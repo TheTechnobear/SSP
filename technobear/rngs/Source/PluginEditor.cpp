@@ -4,6 +4,14 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+
+const unsigned paramTopY=385-1;
+const unsigned paramSpaceY=35;
+
+//todo move, globals into class ;) 
+bool altActive=false;
+bool paramState[Percussa::sspLast] = {false};
+
 RngsEditor::RngsEditor (Rngs& p)
     : AudioProcessorEditor (&p), processor (p)
 {
@@ -48,20 +56,67 @@ void 	RngsEditor::audioProcessorChanged (AudioProcessor *) {
 
 }
 
+
+
+
 void RngsEditor::parameterChanged (int index, float value) {
 	if (index < Percussa::sspFirst) return; 
 	if (index >= Percussa::sspLast) return; 
+
+
+    // std::atomic<float>  f_transpose;
+    // std::atomic<float>  f_bypass;
+    // std::atomic<float>  f_easter_egg;
+    // std::atomic<float>  f_chord;
+    // std::atomic<float>  f_trig;
+    // std::atomic<float>  f_fm;
 
 	// use this if you need to do something special 
 	// to process parameter  
 	switch(index) { 
 		case Percussa::sspEnc1:
+			if(altActive) {
+				float v = processor.data().f_position + value;
+				v=constrain(v,0.0f,127.0f);
+				processor.data().f_position = v;
+			} else {
+				float v = processor.data().f_pitch + value;
+				v=constrain(v,0.0f,127.0f);
+				processor.data().f_pitch = v;
+			}
 			break; 
 		case Percussa::sspEnc2: 
+			if(altActive) {
+				float v = processor.data().f_polyphony + value;
+				v=constrain(v,0.0f,3.0f);
+				processor.data().f_polyphony = v;
+
+			} else {
+				float v = processor.data().f_structure + value/100.0f;
+				v=constrain(v,0.0f,1.0f);
+				processor.data().f_structure = v;
+			}
 			break; 
 		case Percussa::sspEnc3:
+			if(altActive) {
+				float v = processor.data().f_model + value;
+				v=constrain(v,0.0f,5.0f);
+				processor.data().f_model = v;
+			} else {
+				float v = processor.data().f_damping + value/100.0f;
+				v=constrain(v,0.0f,1.0f);
+				processor.data().f_damping = v;
+			}
 			break; 
 		case Percussa::sspEnc4: 
+			if(altActive) {
+
+			} else {
+				float v = processor.data().f_brightness + value/100.0f;
+				v=constrain(v,0.0f,1.0f);
+				processor.data().f_brightness = v;
+			
+			}
 			break; 
 		case Percussa::sspEncSw1: 
 			break; 
@@ -72,10 +127,19 @@ void RngsEditor::parameterChanged (int index, float value) {
 		case Percussa::sspEncSw4: 
 			break; 
 		case Percussa::sspSw1: 
+			if(paramState[index]!=value && !value) {
+				processor.data().f_internal_strum = !processor.data().f_internal_strum; 
+			}
 			break; 
 		case Percussa::sspSw2: 
+			if(paramState[index]!=value && !value) {
+				processor.data().f_internal_note = !processor.data().f_internal_note; 
+			}
 			break; 
 		case Percussa::sspSw3: 
+			if(paramState[index]!=value && !value) {
+				processor.data().f_internal_exciter = !processor.data().f_internal_exciter; 
+			}
 			break; 
 		case Percussa::sspSw4: 
 			break; 
@@ -92,22 +156,25 @@ void RngsEditor::parameterChanged (int index, float value) {
 		case Percussa::sspSwRight: 
 			break; 
 		case Percussa::sspSwUp: 
+			if(paramState[index]!=value && !value) {
+				altActive = false;
+			}
 			break; 
 		case Percussa::sspSwDown: 
+			if(paramState[index]!=value && !value) {
+				altActive = true;
+			}
 			break; 
 		case Percussa::sspSwShiftL:
 			break; 
-		case Percussa::sspSwShiftR: 
+		case Percussa::sspSwShiftR:
 			break; 
 		default:
 			break; 
 	}
+	paramState[index]=value;
 }
 
-const unsigned paramTopY=385-1;
-const unsigned paramSpaceY=35;
-
-bool altActive=false;
 
 
 void displayParameter(Graphics& g, unsigned idx, bool alt, const String& label, float value, const String& unit) {
@@ -241,7 +308,7 @@ void RngsEditor::paint(Graphics& g)
 	displayMainMenu(g,"G",0,false);
 	displayMainMenu(g,"N",1,false);
 	displayMainMenu(g,"P",2,false);
-	displayMainMenu(g,"R",3,true);
+	displayMainMenu(g,"R",3,false);
 
 
 	// button box
@@ -256,65 +323,30 @@ void RngsEditor::paint(Graphics& g)
 	}
 
 
-	displayButton(g,"GR1",0,0,false);
-	displayButton(g,"GR2",0,1,false);
-	displayButton(g,"GR3",0,2,false);
-	displayButton(g,"GR4",0,3,false);
-	displayButton(g,"LS" ,0,4,false);
+	displayButton(g,"Strum",0,0,processor.data().f_internal_strum>0.5);
+	displayButton(g,"Note",0,1,processor.data().f_internal_note>0.5);
+	displayButton(g,"Excit",0,2,processor.data().f_internal_exciter>0.5);
+	displayButton(g,"",0,3,false);
+	displayButton(g,"" ,0,4,false);
 	displayButton(g,"+EN",0,5,false);
-	displayButton(g,"RS" ,0,6,false);
+	displayButton(g,"" ,0,6,false);
 
-	displayButton(g,"GR5",1,0,false);
-	displayButton(g,"GR6",1,1,false);
-	displayButton(g,"GR7",1,2,false);
-	displayButton(g,"GR8",1,3,true);
-	displayButton(g,"-PG",1,4,false);
+	displayButton(g,"",1,0,false);
+	displayButton(g,"",1,1,false);
+	displayButton(g,"",1,2,false);
+	displayButton(g,"",1,3,false);
+	displayButton(g,"",1,4,false);
 	displayButton(g,"-EN",1,5,false);
-	displayButton(g,"+PG",1,6,false);
+	displayButton(g,"",1,6,false);
 
-	// y=butTopY+paramSpaceY;
-	// x=butLeftX+20; 
-	// g.setColour(Colours::red);
-	// g.drawSingleLineText("GR1",x,y);
-	// x+=100;
-	// g.drawSingleLineText("GR2",x,y);
-	// x+=100;
-	// g.drawSingleLineText("GR3",x,y);
-	// x+=100;
-	// g.drawSingleLineText("GR4",x,y);
-	// x+=100;
-	// g.drawSingleLineText("LS",x,y);
-	// x+=100;
-	// g.drawSingleLineText("+EN",x,y);
-	// x+=100;
-	// g.drawSingleLineText("RS",x,y);
-
-	// // row 2
-	// y+=50;
-	// x=butLeftX+20; 
-	// g.drawSingleLineText("GR5",x,y);
-	// x+=100;
-	// g.drawSingleLineText("GR6",x,y);
-	// x+=100;
-	// g.drawSingleLineText("GR7",x,y);
-	// x+=100;
-	// g.drawSingleLineText("GR8",x,y);
-	// x+=100;
-	// g.drawSingleLineText("-PG",x,y);
-	// x+=100;
-	// g.drawSingleLineText("-EN",x,y);
-	// x+=100;
-	// g.drawSingleLineText("+PG",x,y);
-
-
-	displayParameter(g,0,false,"Coarse",440.0f,"Hz");
-	displayParameter(g,0,true,"abc",0,"");
-	displayParameter(g,1,false,"Fine",0.0f,"Hz");
-	displayParameter(g,1,true,"def",1,"");
-	displayParameter(g,2,false,"Cutoff",2100.0f,"Hz");
-	displayParameter(g,2,true,"asj",2,"");
-	displayParameter(g,3,false,"Q",0.5f,"");
-	displayParameter(g,3,true,"zxc",3,"");
+	displayParameter(g,0,false,"Pitch",processor.data().f_pitch,"");
+	displayParameter(g,0,true,"Pos",processor.data().f_position,"");
+	displayParameter(g,1,false,"Struct",processor.data().f_pitch,"");
+	displayParameter(g,1,true,"Poly",processor.data().f_polyphony,"");
+	displayParameter(g,2,false,"Bright",processor.data().f_brightness,"");
+	displayParameter(g,2,true,"Model",processor.data().f_model,"");
+	displayParameter(g,3,false,"Damping",processor.data().f_damping,"");
+	displayParameter(g,3,true,"",0,"");
 
 
 	// paint parameter values 

@@ -5,9 +5,7 @@
 
 
 
-inline float constrain(float v, float vMin, float vMax) {
-    return std::max<float>(vMin, std::min<float>(vMax, v));
-}
+
 
 Rngs::Rngs()
 {
@@ -270,7 +268,7 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 	// if you don't want to do audio rate modulation you'd process the 
 	// changes at a lower control rate. 
 
-    return;	
+//    return;	
 
 
     auto& in=data_.in;
@@ -300,7 +298,7 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 
     // control rate 
     float pitch = data_.f_pitch + buffer.getSample(I_VOCT,0);
-    float fm = data_.f_fm + buffer.getSample(I_FM,0);
+    float fm = data_.f_fm + buffer.getSample(I_FM,0) * 48.0f;
     float damping = data_.f_damping + buffer.getSample(I_DAMPING,0);
     float structure = data_.f_structure + buffer.getSample(I_STUCTURE,0);
     float brightness = data_.f_brightness + buffer.getSample(I_BRIGHTNESS,0);
@@ -331,15 +329,15 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     performance_state.strum = data_.f_trig > 0.5;
 
 
-    data_.f_polyphony = constrain(1 << int(data_.f_polyphony) , 1, rings::kMaxPolyphony);
+    int f_polyphony = constrain(1 << int(data_.f_polyphony) , 1, rings::kMaxPolyphony);
 
-    if(data_.f_polyphony != part.polyphony()) {
-        part.set_polyphony(data_.f_polyphony);
-        data_.string_synth.set_polyphony(data_.f_polyphony);
+    if(f_polyphony != part.polyphony()) {
+        part.set_polyphony(f_polyphony);
+        data_.string_synth.set_polyphony(f_polyphony);
     }
 
-    rings::ResonatorModel model = static_cast<rings::ResonatorModel>((int) data_.f_model);
     data_.f_model=constrain(data_.f_model,0,rings::ResonatorModel::RESONATOR_MODEL_LAST - 1);
+    rings::ResonatorModel model = static_cast<rings::ResonatorModel>((int) data_.f_model);
     if(model != part.model()) {
         part.set_model(model);
         data_.string_synth.set_fx(static_cast<rings::FxType>(model));

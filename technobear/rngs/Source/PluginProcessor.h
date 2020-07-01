@@ -31,6 +31,9 @@
 #include "rings/dsp/strummer.h"
 #include "rings/dsp/string_synth_part.h"
 
+inline float constrain(float v, float vMin, float vMax) {
+    return std::max<float>(vMin, std::min<float>(vMax, v));
+}
 
 struct RngsData {
 	RngsData() {
@@ -162,6 +165,7 @@ public:
 
 	void getStateInformation (MemoryBlock& destData) override;
 	void setStateInformation (const void* data, int sizeInBytes) override;
+    RngsData& data() { return data_;}
 
 private:
     enum {
