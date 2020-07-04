@@ -18,12 +18,12 @@ ifeq ($(CONFIG),Debug)
     TARGET_ARCH := 
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vst3-sdk/VST3_SDK -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
-  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -fPIC -O0
+  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vst3-sdk -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -fPIC -O0 -I../../Source/mi
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -shared -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
   LDDEPS :=
-  RESFLAGS :=  -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vst3-sdk/VST3_SDK -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  RESFLAGS :=  -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vst3-sdk -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   TARGET := rngs.so
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
   CLEANCMD = rm -rf $(OUTDIR)/$(TARGET) $(OBJDIR)
@@ -39,27 +39,27 @@ ifeq ($(CONFIG),Release)
     TARGET_ARCH := 
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vst3-sdk/VST3_SDK -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
-  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -fPIC -O3
+  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vst3-sdk -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -fPIC -O3 -I../../Source/mi
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -shared -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
   LDDEPS :=
-  RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vst3-sdk/VST3_SDK -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vst3-sdk -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   TARGET := rngs.so
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
   CLEANCMD = rm -rf $(OUTDIR)/$(TARGET) $(OBJDIR)
 endif
 
 OBJECTS := \
-  $(OBJDIR)/atan_91030d09.o \
-  $(OBJDIR)/units_7daa9b04.o \
-  $(OBJDIR)/random_a6e6a6f6.o \
-  $(OBJDIR)/fm_voice_dbadff7b.o \
-  $(OBJDIR)/part_5215b022.o \
-  $(OBJDIR)/resonator_65b85112.o \
-  $(OBJDIR)/string_86af7984.o \
-  $(OBJDIR)/string_synth_part_c6411e03.o \
-  $(OBJDIR)/rings_resources_9a7c9770.o \
+  $(OBJDIR)/atan_185c8909.o \
+  $(OBJDIR)/units_e1809f04.o \
+  $(OBJDIR)/random_ad2222f6.o \
+  $(OBJDIR)/fm_voice_a213037b.o \
+  $(OBJDIR)/part_fb9cb422.o \
+  $(OBJDIR)/resonator_6bf3cd12.o \
+  $(OBJDIR)/string_ea857d84.o \
+  $(OBJDIR)/string_synth_part_87409a03.o \
+  $(OBJDIR)/rings_resources_ffc91370.o \
   $(OBJDIR)/Oscilloscope_5e42f118.o \
   $(OBJDIR)/PluginProcessor_a059e380.o \
   $(OBJDIR)/PluginEditor_94d4fb09.o \
@@ -94,47 +94,47 @@ strip:
 	@echo Stripping rngs
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
 
-$(OBJDIR)/atan_91030d09.o: ../../Source/MI/stmlib/dsp/atan.cc
+$(OBJDIR)/atan_185c8909.o: ../../Source/mi/stmlib/dsp/atan.cc
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling atan.cc"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/units_7daa9b04.o: ../../Source/MI/stmlib/dsp/units.cc
+$(OBJDIR)/units_e1809f04.o: ../../Source/mi/stmlib/dsp/units.cc
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling units.cc"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/random_a6e6a6f6.o: ../../Source/MI/stmlib/utils/random.cc
+$(OBJDIR)/random_ad2222f6.o: ../../Source/mi/stmlib/utils/random.cc
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling random.cc"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/fm_voice_dbadff7b.o: ../../Source/MI/rings/dsp/fm_voice.cc
+$(OBJDIR)/fm_voice_a213037b.o: ../../Source/mi/rings/dsp/fm_voice.cc
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling fm_voice.cc"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/part_5215b022.o: ../../Source/MI/rings/dsp/part.cc
+$(OBJDIR)/part_fb9cb422.o: ../../Source/mi/rings/dsp/part.cc
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling part.cc"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/resonator_65b85112.o: ../../Source/MI/rings/dsp/resonator.cc
+$(OBJDIR)/resonator_6bf3cd12.o: ../../Source/mi/rings/dsp/resonator.cc
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling resonator.cc"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/string_86af7984.o: ../../Source/MI/rings/dsp/string.cc
+$(OBJDIR)/string_ea857d84.o: ../../Source/mi/rings/dsp/string.cc
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling string.cc"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/string_synth_part_c6411e03.o: ../../Source/MI/rings/dsp/string_synth_part.cc
+$(OBJDIR)/string_synth_part_87409a03.o: ../../Source/mi/rings/dsp/string_synth_part.cc
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling string_synth_part.cc"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/rings_resources_9a7c9770.o: ../../Source/MI/rings/rings_resources.cc
+$(OBJDIR)/rings_resources_ffc91370.o: ../../Source/mi/rings/rings_resources.cc
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling rings_resources.cc"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
