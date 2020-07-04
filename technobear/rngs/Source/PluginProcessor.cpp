@@ -6,7 +6,7 @@
 
 Rngs::Rngs()
 {
-    memset(params_,sizeof(params_),0);
+    memset(params_,0,sizeof(params_));
 }
 
 Rngs::~Rngs()
@@ -172,24 +172,22 @@ void Rngs::prepareToPlay (double sampleRate, int samplesPerBlock)
 	// the plugin and before it starts calling processBlock below  
 
 
-    data_.strummer.Init(0.01f, sampleRate / samplesPerBlock);
+    data_.strummer.Init(0.01f, sampleRate / RingsBlock);
     data_.string_synth.Init(data_.buffer);
     data_.part.Init(data_.buffer);
 
-    if (samplesPerBlock > data_.iobufsz) {
-        // note: in practice this will never happen !
+    if (RingsBlock > data_.iobufsz) {
         delete [] data_.in;
         delete [] data_.out;
         delete [] data_.aux;
-        data_.iobufsz = samplesPerBlock;
+        data_.iobufsz = RingsBlock;
         data_.in = new float[data_.iobufsz];
         data_.out = new float[data_.iobufsz];
         data_.aux = new float[data_.iobufsz];
-        memset(data_.in,0,samplesPerBlock);
-        memset(data_.out,0,samplesPerBlock);
-        memset(data_.aux,0,samplesPerBlock);
+        memset(data_.in,0,data_.iobufsz);
+        memset(data_.out,0,data_.iobufsz);
+        memset(data_.aux,0,data_.iobufsz);
     }
-
 }
 
 void Rngs::releaseResources()
@@ -215,42 +213,30 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     auto& in=data_.in;
     auto& out=data_.out;
     auto& aux=data_.aux;
-    auto n=buffer.getNumSamples();
+    auto n=RingsBlock;
     size_t size = n;
 
-    bool strum=false;
 
+    for(int bidx=0;bidx<buffer.getNumSamples();bidx+=n) {
+
+    bool strum=false;
     for (int i = 0; i < n; i++) {
-        in[i] = out[i] = buffer.getSample(I_IN, i);
-        float trig = buffer.getSample(I_STRUM,i);
+        in[i] = out[i] = buffer.getSample(I_IN,bidx+i);
+        bool trig = buffer.getSample(I_STRUM,bidx+i) > 0.5;
         if(trig!=data_.f_trig && trig) {
             strum=true;
         }
         data_.f_trig=trig;
     }
 
-    if (n > data_.iobufsz) {
-        // note: in practice this will never happen !
-        delete [] in;
-        delete [] out;
-        delete [] aux;
-        data_.iobufsz = n;
-        in = new float[data_.iobufsz];
-        out = new float[data_.iobufsz];
-        aux = new float[data_.iobufsz];
-        memset(in,0,n);
-        memset(out,0,n);
-        memset(aux,0,n);
-        data_.iobufsz = n;
-    }
-
     // control rate 
-    float pitch = data_.f_pitch + buffer.getSample(I_VOCT,0);
-    float fm = data_.f_fm + buffer.getSample(I_FM,0) * 48.0f;
-    float damping = data_.f_damping + buffer.getSample(I_DAMPING,0);
-    float structure = data_.f_structure + buffer.getSample(I_STUCTURE,0);
-    float brightness = data_.f_brightness + buffer.getSample(I_BRIGHTNESS,0);
-    float position = data_.f_position + buffer.getSample(I_POSITION,0);
+    float transpose = data_.f_pitch;
+    float note = buffer.getSample(I_VOCT,bidx) * 60.0f;
+    float fm = data_.f_fm + buffer.getSample(I_FM,bidx) * 48.0f;
+    float damping = data_.f_damping + buffer.getSample(I_DAMPING,bidx);
+    float structure = data_.f_structure + buffer.getSample(I_STUCTURE,bidx);
+    float brightness = data_.f_brightness + buffer.getSample(I_BRIGHTNESS,bidx);
+    float position = data_.f_position + buffer.getSample(I_POSITION,bidx);
 
 
     auto& patch=data_.patch;
@@ -263,11 +249,8 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     patch.structure = constrain(structure, 0.0f, 0.9995f);
     
     performance_state.fm = constrain(fm, -48.0f, 48.0f);
-    performance_state.note = pitch;
-
-
-
-    performance_state.tonic = 12.0f + data_.f_transpose; //todo ??
+    performance_state.note = note;
+    performance_state.tonic = 12.0f + data_.f_pitch; // rename pitch->transpose
 
     //todo
     performance_state.internal_exciter = data_.f_internal_exciter > 0.5;
@@ -275,9 +258,14 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     performance_state.internal_note =  data_.f_internal_note > 0.5;
     performance_state.chord = data_.patch.structure * constrain(data_.f_chord, 0, rings::kNumChords - 1);
 
+    if(performance_state.internal_note) {
+        
+        performance_state.note = 0.0;
+        performance_state.tonic = 12.0f + data_.f_pitch; // rename pitch->transpose
+    }
 
 
-    performance_state.strum = !strum;
+    performance_state.strum = strum;
 
 
     int f_polyphony = constrain(1 << int(data_.f_polyphony) , 1, rings::kMaxPolyphony);
@@ -319,9 +307,11 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         part.Process(performance_state, patch, in, out, aux, size);
     }
 
-    for (int i=0; i<buffer.getNumSamples(); i++) {
-        buffer.setSample(O_ODD,i,out[i]); 
-        buffer.setSample(O_EVEN,i,aux[i]); 
+    for (int i=0; i<RingsBlock; i++) {
+        buffer.setSample(O_ODD,bidx+i,out[i]); 
+        buffer.setSample(O_EVEN,bidx+i,aux[i]); 
+    }
+
     }
 }
 

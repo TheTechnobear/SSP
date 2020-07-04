@@ -35,11 +35,13 @@ inline float constrain(float v, float vMin, float vMax) {
     return std::max<float>(vMin, std::min<float>(vMax, v));
 }
 
+static constexpr unsigned RingsBlock=16;
+
 struct RngsData {
 	RngsData() {
-		f_polyphony = 1.0f;
+		f_polyphony = 0.0f;
 		f_model = 0.0f;
-		f_pitch = 60.0f;
+		f_pitch = 24.0f;
 		f_structure = 0.4f;
 		f_brightness = 0.5f;
 		f_damping = 0.5f;
@@ -47,8 +49,8 @@ struct RngsData {
 		f_bypass = 0.0f;
 		f_easter_egg = 0.0f;
 		f_internal_exciter = 1;
-		f_internal_strum = 1;
-		f_internal_note= 0;
+		f_internal_strum = 0;
+		f_internal_note= 1;
 		f_chord = 0;
 		f_transpose = 0;
 		f_fm = 0;
@@ -57,7 +59,7 @@ struct RngsData {
 		in_level = 0.0f;
 		kNoiseGateThreshold = 0.00003f;
 
-		iobufsz = 128;
+		iobufsz = RingsBlock;
 	    in = new float[iobufsz];
         out = new float[iobufsz];
         aux = new float[iobufsz];
@@ -100,7 +102,7 @@ struct RngsData {
     std::atomic<float>  f_polyphony;
     std::atomic<float>  f_model;
     std::atomic<float>  f_chord;
-    std::atomic<float>  f_trig;
+    std::atomic<bool>   f_trig;
     std::atomic<float>  f_fm;
     std::atomic<float>  f_internal_strum;
     std::atomic<float>  f_internal_exciter;

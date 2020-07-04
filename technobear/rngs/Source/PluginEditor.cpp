@@ -5,7 +5,7 @@
 #include "PluginEditor.h"
 #include <iostream>
 
-const unsigned paramTopY=385-1;
+const unsigned paramTopY=380-1;
 const unsigned paramSpaceY=35;
 
 //todo move, globals into class ;) 
@@ -76,7 +76,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 				processor.data().f_position = v;
 			} else {
 				float v = processor.data().f_pitch + value;
-				v=constrain(v,0.0f,127.0f);
+				v=constrain(v,0.0f,60.0f);
 				processor.data().f_pitch = v;
 			}
 			break; 
@@ -122,17 +122,20 @@ void RngsEditor::parameterChanged (int index, float value) {
 			break; 
 		case Percussa::sspSw1: 
 			if(paramState[index]!=value && !value) {
-				processor.data().f_internal_strum = !processor.data().f_internal_strum; 
+				processor.data().f_internal_exciter =
+				! processor.data().f_internal_exciter;
 			}
 			break; 
 		case Percussa::sspSw2: 
 			if(paramState[index]!=value && !value) {
-				processor.data().f_internal_note = !processor.data().f_internal_note; 
+				processor.data().f_internal_strum = 
+				! processor.data().f_internal_strum ;
 			}
 			break; 
 		case Percussa::sspSw3: 
 			if(paramState[index]!=value && !value) {
-				processor.data().f_internal_exciter = !processor.data().f_internal_exciter; 
+				processor.data().f_internal_note =
+				! processor.data().f_internal_note;
 			}
 			break; 
 		case Percussa::sspSw4: 
@@ -151,12 +154,12 @@ void RngsEditor::parameterChanged (int index, float value) {
 			break; 
 		case Percussa::sspSwUp: 
 			if(paramState[index]!=value && !value) {
-				altActive = false;
+				altActive = ! altActive;
 			}
 			break; 
 		case Percussa::sspSwDown: 
 			if(paramState[index]!=value && !value) {
-				altActive = true;
+				altActive = ! altActive;
 			}
 			break; 
 		case Percussa::sspSwShiftL:
@@ -172,32 +175,33 @@ void RngsEditor::parameterChanged (int index, float value) {
 
 
 void displayParameter(Graphics& g, unsigned idx, bool alt, const String& label, float value, const String& unit) {
-	unsigned labely=paramTopY+paramSpaceY;
-	unsigned valuey=paramTopY+ (2 * paramSpaceY) + 5;
+	unsigned labely=paramTopY + 5;
+	unsigned valuey=labely +  50;
 	unsigned spacingX=unsigned(900.0f/8.0f);
 	unsigned x= ((idx * 2) + alt) * spacingX;
 
 	String val= String::formatted("%4.2f",value);
 
-	g.setFont(Font(Font::getDefaultMonospacedFontName(), 24, Font::plain));
+    static constexpr unsigned fh=36;
+	g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
 	if(alt) {
 		if(!altActive) 	{
 			g.setColour(Colours::grey);
 		}
 		else {
 			g.setColour(Colours::red);
-			g.drawText(label,x,labely,spacingX,24, Justification::centred);
 		}
-		g.drawText(val+unit,x,valuey,spacingX,24, Justification::centred);
+        g.drawText(label,x,labely,spacingX,fh, Justification::centred);
+		g.drawText(val+unit,x,valuey,spacingX,fh, Justification::centred);
 	} else {
 		if(altActive) 	{
 			g.setColour(Colours::grey);
 		}
 		else {
 			g.setColour(Colours::red);
-			g.drawText(label,x,labely,spacingX,24, Justification::centred);
 		}
-		g.drawText(val+unit,x,valuey,spacingX,24, Justification::centred);
+        g.drawText(label,x,labely,spacingX,fh, Justification::centred);
+		g.drawText(val+unit,x,valuey,spacingX,fh, Justification::centred);
 	}
 }
 
@@ -319,13 +323,14 @@ void RngsEditor::paintBack(Graphics& g)
 
 void RngsEditor::paintParams(Graphics& g)
 {
-	displayButton(g,"Strum",0,0,processor.data().f_internal_strum>0.5);
-	displayButton(g,"Note",0,1,processor.data().f_internal_note>0.5);
-	displayButton(g,"Excit",0,2,processor.data().f_internal_exciter>0.5);
+	displayButton(g,"Audio",0,0,processor.data().f_internal_exciter<0.5);
+	displayButton(g,"Strum",0,1,processor.data().f_internal_strum<0.5);
+	displayButton(g,"V/Oct",0,2,processor.data().f_internal_note<0.5);
 	displayButton(g,"",0,3,false);
 	displayButton(g,"" ,0,4,false);
 	displayButton(g,"+EN",0,5,false);
 	displayButton(g,"" ,0,6,false);
+
 
 	displayButton(g,"",1,0,false);
 	displayButton(g,"",1,1,false);
@@ -341,7 +346,7 @@ void RngsEditor::paintParams(Graphics& g)
 	displayParameter(g,1,true,"Poly",processor.data().f_polyphony,"");
 	displayParameter(g,2,false,"Bright",processor.data().f_brightness,"");
 	displayParameter(g,2,true,"Model",processor.data().f_model,"");
-	displayParameter(g,3,false,"Damping",processor.data().f_damping,"");
+	displayParameter(g,3,false,"Damp",processor.data().f_damping,"");
 	displayParameter(g,3,true,"",0,"");
 }
 
