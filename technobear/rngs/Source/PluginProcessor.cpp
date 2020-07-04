@@ -4,12 +4,9 @@
 #include "Percussa.h" 
 
 
-
-
-
 Rngs::Rngs()
 {
-	memset(paramValues, 0, sizeof(paramValues)); 
+    memset(params_,sizeof(params_),0);
 }
 
 Rngs::~Rngs()
@@ -28,11 +25,8 @@ int Rngs::getNumParameters()
 
 float Rngs::getParameter (int index)
 {
-	if (index < Percussa::sspFirst) return 0.00f; 
-	if (index >= Percussa::sspLast) return 0.00f; 
-
-	// add offset so index starts from 0 
-	return paramValues[index-Percussa::sspFirst];
+    if(index<Percussa::sspLast) return params_[index];
+    return 0.0f;
 }
 
 void Rngs::setParameter (int index, float newValue)
@@ -58,63 +52,8 @@ void Rngs::setParameter (int index, float newValue)
 	// on triggering updates on a diferent thread from within 
 	// setParameter(). 
 
-	// if not an ssp parameter then return 
-	if (index < Percussa::sspFirst) return; 
-	if (index >= Percussa::sspLast) return; 
-
-	// add offset so index starts from 0 
-	paramValues[index-Percussa::sspFirst] = newValue;  
-
-	// use this if you need to do something special 
-	// to process parameter  
-	switch(index) { 
-		case Percussa::sspEnc1:
-			break; 
-		case Percussa::sspEnc2: 
-			break; 
-		case Percussa::sspEnc3:
-			break; 
-		case Percussa::sspEnc4: 
-			break; 
-		case Percussa::sspEncSw1: 
-			break; 
-		case Percussa::sspEncSw2: 
-			break; 
-		case Percussa::sspEncSw3: 
-			break; 
-		case Percussa::sspEncSw4: 
-			break; 
-		case Percussa::sspSw1: 
-			break; 
-		case Percussa::sspSw2: 
-			break; 
-		case Percussa::sspSw3: 
-			break; 
-		case Percussa::sspSw4: 
-			break; 
-		case Percussa::sspSw5: 
-			break; 
-		case Percussa::sspSw6: 
-			break; 
-		case Percussa::sspSw7: 
-			break; 
-		case Percussa::sspSw8: 
-			break; 
-		case Percussa::sspSwLeft: 
-			break; 
-		case Percussa::sspSwRight: 
-			break; 
-		case Percussa::sspSwUp: 
-			break; 
-		case Percussa::sspSwDown: 
-			break; 
-		case Percussa::sspSwShiftL:
-			break; 
-		case Percussa::sspSwShiftR: 
-			break; 
-		default:
-			break; 
-	}
+    if(index<Percussa::sspLast) params_[index]=newValue;
+    AudioProcessor::sendParamChangeMessageToListeners(index,newValue);
 }
 
 const String Rngs::getParameterName (int index)
@@ -202,18 +141,20 @@ int Rngs::getNumPrograms()
 
 int Rngs::getCurrentProgram()
 {
-    return 0;
+    return currentProgram_;
 }
 
 void Rngs::setCurrentProgram (int index)
 {
 	// see below (functions for storing/recalling state info) 
 	// for more info about what the SSP's software stores and recalls for your plugin 
+    currentProgram_=index;
 }
 
 const String Rngs::getProgramName (int index)
 {
-    return String("default");
+    String pn= String("program")+String(index);
+    return pn;
 }
 
 void Rngs::changeProgramName (int index, const String& newName)
@@ -277,8 +218,15 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     auto n=buffer.getNumSamples();
     size_t size = n;
 
+    bool strum=false;
+
     for (int i = 0; i < n; i++) {
         in[i] = out[i] = buffer.getSample(I_IN, i);
+        float trig = buffer.getSample(I_STRUM,i);
+        if(trig!=data_.f_trig && trig) {
+            strum=true;
+        }
+        data_.f_trig=trig;
     }
 
     if (n > data_.iobufsz) {
@@ -326,7 +274,10 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     performance_state.internal_strum =  data_.f_internal_strum > 0.5;
     performance_state.internal_note =  data_.f_internal_note > 0.5;
     performance_state.chord = data_.patch.structure * constrain(data_.f_chord, 0, rings::kNumChords - 1);
-    performance_state.strum = data_.f_trig > 0.5;
+
+
+
+    performance_state.strum = !strum;
 
 
     int f_polyphony = constrain(1 << int(data_.f_polyphony) , 1, rings::kMaxPolyphony);

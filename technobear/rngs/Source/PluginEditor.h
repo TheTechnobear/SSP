@@ -20,17 +20,18 @@ public:
 
 	void parameterChanged(int parameterIndex, float newValue);
 
-
 	void timerCallback(); 
 
 	// audio thread!!
 	void 	audioProcessorParameterChanged (AudioProcessor *processor, int parameterIndex, float newValue) override;
 	void 	audioProcessorChanged (AudioProcessor *processor) override;
 
+protected:
+	void paintBack (Graphics&);
+	void paintParams (Graphics&);
 
 private:
 	Rngs& processor;
-	bool showParamValues; 
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RngsEditor)
 };

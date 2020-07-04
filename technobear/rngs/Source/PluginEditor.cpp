@@ -3,7 +3,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
+#include <iostream>
 
 const unsigned paramTopY=385-1;
 const unsigned paramSpaceY=35;
@@ -20,7 +20,6 @@ RngsEditor::RngsEditor (Rngs& p)
 	// pushing buttons 
 
 	processor.addListener(this);
-	showParamValues = false; 
 
 	setSize (1600, 480);
 
@@ -35,7 +34,6 @@ RngsEditor::~RngsEditor()
 
 void RngsEditor::timerCallback() 
 { 
-	// repaint our own canvas as well 
 	repaint(); 
 }
 
@@ -56,9 +54,6 @@ void 	RngsEditor::audioProcessorChanged (AudioProcessor *) {
 
 }
 
-
-
-
 void RngsEditor::parameterChanged (int index, float value) {
 	if (index < Percussa::sspFirst) return; 
 	if (index >= Percussa::sspLast) return; 
@@ -76,8 +71,8 @@ void RngsEditor::parameterChanged (int index, float value) {
 	switch(index) { 
 		case Percussa::sspEnc1:
 			if(altActive) {
-				float v = processor.data().f_position + value;
-				v=constrain(v,0.0f,127.0f);
+				float v = processor.data().f_position + value/100.0f;
+				v=constrain(v,0.0f,1.0f);
 				processor.data().f_position = v;
 			} else {
 				float v = processor.data().f_pitch + value;
@@ -103,19 +98,18 @@ void RngsEditor::parameterChanged (int index, float value) {
 				v=constrain(v,0.0f,5.0f);
 				processor.data().f_model = v;
 			} else {
-				float v = processor.data().f_damping + value/100.0f;
+				float v = processor.data().f_brightness + value/100.0f;
 				v=constrain(v,0.0f,1.0f);
-				processor.data().f_damping = v;
+				processor.data().f_brightness = v;
 			}
 			break; 
 		case Percussa::sspEnc4: 
 			if(altActive) {
 
 			} else {
-				float v = processor.data().f_brightness + value/100.0f;
+				float v = processor.data().f_damping + value/100.0f;
 				v=constrain(v,0.0f,1.0f);
-				processor.data().f_brightness = v;
-			
+				processor.data().f_damping = v;
 			}
 			break; 
 		case Percussa::sspEncSw1: 
@@ -270,8 +264,12 @@ void drawRngs(Graphics& g) {
 	g.drawEllipse(x+(2*sp),y,d,d,1);
 }
 
+void RngsEditor::paint(Graphics& g) {
+    paintBack(g);
+    paintParams(g);
+}
 
-void RngsEditor::paint(Graphics& g)
+void RngsEditor::paintBack(Graphics& g)
 {
 	g.fillAll (Colours::black);
 
@@ -282,10 +280,6 @@ void RngsEditor::paint(Graphics& g)
 	drawRngs(g);
 	int w=getWidth(); 
 	int h=getHeight();
-
-	if (showParamValues) { 
-		h -= keepout; 
-	}
 
 	// display 1600x 480
   	// x= left/right (0..1599)
@@ -321,8 +315,10 @@ void RngsEditor::paint(Graphics& g)
 	for(int i=0;i<8;i++ ) {
 		g.drawVerticalLine(x+ i*100 ,butTopY,480-1);
 	}
+}
 
-
+void RngsEditor::paintParams(Graphics& g)
+{
 	displayButton(g,"Strum",0,0,processor.data().f_internal_strum>0.5);
 	displayButton(g,"Note",0,1,processor.data().f_internal_note>0.5);
 	displayButton(g,"Excit",0,2,processor.data().f_internal_exciter>0.5);
@@ -341,59 +337,15 @@ void RngsEditor::paint(Graphics& g)
 
 	displayParameter(g,0,false,"Pitch",processor.data().f_pitch,"");
 	displayParameter(g,0,true,"Pos",processor.data().f_position,"");
-	displayParameter(g,1,false,"Struct",processor.data().f_pitch,"");
+	displayParameter(g,1,false,"Struct",processor.data().f_structure,"");
 	displayParameter(g,1,true,"Poly",processor.data().f_polyphony,"");
 	displayParameter(g,2,false,"Bright",processor.data().f_brightness,"");
 	displayParameter(g,2,true,"Model",processor.data().f_model,"");
 	displayParameter(g,3,false,"Damping",processor.data().f_damping,"");
 	displayParameter(g,3,true,"",0,"");
-
-
-	// paint parameter values 
-	if (showParamValues) { 
-
-		Font f(Font::getDefaultMonospacedFontName(), 24, Font::plain);
-		g.setFont(f);
-		g.setColour(Colours::white); 
-
-		// first row 
-		int x = 10; 
-		for (int i=Percussa::sspEnc1; i<Percussa::sspSw1; i++) { 
-			g.drawSingleLineText(
-				String::formatted("%4.2f", processor.getParameter(i)), 
-				x, getHeight()-keepout+20); 
-			x += 150;  
-		}
-
-		// second row 
-		x = 10; 
-		for (int i=Percussa::sspSw1; i<Percussa::sspSwLeft; i++) { 
-			g.drawSingleLineText(
-				String::formatted("%4.2f", processor.getParameter(i)), 
-				x, getHeight()-keepout+40); 
-			x += 150;  
-		}
-
-		// third row 
-		x = 10; 
-		for (int i=Percussa::sspSwLeft; i<Percussa::sspLast; i++) { 
-			g.drawSingleLineText(
-				String::formatted("%4.2f", processor.getParameter(i)), 
-				x, getHeight()-keepout+60); 
-			x += 150;  
-		}
-	} 
 }
 
 	
 void RngsEditor::resized()
 {
-	// int w=getWidth(); 
-	int h=getHeight();
-
-	if (showParamValues) { 
-		h -= keepout; 
-	}
-
-
 }

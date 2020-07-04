@@ -39,11 +39,11 @@ struct RngsData {
 	RngsData() {
 		f_polyphony = 1.0f;
 		f_model = 0.0f;
-		f_pitch = 0.0f;
-		f_structure = 0.0f;
-		f_brightness = 0.0f;
-		f_damping = 0.0f;
-		f_position = 0.0f;
+		f_pitch = 60.0f;
+		f_structure = 0.4f;
+		f_brightness = 0.5f;
+		f_damping = 0.5f;
+		f_position = 0.5f;
 		f_bypass = 0.0f;
 		f_easter_egg = 0.0f;
 		f_internal_exciter = 1;
@@ -168,6 +168,7 @@ public:
     RngsData& data() { return data_;}
 
 private:
+    int currentProgram_=0;
     enum {
         I_IN,
         I_STRUM,
@@ -185,9 +186,8 @@ private:
         O_MAX
     };
 
-	// see Percussa.h 
-	float paramValues[Percussa::sspLast-Percussa::sspFirst]; 
 	RngsData data_;
+    float params_[Percussa::sspLast];
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Rngs)
 };
