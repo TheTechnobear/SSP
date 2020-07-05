@@ -55,12 +55,12 @@ const String Rngs::getInputChannelName (int channelIndex) const
     switch (channelIndex) {
     case I_IN:          { return String("In");}
     case I_STRUM:       { return String("Strum");}
-    case I_VOCT:        { return String("Pitch");}
+    case I_VOCT:        { return String("VOct");}
     case I_FM:          { return String("FM");}
-    case I_STUCTURE:    { return String("Structure");}
-    case I_BRIGHTNESS:  { return String("Brighness");}
-    case I_DAMPING:      { return String("Damping");}
-    case I_POSITION:      { return String("Position");}
+    case I_STUCTURE:    { return String("Struct");}
+    case I_BRIGHTNESS:  { return String("Bright");}
+    case I_DAMPING:      { return String("Damp");}
+    case I_POSITION:      { return String("Pos");}
     }
     return String("Uknown:") + String (channelIndex + 1);
 }
