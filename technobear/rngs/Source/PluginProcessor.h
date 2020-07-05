@@ -18,21 +18,22 @@ static constexpr unsigned RingsBlock = 16;
 
 struct RngsData {
     RngsData() {
-        f_polyphony = 0.0f;
-        f_model = 0.0f;
-        f_pitch = 24.0f;
+        f_frequency = 24.0f;
         f_structure = 0.4f;
         f_brightness = 0.5f;
         f_damping = 0.5f;
         f_position = 0.5f;
+
+        f_polyphony = 0.0f;
+        f_model = 0.0f;
+
         f_bypass = 0.0f;
         f_easter_egg = 0.0f;
+
         f_internal_exciter = 1;
         f_internal_strum = 0;
         f_internal_note = 1;
-        f_chord = 0;
-        f_transpose = 0;
-        f_fm = 0;
+
         f_trig = 0;
 
         in_level = 0.0f;
@@ -70,22 +71,22 @@ struct RngsData {
 
 
 
-    std::atomic<float>  f_pitch;
-    std::atomic<float>  f_transpose;
+    std::atomic<float>  f_frequency;
     std::atomic<float>  f_structure;
     std::atomic<float>  f_brightness;
     std::atomic<float>  f_damping;
     std::atomic<float>  f_position;
-    std::atomic<float>  f_bypass;
-    std::atomic<float>  f_easter_egg;
     std::atomic<float>  f_polyphony;
     std::atomic<float>  f_model;
-    std::atomic<float>  f_chord;
-    std::atomic<bool>   f_trig;
-    std::atomic<float>  f_fm;
+
+    std::atomic<float>  f_bypass;
+    std::atomic<float>  f_easter_egg;
+
     std::atomic<float>  f_internal_strum;
     std::atomic<float>  f_internal_exciter;
     std::atomic<float>  f_internal_note;
+
+    std::atomic<bool>   f_trig;
 
     rings::Part part;
     rings::PerformanceState performance_state;

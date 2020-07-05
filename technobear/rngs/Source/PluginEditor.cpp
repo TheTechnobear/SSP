@@ -50,11 +50,9 @@ void RngsEditor::parameterChanged (int index, float value) {
 
 
 	// unused so far
-	// std::atomic<float>  f_transpose;
 	// std::atomic<float>  f_bypass;
 	// std::atomic<float>  f_easter_egg;
 	// std::atomic<float>  f_chord;
-	// std::atomic<float>  f_trig;
 	// std::atomic<float>  f_fm;
 
 	// use this if you need to do something special
@@ -66,9 +64,9 @@ void RngsEditor::parameterChanged (int index, float value) {
 			v = constrain(v, 0.0f, 1.0f);
 			processor.data().f_position = v;
 		} else {
-			float v = processor.data().f_pitch + value;
+			float v = processor.data().f_frequency + value;
 			v = constrain(v, 0.0f, 60.0f);
-			processor.data().f_pitch = v;
+			processor.data().f_frequency = v;
 		}
 		break;
 	case Percussa::sspEnc2:
@@ -329,7 +327,7 @@ void RngsEditor::paintParams(Graphics& g)
 	displayButton(g, "-EN", 1, 5, false);
 	displayButton(g, "", 1, 6, false);
 
-	displayParameter(g, 0, false, "Pitch", processor.data().f_pitch, "");
+	displayParameter(g, 0, false, "Freq", processor.data().f_frequency, "");
 	displayParameter(g, 0, true, "Pos", processor.data().f_position, "");
 	displayParameter(g, 1, false, "Struct", processor.data().f_structure, "");
 	displayParameter(g, 1, true, "Poly", processor.data().f_polyphony, "");

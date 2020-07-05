@@ -35,7 +35,7 @@ void Rngs::setParameter (int index, float newValue)
 {
     // SSP currently sends control information as parameters
     // see Percussa.h for more info about the parameters below
- 
+
     if (index < Percussa::sspLast) params_[index] = newValue;
     AudioProcessor::sendParamChangeMessageToListeners(index, newValue);
 }
@@ -120,7 +120,7 @@ double Rngs::getTailLengthSeconds() const
 int Rngs::getNumPrograms()
 {
     // NB: some hosts don't cope very well if you tell them there are 0 programs
-    return 1;   
+    return 1;
 }
 
 int Rngs::getCurrentProgram()
@@ -187,7 +187,7 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     size_t size = n;
 
 
-    // Rings usually has a blocks size of 16, 
+    // Rings usually has a blocks size of 16,
     // SSP = 128 (@48k), so split up, so we read the control rate date every 16
     for (int bidx = 0; bidx < buffer.getNumSamples(); bidx += n) {
 
@@ -202,14 +202,14 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         }
 
         // control rate
-        float transpose = data_.f_pitch;
+        float transpose = data_.f_frequency;
         float note = buffer.getSample(I_VOCT, bidx) * 60.0f;
-        float fm = data_.f_fm + buffer.getSample(I_FM, bidx) * 48.0f;
+        float fm = buffer.getSample(I_FM, bidx) * 48.0f;
         float damping = data_.f_damping + buffer.getSample(I_DAMPING, bidx);
         float structure = data_.f_structure + buffer.getSample(I_STUCTURE, bidx);
         float brightness = data_.f_brightness + buffer.getSample(I_BRIGHTNESS, bidx);
         float position = data_.f_position + buffer.getSample(I_POSITION, bidx);
-
+        float chord = data_.patch.structure * rings::kNumChords - 1;
 
         auto& patch = data_.patch;
         auto& part = data_.part;
@@ -227,7 +227,7 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         performance_state.internal_exciter = data_.f_internal_exciter > 0.5;
         performance_state.internal_strum =  data_.f_internal_strum > 0.5;
         performance_state.internal_note =  data_.f_internal_note > 0.5;
-        performance_state.chord = data_.patch.structure * constrain(data_.f_chord, 0, rings::kNumChords - 1);
+        performance_state.chord = constrain(chord , 0, rings::kNumChords - 1);;
 
         if (performance_state.internal_note) {
 
@@ -235,19 +235,17 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
             performance_state.tonic = 12.0f + transpose;
         }
 
-
         performance_state.strum = strum;
 
+        int polyphony = constrain(1 << int(data_.f_polyphony) , 1, rings::kMaxPolyphony);
 
-        int f_polyphony = constrain(1 << int(data_.f_polyphony) , 1, rings::kMaxPolyphony);
-
-        if (f_polyphony != part.polyphony()) {
-            part.set_polyphony(f_polyphony);
-            data_.string_synth.set_polyphony(f_polyphony);
+        if (polyphony != part.polyphony()) {
+            part.set_polyphony(polyphony);
+            data_.string_synth.set_polyphony(polyphony);
         }
 
-        data_.f_model = constrain(data_.f_model, 0, rings::ResonatorModel::RESONATOR_MODEL_LAST - 1);
-        rings::ResonatorModel model = static_cast<rings::ResonatorModel>((int) data_.f_model);
+        int imodel = constrain(data_.f_model, 0, rings::ResonatorModel::RESONATOR_MODEL_LAST - 1);
+        rings::ResonatorModel model = static_cast<rings::ResonatorModel>(imodel);
         if (model != part.model()) {
             part.set_model(model);
             data_.string_synth.set_fx(static_cast<rings::FxType>(model));
@@ -295,7 +293,7 @@ AudioProcessorEditor* Rngs::createEditor()
 void Rngs::getStateInformation (MemoryBlock& destData)
 {
     // SSP not curently using
-    // store state information 
+    // store state information
 }
 
 void Rngs::setStateInformation (const void* data, int sizeInBytes)
