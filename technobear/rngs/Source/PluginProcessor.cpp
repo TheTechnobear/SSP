@@ -178,6 +178,8 @@ void Rngs::releaseResources()
     // spare memory, etc.
 }
 
+
+
 void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
     auto& in = data_.in;
@@ -202,9 +204,9 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         }
 
         // control rate
-        float transpose = data_.f_frequency;
-        float note = buffer.getSample(I_VOCT, bidx) * 60.0f;
-        float fm = buffer.getSample(I_FM, bidx) * 48.0f;
+        float transpose = data_.f_pitch;
+        float note = cv2Pitch(buffer.getSample(I_VOCT, bidx)) * 60.0f;
+        float fm = cv2Pitch(buffer.getSample(I_FM, bidx)) * 48.0f;
         float damping = data_.f_damping + buffer.getSample(I_DAMPING, bidx);
         float structure = data_.f_structure + buffer.getSample(I_STUCTURE, bidx);
         float brightness = data_.f_brightness + buffer.getSample(I_BRIGHTNESS, bidx);

@@ -60,6 +60,8 @@ OBJECTS := \
   $(OBJDIR)/string_ea857d84.o \
   $(OBJDIR)/string_synth_part_87409a03.o \
   $(OBJDIR)/rings_resources_ffc91370.o \
+  $(OBJDIR)/SSPButton_411115c3.o \
+  $(OBJDIR)/SSPParam_8652fc66.o \
   $(OBJDIR)/Oscilloscope_5e42f118.o \
   $(OBJDIR)/PluginProcessor_a059e380.o \
   $(OBJDIR)/PluginEditor_94d4fb09.o \
@@ -137,6 +139,16 @@ $(OBJDIR)/string_synth_part_87409a03.o: ../../Source/mi/rings/dsp/string_synth_p
 $(OBJDIR)/rings_resources_ffc91370.o: ../../Source/mi/rings/rings_resources.cc
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling rings_resources.cc"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/SSPButton_411115c3.o: ../../Source/SSPButton.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling SSPButton.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/SSPParam_8652fc66.o: ../../Source/SSPParam.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling SSPParam.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Oscilloscope_5e42f118.o: ../../Source/Oscilloscope.cpp

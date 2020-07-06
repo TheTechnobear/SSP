@@ -3,6 +3,9 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 
+#include "SSPButton.h"
+#include "SSPParam.h"
+
 class RngsEditor  : public AudioProcessorEditor,
 	public AudioProcessorListener,
 	public Timer
@@ -19,21 +22,30 @@ public:
 	void timerCallback();
 
 	// audio thread!!
-	void 	audioProcessorParameterChanged (AudioProcessor *processor, int parameterIndex, float newValue) override;
-	void 	audioProcessorChanged (AudioProcessor *processor) override;
+	void 	audioProcessorParameterChanged (AudioProcessor *processor_, int parameterIndex, float newValue) override;
+	void 	audioProcessorChanged (AudioProcessor *processor_) override;
 
 protected:
-	void paintBack (Graphics&);
-	void paintParams (Graphics&);
-	void displayParameter(Graphics& g, unsigned idx, bool alt, const String& label, float value, const String& unit);
 	void displayMainMenu(Graphics&g, const String& label, unsigned idx,  bool active );
-	void displayButton(Graphics&g, const String& label, unsigned r, unsigned c, bool active );
 	void drawRngs(Graphics& g);
 
+	void setMenuBounds(SSPButton& btn, unsigned r);
+	void setParamBounds(SSPParam& par, unsigned enc, unsigned var);
+	void setButtonBounds(SSPButton& btn, unsigned r, unsigned c);
+
 private:
-	Rngs& processor;
+	Rngs& processor_;
 	bool altActive_ = false;
 	bool paramState_[Percussa::sspLast];
+
+	SSPButton globalBtn_, networkBtn_, plugInBtn_, recBtn_;
+
+	SSPButton audioBtn_, strumBtn_, vOctBtn_;
+	SSPButton enPlus_, enMinus_;
+
+	SSPParam freqParam_, structParam_, brightParam_, dampParam_;
+	SSPParam posParam_, polyParam_, modelParam_, nullParam_;
+
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RngsEditor)
 };
 

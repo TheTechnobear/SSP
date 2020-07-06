@@ -18,7 +18,7 @@ static constexpr unsigned RingsBlock = 16;
 
 struct RngsData {
     RngsData() {
-        f_frequency = 24.0f;
+        f_pitch = 24.0f;
         f_structure = 0.4f;
         f_brightness = 0.5f;
         f_damping = 0.5f;
@@ -71,7 +71,7 @@ struct RngsData {
 
 
 
-    std::atomic<float>  f_frequency;
+    std::atomic<float>  f_pitch;
     std::atomic<float>  f_structure;
     std::atomic<float>  f_brightness;
     std::atomic<float>  f_damping;
@@ -148,6 +148,18 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     RngsData& data() { return data_;}
+
+protected: 
+    float cv2Pitch(float r) {
+        // SSP SDK
+        static constexpr float p1 = 0.02325f; // first C note 
+        static constexpr float p2 = 0.21187f; // second C note 
+        static constexpr float scale = 1 / (p2 - p1);
+        float arg = r; 
+        arg = arg - p1; 
+        arg = arg * scale; 
+        return arg;
+    }
 
 private:
     int currentProgram_ = 0;

@@ -1,27 +1,103 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+static constexpr unsigned menuTopY = 200 - 1;
 static constexpr unsigned paramTopY = 380 - 1;
 static constexpr unsigned paramSpaceY = 50;
 
 
 RngsEditor::RngsEditor (Rngs& p)
-	: AudioProcessorEditor (&p), processor (p)
+	: AudioProcessorEditor (&p), processor_ (p)
 {
 	// set this to true to see the parameter values update
 	// in the vst plugin GUI (editor) when turning encoders/
 	// pushing buttons
 
-	processor.addListener(this);
+	processor_.addListener(this);
 
 	setSize (1600, 480);
 
 	startTimer(50);
+
+
+	globalBtn_.init("G");
+	networkBtn_.init("N");
+	plugInBtn_.init("P");
+	recBtn_.init("R");
+	addAndMakeVisible(globalBtn_);
+	addAndMakeVisible(networkBtn_);
+	addAndMakeVisible(plugInBtn_);
+	addAndMakeVisible(recBtn_);
+
+	audioBtn_.init("Audio");
+	strumBtn_.init("Strum");
+	vOctBtn_.init("V/Oct");
+	// blank.init("", 0, 3);
+	// blank.init("", 0, 5);
+	enPlus_.init("+EN");
+	// blank.init("", 0, 6);
+
+	// blank.init("", 1, 0);
+	// blank.init("", 1, 1);
+	// blank.init("", 1, 2);
+	// blank.init("", 1, 3);
+	// blank.init("", 1, 4);
+	enMinus_.init("-EN");
+	// blank.init("", 1, 6);
+
+
+	audioBtn_.active(processor_.data().f_internal_exciter < 0.5);
+	strumBtn_.active(processor_.data().f_internal_strum < 0.5);
+	vOctBtn_.active(processor_.data().f_internal_note < 0.5);
+
+	addAndMakeVisible(audioBtn_);
+	addAndMakeVisible(strumBtn_);
+	addAndMakeVisible(vOctBtn_);
+	addAndMakeVisible(enPlus_);
+	addAndMakeVisible(enMinus_);
+
+
+	// parameters
+	freqParam_.init("Freq");
+	structParam_.init("Struct");
+	brightParam_.init("Bright");
+	dampParam_.init("Damp");
+
+	posParam_.init("Pos");
+	polyParam_.init("Poly", "%1.0f");
+	modelParam_.init("Model", "%1.0f");
+	nullParam_.init("");
+
+	freqParam_.value(processor_.data().f_pitch);
+	structParam_.value(processor_.data().f_structure);
+	brightParam_.value(processor_.data().f_brightness);
+	dampParam_.value(processor_.data().f_damping);
+
+	posParam_.value(processor_.data().f_position);
+	polyParam_.value(processor_.data().f_polyphony);
+	modelParam_.value(processor_.data().f_model);
+	//nullParam_
+
+	altActive_ = 0;
+	freqParam_.active(!altActive_);
+	structParam_.active(!altActive_);
+	brightParam_.active(!altActive_);
+	dampParam_.active(!altActive_);
+
+	addAndMakeVisible(freqParam_);
+	addAndMakeVisible(structParam_);
+	addAndMakeVisible(brightParam_);
+	addAndMakeVisible(dampParam_);
+
+	addAndMakeVisible(posParam_);
+	addAndMakeVisible(polyParam_);
+	addAndMakeVisible(modelParam_);
+	addAndMakeVisible(nullParam_);
 }
 
 RngsEditor::~RngsEditor()
 {
-	processor.removeListener(this);
+	processor_.removeListener(this);
 	stopTimer();
 }
 
@@ -60,45 +136,53 @@ void RngsEditor::parameterChanged (int index, float value) {
 	switch (index) {
 	case Percussa::sspEnc1:
 		if (altActive_) {
-			float v = processor.data().f_position + value / 100.0f;
+			float v = processor_.data().f_position + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
-			processor.data().f_position = v;
+			processor_.data().f_position = v;
+			posParam_.value(processor_.data().f_position);
 		} else {
-			float v = processor.data().f_frequency + value;
+			float v = processor_.data().f_pitch + value;
 			v = constrain(v, 0.0f, 60.0f);
-			processor.data().f_frequency = v;
+			processor_.data().f_pitch = v;
+			freqParam_.value(processor_.data().f_pitch);
 		}
 		break;
 	case Percussa::sspEnc2:
 		if (altActive_) {
-			float v = processor.data().f_polyphony + value;
+			float v1 =  ( value > 0.1f ? 1.0f : ( value < 0.1f ? -1.0 : 0.0f) );
+			float v = processor_.data().f_polyphony + v1;
 			v = constrain(v, 0.0f, 3.0f);
-			processor.data().f_polyphony = v;
-
+			processor_.data().f_polyphony = v;
+			polyParam_.value(processor_.data().f_polyphony);
 		} else {
-			float v = processor.data().f_structure + value / 100.0f;
+			float v = processor_.data().f_structure + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
-			processor.data().f_structure = v;
+			processor_.data().f_structure = v;
+			structParam_.value(processor_.data().f_structure);
 		}
 		break;
 	case Percussa::sspEnc3:
 		if (altActive_) {
-			float v = processor.data().f_model + value;
+			float v1 =  ( value > 0.1f ? 1.0f : ( value < 0.1f ? -1.0 : 0.0f) );
+			float v = processor_.data().f_model + v1;
 			v = constrain(v, 0.0f, 5.0f);
-			processor.data().f_model = v;
+			processor_.data().f_model = v;
+			modelParam_.value(processor_.data().f_model);
 		} else {
-			float v = processor.data().f_brightness + value / 100.0f;
+			float v = processor_.data().f_brightness + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
-			processor.data().f_brightness = v;
+			processor_.data().f_brightness = v;
+			brightParam_.value(processor_.data().f_brightness);
 		}
 		break;
 	case Percussa::sspEnc4:
 		if (altActive_) {
 
 		} else {
-			float v = processor.data().f_damping + value / 100.0f;
+			float v = processor_.data().f_damping + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
-			processor.data().f_damping = v;
+			processor_.data().f_damping = v;
+			dampParam_.value(processor_.data().f_damping);
 		}
 		break;
 	case Percussa::sspEncSw1:
@@ -111,20 +195,23 @@ void RngsEditor::parameterChanged (int index, float value) {
 		break;
 	case Percussa::sspSw1:
 		if (paramState_[index] != value && !value) {
-			processor.data().f_internal_exciter =
-			    ! processor.data().f_internal_exciter;
+			processor_.data().f_internal_exciter =
+			    ! processor_.data().f_internal_exciter;
+			audioBtn_.active(processor_.data().f_internal_exciter < 0.5);
 		}
 		break;
 	case Percussa::sspSw2:
 		if (paramState_[index] != value && !value) {
-			processor.data().f_internal_strum =
-			    ! processor.data().f_internal_strum ;
+			processor_.data().f_internal_strum =
+			    ! processor_.data().f_internal_strum ;
+			strumBtn_.active(processor_.data().f_internal_strum < 0.5);
 		}
 		break;
 	case Percussa::sspSw3:
 		if (paramState_[index] != value && !value) {
-			processor.data().f_internal_note =
-			    ! processor.data().f_internal_note;
+			processor_.data().f_internal_note =
+			    ! processor_.data().f_internal_note;
+			vOctBtn_.active(processor_.data().f_internal_note < 0.5);
 		}
 		break;
 	case Percussa::sspSw4:
@@ -142,11 +229,23 @@ void RngsEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSwRight:
 		break;
 	case Percussa::sspSwUp:
+		enPlus_.active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			altActive_ = ! altActive_;
+
+			freqParam_.active(!altActive_);
+			structParam_.active(!altActive_);
+			brightParam_.active(!altActive_);
+			dampParam_.active(!altActive_);
+
+			posParam_.active(altActive_);
+			polyParam_.active(altActive_);
+			modelParam_.active(altActive_);
+			nullParam_.active(altActive_);
 		}
 		break;
 	case Percussa::sspSwDown:
+		enMinus_.active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			altActive_ = ! altActive_;
 		}
@@ -160,81 +259,6 @@ void RngsEditor::parameterChanged (int index, float value) {
 	}
 	paramState_[index] = value;
 }
-
-
-
-void RngsEditor::displayParameter(Graphics& g, unsigned idx, bool alt, const String& label, float value, const String& unit) {
-	unsigned labely = paramTopY + 5;
-	unsigned valuey = labely +  paramSpaceY;
-	unsigned spacingX = unsigned(900.0f / 8.0f);
-	unsigned x = ((idx * 2) + alt) * spacingX;
-
-	String val = String::formatted("%4.2f", value);
-
-	static constexpr unsigned fh = 36;
-	g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
-	if (alt) {
-		if (!altActive_) 	{
-			g.setColour(Colours::grey);
-		}
-		else {
-			g.setColour(Colours::red);
-		}
-		g.drawText(label, x, labely, spacingX, fh, Justification::centred);
-		g.drawText(val + unit, x, valuey, spacingX, fh, Justification::centred);
-	} else {
-		if (altActive_) 	{
-			g.setColour(Colours::grey);
-		}
-		else {
-			g.setColour(Colours::red);
-		}
-		g.drawText(label, x, labely, spacingX, fh, Justification::centred);
-		g.drawText(val + unit, x, valuey, spacingX, fh, Justification::centred);
-	}
-}
-
-void RngsEditor::displayMainMenu(Graphics&g, const String& label, unsigned idx,  bool active ) {
-	const int w = 70;
-	const int h = 45;
-	g.setFont(Font(Font::getDefaultMonospacedFontName(), 36, Font::plain));
-	unsigned x = 1530 + 1;
-	unsigned y = 205 + (idx * h);
-
-	if (!active) {
-		g.setColour(Colours::black);
-		g.fillRect (x, y, w - 2, h - 2);
-		g.setColour(Colours::red);
-	} else {
-		g.setColour(Colours::red);
-		g.fillRect (x, y, w - 2, h - 2);
-		g.setColour(Colours::black);
-	}
-
-	g.drawText(label, x, y, w, h, Justification::centred);
-}
-
-
-void RngsEditor::displayButton(Graphics&g, const String& label, unsigned r, unsigned c, bool active ) {
-	const int w = 100;
-	const int h = paramSpaceY;
-	g.setFont(Font(Font::getDefaultMonospacedFontName(), 36, Font::plain));
-	unsigned x = 900 + (c * w);
-	unsigned y = paramTopY + (r * h);
-
-	if (!active) {
-		g.setColour(Colours::black);
-		g.fillRect (x, y + 1, w - 2, h - 2);
-		g.setColour(Colours::red);
-	} else {
-		g.setColour(Colours::red);
-		g.fillRect (x, y + 1, w - 2, h - 2);
-		g.setColour(Colours::black);
-	}
-
-	g.drawText(label, x, y, w, h, Justification::centred);
-}
-
 
 void RngsEditor::drawRngs(Graphics& g) {
 	unsigned x = 1100;
@@ -257,12 +281,7 @@ void RngsEditor::drawRngs(Graphics& g) {
 	g.drawEllipse(x + (2 * sp), y, d, d, 1);
 }
 
-void RngsEditor::paint(Graphics& g) {
-	paintBack(g);
-	paintParams(g);
-}
-
-void RngsEditor::paintBack(Graphics& g)
+void RngsEditor::paint(Graphics& g)
 {
 	g.fillAll (Colours::black);
 
@@ -279,7 +298,7 @@ void RngsEditor::paintBack(Graphics& g)
 
 	// main menu box
 	g.setColour(Colours::grey);
-	unsigned y = 205 - 1;
+	unsigned y = menuTopY - 1;
 	unsigned x = 1530 - 1;
 	unsigned butTopY = paramTopY;
 	unsigned butLeftX = 900 - 1;
@@ -289,12 +308,6 @@ void RngsEditor::paintBack(Graphics& g)
 	for (int i = 0; i < 5; i++) {
 		g.drawHorizontalLine(y + i * 45, x, 1600 - 1);
 	}
-
-	displayMainMenu(g, "G", 0, false);
-	displayMainMenu(g, "N", 1, false);
-	displayMainMenu(g, "P", 2, false);
-	displayMainMenu(g, "R", 3, false);
-
 
 	// button box
 	x = butLeftX;
@@ -308,37 +321,56 @@ void RngsEditor::paintBack(Graphics& g)
 	}
 }
 
-void RngsEditor::paintParams(Graphics& g)
+
+void RngsEditor::setMenuBounds(SSPButton& btn, unsigned r) {
+	const int w = 70;
+	const int h = 45;
+	unsigned x = 1530 + 1;
+	unsigned y = menuTopY + (r * h);
+	btn.setBounds(x, y, w, h);
+}
+
+void RngsEditor::setParamBounds(SSPParam& par, unsigned enc, unsigned var)
 {
-	displayButton(g, "Audio", 0, 0, processor.data().f_internal_exciter < 0.5);
-	displayButton(g, "Strum", 0, 1, processor.data().f_internal_strum < 0.5);
-	displayButton(g, "V/Oct", 0, 2, processor.data().f_internal_note < 0.5);
-	displayButton(g, "", 0, 3, false);
-	displayButton(g, "" , 0, 4, false);
-	displayButton(g, "+EN", 0, 5, false);
-	displayButton(g, "" , 0, 6, false);
+	unsigned h = 2 * paramSpaceY;
+	unsigned w = unsigned(900.0f / 8.0f);
+	unsigned x = ((enc * 2) + var) * w;
+	unsigned y = paramTopY + 5;
+	par.setBounds(x, y, w, h);
+}
 
 
-	displayButton(g, "", 1, 0, false);
-	displayButton(g, "", 1, 1, false);
-	displayButton(g, "", 1, 2, false);
-	displayButton(g, "", 1, 3, false);
-	displayButton(g, "", 1, 4, false);
-	displayButton(g, "-EN", 1, 5, false);
-	displayButton(g, "", 1, 6, false);
-
-	displayParameter(g, 0, false, "Freq", processor.data().f_frequency, "");
-	displayParameter(g, 0, true, "Pos", processor.data().f_position, "");
-	displayParameter(g, 1, false, "Struct", processor.data().f_structure, "");
-	displayParameter(g, 1, true, "Poly", processor.data().f_polyphony, "");
-	displayParameter(g, 2, false, "Bright", processor.data().f_brightness, "");
-	displayParameter(g, 2, true, "Model", processor.data().f_model, "");
-	displayParameter(g, 3, false, "Damp", processor.data().f_damping, "");
-	displayParameter(g, 3, true, "", 0, "");
+void RngsEditor::setButtonBounds(SSPButton& btn, unsigned r, unsigned c)
+{
+	const int w = 100;
+	const int h = paramSpaceY;
+	unsigned x = 900 + (c * w);
+	unsigned y = paramTopY + (r * h);
+	btn.setBounds(x, y, w, h);
 }
 
 
 void RngsEditor::resized()
 {
-	;
+	setMenuBounds(globalBtn_, 0);
+	setMenuBounds(networkBtn_, 1);
+	setMenuBounds(plugInBtn_, 2);
+	setMenuBounds(recBtn_, 3);
+
+	setButtonBounds(audioBtn_, 0, 0);
+	setButtonBounds(strumBtn_, 0, 1);
+	setButtonBounds(vOctBtn_, 0, 2);
+	setButtonBounds(enPlus_, 0, 5);
+	setButtonBounds(enMinus_, 1, 5);
+
+
+	setParamBounds(freqParam_, 0, 0);
+	setParamBounds(structParam_, 1, 0);
+	setParamBounds(brightParam_, 2, 0);
+	setParamBounds(dampParam_, 3, 0);
+
+	setParamBounds(posParam_, 0, 1);
+	setParamBounds(polyParam_, 1, 1);
+	setParamBounds(modelParam_, 2, 1);
+	setParamBounds(nullParam_, 3, 1);
 }
