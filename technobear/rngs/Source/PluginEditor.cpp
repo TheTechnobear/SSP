@@ -32,18 +32,18 @@ RngsEditor::RngsEditor (Rngs& p)
 	audioBtn_.init("Audio");
 	strumBtn_.init("Strum");
 	vOctBtn_.init("V/Oct");
-	// blank.init("", 0, 3);
-	// blank.init("", 0, 5);
+	// blank.init("");
+	// blank.init("");
 	enPlus_.init("+EN");
-	// blank.init("", 0, 6);
+	// blank.init("");
 
-	// blank.init("", 1, 0);
-	// blank.init("", 1, 1);
-	// blank.init("", 1, 2);
-	// blank.init("", 1, 3);
-	// blank.init("", 1, 4);
+	helpBtn_.init("?");
+	// blank.init("");
+	// blank.init("");
+	// blank.init("");
+	// blank.init("");
 	enMinus_.init("-EN");
-	// blank.init("", 1, 6);
+	// blank.init("");
 
 
 	audioBtn_.active(processor_.data().f_internal_exciter < 0.5);
@@ -55,10 +55,11 @@ RngsEditor::RngsEditor (Rngs& p)
 	addAndMakeVisible(vOctBtn_);
 	addAndMakeVisible(enPlus_);
 	addAndMakeVisible(enMinus_);
+	addAndMakeVisible(helpBtn_);
 
 
 	// parameters
-	freqParam_.init("Freq");
+	pitchParam_.init("Pitch");
 	structParam_.init("Struct");
 	brightParam_.init("Bright");
 	dampParam_.init("Damp");
@@ -68,7 +69,7 @@ RngsEditor::RngsEditor (Rngs& p)
 	modelParam_.init("Model", "%1.0f");
 	nullParam_.init("");
 
-	freqParam_.value(processor_.data().f_pitch);
+	pitchParam_.value(processor_.data().f_pitch);
 	structParam_.value(processor_.data().f_structure);
 	brightParam_.value(processor_.data().f_brightness);
 	dampParam_.value(processor_.data().f_damping);
@@ -79,12 +80,12 @@ RngsEditor::RngsEditor (Rngs& p)
 	//nullParam_
 
 	altActive_ = 0;
-	freqParam_.active(!altActive_);
+	pitchParam_.active(!altActive_);
 	structParam_.active(!altActive_);
 	brightParam_.active(!altActive_);
 	dampParam_.active(!altActive_);
 
-	addAndMakeVisible(freqParam_);
+	addAndMakeVisible(pitchParam_);
 	addAndMakeVisible(structParam_);
 	addAndMakeVisible(brightParam_);
 	addAndMakeVisible(dampParam_);
@@ -144,7 +145,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 			float v = processor_.data().f_pitch + value;
 			v = constrain(v, 0.0f, 60.0f);
 			processor_.data().f_pitch = v;
-			freqParam_.value(processor_.data().f_pitch);
+			pitchParam_.value(processor_.data().f_pitch);
 		}
 		break;
 	case Percussa::sspEnc2:
@@ -217,6 +218,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSw4:
 		break;
 	case Percussa::sspSw5:
+		helpBtn_.active(!helpBtn_.active());
 		break;
 	case Percussa::sspSw6:
 		break;
@@ -233,7 +235,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 		if (paramState_[index] != value && !value) {
 			altActive_ = ! altActive_;
 
-			freqParam_.active(!altActive_);
+			pitchParam_.active(!altActive_);
 			structParam_.active(!altActive_);
 			brightParam_.active(!altActive_);
 			dampParam_.active(!altActive_);
@@ -258,6 +260,32 @@ void RngsEditor::parameterChanged (int index, float value) {
 		break;
 	}
 	paramState_[index] = value;
+}
+
+void RngsEditor::drawHelp(Graphics& g) {
+
+	unsigned x = 900;
+	unsigned y = 40;
+	unsigned space = 30;
+	unsigned yText = y + space * 2;
+	g.setFont(Font(Font::getDefaultMonospacedFontName(), 40, Font::plain));
+	g.drawSingleLineText("Input/Output Help", x, y);
+
+	y = yText;
+	g.setFont(Font(Font::getDefaultMonospacedFontName(), 18, Font::plain));
+	g.drawSingleLineText("VST IN[0] : Audio", x, y);	y += space;
+	g.drawSingleLineText("VST IN[1] : Strum", x, y);	y += space;
+	g.drawSingleLineText("VST IN[2] : V/Oct", x, y);	y += space;
+	g.drawSingleLineText("VST IN[3] : FM", x, y);		y += space;
+	g.drawSingleLineText("VST IN[4] : Structure", x, y);	y += space;
+	g.drawSingleLineText("VST IN[5] : Brightness", x, y);	y += space;
+	g.drawSingleLineText("VST IN[6] : Damping", x, y);	y += space;
+	g.drawSingleLineText("VST IN[7] : Position", x, y);	y += space;
+
+	x = x + 300;
+	y = yText;
+	g.drawSingleLineText("VST OUT[0] : Odd", x, y);		y += space;
+	g.drawSingleLineText("VST OUT[1] : Even", x, y);	y += space;
 }
 
 void RngsEditor::drawRngs(Graphics& g) {
@@ -289,7 +317,11 @@ void RngsEditor::paint(Graphics& g)
 	g.setColour(Colours::yellow);
 	g.drawSingleLineText( "rngs resonator", 20, 30 );
 
-	drawRngs(g);
+	if (helpBtn_.active()) {
+		drawHelp(g);
+	} else {
+		drawRngs(g);
+	}
 
 	// display 1600x 480
 	// x= left/right (0..1599)
@@ -361,10 +393,11 @@ void RngsEditor::resized()
 	setButtonBounds(strumBtn_, 0, 1);
 	setButtonBounds(vOctBtn_, 0, 2);
 	setButtonBounds(enPlus_, 0, 5);
+	setButtonBounds(helpBtn_, 1, 0);
 	setButtonBounds(enMinus_, 1, 5);
 
 
-	setParamBounds(freqParam_, 0, 0);
+	setParamBounds(pitchParam_, 0, 0);
 	setParamBounds(structParam_, 1, 0);
 	setParamBounds(brightParam_, 2, 0);
 	setParamBounds(dampParam_, 3, 0);

@@ -28,6 +28,7 @@ public:
 protected:
 	void displayMainMenu(Graphics&g, const String& label, unsigned idx,  bool active );
 	void drawRngs(Graphics& g);
+	void drawHelp(Graphics& g);
 
 	void setMenuBounds(SSPButton& btn, unsigned r);
 	void setParamBounds(SSPParam& par, unsigned enc, unsigned var);
@@ -41,9 +42,10 @@ private:
 	SSPButton globalBtn_, networkBtn_, plugInBtn_, recBtn_;
 
 	SSPButton audioBtn_, strumBtn_, vOctBtn_;
+	SSPButton helpBtn_;
 	SSPButton enPlus_, enMinus_;
 
-	SSPParam freqParam_, structParam_, brightParam_, dampParam_;
+	SSPParam pitchParam_, structParam_, brightParam_, dampParam_;
 	SSPParam posParam_, polyParam_, modelParam_, nullParam_;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RngsEditor)

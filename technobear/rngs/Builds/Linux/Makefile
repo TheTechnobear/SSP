@@ -62,7 +62,6 @@ OBJECTS := \
   $(OBJDIR)/rings_resources_ffc91370.o \
   $(OBJDIR)/SSPButton_411115c3.o \
   $(OBJDIR)/SSPParam_8652fc66.o \
-  $(OBJDIR)/Oscilloscope_5e42f118.o \
   $(OBJDIR)/PluginProcessor_a059e380.o \
   $(OBJDIR)/PluginEditor_94d4fb09.o \
   $(OBJDIR)/juce_audio_basics_2442e4ea.o \
@@ -149,11 +148,6 @@ $(OBJDIR)/SSPButton_411115c3.o: ../../Source/SSPButton.cpp
 $(OBJDIR)/SSPParam_8652fc66.o: ../../Source/SSPParam.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling SSPParam.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/Oscilloscope_5e42f118.o: ../../Source/Oscilloscope.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Oscilloscope.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/PluginProcessor_a059e380.o: ../../Source/PluginProcessor.cpp

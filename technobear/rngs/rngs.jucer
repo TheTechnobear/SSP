@@ -30,9 +30,6 @@
       <FILE id="Hc6jZY" name="SSPParam.cpp" compile="1" resource="0" file="Source/SSPParam.cpp"/>
       <FILE id="SzKBqN" name="SSPParam.h" compile="0" resource="0" file="Source/SSPParam.h"/>
       <FILE id="TjiVmn" name="Percussa.h" compile="0" resource="0" file="Source/Percussa.h"/>
-      <FILE id="ODpziw" name="Oscilloscope.cpp" compile="1" resource="0"
-            file="Source/Oscilloscope.cpp"/>
-      <FILE id="c64GRQ" name="Oscilloscope.h" compile="0" resource="0" file="Source/Oscilloscope.h"/>
       <FILE id="MizVfU" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="gntTug" name="PluginProcessor.h" compile="0" resource="0"
