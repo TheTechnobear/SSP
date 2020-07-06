@@ -148,10 +148,9 @@ void RngsEditor::parameterChanged (int index, float value) {
 			processor_.data().f_position = v;
 			posParam_.value(processor_.data().f_position);
 
-
 			if(value) activeParam_=&posParam_;
 		} else {
-			float v = processor_.data().f_pitch + value;
+			float v = processor_.data().f_pitch + value / 4.0f;
 			v = constrain(v, 0.0f, 60.0f);
 			processor_.data().f_pitch = v;
 			pitchParam_.value(processor_.data().f_pitch);
@@ -165,11 +164,10 @@ void RngsEditor::parameterChanged (int index, float value) {
 		break;
 	case Percussa::sspEnc2:
 		if (altActive_) {
-			float v1 =  ( value > 0.1f ? 1.0f : ( value < 0.1f ? -1.0 : 0.0f) );
-			float v = processor_.data().f_polyphony + v1;
-			v = constrain(v, 0.0f, 3.0f);
+			float v = processor_.data().f_polyphony + value / 20.0f;
+			v = constrain(v, 0.0f, 2.0f);
 			processor_.data().f_polyphony = v;
-			polyParam_.value(processor_.data().f_polyphony);
+			polyParam_.value((int) processor_.data().f_polyphony);
 
 			if(value) activeParam_=&polyParam_;
 
@@ -188,11 +186,10 @@ void RngsEditor::parameterChanged (int index, float value) {
 		break;
 	case Percussa::sspEnc3:
 		if (altActive_) {
-			float v1 =  ( value > 0.1f ? 1.0f : ( value < 0.1f ? -1.0 : 0.0f) );
-			float v = processor_.data().f_model + v1;
+			float v = processor_.data().f_model + value / 10.0f;
 			v = constrain(v, 0.0f, 5.0f);
 			processor_.data().f_model = v;
-			modelParam_.value(processor_.data().f_model);
+			modelParam_.value((int) processor_.data().f_model);
 
 			if(value) activeParam_=&modelParam_;
 		} else {
@@ -288,6 +285,15 @@ void RngsEditor::parameterChanged (int index, float value) {
 		enMinus_.active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			altActive_ = ! altActive_;
+			pitchParam_.active(!altActive_);
+			structParam_.active(!altActive_);
+			brightParam_.active(!altActive_);
+			dampParam_.active(!altActive_);
+
+			posParam_.active(altActive_);
+			polyParam_.active(altActive_);
+			modelParam_.active(altActive_);
+			nullParam_.active(altActive_);
 		}
 		break;
 	case Percussa::sspSwShiftL:

@@ -18,8 +18,8 @@ static constexpr unsigned RingsBlock = 16;
 
 struct RngsData {
     RngsData() {
-        f_pitch = 24.0f;
-        f_structure = 0.4f;
+        f_pitch = 34.0f;
+        f_structure = 0.45f;
         f_brightness = 0.5f;
         f_damping = 0.5f;
         f_position = 0.5f;
@@ -154,10 +154,10 @@ protected:
         // SSP SDK
         static constexpr float p1 = 0.02325f; // first C note 
         static constexpr float p2 = 0.21187f; // second C note 
-        static constexpr float scale = 1 / (p2 - p1);
+        static constexpr float scale = 12.0f / (p2 - p1);
         float arg = r; 
         arg = arg - p1; 
-        arg = arg * scale; 
+        arg = arg * scale;
         return arg;
     }
 

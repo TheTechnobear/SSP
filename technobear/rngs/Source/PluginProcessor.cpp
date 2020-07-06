@@ -157,6 +157,15 @@ void Rngs::prepareToPlay (double sampleRate, int samplesPerBlock)
     data_.strummer.Init(0.01f, sampleRate / RingsBlock);
     data_.string_synth.Init(data_.buffer);
     data_.part.Init(data_.buffer);
+    auto& part = data_.part;
+    int polyphony = constrain(1 << int(data_.f_polyphony) , 1, rings::kMaxPolyphony);
+    part.set_polyphony(polyphony);
+    data_.string_synth.set_polyphony(polyphony);
+    int imodel = constrain(data_.f_model, 0, rings::ResonatorModel::RESONATOR_MODEL_LAST - 1);
+    rings::ResonatorModel model = static_cast<rings::ResonatorModel>(imodel);
+    part.set_model(model);
+    data_.string_synth.set_fx(static_cast<rings::FxType>(model));
+
 
     if (RingsBlock > data_.iobufsz) {
         delete [] data_.in;
@@ -205,8 +214,8 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 
         // control rate
         float transpose = data_.f_pitch;
-        float note = cv2Pitch(buffer.getSample(I_VOCT, bidx)) * 60.0f;
-        float fm = cv2Pitch(buffer.getSample(I_FM, bidx)) * 48.0f;
+        float note = cv2Pitch(buffer.getSample(I_VOCT, bidx));
+        float fm = cv2Pitch(buffer.getSample(I_FM, bidx));
         float damping = data_.f_damping + buffer.getSample(I_DAMPING, bidx);
         float structure = data_.f_structure + buffer.getSample(I_STUCTURE, bidx);
         float brightness = data_.f_brightness + buffer.getSample(I_BRIGHTNESS, bidx);
