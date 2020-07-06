@@ -29,6 +29,9 @@ public:
 
     float value() { return v_;}
 
+    const String fmt() { return fmt_;}
+    const String unit() { return unit_;}
+
 private:
     void paint(Graphics &g);
     juce_UseDebuggingNewOperator

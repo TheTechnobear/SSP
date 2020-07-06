@@ -104,6 +104,12 @@ RngsEditor::~RngsEditor()
 
 void RngsEditor::timerCallback()
 {
+	if(activeParamCount_>0 ) {
+		activeParamCount_--;
+		if(activeParamCount_==0) {
+			activeParam_=nullptr;
+		}
+	}
 	repaint();
 }
 
@@ -141,11 +147,20 @@ void RngsEditor::parameterChanged (int index, float value) {
 			v = constrain(v, 0.0f, 1.0f);
 			processor_.data().f_position = v;
 			posParam_.value(processor_.data().f_position);
+
+
+			if(value) activeParam_=&posParam_;
 		} else {
 			float v = processor_.data().f_pitch + value;
 			v = constrain(v, 0.0f, 60.0f);
 			processor_.data().f_pitch = v;
 			pitchParam_.value(processor_.data().f_pitch);
+
+			if(value) activeParam_=&pitchParam_;
+		}
+		if(value) {
+			activeParamCount_=PARAM_COUNTER;
+			activeParamIdx_= 0 + altActive_;
 		}
 		break;
 	case Percussa::sspEnc2:
@@ -155,11 +170,20 @@ void RngsEditor::parameterChanged (int index, float value) {
 			v = constrain(v, 0.0f, 3.0f);
 			processor_.data().f_polyphony = v;
 			polyParam_.value(processor_.data().f_polyphony);
+
+			if(value) activeParam_=&polyParam_;
+
 		} else {
 			float v = processor_.data().f_structure + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
 			processor_.data().f_structure = v;
 			structParam_.value(processor_.data().f_structure);
+
+			if(value) activeParam_=&structParam_;
+		}
+		if(value) {
+			activeParamCount_=PARAM_COUNTER;
+			activeParamIdx_= 2 + altActive_;
 		}
 		break;
 	case Percussa::sspEnc3:
@@ -169,11 +193,19 @@ void RngsEditor::parameterChanged (int index, float value) {
 			v = constrain(v, 0.0f, 5.0f);
 			processor_.data().f_model = v;
 			modelParam_.value(processor_.data().f_model);
+
+			if(value) activeParam_=&modelParam_;
 		} else {
 			float v = processor_.data().f_brightness + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
 			processor_.data().f_brightness = v;
 			brightParam_.value(processor_.data().f_brightness);
+
+			if(value) activeParam_=&brightParam_;
+		}
+		if(value) {
+			activeParamCount_=PARAM_COUNTER;
+			activeParamIdx_= 4 + altActive_;
 		}
 		break;
 	case Percussa::sspEnc4:
@@ -184,6 +216,12 @@ void RngsEditor::parameterChanged (int index, float value) {
 			v = constrain(v, 0.0f, 1.0f);
 			processor_.data().f_damping = v;
 			dampParam_.value(processor_.data().f_damping);
+
+			if(value) activeParam_=&dampParam_;
+		}
+		if(value) {
+			activeParamCount_=PARAM_COUNTER;
+			activeParamIdx_= 6 + altActive_;
 		}
 		break;
 	case Percussa::sspEncSw1:
@@ -309,31 +347,10 @@ void RngsEditor::drawRngs(Graphics& g) {
 	g.drawEllipse(x + (2 * sp), y, d, d, 1);
 }
 
-void RngsEditor::paint(Graphics& g)
-{
-	g.fillAll (Colours::black);
-
-	g.setFont(Font(Font::getDefaultMonospacedFontName(), 24, Font::plain));
-	g.setColour(Colours::yellow);
-	g.drawSingleLineText( "rngs resonator", 20, 30 );
-
-	if (helpBtn_.active()) {
-		drawHelp(g);
-	} else {
-		drawRngs(g);
-	}
-
-	// display 1600x 480
-	// x= left/right (0..1599)
-	// y= top/botton (0..479)
-	// title;
-
-	// main menu box
-	g.setColour(Colours::grey);
+void RngsEditor::drawMenuBox(Graphics& g) {
 	unsigned y = menuTopY - 1;
 	unsigned x = 1530 - 1;
 	unsigned butTopY = paramTopY;
-	unsigned butLeftX = 900 - 1;
 	g.setColour(Colours::grey);
 	g.drawVerticalLine(x, y, butTopY);
 	g.drawVerticalLine(1600 - 1, y, butTopY);
@@ -341,15 +358,72 @@ void RngsEditor::paint(Graphics& g)
 		g.drawHorizontalLine(y + i * 45, x, 1600 - 1);
 	}
 
-	// button box
-	x = butLeftX;
-	y = butTopY;
+}
+
+void RngsEditor::drawParamBox(Graphics& g) {
+	unsigned butTopY = paramTopY;
+	unsigned butLeftX = 900 - 1;
+	float x = butLeftX;
+	float y = butTopY;
 	g.setColour(Colours::grey);
 	g.drawHorizontalLine(y, x, 1600 - 1);
 	g.drawHorizontalLine(y + paramSpaceY, x, 1600 - 1);
 	g.drawHorizontalLine(480 - 1, x, 1600 - 1);
 	for (int i = 0; i < 8; i++ ) {
 		g.drawVerticalLine(x + i * 100 , butTopY, 480 - 1);
+	}
+}
+
+
+void RngsEditor::drawEncoderValue(Graphics& g) {
+	if(activeParam_!=nullptr) {
+		unsigned butLeftX = 900 - 1;
+	    String val = String::formatted(activeParam_->fmt(), activeParam_->value());
+        if(activeParam_->unit().length()) { val = val + " " +activeParam_->unit();}
+
+		static constexpr unsigned pw = unsigned(900.0f / 8.0f);
+
+
+		g.setColour(Colours::red);
+		g.drawHorizontalLine(40, 0, butLeftX);
+		g.drawVerticalLine(0, 40, paramTopY);
+		g.drawVerticalLine(butLeftX, 40, paramTopY - 1);
+		g.drawHorizontalLine(paramTopY - 1, 0,  activeParamIdx_ * pw);
+		g.drawHorizontalLine(paramTopY - 1, (activeParamIdx_+1)* pw, butLeftX);
+
+		g.drawVerticalLine(activeParamIdx_ * pw, paramTopY, 1600-1);
+		g.drawVerticalLine((activeParamIdx_+1) * pw, paramTopY, 1600-1);
+		// g.drawHorizontalLine(1600-1, activeParamIdx_ * pw, (activeParamIdx_+1)* pw);
+
+		g.setColour(Colours::white);
+		g.setFont(Font(Font::getDefaultMonospacedFontName(), 180, Font::plain));
+
+		g.drawText(val, 0, 40, butLeftX, paramTopY - 40 - 40, Justification::centred);
+	}
+}
+
+void RngsEditor::paint(Graphics& g)
+{
+	// display 1600x 480
+	// x= left/right (0..1599)
+	// y= top/botton (0..479)
+
+	g.fillAll (Colours::black);
+
+	// title
+	g.setFont(Font(Font::getDefaultMonospacedFontName(), 24, Font::plain));
+	g.setColour(Colours::yellow);
+	g.drawSingleLineText( "rngs resonator", 20, 30 );
+
+	drawMenuBox(g);
+	drawParamBox(g);
+
+	drawEncoderValue(g);	
+
+	if (helpBtn_.active()) {
+		drawHelp(g);
+	} else {
+		drawRngs(g);
 	}
 }
 

@@ -26,9 +26,12 @@ public:
 	void 	audioProcessorChanged (AudioProcessor *processor_) override;
 
 protected:
-	void displayMainMenu(Graphics&g, const String& label, unsigned idx,  bool active );
+
+	void drawMenuBox(Graphics& g);
+	void drawParamBox(Graphics& g);
 	void drawRngs(Graphics& g);
 	void drawHelp(Graphics& g);
+	void drawEncoderValue(Graphics& g);
 
 	void setMenuBounds(SSPButton& btn, unsigned r);
 	void setParamBounds(SSPParam& par, unsigned enc, unsigned var);
@@ -48,6 +51,10 @@ private:
 	SSPParam pitchParam_, structParam_, brightParam_, dampParam_;
 	SSPParam posParam_, polyParam_, modelParam_, nullParam_;
 
+	SSPParam* 	activeParam_ = nullptr;
+	unsigned 	activeParamIdx_ = 0;
+	static constexpr unsigned PARAM_COUNTER = 20;
+	unsigned activeParamCount_ = 0;
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RngsEditor)
 };
 
