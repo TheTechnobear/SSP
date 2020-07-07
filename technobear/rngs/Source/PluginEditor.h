@@ -45,7 +45,7 @@ private:
 	SSPButton globalBtn_, networkBtn_, plugInBtn_, recBtn_;
 
 	SSPButton audioBtn_, strumBtn_, vOctBtn_;
-	SSPButton helpBtn_;
+	SSPButton helpBtn_, writePrBtn_;
 	SSPButton enPlus_, enMinus_;
 
 	SSPParam pitchParam_, structParam_, brightParam_, dampParam_;

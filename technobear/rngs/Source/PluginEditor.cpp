@@ -39,7 +39,7 @@ RngsEditor::RngsEditor (Rngs& p)
 
 	helpBtn_.init("?");
 	// blank.init("");
-	// blank.init("");
+	writePrBtn_.init("WriPr");
 	// blank.init("");
 	// blank.init("");
 	enMinus_.init("-EN");
@@ -56,7 +56,7 @@ RngsEditor::RngsEditor (Rngs& p)
 	addAndMakeVisible(enPlus_);
 	addAndMakeVisible(enMinus_);
 	addAndMakeVisible(helpBtn_);
-
+	addAndMakeVisible(writePrBtn_);
 
 	// parameters
 	pitchParam_.init("Pitch");
@@ -258,6 +258,10 @@ void RngsEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSw6:
 		break;
 	case Percussa::sspSw7:
+		writePrBtn_.active(value > 0.5);
+		if (paramState_[index] != value && !value) {
+			processor_.write();
+		}
 		break;
 	case Percussa::sspSw8:
 		break;
@@ -474,6 +478,7 @@ void RngsEditor::resized()
 	setButtonBounds(vOctBtn_, 0, 2);
 	setButtonBounds(enPlus_, 0, 5);
 	setButtonBounds(helpBtn_, 1, 0);
+	setButtonBounds(writePrBtn_, 1, 2);
 	setButtonBounds(enMinus_, 1, 5);
 
 

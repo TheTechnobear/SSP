@@ -16,8 +16,9 @@ void SSPParam::paint(Graphics &g) {
     } else {
         g.setColour(Colours::grey);
     }
+    if(unit_.length()) { val = val + " " +unit_;}
 
     g.drawText(label_, 0 , 0 , w, fh, Justification::centred);
-    g.drawText(val + unit_, 0, h/2, w, fh, Justification::centred);
+    g.drawText(val, 0, h/2, w, fh, Justification::centred);
 }
 

@@ -4,13 +4,42 @@
 #include "Percussa.h"
 
 
+static constexpr unsigned NUM_PROGRAM_SLOTS=20;
+
+#ifdef __APPLE__
+    static const char*  presetProgramDir="~/SSP/plugin.presets/rngs";
+#else 
+    static const char*  presetProgramDir="/home/linaro/SYNTHOR/plugin.presets/rngs";
+#endif
+
+
 Rngs::Rngs()
 {
     memset(params_, 0, sizeof(params_));
+    File f(presetProgramDir);
+    if(!f.isDirectory()) {
+        if(f.exists()) {
+            Logger::writeToLog("Unable to create plugin.presets directory for plugin");
+        } else {
+            f.createDirectory();
+        }
+    }
+
+    for(int i=0;i<NUM_PROGRAM_SLOTS;i++) {
+        String fn(String(presetProgramDir) + File::separatorString + String::formatted("%03.0f",float(i))  + String(".json"));
+        File f(fn);
+        if(!f.exists()) {
+            f.create();
+            currentProgram_=i;
+            writeToJson();
+        }
+        currentProgram_=-1;
+    }
 }
 
 Rngs::~Rngs()
 {
+    ;
 }
 
 const String Rngs::getName() const
@@ -119,8 +148,14 @@ double Rngs::getTailLengthSeconds() const
 
 int Rngs::getNumPrograms()
 {
+    unsigned c=0;
+    DirectoryIterator di(File(presetProgramDir),false, "*.json");
+    while(di.next()) c++;
+
     // NB: some hosts don't cope very well if you tell them there are 0 programs
-    return 1;
+    if(c==0) c=1;
+
+    return c;
 }
 
 int Rngs::getCurrentProgram()
@@ -132,13 +167,17 @@ int Rngs::getCurrentProgram()
 void Rngs::setCurrentProgram (int index)
 {
     // SSP calls when program being loaded
-    currentProgram_ = index;
+    if(currentProgram_!=index) {
+        currentProgram_ = index;
+        readFromJson();
+    }
 }
 
 const String Rngs::getProgramName (int index)
 {
-    String pn = String("program") + String(index);
-    return pn;
+    bool valid=false;
+    String  fn=fileFromIdx(index, valid);
+    return fn;
 }
 
 void Rngs::changeProgramName (int index, const String& newName)
@@ -157,6 +196,7 @@ void Rngs::prepareToPlay (double sampleRate, int samplesPerBlock)
     data_.strummer.Init(0.01f, sampleRate / RingsBlock);
     data_.string_synth.Init(data_.buffer);
     data_.part.Init(data_.buffer);
+
     auto& part = data_.part;
     int polyphony = constrain(1 << int(data_.f_polyphony) , 1, rings::kMaxPolyphony);
     part.set_polyphony(polyphony);
@@ -301,20 +341,176 @@ AudioProcessorEditor* Rngs::createEditor()
     return new RngsEditor (*this);
 }
 
+void Rngs::write() {
+    writeToJson();
+}
+
+void Rngs::writeToJson() {
+    if(currentProgram_<0) return;
+
+
+    bool valid=false;
+    String  fn=String(presetProgramDir) + File::separatorString + fileFromIdx(currentProgram_, valid);
+    Logger::writeToLog("Writing: " + String(currentProgram_) + " : " + fn);
+    File f(fn);
+
+    if(!valid) {
+        Logger::writeToLog("Unable to write preset, not found, will create : " + String(currentProgram_));
+        f.create();
+    } 
+
+
+    DynamicObject::Ptr v (new DynamicObject());
+    v->setProperty("f_pitch",               float(data_.f_pitch));
+    v->setProperty("f_structure",           float(data_.f_structure));
+    v->setProperty("f_brightness",          float(data_.f_brightness));
+    v->setProperty("f_damping",             float(data_.f_damping));
+    v->setProperty("f_position",            float(data_.f_position));
+    v->setProperty("f_polyphony",           float(data_.f_polyphony));
+    v->setProperty("f_bypass",              float(data_.f_bypass));
+    v->setProperty("f_easter_egg",          float(data_.f_easter_egg));
+    v->setProperty("f_internal_strum",      float(data_.f_internal_strum));
+    v->setProperty("f_internal_exciter",    float(data_.f_internal_exciter));
+    v->setProperty("f_internal_note",       float(data_.f_internal_note));
+
+
+    FileOutputStream fileStream(f);
+
+    var jsonVar(v.get());
+    JSON::writeToStream(fileStream,jsonVar);
+    fileStream.flush();
+}
+
+void Rngs::readFromJson() {
+    if(currentProgram_<0) return;
+
+    bool valid=false;
+    String  fn=String(presetProgramDir) + File::separatorString + fileFromIdx(currentProgram_, valid);
+
+    File f(fn);
+    Logger::writeToLog("Reading: " + String(currentProgram_) + " : " + fn);
+
+    if(!valid || !f.exists()) {
+        Logger::writeToLog("Unable to read preset, file !exist : " + String(currentProgram_) + " : " + fn);
+    }
+
+
+    auto jsonVar = JSON::parse(f);
+    if(jsonVar==var::null) {
+        Logger::writeToLog("Unable to read preset, unable to parse : " + String(currentProgram_) + " : " + fn);
+        return;
+    }
+
+    if(!jsonVar.isObject()) {
+        Logger::writeToLog("Unable to read preset, badly format : " + String(currentProgram_) + " : " + fn);
+        return;
+    }
+
+    data_.f_pitch = jsonVar.getProperty("f_pitch",34.0f);
+    data_.f_structure = jsonVar.getProperty("f_structure",0.45f);
+    data_.f_brightness = jsonVar.getProperty("f_brightness",0.5f);
+    data_.f_damping = jsonVar.getProperty("f_damping",0.5f);
+    data_.f_position = jsonVar.getProperty("f_position",0.5f);
+    data_.f_polyphony = jsonVar.getProperty("f_polyphony",0.0f);
+    data_.f_bypass = jsonVar.getProperty("f_bypass",0.0f);
+    data_.f_easter_egg = jsonVar.getProperty("f_easter_egg",0.0f);
+    data_.f_internal_strum = jsonVar.getProperty("f_internal_strum",1.0f);
+    data_.f_internal_exciter = jsonVar.getProperty("f_internal_exciter",1.0f);
+    data_.f_internal_note = jsonVar.getProperty("f_internal_note",0.0f);
+    data_.f_trig=0.0f;
+
+    // now initialialise with new data
+    auto& part = data_.part;
+    int polyphony = constrain(1 << int(data_.f_polyphony) , 1, rings::kMaxPolyphony);
+    part.set_polyphony(polyphony);
+    data_.string_synth.set_polyphony(polyphony);
+    int imodel = constrain(data_.f_model, 0, rings::ResonatorModel::RESONATOR_MODEL_LAST - 1);
+    rings::ResonatorModel model = static_cast<rings::ResonatorModel>(imodel);
+    part.set_model(model);
+    data_.string_synth.set_fx(static_cast<rings::FxType>(model));
+}
+
 void Rngs::getStateInformation (MemoryBlock& destData)
 {
-    // SSP not curently using
     // store state information
+
+    // SSP not currently using - untested
+
+
+    DynamicObject::Ptr v (new DynamicObject());
+    v->setProperty("f_pitch",               float(data_.f_pitch));
+    v->setProperty("f_structure",           float(data_.f_structure));
+    v->setProperty("f_brightness",          float(data_.f_brightness));
+    v->setProperty("f_damping",             float(data_.f_damping));
+    v->setProperty("f_position",            float(data_.f_position));
+    v->setProperty("f_polyphony",           float(data_.f_polyphony));
+    v->setProperty("f_bypass",              float(data_.f_bypass));
+    v->setProperty("f_easter_egg",          float(data_.f_easter_egg));
+    v->setProperty("f_internal_strum",      float(data_.f_internal_strum));
+    v->setProperty("f_internal_exciter",    float(data_.f_internal_exciter));
+    v->setProperty("f_internal_note",       float(data_.f_internal_note));
+
+
+    var jsonVar(v.get());
+    String str=JSON::toString(jsonVar,true);
+    destData.append(str.toRawUTF8( ), str.getNumBytesAsUTF8( ) + 1);
 }
 
 void Rngs::setStateInformation (const void* data, int sizeInBytes)
 {
-    // SSP not curently using
     // recall state information - created by getStateInformation
+
+
+    // SSP not currently using - untested
+
+    const char* str=static_cast<const char*>(data);
+    auto jsonVar = JSON::parse(String::fromUTF8(str));
+
+    data_.f_pitch = jsonVar.getProperty("f_pitch",34.0f);
+    data_.f_structure = jsonVar.getProperty("f_structure",0.45f);
+    data_.f_brightness = jsonVar.getProperty("f_brightness",0.5f);
+    data_.f_damping = jsonVar.getProperty("f_damping",0.5f);
+    data_.f_position = jsonVar.getProperty("f_position",0.5f);
+    data_.f_polyphony = jsonVar.getProperty("f_polyphony",0.0f);
+    data_.f_bypass = jsonVar.getProperty("f_bypass",0.0f);
+    data_.f_easter_egg = jsonVar.getProperty("f_easter_egg",0.0f);
+    data_.f_internal_strum = jsonVar.getProperty("f_internal_strum",1.0f);
+    data_.f_internal_exciter = jsonVar.getProperty("f_internal_exciter",1.0f);
+    data_.f_internal_note = jsonVar.getProperty("f_internal_note",0.0f);
+    data_.f_trig=0.0f;
+
+
+    auto& part = data_.part;
+    int polyphony = constrain(1 << int(data_.f_polyphony) , 1, rings::kMaxPolyphony);
+    part.set_polyphony(polyphony);
+    data_.string_synth.set_polyphony(polyphony);
+    int imodel = constrain(data_.f_model, 0, rings::ResonatorModel::RESONATOR_MODEL_LAST - 1);
+    rings::ResonatorModel model = static_cast<rings::ResonatorModel>(imodel);
+    part.set_model(model);
+    data_.string_synth.set_fx(static_cast<rings::FxType>(model));
 }
+
+String Rngs::fileFromIdx(int idx, bool& found) {
+    StringArray files; 
+    DirectoryIterator di(File(presetProgramDir),false, "*.json");
+    while(di.next()) {
+        files.add(di.getFile().getFileName());
+    }
+    files.sort(false);
+    if(idx > files.size()) {
+        found = false;
+        return String::formatted("%03.0f", float(idx)) + ".json";
+    }
+    found=true;
+    return files[idx];
+}
+
 
 // This creates new instances of the plugin..
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new Rngs();
 }
+
+
+
