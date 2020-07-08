@@ -253,7 +253,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSw4:
 		break;
 	case Percussa::sspSw5:
-		helpBtn_.active(!helpBtn_.active());
+		helpBtn_.active(value > 0.5);
 		break;
 	case Percussa::sspSw6:
 		break;
@@ -321,19 +321,19 @@ void RngsEditor::drawHelp(Graphics& g) {
 
 	y = yText;
 	g.setFont(Font(Font::getDefaultMonospacedFontName(), 18, Font::plain));
-	g.drawSingleLineText("VST IN[0] : Audio", x, y);	y += space;
-	g.drawSingleLineText("VST IN[1] : Strum", x, y);	y += space;
-	g.drawSingleLineText("VST IN[2] : V/Oct", x, y);	y += space;
-	g.drawSingleLineText("VST IN[3] : FM", x, y);		y += space;
-	g.drawSingleLineText("VST IN[4] : Structure", x, y);	y += space;
-	g.drawSingleLineText("VST IN[5] : Brightness", x, y);	y += space;
-	g.drawSingleLineText("VST IN[6] : Damping", x, y);	y += space;
-	g.drawSingleLineText("VST IN[7] : Position", x, y);	y += space;
+	g.drawSingleLineText("VST IN[1] : Audio", x, y);	y += space;
+	g.drawSingleLineText("VST IN[2] : Strum", x, y);	y += space;
+	g.drawSingleLineText("VST IN[3] : V/Oct", x, y);	y += space;
+	g.drawSingleLineText("VST IN[4] : FM", x, y);		y += space;
+	g.drawSingleLineText("VST IN[5] : Structure", x, y);	y += space;
+	g.drawSingleLineText("VST IN[6] : Brightness", x, y);	y += space;
+	g.drawSingleLineText("VST IN[7] : Damping", x, y);	y += space;
+	g.drawSingleLineText("VST IN[8] : Position", x, y);	y += space;
 
 	x = x + 300;
 	y = yText;
-	g.drawSingleLineText("VST OUT[0] : Odd", x, y);		y += space;
-	g.drawSingleLineText("VST OUT[1] : Even", x, y);	y += space;
+	g.drawSingleLineText("VST OUT[1] : Odd", x, y);		y += space;
+	g.drawSingleLineText("VST OUT[2] : Even", x, y);	y += space;
 }
 
 void RngsEditor::drawRngs(Graphics& g) {
