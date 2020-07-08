@@ -42,9 +42,9 @@ STRUM: if active, use STRUM  - VST IN 2, to excite the internal exciter
 V/OCT: if active, use V/OCT  - VST IN 3, changed notes will excite the internal exciter
 
 tips/typical use:
-AUDIO + V/OCT = use external excitation, and pitch the resonator
 STRUM = for non-pitched excitation, or pitched where you just want the pitch encoder to be used.
 STRUM + V/OCT = or pitched excitation
+AUDIO + V/OCT = use external excitation, and pitch the resonator
 
 
 ## VST Input/Outputs
