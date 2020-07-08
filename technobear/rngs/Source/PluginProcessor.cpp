@@ -294,10 +294,10 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         performance_state.internal_note =  data_.f_internal_note > 0.5;
         performance_state.chord = constrain(chord , 0, rings::kNumChords - 1);;
 
-        if (performance_state.internal_note) {
-
-            performance_state.note = 0.0;
-            performance_state.tonic = 12.0f + transpose;
+        if (!performance_state.internal_note) {
+            // performance_state.note = 0.0;
+            // quantize if using v/oct input
+            performance_state.tonic = 12.0f + roundf(transpose);
         }
 
         performance_state.strum = strum;
