@@ -9,7 +9,7 @@ static constexpr unsigned NUM_PROGRAM_SLOTS=20;
 #ifdef __APPLE__
     static const char*  presetProgramDir="~/SSP/plugin.presets/rngs";
 #else 
-    static const char*  presetProgramDir="/home/linaro/SYNTHOR/plugin.presets/rngs";
+    static const char*  presetProgramDir="/media/linaro/SYNTHOR/plugins.presets/rngs";
 #endif
 
 
@@ -35,6 +35,20 @@ Rngs::Rngs()
         }
         currentProgram_=-1;
     }
+
+    // setProgram gets called before prepare to play
+    // without this part is in an 'unknown' state
+    data_.strummer.Init(0.01f, 48000 / RingsBlock);
+    data_.string_synth.Init(data_.buffer);
+    data_.part.Init(data_.buffer);
+    auto& part = data_.part;
+    int polyphony = constrain(1 << int(data_.f_polyphony) , 1, rings::kMaxPolyphony);
+    part.set_polyphony(polyphony);
+    data_.string_synth.set_polyphony(polyphony);
+    int imodel = constrain(data_.f_model, 0, rings::ResonatorModel::RESONATOR_MODEL_LAST - 1);
+    rings::ResonatorModel model = static_cast<rings::ResonatorModel>(imodel);
+    part.set_model(model);
+    data_.string_synth.set_fx(static_cast<rings::FxType>(model));
 }
 
 Rngs::~Rngs()
@@ -375,6 +389,8 @@ void Rngs::writeToJson() {
 
 
     FileOutputStream fileStream(f);
+    fileStream.setPosition(0);
+    fileStream.truncate();
 
     var jsonVar(v.get());
     JSON::writeToStream(fileStream,jsonVar);

@@ -423,7 +423,9 @@ void RngsEditor::paint(Graphics& g)
 	// title
 	g.setFont(Font(Font::getDefaultMonospacedFontName(), 24, Font::plain));
 	g.setColour(Colours::yellow);
-	g.drawSingleLineText( "rngs resonator", 20, 30 );
+	g.drawSingleLineText("rngs resonator", 20, 30 );
+	g.setColour(Colours::grey);
+    g.drawSingleLineText("preset : " + String(processor_.getCurrentProgram()),1400,30);
 
 	drawMenuBox(g);
 	drawParamBox(g);
