@@ -1,15 +1,18 @@
 # Rngs : Resonator 
-Version 1.0
 
-Developer: TheTechnobear
+## Change Log
+1.0 Initial Release 
+
+## Developer: TheTechnobear
 I develop these plugins for free, please consider supporting my efforts with a donation.
 https://ko-fi.com/thetechnobear
+
 
 ## Installation
 copy the plugins/rngs.so to /media/linaro/SYNTHOR/plugins
 
 ## Optional Installation
-copy the presets to /media/linaro/SYNTHOR/plugins
+copy the presets to /media/linaro/SYNTHOR/
 (same folder structure)
 
 
@@ -32,7 +35,7 @@ Generally, I've tried to make as close as possible
 The Rings Eurorack module automatically detects jacks being connected into IN, V/OCT and STRUM.
 Unfortunately, this is not currently possible with SSP VSTs.
 
-This functonality is replicated with the 'buttons'.
+This functionality is replicated with the 'buttons'.
 
 AUDIO: if active, use AUDIO IN - VST IN 1 as the excitation source.
 STRUM: if active, use STRUM  - VST IN 2, to excite the internal exciter
@@ -48,8 +51,38 @@ STRUM + V/OCT = or pitched excitation
 Currently, the SSP does not use the VST's name input/output.
 The help screen ( ? button ) shows the mapping
 
+
+## Presets
+Currently the SSP does **not** save the VST state within the SSP preset.
+Instead, it associates the SSP preset with a numbered preset that the VST manages.
+
+When you start this VST it will create 20 'preset slots' , which you can select and associate with the SSP preset.
+you can then write this **VST preset**  using WriPr within the VST.
+
+this means the 'normal process' is for saving an SSP preset with a particular VST state is:
+a) select a unique VST preset
+b) change when you have the VST sounding as you wish use VST:WriPr.
+c) write the SSP preset  (which will associate this SSP preset with the preset selected in (a)) 
+
+
+### Can you have more than 20 presets?
+Yes, you can create more in /media/linaro/SYNTHOR/plugin.presets/rngs
+
+(see note below about number/naming) 
+
+### Can I rename them?
+Yes, but bare in mind the SSP preset holds the 'number' not a name, this is an index into this directory. so preserve the number order, or the SSP **will** load the incorrect preset!
+to circumvent this, I recommend you just append a description to the preset.
+e.g. 
+000.json -> 000-MyAwesomePreset.json
+001.json -> 001-APrettyBell.json
+
+this will preserve the ordering, and so mean your SSP presets will be unaffected.
+
+
+
 ## Tips
-Note the outputs are ODD and EVEN, not stereo pairs, and their 'usage' changes depending on 'poly' (as detailed in the manaul).
+Note the outputs are ODD and EVEN, not stereo pairs, and their 'usage' changes depending on 'poly' (as detailed in the manual).
 on the SSP we can simply sum these to one input on another module, and then use attenuation or a vca to mix.
 However, there is alot of fun to be had panning these in varying degrees.
 
