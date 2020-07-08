@@ -4,3 +4,6 @@
 [submodule "ssp-sdk"]
 	path = ssp-sdk
 	url = https://github.com/percussa/ssp-sdk
+[submodule "mi"]
+	path = mi
+	url = https://github.com/TheTechnobear/mi.git

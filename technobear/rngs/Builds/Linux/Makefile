@@ -19,7 +19,7 @@ ifeq ($(CONFIG),Debug)
   endif
 
   CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vst3-sdk -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
-  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -fPIC -O0 -I../../Source/mi
+  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -fPIC -O0 -I../../../../mi
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -shared -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
   LDDEPS :=
@@ -40,7 +40,7 @@ ifeq ($(CONFIG),Release)
   endif
 
   CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vst3-sdk -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
-  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -fPIC -O3 -I../../Source/mi
+  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -fPIC -O3 -I../../../../mi
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -shared -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
   LDDEPS :=
@@ -51,15 +51,15 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
-  $(OBJDIR)/atan_185c8909.o \
-  $(OBJDIR)/units_e1809f04.o \
-  $(OBJDIR)/random_ad2222f6.o \
-  $(OBJDIR)/fm_voice_a213037b.o \
-  $(OBJDIR)/part_fb9cb422.o \
-  $(OBJDIR)/resonator_6bf3cd12.o \
-  $(OBJDIR)/string_ea857d84.o \
-  $(OBJDIR)/string_synth_part_87409a03.o \
-  $(OBJDIR)/rings_resources_ffc91370.o \
+  $(OBJDIR)/string_a13dd610.o \
+  $(OBJDIR)/random_3aa6eea.o \
+  $(OBJDIR)/atan_dc30eefd.o \
+  $(OBJDIR)/units_9838f790.o \
+  $(OBJDIR)/resources_e15de328.o \
+  $(OBJDIR)/fm_voice_8c176907.o \
+  $(OBJDIR)/part_f169bfae.o \
+  $(OBJDIR)/resonator_c27c1906.o \
+  $(OBJDIR)/string_synth_part_3387b1f7.o \
   $(OBJDIR)/SSPButton_411115c3.o \
   $(OBJDIR)/SSPParam_8652fc66.o \
   $(OBJDIR)/PluginProcessor_a059e380.o \
@@ -95,49 +95,49 @@ strip:
 	@echo Stripping rngs
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
 
-$(OBJDIR)/atan_185c8909.o: ../../Source/mi/stmlib/dsp/atan.cc
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling atan.cc"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/units_e1809f04.o: ../../Source/mi/stmlib/dsp/units.cc
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling units.cc"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/random_ad2222f6.o: ../../Source/mi/stmlib/utils/random.cc
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling random.cc"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/fm_voice_a213037b.o: ../../Source/mi/rings/dsp/fm_voice.cc
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling fm_voice.cc"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/part_fb9cb422.o: ../../Source/mi/rings/dsp/part.cc
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling part.cc"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/resonator_6bf3cd12.o: ../../Source/mi/rings/dsp/resonator.cc
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling resonator.cc"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/string_ea857d84.o: ../../Source/mi/rings/dsp/string.cc
+$(OBJDIR)/string_a13dd610.o: ../../../../mi/rings/dsp/string.cc
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling string.cc"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/string_synth_part_87409a03.o: ../../Source/mi/rings/dsp/string_synth_part.cc
+$(OBJDIR)/random_3aa6eea.o: ../../../../mi/stmlib/utils/random.cc
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling string_synth_part.cc"
+	@echo "Compiling random.cc"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/rings_resources_ffc91370.o: ../../Source/mi/rings/rings_resources.cc
+$(OBJDIR)/atan_dc30eefd.o: ../../../../mi/stmlib/dsp/atan.cc
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling rings_resources.cc"
+	@echo "Compiling atan.cc"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/units_9838f790.o: ../../../../mi/stmlib/dsp/units.cc
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling units.cc"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/resources_e15de328.o: ../../../../mi/rings/resources.cc
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling resources.cc"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/fm_voice_8c176907.o: ../../../../mi/rings/dsp/fm_voice.cc
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling fm_voice.cc"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/part_f169bfae.o: ../../../../mi/rings/dsp/part.cc
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling part.cc"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/resonator_c27c1906.o: ../../../../mi/rings/dsp/resonator.cc
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling resonator.cc"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/string_synth_part_3387b1f7.o: ../../../../mi/rings/dsp/string_synth_part.cc
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling string_synth_part.cc"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/SSPButton_411115c3.o: ../../Source/SSPButton.cpp
