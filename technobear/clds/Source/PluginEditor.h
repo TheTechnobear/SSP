@@ -39,13 +39,10 @@ protected:
 
 private:
 	Clds& processor_;
-	unsigned  paramActive_ = 0; // instead of altindex!
-	bool paramState_[Percussa::sspLast];
-
 
 	enum Params {
-    	P_POS
-    	P_SIZE
+    	P_POS,
+    	P_SIZE,
     	P_DENSITY,
     	P_TEXTURE,
 
@@ -65,12 +62,13 @@ private:
 		// B_SILENCE,
 		// B_BYPASS,
 		// B_LOFI,
-		B_EN_PLUS,
-		B_EN_MINUS,
-		// B_PG_PLUS,
-		// B_PG_MINUS,
 		B_HELP,
 		B_WRITE_PR,
+
+		B_UP,
+		B_DOWN,
+		B_LEFT,
+		B_RIGHT,
 
 		B_MAX
 	};
@@ -82,9 +80,13 @@ private:
 	SSPButton globalBtn_, networkBtn_, plugInBtn_, recBtn_;
 
 	SSPParam* 	activeParam_ = nullptr;
-	unsigned 	activeParamIdx_ = 0;
+	unsigned 	activeEncIdx_ = 0;
+	unsigned  	paramActive_ = 0;
+	bool paramState_[Percussa::sspLast];
+
 	static constexpr unsigned PARAM_COUNTER = 20;
 	unsigned activeParamCount_ = 0;
+
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CldsEditor)
 };
 

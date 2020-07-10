@@ -46,9 +46,9 @@
                 extraCompilerFlags="-I../../../../mi">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
-                       targetName="rngs" binaryPath="Builds/Linux/build/Debug" linuxArchitecture=""/>
+                       targetName="clds" binaryPath="Builds/Linux/build/Debug" linuxArchitecture=""/>
         <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="3"
-                       targetName="rngs" binaryPath="Builds/Linux/build/Release" linuxArchitecture=""/>
+                       targetName="clds" binaryPath="Builds/Linux/build/Release" linuxArchitecture=""/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../juce"/>
@@ -70,9 +70,9 @@
                extraDefs="">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
-                       isDebug="1" optimisation="1" targetName="rngs"/>
+                       isDebug="1" optimisation="1" targetName="clds"/>
         <CONFIGURATION name="Release" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
-                       isDebug="0" optimisation="2" targetName="rngs"/>
+                       isDebug="0" optimisation="2" targetName="clds"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="../../juce"/>

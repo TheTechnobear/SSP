@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<FILTERGRAPH>
+  <FILTER uid="1" x="0.5" y="0.1" uiLastX="" uiLastY="">
+    <PLUGIN name="Audio Input" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="Raw Material Software" version="1.0" file="" uid="246006c0"
+            isInstrument="0" fileTime="0" numInputs="0" numOutputs="12" isShell="0"/>
+    <STATE>0.</STATE>
+  </FILTER>
+  <FILTER uid="2" x="0.25" y="0.1" uiLastX="" uiLastY="">
+    <PLUGIN name="Midi Input" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="Raw Material Software" version="1.0" file="" uid="cb5fde0b"
+            isInstrument="0" fileTime="0" numInputs="0" numOutputs="0" isShell="0"/>
+    <STATE>0.</STATE>
+  </FILTER>
+  <FILTER uid="3" x="0.5" y="0.9" uiLastX="" uiLastY="">
+    <PLUGIN name="Audio Output" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="Raw Material Software" version="1.0" file="" uid="724248cb"
+            isInstrument="0" fileTime="0" numInputs="8" numOutputs="0" isShell="0"/>
+    <STATE>0.</STATE>
+  </FILTER>
+  <FILTER uid="4" x="0.48125" y="0.511111" uiLastX="" uiLastY="">
+    <PLUGIN name="clds" format="VST" category="Effect" manufacturer="technobear"
+            version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/clds.vst"
+            uid="54636c64" isInstrument="0" fileTime="1733901b118" numInputs="8"
+            numOutputs="2" isShell="0"/>
+    <STATE>395.CMlaKA....fQBMDZ....AP0XrQF....Y....T...............................................................................................................................................................................qumHl8kYxUVY5UlH5.BLr.hHl8EbuMWZzk1atIhNf.CKfHhYeMWZ5UlH5.BLtTCKfHhYeAWZzMFZhnCHvvBHhX1WjUlaykFc4IhNf.iKzvBHhX1WzUFdzUmbkIhNf.iK0vBHhX1WskFdhnCHv3RMr.hHl80bvIWYgQlH5.BLtTCKfHhYeYVYkQlXgM1ZhnCHv3RLr.hHl8kbkYWYxIlH5.BLtTCKfHhYe01ajUlH5.BLr.hHl8Uau41ahnCHvvBHhX1WykFak41XkIhNf.CKfHhYeIVdvE1byIhNf.CKfHhYew1alklH5.BL8A.</STATE>
+  </FILTER>
+</FILTERGRAPH>

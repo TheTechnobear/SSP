@@ -1,14 +1,14 @@
 #pragma once
 
+
+#include "clouds/dsp/granular_processor.h"
+
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Percussa.h"
 
 #include <atomic>
 
-#include "rings/dsp/part.h"
-#include "rings/dsp/patch.h"
-#include "rings/dsp/strummer.h"
-#include "rings/dsp/string_synth_part.h"
+
 
 inline float constrain(float v, float vMin, float vMax) {
     return std::max<float>(vMin, std::min<float>(vMax, v));
@@ -21,35 +21,33 @@ struct CldsData {
         ltrig = false;
 
         iobufsz = CloudsBlock;
-        ibuf = new clouds::ShortFrame[x->iobufsz];
-        obuf = new clouds::ShortFrame[x->iobufsz];
+        ibuf = new clouds::ShortFrame[iobufsz];
+        obuf = new clouds::ShortFrame[iobufsz];
 
-        large_buf_size = (lsize <t_clds_tilde::LARGE_BUF ? t_clds_tilde::LARGE_BUF : lsize);
-        large_buf = new uint8_t[large_buf_size];
+        large_buf = new uint8_t[LARGE_BUF];
+        small_buf = new uint8_t[SMALL_BUF];
 
-        small_buf_size =  (ssize < t_clds_tilde::SMALL_BUF ? t_clds_tilde::SMALL_BUF : ssize);;
-        small_buf = new uint8_t[small_buf_size];
+        f_freeze    = 0.0f;
+        f_position  = 0.0f;
+        f_size      = 0.5f;
+        f_pitch     = 0.0f;
+        f_density   = 0.4f;
+        f_texture   = 0.5f;
+        f_mix       = 0.5f;
+        f_spread    = 0.5f;
+        f_feedback  = 0.1f;
+        f_reverb    = 0.5f;
+        f_mode      = 0.0f;
 
-        f_freeze = 0.0f;
-        f_trig = 0.0f;
-        f_position = 0.0f;
-        f_size = 0.0f;
-        f_pitch = 0.0f;
-        f_density = 0.0f;
-        f_texture = 0.0f;
-        f_mix = 0.0f;
-        f_spread = 0.0f;
-        f_feedback = 0.0f;
-        f_reverb = 0.0f;
-        f_mode = 0.0f;
-        f_mono = 0.0f;
-        f_silence = 0.0f;
-        f_bypass = 0.0f;
-        f_lofi = 0.0f;
+        f_mono      = 0.0f;
+        f_silence   = 0.0f;
+        f_bypass    = 0.0f;
+        f_lofi      = 0.0f;
+        f_trig      = 0.0f;
 
         processor.Init(
-            large_buf,large_buf_size, 
-            small_buf,small_buf_size);
+            large_buf, large_buf_size,
+            small_buf, small_buf_size);
 
         ltrig = false;
     }
@@ -88,9 +86,9 @@ struct CldsData {
     static constexpr unsigned LARGE_BUF = 524288;
     static constexpr unsigned SMALL_BUF = 262144;
     uint8_t* large_buf;
-    int      large_buf_size;
+    int      large_buf_size=LARGE_BUF;
     uint8_t* small_buf;
-    int      small_buf_size;
+    int      small_buf_size=SMALL_BUF;
 };
 
 
@@ -139,14 +137,14 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     CldsData& data() { return data_;}
 
-protected: 
+protected:
     float cv2Pitch(float r) {
         // SSP SDK
-        static constexpr float p1 = 0.02325f; // first C note 
-        static constexpr float p2 = 0.21187f; // second C note 
+        static constexpr float p1 = 0.02325f; // first C note
+        static constexpr float p2 = 0.21187f; // second C note
         static constexpr float scale = 12.0f / (p2 - p1);
-        float arg = r; 
-        arg = arg - p1; 
+        float arg = r;
+        arg = arg - p1;
         arg = arg * scale;
         return arg;
     }
@@ -167,11 +165,12 @@ private:
         I_DENSITY,
         I_TEXT,
         // I_FREEZE,
-        // I_BLEND,        
+        // I_BLEND,
         I_MAX
     };
+
     enum {
-        O_LEFT
+        O_LEFT,
         O_RIGHT,
         O_MAX
     };

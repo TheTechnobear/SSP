@@ -746,7 +746,7 @@
 		DC8AD4EC283DBC26A0AC2E20 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = "phase_vocoder.cc"; path = "../../../../mi/clouds/dsp/pvoc/phase_vocoder.cc"; sourceTree = "SOURCE_ROOT"; };
 		DD277F0AD96882D4ADCBFF20 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = "juce_BufferedInputStream.cpp"; path = "../../JuceLibraryCode/modules/juce_core/streams/juce_BufferedInputStream.cpp"; sourceTree = "SOURCE_ROOT"; };
 		E64879F9B3FE4814D0F66143 = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
-		11CCDAA31BD162C786302212 = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = rngs.component; sourceTree = "BUILT_PRODUCTS_DIR"; };
+		11CCDAA31BD162C786302212 = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = clds.component; sourceTree = "BUILT_PRODUCTS_DIR"; };
 		CDAFBD5540413F2808356B1D = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "juce_AiffAudioFormat.h"; path = "../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_AiffAudioFormat.h"; sourceTree = "SOURCE_ROOT"; };
 		D1CB28E22F28EF9B502A7449 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = "juce_RTAS_DigiCode1.cpp"; path = "../../JuceLibraryCode/modules/juce_audio_plugin_client/RTAS/juce_RTAS_DigiCode1.cpp"; sourceTree = "SOURCE_ROOT"; };
 		D4358CE75DD22C09BD7A3CE0 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = "juce_AudioProcessorGraph.cpp"; path = "../../JuceLibraryCode/modules/juce_audio_processors/processors/juce_AudioProcessorGraph.cpp"; sourceTree = "SOURCE_ROOT"; };
@@ -2041,7 +2041,7 @@
 				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = "rngs";
+				PRODUCT_NAME = "clds";
 				WARNING_CFLAGS = -Wreorder;
 				ZERO_LINK = NO; }; name = Debug; };
 		34908438B0412203537BE339 = {isa = XCBuildConfiguration; buildSettings = {
@@ -2056,7 +2056,7 @@
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
 				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				PRODUCT_NAME = "rngs";
+				PRODUCT_NAME = "clds";
 				WARNING_CFLAGS = -Wreorder;
 				ZERO_LINK = NO; }; name = Release; };
 		78B3059FED5E78C48B1890E6 = {isa = XCConfigurationList; buildConfigurations = (
