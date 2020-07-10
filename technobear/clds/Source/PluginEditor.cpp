@@ -33,6 +33,8 @@ CldsEditor::CldsEditor (Clds& p)
 	buttons_[B_DOWN].init("-EN");
 	buttons_[B_LEFT].init("-PG");
 	buttons_[B_RIGHT].init("+PG");
+	buttons_[B_WRITE_PR].init("WriPr");
+
 
 	buttons_[B_FREEZE].active(processor_.data().f_freeze > 0.5);
 
@@ -404,18 +406,14 @@ void CldsEditor::drawClds(Graphics & g) {
 	unsigned sp = 75;
 
 	g.setColour(Colours::white);
-	g.drawEllipse(x, y, d, d, 1);
-	g.setColour(Colours::green);
-	g.drawEllipse(x + sp, y, d, d, 1);
+	g.fillEllipse(x, y, d, d);
+	g.fillEllipse(x + sp, y, d, d);
 
 	x = x - sp / 2;
 	y = y + sp;
-	g.setColour(Colours::yellow);
-	g.drawEllipse(x, y, d, d, 1);
-	g.setColour(Colours::blue);
-	g.drawEllipse(x + sp, y, d, d, 1);
-	g.setColour(Colours::red);
-	g.drawEllipse(x + (2 * sp), y, d, d, 1);
+	g.fillEllipse(x, y, d, d);
+	g.fillEllipse(x + sp, y, d, d);
+	g.fillEllipse(x + (2 * sp), y, d, d);
 }
 
 void CldsEditor::drawMenuBox(Graphics & g) {
@@ -541,6 +539,7 @@ void CldsEditor::resized()
 	setButtonBounds(buttons_[B_UP], 	0, 5);
 
 	setButtonBounds(buttons_[B_HELP], 	1, 0);
+	setButtonBounds(buttons_[B_WRITE_PR],1, 2);
 	setButtonBounds(buttons_[B_LEFT], 	1, 4);
 	setButtonBounds(buttons_[B_DOWN], 	1, 5);
 	setButtonBounds(buttons_[B_RIGHT], 	1, 6);
