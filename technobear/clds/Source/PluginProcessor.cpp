@@ -12,6 +12,8 @@ static const char*  presetProgramDir = "~/SSP/plugin.presets/clds";
 static const char*  presetProgramDir = "/media/linaro/SYNTHOR/plugins.presets/clds";
 #endif
 
+inline float TO_SHORTFRAME(float v)   { return constrain(v * 32767.0f,-32768.0f,32767.0f);}
+inline float FROM_SHORTFRAME(short v) { return (float(v) / 32768.0f); }
 
 Clds::Clds()
 {
@@ -199,10 +201,6 @@ void Clds::releaseResources()
     // spare memory, etc.
 }
 
-inline short TO_SHORTFRAME(float v)   { return (short (v * 16384.0f));}
-inline float FROM_SHORTFRAME(short v) { return (float(v) / 16384.0f); }
-
-
 void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
     auto& ibuf = data_.ibuf;
@@ -212,80 +210,68 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 
     auto n = CloudsBlock;
 
+    // note: clouds is run at 32khz, we are running at 48khz!
     // Clouds usually has a blocks size of 16,(?)
     // SSP = 128 (@48k), so split up, so we read the control rate date every 16
     for (int bidx = 0; bidx < buffer.getNumSamples(); bidx += n) {
 
-        bool f_trig = false;
+        bool trig=false;
+
         for (int i = 0; i < n; i++) {
 
             ibuf[i].l = TO_SHORTFRAME(buffer.getSample(I_LEFT, bidx + i));
             ibuf[i].r = TO_SHORTFRAME(buffer.getSample(I_RIGHT, bidx + i));
 
-
-            bool trig = buffer.getSample(I_TRIG, bidx + i) > 0.5;
-            if (trig != data_.f_trig && trig) {
-                f_trig = true;
+            if(buffer.getSample(I_TRIG, bidx + i) > 0.5) {
+                trig = true;
             }
-            data_.f_trig = trig;
         }
 
         // control rate
         clouds::PlaybackMode mode  = (clouds::PlaybackMode) ( int(data.f_mode) % clouds::PLAYBACK_MODE_LAST);
-        if (mode != processor.playback_mode()) {
-            switch (mode) {
-            case clouds::PLAYBACK_MODE_GRANULAR:        processor.set_num_channels(2); break;
-            case clouds::PLAYBACK_MODE_STRETCH:         processor.set_num_channels(2); break;
-            case clouds::PLAYBACK_MODE_LOOPING_DELAY:   processor.set_num_channels(2); break;
-            case clouds::PLAYBACK_MODE_SPECTRAL:        processor.set_num_channels(1); break;
-            case clouds::PLAYBACK_MODE_LAST:
-            default:
-                ;
-            }
-        }
+
         processor.set_playback_mode(mode);
+        processor.set_num_channels(2);
+        processor.set_low_fidelity(false);
+        processor.Prepare();
+
+        // processor.set_quality();
+        // processor.set_bypass(data.f_bypass > 0.5f);
+        // processor.set_silence(data.f_silence > 0.5f);
+        // processor.set_num_channels(f_mono  < 0.5f ? 1 : 2 );
+        // processor.set_low_fidelity(f_lofi > 0.5f);
 
 
-        float pitch = data_.f_pitch + cv2Pitch(buffer.getSample(I_VOCT, bidx));
+        auto p = processor.mutable_parameters();
 
-        float position = data_.f_position + buffer.getSample(I_POS, bidx);
-        float size = data_.f_size + buffer.getSample(I_SIZE, bidx);
-        float density = data_.f_density + buffer.getSample(I_DENSITY, bidx);
-        float texture = data_.f_texture + buffer.getSample(I_TEXT, bidx);
+        float pitch     = data_.f_pitch + cv2Pitch(buffer.getSample(I_VOCT, bidx));
+        float position  = data_.f_position + buffer.getSample(I_POS, bidx);
+        float size      = data_.f_size + buffer.getSample(I_SIZE, bidx);
+        float density   = data_.f_density + buffer.getSample(I_DENSITY, bidx);
+        float texture   = data_.f_texture + buffer.getSample(I_TEXT, bidx);
 
 
         //restrict density to .2 to .8 for granular mode, outside this breaks up
-        density = constrain(density, 0.0f, 1.0f);
-        density = (mode == clouds::PLAYBACK_MODE_GRANULAR) ? (density * 0.6f) + 0.2f : density;
+        // density = constrain(density, 0.0f, 1.0f);
+        // density = (mode == clouds::PLAYBACK_MODE_GRANULAR) ? (density * 0.6f) + 0.2f : density;
 
 
-        processor.mutable_parameters()->freeze = (data.f_freeze > 0.5f);
+        p->freeze = (data.f_freeze > 0.5f);
 
-        //Note the trig input is really a gate... which then feeds the trig
-        processor.mutable_parameters()->gate = (data.f_trig > 0.5f);
-        processor.mutable_parameters()->trigger = f_trig;
-        processor.set_bypass(data.f_bypass > 0.5f);
-        processor.set_silence(data.f_silence > 0.5f);
+        p->gate        = trig;
+        p->trigger     = trig;
 
+        p->pitch       = constrain(pitch,      -48.0f, 48.0f);
+        p->position    = constrain(position,   0.0f, 1.0f);
+        p->size        = constrain(size,       0.0f, 1.0f);
+        p->texture     = constrain(texture,    0.0f, 1.0f);
+        p->density     = constrain(density,    0.0f, 1.0f);
 
-        //processor.set_num_channels(f_mono  < 0.5f ? 1 : 2 );
-        //processor.set_low_fidelity(f_lofi > 0.5f);
-        //processor.set_num_channels(2);
-        processor.set_low_fidelity(false);        //TODO - blowing up... fidility is probably due to downsampler
+        p->dry_wet     = constrain(data.f_mix,           0.0f, 1.0f);
+        p->stereo_spread = constrain(data.f_spread,      0.0f, 1.0f);
+        p->feedback    = constrain(data.f_feedback,      0.0f, 1.0f);
+        p->reverb      = constrain(data.f_reverb,        0.0f, 1.0f);
 
-        processor.mutable_parameters()->pitch       = constrain(pitch,      -64.0f, 64.0f);
-        processor.mutable_parameters()->position    = constrain(position,   0.0f, 1.0f);
-        processor.mutable_parameters()->size        = constrain(size,       0.0f, 1.0f);
-        processor.mutable_parameters()->texture     = constrain(texture,    0.0f, 1.0f);
-        processor.mutable_parameters()->density     = constrain(density,    0.0f, 1.0f);
-
-
-        processor.mutable_parameters()->dry_wet     = constrain(data.f_mix,           0.0f, 1.0f);
-        processor.mutable_parameters()->stereo_spread = constrain(data.f_spread,      0.0f, 1.0f);
-        processor.mutable_parameters()->feedback    = constrain(data.f_feedback,      0.0f, 1.0f);
-        processor.mutable_parameters()->reverb      = constrain(data.f_reverb,        0.0f, 1.0f);
-
-        processor.Prepare();
         processor.Process(ibuf, obuf, n);
 
         for (int i = 0; i < CloudsBlock; i++) {
@@ -336,10 +322,7 @@ void Clds::writeToJson() {
     v->setProperty("f_reverb",          float(data_.f_reverb));
     v->setProperty("f_mode",            float(data_.f_mode));
     v->setProperty("f_mono",            float(data_.f_mono));
-    v->setProperty("f_silence",         float(data_.f_silence));
-    v->setProperty("f_bypass",          float(data_.f_bypass));
     v->setProperty("f_lofi",            float(data_.f_lofi));
-    // v->setProperty("f_trig",            float(data_.f_trig));
 
     FileOutputStream fileStream(f);
     fileStream.setPosition(0);
@@ -386,10 +369,7 @@ void Clds::readFromJson() {
     data_.f_reverb      = jsonVar.getProperty("f_reverb"    , 0.5f);
 
     data_.f_mode        = jsonVar.getProperty("f_mode"      , 0.0f);
-    data_.f_silence     = jsonVar.getProperty("f_silence"   , 0.0f);
-    data_.f_bypass      = jsonVar.getProperty("f_bypass"    , 0.0f);
     data_.f_lofi        = jsonVar.getProperty("f_lofi"      , 0.0f);
-    data_.f_trig = 0.0f;
 }
 
 void Clds::getStateInformation (MemoryBlock& destData)
@@ -410,10 +390,7 @@ void Clds::getStateInformation (MemoryBlock& destData)
     v->setProperty("f_reverb",          float(data_.f_reverb));
     v->setProperty("f_mode",            float(data_.f_mode));
     v->setProperty("f_mono",            float(data_.f_mono));
-    v->setProperty("f_silence",         float(data_.f_silence));
-    v->setProperty("f_bypass",          float(data_.f_bypass));
     v->setProperty("f_lofi",            float(data_.f_lofi));
-    // v->setProperty("f_trig",            float(data_.f_trig));
 
     var jsonVar(v.get());
     String str = JSON::toString(jsonVar, true);
@@ -439,10 +416,7 @@ void Clds::setStateInformation (const void* data, int sizeInBytes)
     data_.f_reverb      = jsonVar.getProperty("f_reverb"    , 0.5f);
 
     data_.f_mode        = jsonVar.getProperty("f_mode"      , 0.0f);
-    data_.f_silence     = jsonVar.getProperty("f_silence"   , 0.0f);
-    data_.f_bypass      = jsonVar.getProperty("f_bypass"    , 0.0f);
     data_.f_lofi        = jsonVar.getProperty("f_lofi"      , 0.0f);
-    data_.f_trig = 0.0f;
 }
 
 

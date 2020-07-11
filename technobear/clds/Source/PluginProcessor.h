@@ -7,25 +7,23 @@
 #include "Percussa.h"
 
 #include <atomic>
-
+#include <algorithm>
 
 
 inline float constrain(float v, float vMin, float vMax) {
     return std::max<float>(vMin, std::min<float>(vMax, v));
 }
 
-static constexpr unsigned CloudsBlock = 16;
+
+static constexpr unsigned CloudsBlock = 32;
 
 struct CldsData {
     CldsData() {
-        ltrig = false;
-
         iobufsz = CloudsBlock;
         ibuf = new clouds::ShortFrame[iobufsz];
         obuf = new clouds::ShortFrame[iobufsz];
-
-        large_buf = new uint8_t[LARGE_BUF];
-        small_buf = new uint8_t[SMALL_BUF];
+        block_mem = new uint8_t[block_mem_sz];
+        block_ccm = new uint8_t[block_ccm_sz];
 
         f_freeze    = 0.0f;
         f_position  = 0.0f;
@@ -39,15 +37,14 @@ struct CldsData {
         f_reverb    = 0.5f;
         f_mode      = 0.0f;
 
+        // unused, since this is downsampling
+        // and we are already at wrong SR
         f_mono      = 0.0f;
-        f_silence   = 0.0f;
-        f_bypass    = 0.0f;
         f_lofi      = 0.0f;
-        f_trig      = 0.0f;
 
         processor.Init(
-            large_buf, large_buf_size,
-            small_buf, small_buf_size);
+            block_mem, block_mem_sz,
+            block_ccm, block_ccm_sz);
 
         ltrig = false;
     }
@@ -55,8 +52,8 @@ struct CldsData {
     ~CldsData() {
         delete [] ibuf;
         delete [] obuf;
-        delete [] small_buf;
-        delete [] large_buf;
+        delete [] block_ccm;
+        delete [] block_mem;
     }
 
 
@@ -83,12 +80,10 @@ struct CldsData {
     clouds::ShortFrame* obuf;
     int iobufsz;
 
-    static constexpr unsigned LARGE_BUF = 524288;
-    static constexpr unsigned SMALL_BUF = 262144;
-    uint8_t* large_buf;
-    int      large_buf_size=LARGE_BUF;
-    uint8_t* small_buf;
-    int      small_buf_size=SMALL_BUF;
+    static constexpr unsigned block_mem_sz =   118784;
+    static constexpr unsigned block_ccm_sz =  65536 - 128;;
+    uint8_t* block_mem;
+    uint8_t* block_ccm;
 };
 
 
