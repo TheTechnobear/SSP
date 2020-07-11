@@ -28,6 +28,7 @@ CldsEditor::CldsEditor (Clds& p)
 	addAndMakeVisible(plugInBtn_);
 	addAndMakeVisible(recBtn_);
 
+	buttons_[B_HELP].init("?");
 	buttons_[B_FREEZE].init("Frze");
 	buttons_[B_UP].init("+EN");
 	buttons_[B_DOWN].init("-EN");
@@ -162,7 +163,7 @@ void CldsEditor::parameterChanged (int index, float value) {
 		}
 		case 2 : {
 			float v = processor_.data().f_pitch + value / 4.0f;
-			v = constrain(v, -64.0f, 64.0f);
+			v = constrain(v, -48.0f, 48.0f);
 			processor_.data().f_pitch = v;
 			params_[P_PITCH].value(processor_.data().f_pitch);
 
@@ -197,7 +198,7 @@ void CldsEditor::parameterChanged (int index, float value) {
 		}
 		case 2 : {
 			float v = processor_.data().f_mode + value / 20.0f;
-			v = constrain(v, 0.0f, 1.0f);
+			v = constrain(v, 0.0f, 3.0f);
 			processor_.data().f_mode = v;
 			params_[P_MODE].value((int) processor_.data().f_mode);
 
@@ -214,7 +215,7 @@ void CldsEditor::parameterChanged (int index, float value) {
 		switch (paramActive_) {
 		case 0 :  {
 			float v = processor_.data().f_density + value / 100.0f;
-			v = constrain(v, 0.0f, 1.0f);
+			v = constrain(v, -1.0f, 1.0f);
 			processor_.data().f_density = v;
 			params_[P_DENSITY].value(processor_.data().f_density);
 

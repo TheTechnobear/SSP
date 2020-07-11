@@ -29,7 +29,7 @@ struct CldsData {
         f_position  = 0.0f;
         f_size      = 0.5f;
         f_pitch     = 0.0f;
-        f_density   = 0.4f;
+        f_density   = -0.2f;
         f_texture   = 0.5f;
         f_mix       = 0.5f;
         f_spread    = 0.5f;

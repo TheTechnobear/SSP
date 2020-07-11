@@ -231,6 +231,8 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         clouds::PlaybackMode mode  = (clouds::PlaybackMode) ( int(data.f_mode) % clouds::PLAYBACK_MODE_LAST);
 
         processor.set_playback_mode(mode);
+        processor.set_silence(false);
+        processor.set_bypass(false);
         processor.set_num_channels(2);
         processor.set_low_fidelity(false);
         processor.Prepare();
@@ -247,14 +249,13 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         float pitch     = data_.f_pitch + cv2Pitch(buffer.getSample(I_VOCT, bidx));
         float position  = data_.f_position + buffer.getSample(I_POS, bidx);
         float size      = data_.f_size + buffer.getSample(I_SIZE, bidx);
-        float density   = data_.f_density + buffer.getSample(I_DENSITY, bidx);
+        float density   = ((data_.f_density + buffer.getSample(I_DENSITY, bidx)) +1.0f ) /2.0f;
         float texture   = data_.f_texture + buffer.getSample(I_TEXT, bidx);
 
 
         //restrict density to .2 to .8 for granular mode, outside this breaks up
         // density = constrain(density, 0.0f, 1.0f);
         // density = (mode == clouds::PLAYBACK_MODE_GRANULAR) ? (density * 0.6f) + 0.2f : density;
-
 
         p->freeze = (data.f_freeze > 0.5f);
 
@@ -362,13 +363,14 @@ void Clds::readFromJson() {
     data_.f_position    = jsonVar.getProperty("f_position"  , 0.5f);
     data_.f_size        = jsonVar.getProperty("f_size"      , 0.5f);
     data_.f_pitch       = jsonVar.getProperty("f_pitch"     , 0.0f);
-    data_.f_density     = jsonVar.getProperty("f_density"   , 0.4f);
+    data_.f_density     = jsonVar.getProperty("f_density"   , -0.2f);
     data_.f_mix         = jsonVar.getProperty("f_mix"       , 0.5f);
     data_.f_spread      = jsonVar.getProperty("f_spread"    , 0.5f);
     data_.f_feedback    = jsonVar.getProperty("f_feedback"  , 0.1f);
     data_.f_reverb      = jsonVar.getProperty("f_reverb"    , 0.5f);
-
     data_.f_mode        = jsonVar.getProperty("f_mode"      , 0.0f);
+
+    data_.f_mono        = jsonVar.getProperty("f_mono"      , 0.0f);
     data_.f_lofi        = jsonVar.getProperty("f_lofi"      , 0.0f);
 }
 
@@ -409,13 +411,14 @@ void Clds::setStateInformation (const void* data, int sizeInBytes)
     data_.f_position    = jsonVar.getProperty("f_position"  , 0.5f);
     data_.f_size        = jsonVar.getProperty("f_size"      , 0.5f);
     data_.f_pitch       = jsonVar.getProperty("f_pitch"     , 0.0f);
-    data_.f_density     = jsonVar.getProperty("f_density"   , 0.4f);
+    data_.f_density     = jsonVar.getProperty("f_density"   , -0.2f);
     data_.f_mix         = jsonVar.getProperty("f_mix"       , 0.5f);
     data_.f_spread      = jsonVar.getProperty("f_spread"    , 0.5f);
     data_.f_feedback    = jsonVar.getProperty("f_feedback"  , 0.1f);
     data_.f_reverb      = jsonVar.getProperty("f_reverb"    , 0.5f);
-
     data_.f_mode        = jsonVar.getProperty("f_mode"      , 0.0f);
+
+    data_.f_mono        = jsonVar.getProperty("f_mono"      , 0.0f);
     data_.f_lofi        = jsonVar.getProperty("f_lofi"      , 0.0f);
 }
 
