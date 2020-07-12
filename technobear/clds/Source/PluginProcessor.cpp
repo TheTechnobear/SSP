@@ -12,7 +12,7 @@ static const char*  presetProgramDir = "~/SSP/plugin.presets/clds";
 static const char*  presetProgramDir = "/media/linaro/SYNTHOR/plugins.presets/clds";
 #endif
 
-inline float TO_SHORTFRAME(float v)   { return constrain(v * 32767.0f,-32768.0f,32767.0f);}
+inline float TO_SHORTFRAME(float v)   { return constrain(v * 32767.0f, -32768.0f, 32767.0f);}
 inline float FROM_SHORTFRAME(short v) { return (float(v) / 32768.0f); }
 
 Clds::Clds()
@@ -215,16 +215,16 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     // SSP = 128 (@48k), so split up, so we read the control rate date every 16
     for (int bidx = 0; bidx < buffer.getNumSamples(); bidx += n) {
 
-        bool trig=false;
+        bool trig = false;
         float gain = (data_.f_in_gain * 2.0f);
-        float in_gain = constrain(1.0f + (gain * gain), 1.0f, 5.0f); 
+        float in_gain = constrain(1.0f + (gain * gain), 1.0f, 5.0f);
 
         for (int i = 0; i < n; i++) {
 
             ibuf[i].l = TO_SHORTFRAME(buffer.getSample(I_LEFT, bidx + i) * in_gain);
             ibuf[i].r = TO_SHORTFRAME(buffer.getSample(I_RIGHT, bidx + i) * in_gain);
 
-            if(buffer.getSample(I_TRIG, bidx + i) > 0.5) {
+            if (buffer.getSample(I_TRIG, bidx + i) > 0.5) {
                 trig = true;
             }
         }
@@ -251,7 +251,7 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         float pitch     = data_.f_pitch + cv2Pitch(buffer.getSample(I_VOCT, bidx));
         float position  = data_.f_position + buffer.getSample(I_POS, bidx);
         float size      = data_.f_size + buffer.getSample(I_SIZE, bidx);
-        float density   = ((data_.f_density + buffer.getSample(I_DENSITY, bidx)) +1.0f ) /2.0f;
+        float density   = ((data_.f_density + buffer.getSample(I_DENSITY, bidx)) + 1.0f ) / 2.0f;
         float texture   = data_.f_texture + buffer.getSample(I_TEXT, bidx);
 
 

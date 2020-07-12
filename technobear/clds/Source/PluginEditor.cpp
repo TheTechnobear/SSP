@@ -54,6 +54,7 @@ CldsEditor::CldsEditor (Clds& p)
 	params_[P_REVERB].init("Reverb");
 	params_[P_PITCH].init("Pitch");
 	params_[P_MODE].init("Mode");
+	params_[P_IN_GAIN].init("Gain");
 
 	params_[P_POS].value(processor_.data().f_position);
 	params_[P_SIZE].value(processor_.data().f_size);
@@ -63,21 +64,24 @@ CldsEditor::CldsEditor (Clds& p)
 	params_[P_SPREAD].value(processor_.data().f_spread);
 	params_[P_FEEDBACK].value(processor_.data().f_feedback);
 	params_[P_REVERB].value(processor_.data().f_reverb);
+
 	params_[P_PITCH].value(processor_.data().f_pitch);
 	params_[P_MODE].value((int) processor_.data().f_mode);
+	params_[P_IN_GAIN].value((int) processor_.data().f_in_gain);
 
-	params_[P_POS].active(paramActive_ == 0);
-	params_[P_SIZE].active(paramActive_ == 0);
-	params_[P_DENSITY].active(paramActive_ == 0);
-	params_[P_TEXTURE].active(paramActive_ == 0);
+	params_[P_POS].active(paramActive_ 		== 0);
+	params_[P_SIZE].active(paramActive_ 	== 0);
+	params_[P_DENSITY].active(paramActive_ 	== 0);
+	params_[P_TEXTURE].active(paramActive_ 	== 0);
 
-	params_[P_MIX].active(paramActive_ == 1);
-	params_[P_SPREAD].active(paramActive_ == 1);
+	params_[P_MIX].active(paramActive_ 		== 1);
+	params_[P_SPREAD].active(paramActive_ 	== 1);
 	params_[P_FEEDBACK].active(paramActive_ == 1);
-	params_[P_REVERB].active(paramActive_ == 1);
+	params_[P_REVERB].active(paramActive_ 	== 1);
 
-	params_[P_PITCH].active(paramActive_ == 2);
-	params_[P_MODE].active(paramActive_ == 2);
+	params_[P_PITCH].active(paramActive_ 	== 2);
+	params_[P_MODE].active(paramActive_ 	== 2);
+	params_[P_IN_GAIN].active(paramActive_ 	== 2);
 
 	paramActive_ = 0;
 	addAndMakeVisible(params_[P_POS]);
@@ -91,6 +95,7 @@ CldsEditor::CldsEditor (Clds& p)
 
 	addChildComponent(params_[P_PITCH]);
 	addChildComponent(params_[P_MODE]);
+	addChildComponent(params_[P_IN_GAIN]);
 }
 
 CldsEditor::~CldsEditor()
@@ -133,8 +138,6 @@ void CldsEditor::parameterChanged (int index, float value) {
 	// there are 3 (!) pages of params not two!
 
 	// f_mono      = 0.0f;
-	// f_silence   = 0.0f;
-	// f_bypass    = 0.0f;
 	// f_lofi      = 0.0f;
 
 	unsigned paramActive = paramActive_;
@@ -232,7 +235,12 @@ void CldsEditor::parameterChanged (int index, float value) {
 			break;
 		}
 		case 2 : {
-			break;
+			float v = processor_.data().f_in_gain + value / 100.0f;
+			v = constrain(v, 0.0f, 1.0f);
+			processor_.data().f_in_gain = v;
+			params_[P_PITCH].value(processor_.data().f_in_gain);
+
+			if (value) activeParam_ = &params_[P_IN_GAIN];
 		}
 		} //switch paramActive_
 		if (value) {
@@ -344,31 +352,33 @@ void CldsEditor::parameterChanged (int index, float value) {
 
 	if (paramActive != paramActive_) {
 
-		params_[P_POS].setVisible(paramActive_ < 2);
-		params_[P_SIZE].setVisible(paramActive_ < 2);
-		params_[P_DENSITY].setVisible(paramActive_ < 2);
-		params_[P_TEXTURE].setVisible(paramActive_ < 2);
-		params_[P_MIX].setVisible(paramActive_ < 2);
-		params_[P_SPREAD].setVisible(paramActive_ < 2);
+		params_[P_POS].setVisible(paramActive_ 		< 2);
+		params_[P_SIZE].setVisible(paramActive_ 	< 2);
+		params_[P_DENSITY].setVisible(paramActive_	< 2);
+		params_[P_TEXTURE].setVisible(paramActive_ 	< 2);
+		params_[P_MIX].setVisible(paramActive_ 		< 2);
+		params_[P_SPREAD].setVisible(paramActive_ 	< 2);
 		params_[P_FEEDBACK].setVisible(paramActive_ < 2);
-		params_[P_REVERB].setVisible(paramActive_ < 2);
+		params_[P_REVERB].setVisible(paramActive_ 	< 2);
 
-		params_[P_PITCH].setVisible(paramActive_ == 2);
-		params_[P_MODE].setVisible(paramActive_ == 2);
+		params_[P_PITCH].setVisible(paramActive_ 	== 2);
+		params_[P_MODE].setVisible(paramActive_ 	== 2);
+		params_[P_IN_GAIN].setVisible(paramActive_ 	== 2);
 
 
-		params_[P_POS].active(paramActive_ == 0);
-		params_[P_SIZE].active(paramActive_ == 0);
-		params_[P_DENSITY].active(paramActive_ == 0);
-		params_[P_TEXTURE].active(paramActive_ == 0);
+		params_[P_POS].active(paramActive_ 		== 0);
+		params_[P_SIZE].active(paramActive_ 	== 0);
+		params_[P_DENSITY].active(paramActive_ 	== 0);
+		params_[P_TEXTURE].active(paramActive_ 	== 0);
 
-		params_[P_MIX].active(paramActive_ == 1);
-		params_[P_SPREAD].active(paramActive_ == 1);
+		params_[P_MIX].active(paramActive_ 		== 1);
+		params_[P_SPREAD].active(paramActive_ 	== 1);
 		params_[P_FEEDBACK].active(paramActive_ == 1);
-		params_[P_REVERB].active(paramActive_ == 1);
+		params_[P_REVERB].active(paramActive_ 	== 1);
 
-		params_[P_PITCH].active(paramActive_ == 2);
-		params_[P_MODE].active(paramActive_ == 2);
+		params_[P_PITCH].active(paramActive_ 	== 2);
+		params_[P_MODE].active(paramActive_ 	== 2);
+		params_[P_IN_GAIN].active(paramActive_ 	== 2);
 	}
 
 	paramState_[index] = value;
@@ -540,7 +550,7 @@ void CldsEditor::resized()
 	setButtonBounds(buttons_[B_UP], 	0, 5);
 
 	setButtonBounds(buttons_[B_HELP], 	1, 0);
-	setButtonBounds(buttons_[B_WRITE_PR],1, 2);
+	setButtonBounds(buttons_[B_WRITE_PR], 1, 2);
 	setButtonBounds(buttons_[B_LEFT], 	1, 4);
 	setButtonBounds(buttons_[B_DOWN], 	1, 5);
 	setButtonBounds(buttons_[B_RIGHT], 	1, 6);
@@ -557,4 +567,5 @@ void CldsEditor::resized()
 
 	setParamBounds(params_[P_PITCH], 	0, 2);
 	setParamBounds(params_[P_MODE], 	1, 2);
+	setParamBounds(params_[P_IN_GAIN], 	1, 3);
 }

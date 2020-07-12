@@ -71,9 +71,7 @@ struct CldsData {
     float f_reverb;
     float f_mode;
     float f_in_gain;
-    
-    // float f_silence;
-    // float f_bypass;
+
     float f_mono;
     float f_lofi;
 

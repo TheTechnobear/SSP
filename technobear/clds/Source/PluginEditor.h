@@ -41,19 +41,20 @@ private:
 	Clds& processor_;
 
 	enum Params {
-    	P_POS,
-    	P_SIZE,
-    	P_DENSITY,
-    	P_TEXTURE,
+		P_POS,
+		P_SIZE,
+		P_DENSITY,
+		P_TEXTURE,
 
-    	P_MIX,
-    	P_SPREAD,
-    	P_FEEDBACK,
-    	P_REVERB,
+		P_MIX,
+		P_SPREAD,
+		P_FEEDBACK,
+		P_REVERB,
 
-    	P_PITCH,
-    	P_MODE,
-    	P_MAX
+		P_PITCH,
+		P_MODE,
+		P_IN_GAIN,
+		P_MAX
 	};
 
 	enum Buttons {
