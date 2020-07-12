@@ -216,11 +216,13 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     for (int bidx = 0; bidx < buffer.getNumSamples(); bidx += n) {
 
         bool trig=false;
+        float gain = (data_.f_in_gain * 2.0f);
+        float in_gain = constrain(1.0f + (gain * gain), 1.0f, 5.0f); 
 
         for (int i = 0; i < n; i++) {
 
-            ibuf[i].l = TO_SHORTFRAME(buffer.getSample(I_LEFT, bidx + i));
-            ibuf[i].r = TO_SHORTFRAME(buffer.getSample(I_RIGHT, bidx + i));
+            ibuf[i].l = TO_SHORTFRAME(buffer.getSample(I_LEFT, bidx + i) * in_gain);
+            ibuf[i].r = TO_SHORTFRAME(buffer.getSample(I_RIGHT, bidx + i) * in_gain);
 
             if(buffer.getSample(I_TRIG, bidx + i) > 0.5) {
                 trig = true;
@@ -322,6 +324,7 @@ void Clds::writeToJson() {
     v->setProperty("f_feedback",        float(data_.f_feedback));
     v->setProperty("f_reverb",          float(data_.f_reverb));
     v->setProperty("f_mode",            float(data_.f_mode));
+    v->setProperty("f_in_gain",         float(data_.f_in_gain));
     v->setProperty("f_mono",            float(data_.f_mono));
     v->setProperty("f_lofi",            float(data_.f_lofi));
 
@@ -369,6 +372,7 @@ void Clds::readFromJson() {
     data_.f_feedback    = jsonVar.getProperty("f_feedback"  , 0.1f);
     data_.f_reverb      = jsonVar.getProperty("f_reverb"    , 0.5f);
     data_.f_mode        = jsonVar.getProperty("f_mode"      , 0.0f);
+    data_.f_in_gain        = jsonVar.getProperty("f_in_gain", 0.0f);
 
     data_.f_mono        = jsonVar.getProperty("f_mono"      , 0.0f);
     data_.f_lofi        = jsonVar.getProperty("f_lofi"      , 0.0f);
@@ -391,6 +395,7 @@ void Clds::getStateInformation (MemoryBlock& destData)
     v->setProperty("f_feedback",        float(data_.f_feedback));
     v->setProperty("f_reverb",          float(data_.f_reverb));
     v->setProperty("f_mode",            float(data_.f_mode));
+    v->setProperty("f_in_gain",         float(data_.f_in_gain));
     v->setProperty("f_mono",            float(data_.f_mono));
     v->setProperty("f_lofi",            float(data_.f_lofi));
 
@@ -417,6 +422,7 @@ void Clds::setStateInformation (const void* data, int sizeInBytes)
     data_.f_feedback    = jsonVar.getProperty("f_feedback"  , 0.1f);
     data_.f_reverb      = jsonVar.getProperty("f_reverb"    , 0.5f);
     data_.f_mode        = jsonVar.getProperty("f_mode"      , 0.0f);
+    data_.f_in_gain        = jsonVar.getProperty("f_in_gain", 0.0f);
 
     data_.f_mono        = jsonVar.getProperty("f_mono"      , 0.0f);
     data_.f_lofi        = jsonVar.getProperty("f_lofi"      , 0.0f);

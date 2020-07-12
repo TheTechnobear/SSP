@@ -36,6 +36,7 @@ struct CldsData {
         f_feedback  = 0.1f;
         f_reverb    = 0.5f;
         f_mode      = 0.0f;
+        f_in_gain   = 0.0f;
 
         // unused, since this is downsampling
         // and we are already at wrong SR
@@ -69,9 +70,11 @@ struct CldsData {
     float f_feedback;
     float f_reverb;
     float f_mode;
+    float f_in_gain;
+    
+    // float f_silence;
+    // float f_bypass;
     float f_mono;
-    float f_silence;
-    float f_bypass;
     float f_lofi;
 
     clouds::GranularProcessor processor;
@@ -80,8 +83,8 @@ struct CldsData {
     clouds::ShortFrame* obuf;
     int iobufsz;
 
-    static constexpr unsigned block_mem_sz =   118784;
-    static constexpr unsigned block_ccm_sz =  65536 - 128;;
+    static constexpr unsigned block_mem_sz =  (118784 * 3) / 2; // 48k vs 32k    118784;
+    static constexpr unsigned block_ccm_sz =  ((65536 - 128) * 3 ) / 2 ; //65536 - 128;
     uint8_t* block_mem;
     uint8_t* block_ccm;
 };
