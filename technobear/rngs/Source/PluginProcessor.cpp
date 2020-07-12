@@ -219,20 +219,6 @@ void Rngs::prepareToPlay (double sampleRate, int samplesPerBlock)
     rings::ResonatorModel model = static_cast<rings::ResonatorModel>(imodel);
     part.set_model(model);
     data_.string_synth.set_fx(static_cast<rings::FxType>(model));
-
-
-    if (RingsBlock > data_.iobufsz) {
-        delete [] data_.in;
-        delete [] data_.out;
-        delete [] data_.aux;
-        data_.iobufsz = RingsBlock;
-        data_.in = new float[data_.iobufsz];
-        data_.out = new float[data_.iobufsz];
-        data_.aux = new float[data_.iobufsz];
-        memset(data_.in, 0, data_.iobufsz);
-        memset(data_.out, 0, data_.iobufsz);
-        memset(data_.aux, 0, data_.iobufsz);
-    }
 }
 
 void Rngs::releaseResources()
@@ -381,6 +367,7 @@ void Rngs::writeToJson() {
     v->setProperty("f_damping",             float(data_.f_damping));
     v->setProperty("f_position",            float(data_.f_position));
     v->setProperty("f_polyphony",           float(data_.f_polyphony));
+    v->setProperty("f_model",               float(data_.f_model));
     v->setProperty("f_bypass",              float(data_.f_bypass));
     v->setProperty("f_easter_egg",          float(data_.f_easter_egg));
     v->setProperty("f_internal_strum",      float(data_.f_internal_strum));
@@ -428,6 +415,7 @@ void Rngs::readFromJson() {
     data_.f_damping = jsonVar.getProperty("f_damping",0.5f);
     data_.f_position = jsonVar.getProperty("f_position",0.5f);
     data_.f_polyphony = jsonVar.getProperty("f_polyphony",0.0f);
+    data_.f_model = jsonVar.getProperty("f_model",0.0f);
     data_.f_bypass = jsonVar.getProperty("f_bypass",0.0f);
     data_.f_easter_egg = jsonVar.getProperty("f_easter_egg",0.0f);
     data_.f_internal_strum = jsonVar.getProperty("f_internal_strum",1.0f);
@@ -460,6 +448,7 @@ void Rngs::getStateInformation (MemoryBlock& destData)
     v->setProperty("f_damping",             float(data_.f_damping));
     v->setProperty("f_position",            float(data_.f_position));
     v->setProperty("f_polyphony",           float(data_.f_polyphony));
+    v->setProperty("f_model",               float(data_.f_model));
     v->setProperty("f_bypass",              float(data_.f_bypass));
     v->setProperty("f_easter_egg",          float(data_.f_easter_egg));
     v->setProperty("f_internal_strum",      float(data_.f_internal_strum));
@@ -488,6 +477,7 @@ void Rngs::setStateInformation (const void* data, int sizeInBytes)
     data_.f_damping = jsonVar.getProperty("f_damping",0.5f);
     data_.f_position = jsonVar.getProperty("f_position",0.5f);
     data_.f_polyphony = jsonVar.getProperty("f_polyphony",0.0f);
+    data_.f_model = jsonVar.getProperty("f_model",0.0f);
     data_.f_bypass = jsonVar.getProperty("f_bypass",0.0f);
     data_.f_easter_egg = jsonVar.getProperty("f_easter_egg",0.0f);
     data_.f_internal_strum = jsonVar.getProperty("f_internal_strum",1.0f);
