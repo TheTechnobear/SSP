@@ -29,71 +29,54 @@ RngsEditor::RngsEditor (Rngs& p)
 	addAndMakeVisible(plugInBtn_);
 	addAndMakeVisible(recBtn_);
 
-	audioBtn_.init("Audio");
-	strumBtn_.init("Strum");
-	vOctBtn_.init("V/Oct");
-	// blank.init("");
-	// blank.init("");
-	enPlus_.init("+EN");
-	// blank.init("");
+	buttons_[B_AUDIO].init("Audio");
+	buttons_[B_STRUM].init("Strum");
+	buttons_[B_VOCT].init("V/Oct");
+	buttons_[B_UP].init("+EN");
 
-	helpBtn_.init("?");
-	// blank.init("");
-	writePrBtn_.init("WriPr");
-	// blank.init("");
-	// blank.init("");
-	enMinus_.init("-EN");
-	// blank.init("");
+	buttons_[B_HELP].init("?");
+	buttons_[B_WRITE_PR].init("WriPr");
+	buttons_[B_DOWN].init("-EN");
 
 
-	audioBtn_.active(processor_.data().f_internal_exciter < 0.5);
-	strumBtn_.active(processor_.data().f_internal_strum < 0.5);
-	vOctBtn_.active(processor_.data().f_internal_note < 0.5);
-
-	addAndMakeVisible(audioBtn_);
-	addAndMakeVisible(strumBtn_);
-	addAndMakeVisible(vOctBtn_);
-	addAndMakeVisible(enPlus_);
-	addAndMakeVisible(enMinus_);
-	addAndMakeVisible(helpBtn_);
-	addAndMakeVisible(writePrBtn_);
+	buttons_[B_AUDIO].active(processor_.data().f_internal_exciter < 0.5);
+	buttons_[B_STRUM].active(processor_.data().f_internal_strum < 0.5);
+	buttons_[B_VOCT].active(processor_.data().f_internal_note < 0.5);
+	for(unsigned i=0;i<B_MAX;i++) {
+		addAndMakeVisible(buttons_[i]);
+	}
 
 	// parameters
-	pitchParam_.init("Pitch");
-	structParam_.init("Struct");
-	brightParam_.init("Bright");
-	dampParam_.init("Damp");
+	params_[P_PITCH].init("Pitch");
+	params_[P_STRUCT].init("Struct");
+	params_[P_BRIGHT].init("Bright");
+	params_[P_DAMP].init("Damp");
 
-	posParam_.init("Pos");
-	polyParam_.init("Poly", "%1.0f");
-	modelParam_.init("Model", "%1.0f");
-	nullParam_.init("");
+	params_[P_POS].init("Pos");
+	params_[P_POLY].init("Poly", "%1.0f");
+	params_[P_MODEL].init("Model", "%1.0f");
+	params_[P_NULL].init("");
 
-	pitchParam_.value(processor_.data().f_pitch);
-	structParam_.value(processor_.data().f_structure);
-	brightParam_.value(processor_.data().f_brightness);
-	dampParam_.value(processor_.data().f_damping);
+	params_[P_PITCH].value(processor_.data().f_pitch);
+	params_[P_STRUCT].value(processor_.data().f_structure);
+	params_[P_BRIGHT].value(processor_.data().f_brightness);
+	params_[P_DAMP].value(processor_.data().f_damping);
 
-	posParam_.value(processor_.data().f_position);
-	polyParam_.value(processor_.data().f_polyphony);
-	modelParam_.value(processor_.data().f_model);
-	//nullParam_
+	params_[P_POS].value(processor_.data().f_position);
+	params_[P_POLY].value(processor_.data().f_polyphony);
+	params_[P_MODEL].value(processor_.data().f_model);
+	//params_[P_NULL]
 
 	altActive_ = 0;
-	pitchParam_.active(!altActive_);
-	structParam_.active(!altActive_);
-	brightParam_.active(!altActive_);
-	dampParam_.active(!altActive_);
+	params_[P_PITCH].active(!altActive_);
+	params_[P_STRUCT].active(!altActive_);
+	params_[P_BRIGHT].active(!altActive_);
+	params_[P_DAMP].active(!altActive_);
 
-	addAndMakeVisible(pitchParam_);
-	addAndMakeVisible(structParam_);
-	addAndMakeVisible(brightParam_);
-	addAndMakeVisible(dampParam_);
 
-	addAndMakeVisible(posParam_);
-	addAndMakeVisible(polyParam_);
-	addAndMakeVisible(modelParam_);
-	addAndMakeVisible(nullParam_);
+	for(unsigned i=0;i<B_MAX;i++) {
+		addAndMakeVisible(params_[i]);
+	}
 }
 
 RngsEditor::~RngsEditor()
@@ -146,16 +129,16 @@ void RngsEditor::parameterChanged (int index, float value) {
 			float v = processor_.data().f_position + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
 			processor_.data().f_position = v;
-			posParam_.value(processor_.data().f_position);
+			params_[P_POS].value(processor_.data().f_position);
 
-			if(value) activeParam_=&posParam_;
+			if(value) activeParam_=&params_[P_POS];
 		} else {
 			float v = processor_.data().f_pitch + value / 4.0f;
 			v = constrain(v, 0.0f, 60.0f);
 			processor_.data().f_pitch = v;
-			pitchParam_.value(processor_.data().f_pitch);
+			params_[P_PITCH].value(processor_.data().f_pitch);
 
-			if(value) activeParam_=&pitchParam_;
+			if(value) activeParam_=&params_[P_PITCH];
 		}
 		if(value) {
 			activeParamCount_=PARAM_COUNTER;
@@ -167,17 +150,17 @@ void RngsEditor::parameterChanged (int index, float value) {
 			float v = processor_.data().f_polyphony + value / 20.0f;
 			v = constrain(v, 0.0f, 2.0f);
 			processor_.data().f_polyphony = v;
-			polyParam_.value((int) processor_.data().f_polyphony);
+			params_[P_POLY].value((int) processor_.data().f_polyphony);
 
-			if(value) activeParam_=&polyParam_;
+			if(value) activeParam_=&params_[P_POLY];
 
 		} else {
 			float v = processor_.data().f_structure + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
 			processor_.data().f_structure = v;
-			structParam_.value(processor_.data().f_structure);
+			params_[P_STRUCT].value(processor_.data().f_structure);
 
-			if(value) activeParam_=&structParam_;
+			if(value) activeParam_=&params_[P_STRUCT];
 		}
 		if(value) {
 			activeParamCount_=PARAM_COUNTER;
@@ -189,16 +172,16 @@ void RngsEditor::parameterChanged (int index, float value) {
 			float v = processor_.data().f_model + value / 10.0f;
 			v = constrain(v, 0.0f, 5.0f);
 			processor_.data().f_model = v;
-			modelParam_.value((int) processor_.data().f_model);
+			params_[P_MODEL].value((int) processor_.data().f_model);
 
-			if(value) activeParam_=&modelParam_;
+			if(value) activeParam_=&params_[P_MODEL];
 		} else {
 			float v = processor_.data().f_brightness + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
 			processor_.data().f_brightness = v;
-			brightParam_.value(processor_.data().f_brightness);
+			params_[P_BRIGHT].value(processor_.data().f_brightness);
 
-			if(value) activeParam_=&brightParam_;
+			if(value) activeParam_=&params_[P_BRIGHT];
 		}
 		if(value) {
 			activeParamCount_=PARAM_COUNTER;
@@ -212,9 +195,9 @@ void RngsEditor::parameterChanged (int index, float value) {
 			float v = processor_.data().f_damping + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
 			processor_.data().f_damping = v;
-			dampParam_.value(processor_.data().f_damping);
+			params_[P_DAMP].value(processor_.data().f_damping);
 
-			if(value) activeParam_=&dampParam_;
+			if(value) activeParam_=&params_[P_DAMP];
 		}
 		if(value) {
 			activeParamCount_=PARAM_COUNTER;
@@ -233,32 +216,32 @@ void RngsEditor::parameterChanged (int index, float value) {
 		if (paramState_[index] != value && !value) {
 			processor_.data().f_internal_exciter =
 			    ! processor_.data().f_internal_exciter;
-			audioBtn_.active(processor_.data().f_internal_exciter < 0.5);
+			buttons_[B_AUDIO].active(processor_.data().f_internal_exciter < 0.5);
 		}
 		break;
 	case Percussa::sspSw2:
 		if (paramState_[index] != value && !value) {
 			processor_.data().f_internal_strum =
 			    ! processor_.data().f_internal_strum ;
-			strumBtn_.active(processor_.data().f_internal_strum < 0.5);
+			buttons_[B_STRUM].active(processor_.data().f_internal_strum < 0.5);
 		}
 		break;
 	case Percussa::sspSw3:
 		if (paramState_[index] != value && !value) {
 			processor_.data().f_internal_note =
 			    ! processor_.data().f_internal_note;
-			vOctBtn_.active(processor_.data().f_internal_note < 0.5);
+			buttons_[B_VOCT].active(processor_.data().f_internal_note < 0.5);
 		}
 		break;
 	case Percussa::sspSw4:
 		break;
 	case Percussa::sspSw5:
-		helpBtn_.active(value > 0.5);
+		buttons_[B_HELP].active(value > 0.5);
 		break;
 	case Percussa::sspSw6:
 		break;
 	case Percussa::sspSw7:
-		writePrBtn_.active(value > 0.5);
+		buttons_[B_WRITE_PR].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			processor_.write();
 		}
@@ -270,34 +253,34 @@ void RngsEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSwRight:
 		break;
 	case Percussa::sspSwUp:
-		enPlus_.active(value > 0.5);
+		buttons_[B_UP].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			altActive_ = ! altActive_;
 
-			pitchParam_.active(!altActive_);
-			structParam_.active(!altActive_);
-			brightParam_.active(!altActive_);
-			dampParam_.active(!altActive_);
+			params_[P_PITCH].active(!altActive_);
+			params_[P_STRUCT].active(!altActive_);
+			params_[P_BRIGHT].active(!altActive_);
+			params_[P_DAMP].active(!altActive_);
 
-			posParam_.active(altActive_);
-			polyParam_.active(altActive_);
-			modelParam_.active(altActive_);
-			nullParam_.active(altActive_);
+			params_[P_POS].active(altActive_);
+			params_[P_POLY].active(altActive_);
+			params_[P_MODEL].active(altActive_);
+			params_[P_NULL].active(altActive_);
 		}
 		break;
 	case Percussa::sspSwDown:
-		enMinus_.active(value > 0.5);
+		buttons_[B_DOWN].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			altActive_ = ! altActive_;
-			pitchParam_.active(!altActive_);
-			structParam_.active(!altActive_);
-			brightParam_.active(!altActive_);
-			dampParam_.active(!altActive_);
+			params_[P_PITCH].active(!altActive_);
+			params_[P_STRUCT].active(!altActive_);
+			params_[P_BRIGHT].active(!altActive_);
+			params_[P_DAMP].active(!altActive_);
 
-			posParam_.active(altActive_);
-			polyParam_.active(altActive_);
-			modelParam_.active(altActive_);
-			nullParam_.active(altActive_);
+			params_[P_POS].active(altActive_);
+			params_[P_POLY].active(altActive_);
+			params_[P_MODEL].active(altActive_);
+			params_[P_NULL].active(altActive_);
 		}
 		break;
 	case Percussa::sspSwShiftL:
@@ -432,7 +415,7 @@ void RngsEditor::paint(Graphics& g)
 
 	drawEncoderValue(g);	
 
-	if (helpBtn_.active()) {
+	if (buttons_[B_HELP].active()) {
 		drawHelp(g);
 	} else {
 		drawRngs(g);
@@ -475,22 +458,22 @@ void RngsEditor::resized()
 	setMenuBounds(plugInBtn_, 2);
 	setMenuBounds(recBtn_, 3);
 
-	setButtonBounds(audioBtn_, 0, 0);
-	setButtonBounds(strumBtn_, 0, 1);
-	setButtonBounds(vOctBtn_, 0, 2);
-	setButtonBounds(enPlus_, 0, 5);
-	setButtonBounds(helpBtn_, 1, 0);
-	setButtonBounds(writePrBtn_, 1, 2);
-	setButtonBounds(enMinus_, 1, 5);
+	setButtonBounds(buttons_[B_AUDIO], 0, 0);
+	setButtonBounds(buttons_[B_STRUM], 0, 1);
+	setButtonBounds(buttons_[B_VOCT], 0, 2);
+	setButtonBounds(buttons_[B_UP], 0, 5);
+	setButtonBounds(buttons_[B_HELP], 1, 0);
+	setButtonBounds(buttons_[B_WRITE_PR], 1, 2);
+	setButtonBounds(buttons_[B_DOWN], 1, 5);
 
 
-	setParamBounds(pitchParam_, 0, 0);
-	setParamBounds(structParam_, 1, 0);
-	setParamBounds(brightParam_, 2, 0);
-	setParamBounds(dampParam_, 3, 0);
+	setParamBounds(params_[P_PITCH], 0, 0);
+	setParamBounds(params_[P_STRUCT], 1, 0);
+	setParamBounds(params_[P_BRIGHT], 2, 0);
+	setParamBounds(params_[P_DAMP], 3, 0);
 
-	setParamBounds(posParam_, 0, 1);
-	setParamBounds(polyParam_, 1, 1);
-	setParamBounds(modelParam_, 2, 1);
-	setParamBounds(nullParam_, 3, 1);
+	setParamBounds(params_[P_POS], 0, 1);
+	setParamBounds(params_[P_POLY], 1, 1);
+	setParamBounds(params_[P_MODEL], 2, 1);
+	setParamBounds(params_[P_NULL], 3, 1);
 }

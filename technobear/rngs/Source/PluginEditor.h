@@ -44,12 +44,33 @@ private:
 
 	SSPButton globalBtn_, networkBtn_, plugInBtn_, recBtn_;
 
-	SSPButton audioBtn_, strumBtn_, vOctBtn_;
-	SSPButton helpBtn_, writePrBtn_;
-	SSPButton enPlus_, enMinus_;
+	enum {
+		B_AUDIO, 
+		B_STRUM,
+		B_VOCT,
+		B_HELP,
+		B_WRITE_PR,
+		B_UP,
+		B_DOWN,
+		B_MAX
+	};
 
-	SSPParam pitchParam_, structParam_, brightParam_, dampParam_;
-	SSPParam posParam_, polyParam_, modelParam_, nullParam_;
+	SSPButton buttons_[B_MAX];
+
+	enum {
+		P_PITCH,
+		P_STRUCT,
+		P_BRIGHT,
+		P_DAMP,
+		P_POS,
+		P_POLY,
+		P_MODEL,
+		P_NULL,
+		P_MAX
+	};
+
+	SSPParam params_[P_MAX];
+
 
 	SSPParam* 	activeParam_ = nullptr;
 	unsigned 	activeParamIdx_ = 0;
