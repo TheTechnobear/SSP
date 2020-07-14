@@ -11,6 +11,9 @@ public:
     void init(const String& label) {
         label_=label;
     }
+    void label(const String& label) {
+        label_=label;
+    }
     void active(bool a) {active_=a;}
     bool active() { return active_;}
 

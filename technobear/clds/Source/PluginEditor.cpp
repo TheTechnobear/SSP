@@ -30,6 +30,7 @@ CldsEditor::CldsEditor (Clds& p)
 
 	buttons_[B_HELP].init("?");
 	buttons_[B_FREEZE].init("Frze");
+	buttons_[B_TRIGFREEZE].init("[T]/F");
 	buttons_[B_UP].init("+EN");
 	buttons_[B_DOWN].init("-EN");
 	buttons_[B_LEFT].init("-PG");
@@ -295,6 +296,17 @@ void CldsEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSw2:
 		break;
 	case Percussa::sspSw3:
+		buttons_[B_TRIGFREEZE].active(value > 0.5);
+		if (paramState_[index] != value && !value) {
+			processor_.data().trig_or_freeze =
+			    ! processor_.data().trig_or_freeze;
+
+			if(processor_.data().trig_or_freeze)  {
+				buttons_[B_TRIGFREEZE].label("T/[F]");
+			} else {
+				buttons_[B_TRIGFREEZE].label("[T]/F");
+			}
+		}
 		break;
 	case Percussa::sspSw4:
 		break;
@@ -397,7 +409,7 @@ void CldsEditor::drawHelp(Graphics & g) {
 	g.setFont(Font(Font::getDefaultMonospacedFontName(), 18, Font::plain));
 	g.drawSingleLineText("VST IN[1] : IN Left", x, y);	y += space;
 	g.drawSingleLineText("VST IN[2] : IN Right", x, y);	y += space;
-	g.drawSingleLineText("VST IN[3] : Trig", x, y);	y += space;
+	g.drawSingleLineText("VST IN[3] : Trig/Freeze", x, y);	y += space;
 	g.drawSingleLineText("VST IN[4] : V/Oct", x, y);		y += space;
 	g.drawSingleLineText("VST IN[5] : Position", x, y);	y += space;
 	g.drawSingleLineText("VST IN[6] : Size", x, y);	y += space;
@@ -547,6 +559,7 @@ void CldsEditor::resized()
 	setMenuBounds(recBtn_, 3);
 
 	setButtonBounds(buttons_[B_FREEZE], 0, 0);
+	setButtonBounds(buttons_[B_TRIGFREEZE], 0, 2);
 	setButtonBounds(buttons_[B_UP], 	0, 5);
 
 	setButtonBounds(buttons_[B_HELP], 	1, 0);

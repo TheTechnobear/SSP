@@ -216,7 +216,7 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     for (int bidx = 0; bidx < buffer.getNumSamples(); bidx += n) {
 
         bool trig = false;
-        float gain = (data_.f_in_gain * 2.0f);
+        float gain = (data.f_in_gain * 2.0f);
         float in_gain = constrain(1.0f + (gain * gain), 1.0f, 5.0f);
 
         for (int i = 0; i < n; i++) {
@@ -248,21 +248,21 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 
         auto p = processor.mutable_parameters();
 
-        float pitch     = data_.f_pitch + cv2Pitch(buffer.getSample(I_VOCT, bidx));
-        float position  = data_.f_position + buffer.getSample(I_POS, bidx);
-        float size      = data_.f_size + buffer.getSample(I_SIZE, bidx);
-        float density   = ((data_.f_density + buffer.getSample(I_DENSITY, bidx)) + 1.0f ) / 2.0f;
-        float texture   = data_.f_texture + buffer.getSample(I_TEXT, bidx);
+        float pitch     = data.f_pitch + cv2Pitch(buffer.getSample(I_VOCT, bidx));
+        float position  = data.f_position + buffer.getSample(I_POS, bidx);
+        float size      = data.f_size + buffer.getSample(I_SIZE, bidx);
+        float density   = ((data.f_density + buffer.getSample(I_DENSITY, bidx)) + 1.0f ) / 2.0f;
+        float texture   = data.f_texture + buffer.getSample(I_TEXT, bidx);
 
 
         //restrict density to .2 to .8 for granular mode, outside this breaks up
         // density = constrain(density, 0.0f, 1.0f);
         // density = (mode == clouds::PLAYBACK_MODE_GRANULAR) ? (density * 0.6f) + 0.2f : density;
 
-        p->freeze = (data.f_freeze > 0.5f);
+        p->freeze = (data.f_freeze > 0.5f) ||  (data.trig_or_freeze && trig) ;
 
-        p->gate        = trig;
-        p->trigger     = trig;
+        p->gate        = (!data.trig_or_freeze) && trig;
+        p->trigger     = p->gate;
 
         p->pitch       = constrain(pitch,      -48.0f, 48.0f);
         p->position    = constrain(position,   0.0f, 1.0f);
@@ -325,6 +325,8 @@ void Clds::writeToJson() {
     v->setProperty("f_reverb",          float(data_.f_reverb));
     v->setProperty("f_mode",            float(data_.f_mode));
     v->setProperty("f_in_gain",         float(data_.f_in_gain));
+    v->setProperty("trig_or_freeze",    float(data_.trig_or_freeze));
+
     v->setProperty("f_mono",            float(data_.f_mono));
     v->setProperty("f_lofi",            float(data_.f_lofi));
 
@@ -372,7 +374,8 @@ void Clds::readFromJson() {
     data_.f_feedback    = jsonVar.getProperty("f_feedback"  , 0.1f);
     data_.f_reverb      = jsonVar.getProperty("f_reverb"    , 0.5f);
     data_.f_mode        = jsonVar.getProperty("f_mode"      , 0.0f);
-    data_.f_in_gain        = jsonVar.getProperty("f_in_gain", 0.0f);
+    data_.f_in_gain     = jsonVar.getProperty("f_in_gain", 0.0f);
+    data_.trig_or_freeze = jsonVar.getProperty("trig_or_freeze" , 0.0f);
 
     data_.f_mono        = jsonVar.getProperty("f_mono"      , 0.0f);
     data_.f_lofi        = jsonVar.getProperty("f_lofi"      , 0.0f);
@@ -396,6 +399,8 @@ void Clds::getStateInformation (MemoryBlock& destData)
     v->setProperty("f_reverb",          float(data_.f_reverb));
     v->setProperty("f_mode",            float(data_.f_mode));
     v->setProperty("f_in_gain",         float(data_.f_in_gain));
+    v->setProperty("trig_or_freeze",    float(data_.trig_or_freeze));
+
     v->setProperty("f_mono",            float(data_.f_mono));
     v->setProperty("f_lofi",            float(data_.f_lofi));
 
@@ -422,10 +427,12 @@ void Clds::setStateInformation (const void* data, int sizeInBytes)
     data_.f_feedback    = jsonVar.getProperty("f_feedback"  , 0.1f);
     data_.f_reverb      = jsonVar.getProperty("f_reverb"    , 0.5f);
     data_.f_mode        = jsonVar.getProperty("f_mode"      , 0.0f);
-    data_.f_in_gain        = jsonVar.getProperty("f_in_gain", 0.0f);
+    data_.f_in_gain     = jsonVar.getProperty("f_in_gain", 0.0f);
+    data_.trig_or_freeze = jsonVar.getProperty("trig_or_freeze" , 0.0f);
 
     data_.f_mono        = jsonVar.getProperty("f_mono"      , 0.0f);
     data_.f_lofi        = jsonVar.getProperty("f_lofi"      , 0.0f);
+
 }
 
 

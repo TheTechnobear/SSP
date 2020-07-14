@@ -59,6 +59,7 @@ private:
 
 	enum Buttons {
 		B_FREEZE,
+		B_TRIGFREEZE,
 		// B_MONO,
 		// B_SILENCE,
 		// B_BYPASS,

@@ -43,11 +43,12 @@ struct CldsData {
         f_mono      = 0.0f;
         f_lofi      = 0.0f;
 
+        trig_or_freeze = 0.0f;
+
         processor.Init(
             block_mem, block_mem_sz,
             block_ccm, block_ccm_sz);
 
-        ltrig = false;
     }
 
     ~CldsData() {
@@ -71,12 +72,13 @@ struct CldsData {
     float f_reverb;
     float f_mode;
     float f_in_gain;
+    float trig_or_freeze;
 
     float f_mono;
     float f_lofi;
 
+
     clouds::GranularProcessor processor;
-    bool ltrig;
     clouds::ShortFrame* ibuf;
     clouds::ShortFrame* obuf;
     int iobufsz;
@@ -154,7 +156,7 @@ private:
     enum {
         I_LEFT,
         I_RIGHT,
-        I_TRIG,
+        I_TRIG, // also freeze depend on trig or freeze!
         I_VOCT,
         I_POS,
         I_SIZE,
