@@ -243,8 +243,8 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     for (int bidx = 0; bidx < buffer.getNumSamples(); bidx += n) {
 
 
-        float gain = (data_.f_in_gain * 2.0f);
-        float in_gain = constrain(1.0f + (gain * gain), 1.0f, 5.0f);
+        float gain = (data_.f_in_gain * 4.0f);
+        float in_gain = constrain(1.0f + (gain * gain), 1.0f, 17.0f);
 
         bool strum = false;
         for (int i = 0; i < n; i++) {

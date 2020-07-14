@@ -32,7 +32,7 @@ Pitch & Frequency are synonymous in this context. Rings actually uses pitches in
 Excitation choice - see below
 Models, I use a number to represent the models, 0,1,2 are the 'normal' modes, 3,4,5 are alternative modes.
 
-added In Gain, this allows the input signal to be amplified, 0 = no gain (1x), up to 1.0  = 5x
+added In Gain, this allows the input signal to be amplified, 0 = no gain (1x), up to 1.0  = 17x
 
 
 ## Excitation source
