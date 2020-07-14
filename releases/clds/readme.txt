@@ -1,6 +1,6 @@
 # Clds : Textural 
 ## Change Log
-1.0 Initial Release 
+1.0.0 Initial Release 
 
 ## Developer: TheTechnobear
 I develop these plugins for free, please consider supporting my efforts with a donation.
@@ -35,11 +35,11 @@ again, hopefully in the future they will be broken out to separate cvs.
 
 
 ## Differences
+Generally, I've tried to make as close as possible to the hardware module.
 
 Clouds hardware runs at 32kHZ sample rate, clds runs on Percussa runs at 48kHz.
 There is currently no lo-fi or mono mode.
 
-But generally, I've tried to make as close as possible 
 
 
 ## VST Input/Outputs
@@ -80,7 +80,7 @@ this will preserve the ordering, and so mean your SSP presets will be unaffected
 
 Play with the different modes - personally my favourite for 'general purpose' patching is looping delay :) 
 
-In Gain - 0.0 = no gain (or 1x) , 1.0 goes to 16x for very quiet signals, if you turn it up to much you will distort, 
+In Gain - 0.0 = no gain (or 1x) , 1.0 goes to 5x for very quiet signals, if you turn it up to much you will distort, 
 so listen carefully, and I'd recommend err'ing on the side of quiet.
 
 
