@@ -24,6 +24,8 @@ struct CldsData {
         obuf = new clouds::ShortFrame[iobufsz];
         block_mem = new uint8_t[block_mem_sz];
         block_ccm = new uint8_t[block_ccm_sz];
+        memset(block_mem, 0, sizeof(uint8_t)*block_mem_sz);
+        memset(block_ccm, 0, sizeof(uint8_t)*block_ccm_sz);
 
         f_freeze    = 0.0f;
         f_position  = 0.0f;
@@ -81,8 +83,10 @@ struct CldsData {
     clouds::ShortFrame* obuf;
     int iobufsz;
 
-    static constexpr unsigned block_mem_sz =  (118784 * 3) / 2; // 48k vs 32k    118784;
-    static constexpr unsigned block_ccm_sz =  ((65536 - 128) * 3 ) / 2 ; //65536 - 128;
+    static constexpr unsigned block_mem_sz =  118784;
+    static constexpr unsigned block_ccm_sz =  65536 - 128;
+    //static constexpr unsigned block_mem_sz =  (118784 * 3) / 2; // 48k vs 32k 
+    //static constexpr unsigned block_ccm_sz =  ((65536 - 128) * 3 ) / 2 ; 
     uint8_t* block_mem;
     uint8_t* block_ccm;
 };

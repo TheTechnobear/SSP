@@ -67,7 +67,7 @@ CldsEditor::CldsEditor (Clds& p)
 
 	params_[P_PITCH].value(processor_.data().f_pitch);
 	params_[P_MODE].value((int) processor_.data().f_mode);
-	params_[P_IN_GAIN].value((int) processor_.data().f_in_gain);
+	params_[P_IN_GAIN].value(processor_.data().f_in_gain);
 
 	params_[P_POS].active(paramActive_ 		== 0);
 	params_[P_SIZE].active(paramActive_ 	== 0);
@@ -238,7 +238,7 @@ void CldsEditor::parameterChanged (int index, float value) {
 			float v = processor_.data().f_in_gain + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
 			processor_.data().f_in_gain = v;
-			params_[P_PITCH].value(processor_.data().f_in_gain);
+			params_[P_IN_GAIN].value(processor_.data().f_in_gain);
 
 			if (value) activeParam_ = &params_[P_IN_GAIN];
 		}
@@ -567,5 +567,5 @@ void CldsEditor::resized()
 
 	setParamBounds(params_[P_PITCH], 	0, 2);
 	setParamBounds(params_[P_MODE], 	1, 2);
-	setParamBounds(params_[P_IN_GAIN], 	1, 3);
+	setParamBounds(params_[P_IN_GAIN], 	2, 2);
 }

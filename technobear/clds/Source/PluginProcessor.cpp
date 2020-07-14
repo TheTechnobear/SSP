@@ -216,8 +216,8 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     for (int bidx = 0; bidx < buffer.getNumSamples(); bidx += n) {
 
         bool trig = false;
-        float gain = (data_.f_in_gain * 2.0f);
-        float in_gain = constrain(1.0f + (gain * gain), 1.0f, 5.0f);
+        float gain = (data_.f_in_gain * 4.0f);
+        float in_gain = constrain(1.0f + (gain * gain), 1.0f, 17.0f);
 
         for (int i = 0; i < n; i++) {
 
@@ -249,6 +249,7 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         auto p = processor.mutable_parameters();
 
         float pitch     = data_.f_pitch + cv2Pitch(buffer.getSample(I_VOCT, bidx));
+        pitch = pitch + 1.50f; // SSP adapt?!
         float position  = data_.f_position + buffer.getSample(I_POS, bidx);
         float size      = data_.f_size + buffer.getSample(I_SIZE, bidx);
         float density   = ((data_.f_density + buffer.getSample(I_DENSITY, bidx)) + 1.0f ) / 2.0f;
@@ -372,7 +373,7 @@ void Clds::readFromJson() {
     data_.f_feedback    = jsonVar.getProperty("f_feedback"  , 0.1f);
     data_.f_reverb      = jsonVar.getProperty("f_reverb"    , 0.5f);
     data_.f_mode        = jsonVar.getProperty("f_mode"      , 0.0f);
-    data_.f_in_gain        = jsonVar.getProperty("f_in_gain", 0.0f);
+    data_.f_in_gain     = jsonVar.getProperty("f_in_gain"   , 0.0f);
 
     data_.f_mono        = jsonVar.getProperty("f_mono"      , 0.0f);
     data_.f_lofi        = jsonVar.getProperty("f_lofi"      , 0.0f);
@@ -422,7 +423,7 @@ void Clds::setStateInformation (const void* data, int sizeInBytes)
     data_.f_feedback    = jsonVar.getProperty("f_feedback"  , 0.1f);
     data_.f_reverb      = jsonVar.getProperty("f_reverb"    , 0.5f);
     data_.f_mode        = jsonVar.getProperty("f_mode"      , 0.0f);
-    data_.f_in_gain        = jsonVar.getProperty("f_in_gain", 0.0f);
+    data_.f_in_gain     = jsonVar.getProperty("f_in_gain"   , 0.0f);
 
     data_.f_mono        = jsonVar.getProperty("f_mono"      , 0.0f);
     data_.f_lofi        = jsonVar.getProperty("f_lofi"      , 0.0f);
