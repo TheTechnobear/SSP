@@ -65,7 +65,7 @@ private:
 		P_POS,
 		P_POLY,
 		P_MODEL,
-		P_NULL,
+		P_IN_GAIN,
 		P_MAX
 	};
 

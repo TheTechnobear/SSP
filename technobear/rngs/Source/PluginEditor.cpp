@@ -55,7 +55,7 @@ RngsEditor::RngsEditor (Rngs& p)
 	params_[P_POS].init("Pos");
 	params_[P_POLY].init("Poly", "%1.0f");
 	params_[P_MODEL].init("Model", "%1.0f");
-	params_[P_NULL].init("");
+	params_[P_IN_GAIN].init("InGain");
 
 	params_[P_PITCH].value(processor_.data().f_pitch);
 	params_[P_STRUCT].value(processor_.data().f_structure);
@@ -65,7 +65,7 @@ RngsEditor::RngsEditor (Rngs& p)
 	params_[P_POS].value(processor_.data().f_position);
 	params_[P_POLY].value(processor_.data().f_polyphony);
 	params_[P_MODEL].value(processor_.data().f_model);
-	//params_[P_NULL]
+	params_[P_IN_GAIN].value(processor_.data().f_in_gain);
 
 	altActive_ = 0;
 	params_[P_PITCH].active(!altActive_);
@@ -74,7 +74,7 @@ RngsEditor::RngsEditor (Rngs& p)
 	params_[P_DAMP].active(!altActive_);
 
 
-	for(unsigned i=0;i<B_MAX;i++) {
+	for(unsigned i=0;i<P_MAX;i++) {
 		addAndMakeVisible(params_[i]);
 	}
 }
@@ -190,7 +190,12 @@ void RngsEditor::parameterChanged (int index, float value) {
 		break;
 	case Percussa::sspEnc4:
 		if (altActive_) {
+			float v = processor_.data().f_in_gain + value / 100.0f;
+			v = constrain(v, 0.0f, 1.0f);
+			processor_.data().f_in_gain = v;
+			params_[P_IN_GAIN].value(processor_.data().f_in_gain);
 
+			if(value) activeParam_=&params_[P_IN_GAIN];
 		} else {
 			float v = processor_.data().f_damping + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
@@ -265,7 +270,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 			params_[P_POS].active(altActive_);
 			params_[P_POLY].active(altActive_);
 			params_[P_MODEL].active(altActive_);
-			params_[P_NULL].active(altActive_);
+			params_[P_IN_GAIN].active(altActive_);
 		}
 		break;
 	case Percussa::sspSwDown:
@@ -280,7 +285,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 			params_[P_POS].active(altActive_);
 			params_[P_POLY].active(altActive_);
 			params_[P_MODEL].active(altActive_);
-			params_[P_NULL].active(altActive_);
+			params_[P_IN_GAIN].active(altActive_);
 		}
 		break;
 	case Percussa::sspSwShiftL:
@@ -475,5 +480,5 @@ void RngsEditor::resized()
 	setParamBounds(params_[P_POS], 0, 1);
 	setParamBounds(params_[P_POLY], 1, 1);
 	setParamBounds(params_[P_MODEL], 2, 1);
-	setParamBounds(params_[P_NULL], 3, 1);
+	setParamBounds(params_[P_IN_GAIN], 3, 1);
 }

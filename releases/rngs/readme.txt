@@ -1,7 +1,8 @@
 # Rngs : Resonator 
 
 ## Change Log
-1.0 Initial Release 
+1.0.1 fix model persistence, add input gain, code re-org 
+1.0.0 Initial Release 
 
 ## Developer: TheTechnobear
 I develop these plugins for free, please consider supporting my efforts with a donation.
@@ -24,11 +25,14 @@ https://mutable-instruments.net/modules/rings/manual/
 
 ## Differences
 
+
+Generally, I've tried to make as close as possible to the hardware modules.
+
 Pitch & Frequency are synonymous in this context. Rings actually uses pitches internally not frequency ;) 
 Excitation choice - see below
 Models, I use a number to represent the models, 0,1,2 are the 'normal' modes, 3,4,5 are alternative modes.
 
-Generally, I've tried to make as close as possible 
+added In Gain, this allows the input signal to be amplified, 0 = no gain (1x), up to 1.0  = 5x
 
 
 ## Excitation source
@@ -85,6 +89,8 @@ this will preserve the ordering, and so mean your SSP presets will be unaffected
 Note the outputs are ODD and EVEN, not stereo pairs, and their 'usage' changes depending on 'poly' (as detailed in the manual).
 on the SSP we can simply sum these to one input on another module, and then use attenuation or a vca to mix.
 However, there is alot of fun to be had panning these in varying degrees.
+
+I highly recommend exciting Rngs with an external audio source (NOI/WTO/LFO), you can get all sorts of interesting sounds, that are not possible with internal exciter
 
 I only recommend using at 48Khz sample rate, as this is how the Rings code is designed.
 Using at other sample rates will lead to incorrect pitch, and possible other oddities.

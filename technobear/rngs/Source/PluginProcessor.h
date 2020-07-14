@@ -36,6 +36,8 @@ struct RngsData {
 
         f_trig = 0;
 
+        f_in_gain = 0.0f;
+
         in_level = 0.0f;
         kNoiseGateThreshold = 0.00003f;
 
@@ -85,6 +87,8 @@ struct RngsData {
     std::atomic<float>  f_internal_strum;
     std::atomic<float>  f_internal_exciter;
     std::atomic<float>  f_internal_note;
+
+    std::atomic<float>  f_in_gain;
 
     std::atomic<bool>   f_trig;
 

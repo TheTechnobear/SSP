@@ -242,9 +242,13 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     // SSP = 128 (@48k), so split up, so we read the control rate date every 16
     for (int bidx = 0; bidx < buffer.getNumSamples(); bidx += n) {
 
+
+        float gain = (data_.f_in_gain * 2.0f);
+        float in_gain = constrain(1.0f + (gain * gain), 1.0f, 5.0f);
+
         bool strum = false;
         for (int i = 0; i < n; i++) {
-            in[i] = out[i] = buffer.getSample(I_IN, bidx + i);
+            in[i] = out[i] = buffer.getSample(I_IN, bidx + i) * in_gain;
             bool trig = buffer.getSample(I_STRUM, bidx + i) > 0.5;
             if (trig != data_.f_trig && trig) {
                 strum = true;
@@ -373,6 +377,7 @@ void Rngs::writeToJson() {
     v->setProperty("f_internal_strum",      float(data_.f_internal_strum));
     v->setProperty("f_internal_exciter",    float(data_.f_internal_exciter));
     v->setProperty("f_internal_note",       float(data_.f_internal_note));
+    v->setProperty("f_in_gain",             float(data_.f_in_gain));
 
 
     FileOutputStream fileStream(f);
@@ -421,6 +426,7 @@ void Rngs::readFromJson() {
     data_.f_internal_strum = jsonVar.getProperty("f_internal_strum",1.0f);
     data_.f_internal_exciter = jsonVar.getProperty("f_internal_exciter",1.0f);
     data_.f_internal_note = jsonVar.getProperty("f_internal_note",0.0f);
+    data_.f_in_gain = jsonVar.getProperty("f_in_gain",0.0f);
     data_.f_trig=0.0f;
 
     // now initialialise with new data
@@ -454,6 +460,7 @@ void Rngs::getStateInformation (MemoryBlock& destData)
     v->setProperty("f_internal_strum",      float(data_.f_internal_strum));
     v->setProperty("f_internal_exciter",    float(data_.f_internal_exciter));
     v->setProperty("f_internal_note",       float(data_.f_internal_note));
+    v->setProperty("f_in_gain",             float(data_.f_in_gain));
 
 
     var jsonVar(v.get());
@@ -483,6 +490,8 @@ void Rngs::setStateInformation (const void* data, int sizeInBytes)
     data_.f_internal_strum = jsonVar.getProperty("f_internal_strum",1.0f);
     data_.f_internal_exciter = jsonVar.getProperty("f_internal_exciter",1.0f);
     data_.f_internal_note = jsonVar.getProperty("f_internal_note",0.0f);
+    data_.f_in_gain = jsonVar.getProperty("f_in_gain",0.0f);
+
     data_.f_trig=0.0f;
 
 
