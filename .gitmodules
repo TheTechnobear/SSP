@@ -7,3 +7,6 @@
 [submodule "mi"]
 	path = mi
 	url = https://github.com/TheTechnobear/mi.git
+[submodule "madronalib"]
+	path = madronalib
+	url = https://github.com/madronalabs/madronalib.git
