@@ -36,6 +36,32 @@ PmixEditor::PmixEditor (Pmix& p)
 	buttons_[B_WRITE_PR].init("WriPr");
 
 
+	inTracks_[0].init("In 1", &processor_.inputTrack(0));
+	inTracks_[1].init("In 2", &processor_.inputTrack(1));
+	inTracks_[2].init("In 3", &processor_.inputTrack(2));
+	inTracks_[3].init("In 4", &processor_.inputTrack(3));
+	inTracks_[4].init("In 5", &processor_.inputTrack(4));
+	inTracks_[5].init("In 6", &processor_.inputTrack(5));
+	inTracks_[6].init("In 7", &processor_.inputTrack(6));
+	inTracks_[7].init("In 8", &processor_.inputTrack(7));
+	for(unsigned i=0;i<PluginProcessor::I_MAX;i++) {
+		inTracks_.active[i]=true;
+	}
+
+	outTracks_[0].init("Main L", 	&processor_.outputTrack(0));
+	outTracks_[1].init("Main R", 	&processor_.outputTrack(1));
+	outTracks_[2].init("Aux 1 L", 	&processor_.outputTrack(2));
+	outTracks_[3].init("Aux 1 R", 	&processor_.outputTrack(3));
+	outTracks_[4].init("Aux 2 L", 	&processor_.outputTrack(4));
+	outTracks_[5].init("Aux 2 R", 	&processor_.outputTrack(5));
+	outTracks_[6].init("Aux 3 L", 	&processor_.outputTrack(6));
+	outTracks_[7].init("Aux 3 R", 	&processor_.outputTrack(7));
+
+	for(unsigned i=0;i<PluginProcessor::O_MAX;i++) {
+		outTracks_.active[i]=true;
+	}
+
+
 	// buttons_[B_FREEZE].active(processor_.data().f_freeze > 0.5);
 
 
@@ -102,12 +128,14 @@ void PmixEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEnc1:
 		switch (paramActive_) {
 		case 0 :  {
+			channelEncoder(0,value);
 			// float v = processor_.data().f_position + value / 100.0f;
 			// v = constrain(v, 0.0f, 1.0f);
 			// processor_.data().f_position = v;
 			// params_[P_POS].value(processor_.data().f_position);
 
 			// if (value) activeParam_ = &params_[P_POS];
+
 			break;
 		}
 		case 1 :  {
@@ -125,6 +153,7 @@ void PmixEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEnc2:
 		switch (paramActive_) {
 		case 0 :  {
+			channelEncoder(1,value);
 			break;
 		}
 		case 1 :  {
@@ -142,6 +171,7 @@ void PmixEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEnc3:
 		switch (paramActive_) {
 		case 0 :  {
+			channelEncoder(2,value);
 			break;
 		}
 		case 1 :  {
@@ -158,6 +188,7 @@ void PmixEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEnc4:
 		switch (paramActive_) {
 		case 0 :  {
+			channelEncoder(3,value);
 			break;
 		}
 		case 1 :  {
@@ -181,6 +212,7 @@ void PmixEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEncSw4:
 		break;
 	case Percussa::sspSw1:
+		channelButton(1,value);
 		// if (paramState_[index] != value && !value) {
 		// 	processor_.data().f_freeze =
 		// 	    ! processor_.data().f_freeze;
@@ -188,23 +220,30 @@ void PmixEditor::parameterChanged (int index, float value) {
 		// }
 		break;
 	case Percussa::sspSw2:
+		channelButton(2,value);
 		break;
 	case Percussa::sspSw3:
+		channelButton(3,value);
 		break;
 	case Percussa::sspSw4:
+		channelButton(4,value);
 		break;
 	case Percussa::sspSw5:
-		buttons_[B_HELP].active(value > 0.5);
+		channelButton(5,value);
+		// buttons_[B_HELP].active(value > 0.5);
 		break;
 	case Percussa::sspSw6:
+		channelButton(6,value);
 		break;
 	case Percussa::sspSw7:
-		buttons_[B_WRITE_PR].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
-			processor_.write();
-		}
+		channelButton(7,value);
+		// buttons_[B_WRITE_PR].active(value > 0.5);
+		// if (paramState_[index] != value && !value) {
+		// 	processor_.write();
+		// }
 		break;
 	case Percussa::sspSw8:
+		channelButton(8,value);
 		break;
 
 	case Percussa::sspSwLeft:
@@ -222,11 +261,13 @@ void PmixEditor::parameterChanged (int index, float value) {
 		}
 		break;
 	case Percussa::sspSwUp:
+	  	//TODO : non-latching
 		buttons_[B_UP].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
-			if (paramActive_ != 2) {
-				paramActive_ = (paramActive_ + 1 ) % 2;
-			}
+			activeTracks_=OUT_14;
+			// if (paramActive_ != 2) {
+			// 	paramActive_ = (paramActive_ + 1 ) % 2;
+			// }
 		}
 		break;
 	case Percussa::sspSwDown:
@@ -238,8 +279,24 @@ void PmixEditor::parameterChanged (int index, float value) {
 		}
 		break;
 	case Percussa::sspSwShiftL:
+	  	//TODO : non-latching
+		buttons_[B_SHIFTL].active(value > 0.5);
+		if (paramState_[index] != value && !value) {
+			activeTracks_=IN_14;
+			// if (paramActive_ != 2) {
+			// 	paramActive_ = (paramActive_ + 1 ) % 2;
+			// }
+		}
 		break;
 	case Percussa::sspSwShiftR:
+	  	//TODO : non-latching
+		buttons_[B_SHIFTR].active(value > 0.5);
+		if (paramState_[index] != value && !value) {
+			activeTracks_=IN_58;
+			// if (paramActive_ != 2) {
+			// 	paramActive_ = (paramActive_ + 1 ) % 2;
+			// }
+		}
 		break;
 	default:
 		break;
@@ -253,6 +310,58 @@ void PmixEditor::parameterChanged (int index, float value) {
 	paramState_[index] = value;
 }
 
+
+void PmixEditor::channelEncoder(unsigned c, float v) {
+	TrackSelect ts=activeTracks_;
+	if(paramState_[Percussa::sspSwShiftR:]) {
+		ts= IN_14;
+	} else if (paramState_[Percussa::sspSwUp:]) {
+		ts= OUT_14;
+	} else if (paramState_[Percussa::sspSwShiftR:]) {
+		ts= IN_58;
+	}
+
+	switch(ts) {
+		case IN_14: {
+			inTracks_[c].encoder(v);
+			break;
+		}
+		case IN_58: {
+			inTracks_[c+4].encoder(v);
+			break;
+		}
+		case OUT_14: {
+			outTracks_[c].encoder(v);
+			break;
+		}
+	}
+}
+
+	
+void PmixEditor::channelButton(unsigned c, bool v) {
+	TrackSelect ts=activeTracks_;
+	if(paramState_[Percussa::sspSwShiftR:]) {
+		ts= IN_14;
+	} else if (paramState_[Percussa::sspSwUp:]) {
+		ts= OUT_14;
+	} else if (paramState_[Percussa::sspSwShiftR:]) {
+		ts= IN_58;
+	}
+
+	switch(ts) {
+		case IN_14: {
+		case IN_58: {
+			inTracks_[c].button(v);
+			break;
+		}
+		case OUT_14: {
+			outTracks_[c].button(v);
+			break;
+		}
+	}
+}
+
+
 void PmixEditor::drawHelp(Graphics & g) {
 
 	unsigned x = 900;
@@ -264,19 +373,18 @@ void PmixEditor::drawHelp(Graphics & g) {
 
 	y = yText;
 	g.setFont(Font(Font::getDefaultMonospacedFontName(), 18, Font::plain));
-	// g.drawSingleLineText("VST IN[1] : IN Left", x, y);	y += space;
-	// g.drawSingleLineText("VST IN[2] : IN Right", x, y);	y += space;
-	// g.drawSingleLineText("VST IN[3] : Trig/Freeze", x, y);	y += space;
-	// g.drawSingleLineText("VST IN[4] : V/Oct", x, y);		y += space;
-	// g.drawSingleLineText("VST IN[5] : Position", x, y);	y += space;
-	// g.drawSingleLineText("VST IN[6] : Size", x, y);	y += space;
-	// g.drawSingleLineText("VST IN[7] : Density", x, y);	y += space;
-	// g.drawSingleLineText("VST IN[8] : Texture", x, y);	y += space;
+	for(unsigned i=0;i<PluginProcessor::I_MAX;i++) {
+		String s=String("VST IN[")+String(i)+String("] : " + processor_.getInputChannelName(i));
+		g.drawSingleLineText(s, x, y);	y += space;
+	}
 
 	x = x + 300;
 	y = yText;
-	// g.drawSingleLineText("VST OUT[1] : OUT Left", x, y);		y += space;
-	// g.drawSingleLineText("VST OUT[2] : Out Right", x, y);	y += space;
+
+	for(unsigned i=0;i<PluginProcessor::O_MAX;i++) {
+		String s=String("VST OUT[")+String(i)+String("] : " + processor_.getOutputChannelName(i));
+		g.drawSingleLineText(s, x, y);	y += space;
+	}
 }
 
 void PmixEditor::drawPmix(Graphics & g) {
@@ -424,5 +532,26 @@ void PmixEditor::resized()
 	setButtonBounds(buttons_[B_DOWN], 	1, 5);
 	setButtonBounds(buttons_[B_RIGHT], 	1, 6);
 
-	// setParamBounds(params_[P_POS], 		0, 0);
+	// params?
+
+
+	const unsigned space = 20;
+	const unsigned inStart = space;
+	const unsigned w = 80;
+	const unsigned h = 200; //?
+	const unsigned y = 100;
+
+	const unsigned outStart = 900;
+
+	for(unsigned i=i<PluginProcessor::I_MAX;i++) {
+		unsigned x = inStart + (i * (space+w));
+		inTracks_.setBounds(x, y, w, h);
+	}
+
+	for(unsigned i=i<PluginProcessor::O_MAX;i++) {
+		unsigned x = outStart + (i * (space+w));
+		outTracks_.setBounds(x, y, w, h);
+	}
+
+
 }

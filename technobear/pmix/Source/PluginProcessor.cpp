@@ -3,6 +3,7 @@
 #include "PluginEditor.h"
 #include "Percussa.h"
 
+#include <cmath>
 
 static constexpr unsigned NUM_PROGRAM_SLOTS = 20;
 
@@ -15,6 +16,8 @@ static const char*  presetProgramDir = "/media/linaro/SYNTHOR/plugins.presets/pm
 Pmix::Pmix()
 {
     memset(params_, 0, sizeof(params_));
+    initTracks();
+
     File f(presetProgramDir);
     if (!f.isDirectory()) {
         if (f.exists()) {
@@ -78,21 +81,24 @@ const String Pmix::getParameterText (int index)
     return String();
 }
 
+
 const String Pmix::getInputChannelName (int channelIndex) const
 {
-    switch (channelIndex) {
-    case I_LEFT:        { return String("In L");}
-    case I_RIGHT:       { return String("In R");}
-    }
-    return String("Uknown:") + String (channelIndex + 1);
+    return String("IN ") + String(channelIndex + 1);
 }
 
 const String Pmix::getOutputChannelName (int channelIndex) const
 {
 
     switch (channelIndex) {
-    case O_LEFT:        { return String("Out L");}
-    case O_RIGHT:       { return String("Out R");}
+    case O_MAIN_L:        { return String("Out L");}
+    case O_MAIN_R:        { return String("Out R");}
+    case O_AUX_1_L:       { return String("Aux 1 L");}
+    case O_AUX_1_R:       { return String("Aux 1 R");}
+    case O_AUX_2_L:       { return String("Aux 2 L");}
+    case O_AUX_2_R:       { return String("Aux 2 R");}
+    case O_AUX_3_L:       { return String("Aux 3 L");}
+    case O_AUX_3_R:       { return String("Aux 3 R");}
     }
     return String("Uknown:") + String (channelIndex + 1);
 }
@@ -176,6 +182,7 @@ void Pmix::changeProgramName (int index, const String& newName)
 
 void Pmix::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    inputBuffers_.setSize(I_MAX, samplesPerBlock);
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
     // this is called by the SSP's software right after loading
@@ -188,23 +195,99 @@ void Pmix::releaseResources()
     // spare memory, etc.
 }
 
+
+// from : https://www.kvraudio.com/forum/viewtopic.php?t=148865
+
+// -3dB at center, sin/cos taper
+// LeftOut = cos(pan*pi/2) * MonoIn;
+// RightOut = sin(pan*pi/2) * MonoIn;
+
+// -3db at center, sqrt taper
+// LeftOut = sqrt(pan) * MonoIn;
+// RightOut = sqrt(1-pan) * MonoIn;
+
+// -6db at center, linear taper
+// LeftOut = pan * MonoIn;
+// RightOut = (1-pan) * MonoIn;
+
+// to do: optimise, use a sin lookup table
+float panGain(bool left, float p) {
+    static constexpr float PIdiv2 = M_PI / 2.0f;
+    float pan = (p + 1.0f) / 2.0f;
+    if (left) {
+        return std::cosf(pan * PIdiv2);
+    }
+    return std::sinf(pan * PIdiv2);
+}
+
 void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
+    unsigned n = buffer.getNumSamples();
+    bool soloed = false;
 
-    // float pitch     = data.f_pitch + cv2Pitch(buffer.getSample(I_VOCT, 0));
+    for (unsigned ich = 0; ich < I_MAX; ich++) {
+        //process input channels
+        unsigned intr = inTracks_[ich].dummy_ ? inTracks_[ich].follows_ : ich;
+
+        soloed |= inTracks_[intr].solo_;
+        float inGain = inTracks_[intr].gain_ + inTracks_[intr].level_[0]; // MASTER
+        auto inbuf = buffer.getReadPointer(ich);
+        inputBuffers_.copyFrom(ich, 0, inbuf, n, inGain);
+
+        float inRMS = inputBuffers_.getRMSLevel(ich, 0, n);
+        // notes:
+        // mute/solo is not applied until building outputs
+        // as these are mono, pan only gets applied at output stage
+
+        // if we start allowing stereo input, then we will add pan at this stage!
+        // this probably means we assume all channels are stereo, and just duplicate mono inputs.
+        // hmm: this probably is the way forward .. but need to think it thru,
+        // since we need to take care for source of input
+    }
 
 
-    // for (int bidx = 0; bidx < buffer.getNumSamples(); bidx++) {
-    //     float l = buffer.getSample(I_LEFT, bidx);
-    //     float r = buffer.getSample(I_RIGHT, bidx);
-    // }
+    // outputs are currently all stereo, so we have to add panning
+    // if were start allow mono aux channels this will change.
+    for (unsigned och = 0; och < O_MAX / 2; och++) {
+        unsigned outtr = och * 2;
+        float lRMS = 0.0f;
+        float rRMS = 0.0f;
+        // mute output channel
+        if (outTracks_[outtr].mute_) {
+            buffer.applyGain(och, 0, n, 0.0f);
+            buffer.applyGain(och + 1, 0, n, 0.0f);
+            lRMS = 0.0f;
+            rRMS = 0.0f;
+        } else {
+            float outGain = outTracks_[outtr].gain_ * outTracks_[outtr].level_[och];
+            float lOutGain = panGain(true,  outTracks_[outtr].pan_);
+            float rOutGain = panGain(false, outTracks_[outtr].pan_);
 
-    // process
+            // process each input channel
+            for (unsigned ich = 0; ich < I_MAX; ich++) {
 
-    // for (int bidx = 0; bidx < buffer.getNumSamples(); bidx++) {
-    //     buffer.setSample(I_LEFT, l);
-    //     buffer.setSample(I_RIGHT, r);
-    // }
+                unsigned intr = inTracks_[ich].dummy_ ? inTracks_[ich].follows_ : ich;
+                bool muted = inTracks_[intr].mute_ ||   (soloed && ! inTracks_[intr].solo_);
+                if (!muted) {
+                    float inGain = outtr > 0 ? (float) inTracks_[intr].level_[outtr] : 1.0f; // master already applied
+                    float lInGain = panGain(true, inTracks_[intr].pan_);
+                    float rInGain = panGain(false, inTracks_[intr].pan_);
+
+                    auto inbuf = buffer.getReadPointer(ich);
+                    float lGain = (inGain * outGain * lOutGain * lInGain);
+                    float rGain = (inGain * outGain * rOutGain * rInGain);
+
+                    buffer.addFrom(outtr        , 0, inbuf, n, lGain);
+                    buffer.addFrom(outtr + 1    , 0, inbuf, n, rGain);
+                }
+            }
+            // all inputs handled.
+
+            // note: at this stage, not allowing outputs to feed to other outputs!
+            float lRMS = inputBuffers_.getRMSLevel(outtr    , 0, n);
+            float rRMS = inputBuffers_.getRMSLevel(outtr + 1, 0, n);
+        }
+    }
 }
 
 bool Pmix::hasEditor() const
@@ -320,6 +403,20 @@ String Pmix::fileFromIdx(int idx, bool& found) {
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new Pmix();
+}
+
+
+void Pmix::initTracks() {
+    // outTracks_[0]// main master
+    outTracks_[1].makeFollow(0);
+    // outTracks_[2]// aux1
+    outTracks_[3].makeFollow(1);
+    // outTracks_[3]// aux1
+    outTracks_[4].makeFollow(3);
+    // outTracks_[5]// aux1
+    outTracks_[5].makeFollow(5);
+    // outTracks_[6]// aux1
+    outTracks_[7].makeFollow(6);
 }
 
 

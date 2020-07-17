@@ -51,6 +51,7 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/SSPChannel_5cefdcdc.o \
   $(OBJDIR)/SSPButton_411115c3.o \
   $(OBJDIR)/SSPParam_8652fc66.o \
   $(OBJDIR)/PluginProcessor_a059e380.o \
@@ -85,6 +86,11 @@ clean:
 strip:
 	@echo Stripping pmix
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
+
+$(OBJDIR)/SSPChannel_5cefdcdc.o: ../../Source/SSPChannel.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling SSPChannel.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/SSPButton_411115c3.o: ../../Source/SSPButton.cpp
 	-@mkdir -p $(OBJDIR)

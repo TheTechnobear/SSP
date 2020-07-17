@@ -46,17 +46,30 @@ private:
 	};
 
 	enum Buttons {
-		// B_FREEZE,
-		B_HELP,
-		B_WRITE_PR,
+		// B_MUTE_1,
+		// B_MUTE_2,
+		// B_MUTE_3,
+		// B_MUTE_4,
+		// B_IN_14
+		B_UP, // B_OUT_14
+		// B_IN_58
 
-		B_UP,
+		// B_SOLO_1,
+		// B_SOLO_2,
+		// B_SOLO_3,
+		// B_SOLO_4,
 		B_DOWN,
 		B_LEFT,
 		B_RIGHT,
 
+		B_HELP,
+		B_WRITE_PR,
+
 		B_MAX
 	};
+
+	void channelEncoder(unsigned c, float v);
+	void channelButton(unsigned c, bool v);
 
 	SSPButton buttons_[B_MAX];
 	SSPParam  params_[P_MAX];
@@ -67,7 +80,17 @@ private:
 	SSPParam* 	activeParam_ = nullptr;
 	unsigned 	activeEncIdx_ = 0;
 	unsigned  	paramActive_ = 0;
-	bool paramState_[Percussa::sspLast];
+	bool 		paramState_[Percussa::sspLast];
+
+	enum TrackSelect {
+		IN_14,
+		IN_58,
+		OUT_14
+	} activeTracks_ ;
+
+
+	SSPChannel inTracks_[PluginProcessor::I_MAX];
+	SSPChannel outTracks_[PluginProcessor::O_MAX];
 
 	static constexpr unsigned PARAM_COUNTER = 20;
 	unsigned activeParamCount_ = 0;

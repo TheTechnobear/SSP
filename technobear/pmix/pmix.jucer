@@ -12,6 +12,8 @@
               companyName="Technobear" companyWebsite="www.technobear.com">
   <MAINGROUP id="LI9Efo" name="pmix">
     <GROUP id="{C0553C7B-09BA-4FC3-4E85-F32F355F9FF1}" name="Source">
+      <FILE id="QyQYM5" name="SSPChannel.cpp" compile="1" resource="0" file="Source/SSPChannel.cpp"/>
+      <FILE id="Fj6eel" name="SSPChannel.h" compile="0" resource="0" file="Source/SSPChannel.h"/>
       <FILE id="hUbCqo" name="SSPButton.cpp" compile="1" resource="0" file="Source/SSPButton.cpp"/>
       <FILE id="cY4fNf" name="SSPButton.h" compile="0" resource="0" file="Source/SSPButton.h"/>
       <FILE id="Hc6jZY" name="SSPParam.cpp" compile="1" resource="0" file="Source/SSPParam.cpp"/>
