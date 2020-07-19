@@ -5,6 +5,7 @@
 
 #include "SSPButton.h"
 #include "SSPParam.h"
+#include "SSPChannel.h"
 
 class PmixEditor  : public AudioProcessorEditor,
 	public AudioProcessorListener,
@@ -46,20 +47,22 @@ private:
 	};
 
 	enum Buttons {
-		// B_MUTE_1,
-		// B_MUTE_2,
-		// B_MUTE_3,
-		// B_MUTE_4,
-		// B_IN_14
-		B_UP, // B_OUT_14
-		// B_IN_58
+		B_A_1,  	// mute
+		B_A_2,
+		B_A_3,
+		B_A_4,
 
-		// B_SOLO_1,
-		// B_SOLO_2,
-		// B_SOLO_3,
-		// B_SOLO_4,
-		B_DOWN,
+		B_SHIFTR, 	// in14
+		B_UP, 		// out 
+		B_SHIFTL, 	// in58
+
+		B_B_1, 		// solo
+		B_B_2,
+		B_B_3,
+		B_B_4,
+
 		B_LEFT,
+		B_DOWN,
 		B_RIGHT,
 
 		B_HELP,
@@ -69,7 +72,8 @@ private:
 	};
 
 	void channelEncoder(unsigned c, float v);
-	void channelButton(unsigned c, bool v);
+	void channelButtonA(unsigned c, bool v);
+	void channelButtonB(unsigned c, bool v);
 
 	SSPButton buttons_[B_MAX];
 	SSPParam  params_[P_MAX];
@@ -89,8 +93,16 @@ private:
 	} activeTracks_ ;
 
 
-	SSPChannel inTracks_[PluginProcessor::I_MAX];
-	SSPChannel outTracks_[PluginProcessor::O_MAX];
+	// this includes non-channel modes!
+    enum ButMode {
+        BM_MUTESOLO,
+        // BM_HPF,
+        BM_MISC,
+        BM_MAX
+    } butMode_;
+
+	SSPChannel inTracks_[Pmix::I_MAX];
+	SSPChannel outTracks_[Pmix::O_MAX];
 
 	static constexpr unsigned PARAM_COUNTER = 20;
 	unsigned activeParamCount_ = 0;

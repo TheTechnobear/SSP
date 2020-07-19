@@ -8,6 +8,7 @@
 profile
 **/build/*
 build
+err.txt
 
 **/*.sublime-workspace
 cmake-build*/

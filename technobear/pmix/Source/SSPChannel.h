@@ -8,7 +8,7 @@
 class SSPChannel: public Component
 {
 public:
-    SSPChannel() data_(nullptr),active_(false) {;}
+    SSPChannel() : data_(nullptr),active_(false) {;}
     void init(const String& label, TrackData* data)  {
         label_=label;
         data_=data;
@@ -20,7 +20,8 @@ public:
     }
     bool active() { return active_;}
 
-    void button(bool b);
+    void buttonA(bool b);
+    void buttonB(bool b);
     void encoder(float e);
 
     enum EncMode {
@@ -33,10 +34,9 @@ public:
     };
 
     enum ButMode {
-        BM_MUTE,
-        BM_SOLO,
+        BM_MUTESOLO,
         // BM_HPF,
-        NM_MAX
+        BM_MAX
     };
 
     void buttonMode(ButMode m);
@@ -45,9 +45,9 @@ public:
 private:
 
     EncMode encMode_=EM_LEVEL;
-    ButMode butMode_=BM_MUTE;
+    ButMode butMode_=BM_MUTESOLO;
     String label_;
-    TrackData_* data_=nullptr;
+    TrackData* data_=nullptr;
     bool active_=false;
 
     void paint(Graphics &g);

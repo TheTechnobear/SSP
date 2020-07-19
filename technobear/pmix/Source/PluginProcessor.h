@@ -39,8 +39,15 @@ struct TrackData {
     std::atomic<float>  gain_;   
     std::atomic<bool>   mute_; 
     std::atomic<bool>   solo_; 
+    std::atomic<float>  rms_;
+
+    // only used by processor
     bool                dummy_;
-    unsigned            follows_; // dummy 
+    unsigned            follows_; // dummy
+    static constexpr    unsigned MAX_RMS = 1000 ; // 1000 / (48000/16)  = 1 block = .333 mS, we want ~ 300mS 
+    unsigned            rmsHead_=0;
+    unsigned            rmsSum_=0;
+    float               rmsHistory_[MAX_RMS];
 };
 
 

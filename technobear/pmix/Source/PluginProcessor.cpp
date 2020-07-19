@@ -183,10 +183,27 @@ void Pmix::changeProgramName (int index, const String& newName)
 void Pmix::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     inputBuffers_.setSize(I_MAX, samplesPerBlock);
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
-    // this is called by the SSP's software right after loading
-    // the plugin and before it starts calling processBlock below
+
+    // reset the RMS 
+    for (unsigned ich = 0; ich < I_MAX; ich++) {
+        auto& d = inTracks_[ich];
+        d.rms_=0.0f;
+        d.rmsHead_=0;
+        d.rmsSum_=0.0f;
+        for(unsigned i=0;i<TrackData::MAX_RMS;i++) {
+            d.rmsHistory_[i]=0.0f;
+        }
+    }
+
+    for (unsigned och = 0; och < O_MAX; och++) {
+        auto& d = outTracks_[och];
+        d.rms_=0.0f;
+        d.rmsHead_=0;
+        d.rmsSum_=0.0f;
+        for(unsigned i=0;i<TrackData::MAX_RMS;i++) {
+            d.rmsHistory_[i]=0.0f;
+        }
+    }
 }
 
 void Pmix::releaseResources()
@@ -235,6 +252,13 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         inputBuffers_.copyFrom(ich, 0, inbuf, n, inGain);
 
         float inRMS = inputBuffers_.getRMSLevel(ich, 0, n);
+        
+        auto& trd= inTracks_[ich];
+        trd.rmsSum_-=trd.rmsHistory_[trd.rmsHead_];
+        trd.rmsHistory_[trd.rmsHead_]=inRMS;
+        trd.rmsHead_=(trd.rmsHead_ + 1) % TrackData::MAX_RMS;        
+        trd.rms_= trd.rmsSum_ / TrackData::MAX_RMS;
+
         // notes:
         // mute/solo is not applied until building outputs
         // as these are mono, pan only gets applied at output stage
@@ -284,8 +308,16 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
             // all inputs handled.
 
             // note: at this stage, not allowing outputs to feed to other outputs!
-            float lRMS = inputBuffers_.getRMSLevel(outtr    , 0, n);
-            float rRMS = inputBuffers_.getRMSLevel(outtr + 1, 0, n);
+            lRMS = inputBuffers_.getRMSLevel(outtr    , 0, n);
+            rRMS = inputBuffers_.getRMSLevel(outtr + 1, 0, n);
+        }
+
+        for(unsigned ot=0;ot<2;ot++) {
+            auto& trd= outTracks_[outtr + ot];
+            trd.rmsSum_-=trd.rmsHistory_[trd.rmsHead_];
+            trd.rmsHistory_[trd.rmsHead_]= (ot == 0 ? lRMS : rRMS);
+            trd.rmsHead_=(trd.rmsHead_ + 1) % TrackData::MAX_RMS;        
+            trd.rms_= trd.rmsSum_ / TrackData::MAX_RMS;
         }
     }
 }
