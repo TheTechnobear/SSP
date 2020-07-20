@@ -44,9 +44,9 @@ struct TrackData {
     // only used by processor
     bool                dummy_;
     unsigned            follows_; // dummy
-    static constexpr    unsigned MAX_RMS = 1000 ; // 1000 / (48000/16)  = 1 block = .333 mS, we want ~ 300mS 
+    static constexpr    unsigned MAX_RMS = 100 ; // 1000 / (48000/129)  = 1 block = 2.8 mS, we want ~ 300mS 
     unsigned            rmsHead_=0;
-    unsigned            rmsSum_=0;
+    float               rmsSum_=0.0f;
     float               rmsHistory_[MAX_RMS];
 };
 
@@ -159,6 +159,7 @@ private:
     float params_[Percussa::sspLast];
 
     AudioSampleBuffer inputBuffers_;
+    AudioSampleBuffer outputBuffers_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Pmix)
 };

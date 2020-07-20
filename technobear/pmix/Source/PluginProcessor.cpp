@@ -183,25 +183,26 @@ void Pmix::changeProgramName (int index, const String& newName)
 void Pmix::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     inputBuffers_.setSize(I_MAX, samplesPerBlock);
+    outputBuffers_.setSize(O_MAX, samplesPerBlock);
 
-    // reset the RMS 
+    // reset the RMS
     for (unsigned ich = 0; ich < I_MAX; ich++) {
         auto& d = inTracks_[ich];
-        d.rms_=0.0f;
-        d.rmsHead_=0;
-        d.rmsSum_=0.0f;
-        for(unsigned i=0;i<TrackData::MAX_RMS;i++) {
-            d.rmsHistory_[i]=0.0f;
+        d.rms_ = 0.0f;
+        d.rmsHead_ = 0;
+        d.rmsSum_ = 0.0f;
+        for (unsigned i = 0; i < TrackData::MAX_RMS; i++) {
+            d.rmsHistory_[i] = 0.0f;
         }
     }
 
     for (unsigned och = 0; och < O_MAX; och++) {
         auto& d = outTracks_[och];
-        d.rms_=0.0f;
-        d.rmsHead_=0;
-        d.rmsSum_=0.0f;
-        for(unsigned i=0;i<TrackData::MAX_RMS;i++) {
-            d.rmsHistory_[i]=0.0f;
+        d.rms_ = 0.0f;
+        d.rmsHead_ = 0;
+        d.rmsSum_ = 0.0f;
+        for (unsigned i = 0; i < TrackData::MAX_RMS; i++) {
+            d.rmsHistory_[i] = 0.0f;
         }
     }
 }
@@ -252,12 +253,13 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         inputBuffers_.copyFrom(ich, 0, inbuf, n, inGain);
 
         float inRMS = inputBuffers_.getRMSLevel(ich, 0, n);
-        
-        auto& trd= inTracks_[ich];
-        trd.rmsSum_-=trd.rmsHistory_[trd.rmsHead_];
-        trd.rmsHistory_[trd.rmsHead_]=inRMS;
-        trd.rmsHead_=(trd.rmsHead_ + 1) % TrackData::MAX_RMS;        
-        trd.rms_= trd.rmsSum_ / TrackData::MAX_RMS;
+
+        auto& trd = inTracks_[ich];
+        trd.rmsSum_ -= trd.rmsHistory_[trd.rmsHead_];
+        trd.rmsHistory_[trd.rmsHead_] = inRMS;
+        trd.rmsSum_ += trd.rmsHistory_[trd.rmsHead_];
+        trd.rmsHead_ = (trd.rmsHead_ + 1) % TrackData::MAX_RMS;
+        trd.rms_ = trd.rmsSum_ / TrackData::MAX_RMS;
 
         // notes:
         // mute/solo is not applied until building outputs
@@ -276,10 +278,11 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         unsigned outtr = och * 2;
         float lRMS = 0.0f;
         float rRMS = 0.0f;
+
+        outputBuffers_.applyGain(och, 0, n, 0.0f);
+        outputBuffers_.applyGain(och + 1, 0, n, 0.0f);
         // mute output channel
         if (outTracks_[outtr].mute_) {
-            buffer.applyGain(och, 0, n, 0.0f);
-            buffer.applyGain(och + 1, 0, n, 0.0f);
             lRMS = 0.0f;
             rRMS = 0.0f;
         } else {
@@ -297,28 +300,34 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
                     float lInGain = panGain(true, inTracks_[intr].pan_);
                     float rInGain = panGain(false, inTracks_[intr].pan_);
 
-                    auto inbuf = buffer.getReadPointer(ich);
+                    auto inbuf = inputBuffers_.getReadPointer(ich);
                     float lGain = (inGain * outGain * lOutGain * lInGain);
                     float rGain = (inGain * outGain * rOutGain * rInGain);
 
-                    buffer.addFrom(outtr        , 0, inbuf, n, lGain);
-                    buffer.addFrom(outtr + 1    , 0, inbuf, n, rGain);
+                    outputBuffers_.addFrom(outtr        , 0, inbuf, n, lGain);
+                    outputBuffers_.addFrom(outtr + 1    , 0, inbuf, n, rGain);
                 }
             }
             // all inputs handled.
 
             // note: at this stage, not allowing outputs to feed to other outputs!
-            lRMS = inputBuffers_.getRMSLevel(outtr    , 0, n);
-            rRMS = inputBuffers_.getRMSLevel(outtr + 1, 0, n);
+            lRMS = outputBuffers_.getRMSLevel(outtr    , 0, n);
+            rRMS = outputBuffers_.getRMSLevel(outtr + 1, 0, n);
         }
 
-        for(unsigned ot=0;ot<2;ot++) {
-            auto& trd= outTracks_[outtr + ot];
-            trd.rmsSum_-=trd.rmsHistory_[trd.rmsHead_];
-            trd.rmsHistory_[trd.rmsHead_]= (ot == 0 ? lRMS : rRMS);
-            trd.rmsHead_=(trd.rmsHead_ + 1) % TrackData::MAX_RMS;        
-            trd.rms_= trd.rmsSum_ / TrackData::MAX_RMS;
+        for (unsigned ot = 0; ot < 2; ot++) {
+            auto& trd = outTracks_[outtr + ot];
+            trd.rmsSum_ -= trd.rmsHistory_[trd.rmsHead_];
+            trd.rmsHistory_[trd.rmsHead_] = (ot == 0 ? lRMS : rRMS);
+            trd.rmsSum_ += trd.rmsHistory_[trd.rmsHead_];
+            trd.rmsHead_ = (trd.rmsHead_ + 1) % TrackData::MAX_RMS;
+            trd.rms_ = trd.rmsSum_ / TrackData::MAX_RMS;
         }
+    }
+
+    for(int och=0;och<O_MAX;och++) {
+        auto buf = outputBuffers_.getReadPointer(och);
+        buffer.copyFrom(och, 0, buf, n, 1.0);
     }
 }
 

@@ -60,6 +60,7 @@ PmixEditor::PmixEditor (Pmix& p)
 	inTracks_[7].init("In 8", &processor_.inputTrack(7));
 	for (unsigned i = 0; i < Pmix::I_MAX; i++) {
 		inTracks_[i].active(true);
+		addAndMakeVisible(inTracks_[i]);
 	}
 
 	outTracks_[0].init("Main L", 	&processor_.outputTrack(0));
@@ -73,7 +74,9 @@ PmixEditor::PmixEditor (Pmix& p)
 
 	for (unsigned i = 0; i < Pmix::O_MAX; i++) {
 		outTracks_[i].active(true);
+		addAndMakeVisible(outTracks_[i]);
 	}
+
 
 
 	butMode_ = BM_MUTESOLO;
@@ -641,11 +644,11 @@ void PmixEditor::resized()
 	// params?
 
 
-	const unsigned space = 20;
+	const unsigned space = 15;
 	const unsigned inStart = space;
-	const unsigned w = 80;
-	const unsigned h = 200; //?
-	const unsigned y = 100;
+	const unsigned w = 60;
+	const unsigned h = 250; //?
+	const unsigned y = 50;
 
 	const unsigned outStart = 900;
 
