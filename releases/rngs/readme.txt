@@ -1,6 +1,9 @@
 # Rngs : Resonator 
 
 ## Change Log
+1.1.0 requires new ssp firmware ! 
+auto detection of audio/strum/voct, 
+
 1.0.1 fix model persistence, add input gain, code re-org 
 1.0.0 Initial Release 
 
@@ -10,11 +13,12 @@ https://ko-fi.com/thetechnobear
 
 
 ## Installation
-copy the plugins/rngs.so to /media/linaro/SYNTHOR/plugins
+copy the plugins/*.so to sdcard /plugins
 
 ## Optional Installation
-copy the presets to /media/linaro/SYNTHOR/
+copy the plugins.presets/* to  sdcard /plugins/plugins.preset 
 (same folder structure)
+
 
 
 ## General Usage 
