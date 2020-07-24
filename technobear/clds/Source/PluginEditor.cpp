@@ -30,7 +30,6 @@ CldsEditor::CldsEditor (Clds& p)
 
 	buttons_[B_HELP].init("?");
 	buttons_[B_FREEZE].init("Frze");
-	buttons_[B_TRIGFREEZE].init("[T]/F");
 	buttons_[B_UP].init("+EN");
 	buttons_[B_DOWN].init("-EN");
 	buttons_[B_LEFT].init("-PG");
@@ -40,11 +39,6 @@ CldsEditor::CldsEditor (Clds& p)
 
 	buttons_[B_FREEZE].active(processor_.data().f_freeze > 0.5);
 
-    if(processor_.data().trig_or_freeze)  {
-        buttons_[B_TRIGFREEZE].label("T/[F]");
-    } else {
-        buttons_[B_TRIGFREEZE].label("[T]/F");
-    }
 
 	for (int i = 0; i < B_MAX; i++) {
 		addAndMakeVisible(buttons_[i]);
@@ -302,17 +296,6 @@ void CldsEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSw2:
 		break;
 	case Percussa::sspSw3:
-		buttons_[B_TRIGFREEZE].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
-			processor_.data().trig_or_freeze =
-			    ! processor_.data().trig_or_freeze;
-
-			if(processor_.data().trig_or_freeze)  {
-				buttons_[B_TRIGFREEZE].label("T/[F]");
-			} else {
-				buttons_[B_TRIGFREEZE].label("[T]/F");
-			}
-		}
 		break;
 	case Percussa::sspSw4:
 		break;
@@ -565,7 +548,6 @@ void CldsEditor::resized()
 	setMenuBounds(recBtn_, 3);
 
 	setButtonBounds(buttons_[B_FREEZE], 0, 0);
-	setButtonBounds(buttons_[B_TRIGFREEZE], 0, 2);
 	setButtonBounds(buttons_[B_UP], 	0, 5);
 
 	setButtonBounds(buttons_[B_HELP], 	1, 0);

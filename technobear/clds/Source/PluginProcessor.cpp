@@ -64,11 +64,33 @@ float Clds::getParameter (int index)
 
 void Clds::setParameter (int index, float newValue)
 {
-    // SSP currently sends control information as parameters
-    // see Percussa.h for more info about the parameters below
-
-    if (index < Percussa::sspLast) params_[index] = newValue;
-    AudioProcessor::sendParamChangeMessageToListeners(index, newValue);
+    // this will have to change... as the +/-1 is larger than before
+    // current idea is to move away from sendParamChangeMessageToListeners
+    // to a differ 'changebroadcaster' to free up parameter change for 'proper use'
+    switch (index) {
+    case Percussa::sspEnc1:
+    case Percussa::sspEnc2:
+    case Percussa::sspEnc3:
+    case Percussa::sspEnc4:
+    {
+        if (newValue > 0.5) {
+            // TODO - check shoudl paramValues really hold actual value?
+            params_[index - Percussa::sspFirst]++;
+            AudioProcessor::sendParamChangeMessageToListeners(index, 1.0f);
+        } else if (newValue < 0.5) {
+            params_[index - Percussa::sspFirst]--;
+            AudioProcessor::sendParamChangeMessageToListeners(index, -1.0f);
+        } else {
+            AudioProcessor::sendParamChangeMessageToListeners(index, 0.0f);
+        }
+        break;
+    }
+    default: {
+        if (index < Percussa::sspLast) params_[index] = newValue;
+        AudioProcessor::sendParamChangeMessageToListeners(index, newValue);
+        break;
+    }
+    }
 }
 
 const String Clds::getParameterName (int index)
@@ -92,8 +114,13 @@ const String Clds::getInputChannelName (int channelIndex) const
     case I_SIZE:        { return String("Size");}
     case I_DENSITY:     { return String("Density");}
     case I_TEXT:        { return String("Texture");}
+    case I_FREEZE:      { return String("Freeze");}
+    case I_MIX:         { return String("Mix");}
+    case I_SPREAD:      { return String("Spread");}
+    case I_FEEDBACK:    { return String("Feedback");}
+    case I_REVERB:      { return String("Reverb");}
     }
-    return String("Uknown:") + String (channelIndex + 1);
+    return String("unused:") + String (channelIndex + 1);
 }
 
 const String Clds::getOutputChannelName (int channelIndex) const
@@ -107,7 +134,7 @@ const String Clds::getOutputChannelName (int channelIndex) const
         return String("Out R");
     }
     }
-    return String("Uknown:") + String (channelIndex + 1);
+    return String("unused:") + String (channelIndex + 1);
 }
 
 bool Clds::isInputChannelStereoPair (int index) const
@@ -254,15 +281,21 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         float size      = data.f_size + buffer.getSample(I_SIZE, bidx);
         float density   = ((data.f_density + buffer.getSample(I_DENSITY, bidx)) + 1.0f ) / 2.0f;
         float texture   = data.f_texture + buffer.getSample(I_TEXT, bidx);
+        bool  freeze    = (data.f_freeze + buffer.getSample(I_FREEZE, bidx)) > 0.5f;
+        float mix       = data.f_mix + buffer.getSample(I_MIX, bidx);
+        float spread    = data.f_spread + buffer.getSample(I_SPREAD, bidx);
+        float feedback  = data.f_feedback + buffer.getSample(I_FEEDBACK, bidx);
+        float reverb    = data.f_reverb + buffer.getSample(I_REVERB, bidx);
+
 
 
         //restrict density to .2 to .8 for granular mode, outside this breaks up
         // density = constrain(density, 0.0f, 1.0f);
         // density = (mode == clouds::PLAYBACK_MODE_GRANULAR) ? (density * 0.6f) + 0.2f : density;
 
-        p->freeze = (data.f_freeze > 0.5f) ||  (data.trig_or_freeze && trig) ;
+        p->freeze = freeze;
 
-        p->gate        = (!data.trig_or_freeze) && trig;
+        p->gate        = trig;
         p->trigger     = p->gate;
 
         p->pitch       = constrain(pitch,      -48.0f, 48.0f);
@@ -271,10 +304,10 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         p->texture     = constrain(texture,    0.0f, 1.0f);
         p->density     = constrain(density,    0.0f, 1.0f);
 
-        p->dry_wet     = constrain(data.f_mix,           0.0f, 1.0f);
-        p->stereo_spread = constrain(data.f_spread,      0.0f, 1.0f);
-        p->feedback    = constrain(data.f_feedback,      0.0f, 1.0f);
-        p->reverb      = constrain(data.f_reverb,        0.0f, 1.0f);
+        p->dry_wet     = constrain(mix,           0.0f, 1.0f);
+        p->stereo_spread = constrain(spread,      0.0f, 1.0f);
+        p->feedback    = constrain(feedback,      0.0f, 1.0f);
+        p->reverb      = constrain(reverb,        0.0f, 1.0f);
 
         processor.Process(ibuf, obuf, n);
 
@@ -326,7 +359,6 @@ void Clds::writeToJson() {
     v->setProperty("f_reverb",          float(data_.f_reverb));
     v->setProperty("f_mode",            float(data_.f_mode));
     v->setProperty("f_in_gain",         float(data_.f_in_gain));
-    v->setProperty("trig_or_freeze",    float(data_.trig_or_freeze));
 
     v->setProperty("f_mono",            float(data_.f_mono));
     v->setProperty("f_lofi",            float(data_.f_lofi));
@@ -376,7 +408,6 @@ void Clds::readFromJson() {
     data_.f_reverb      = jsonVar.getProperty("f_reverb"    , 0.5f);
     data_.f_mode        = jsonVar.getProperty("f_mode"      , 0.0f);
     data_.f_in_gain     = jsonVar.getProperty("f_in_gain"   , 0.0f);
-    data_.trig_or_freeze = jsonVar.getProperty("trig_or_freeze" , 0.0f);
 
     data_.f_mono        = jsonVar.getProperty("f_mono"      , 0.0f);
     data_.f_lofi        = jsonVar.getProperty("f_lofi"      , 0.0f);
@@ -386,7 +417,6 @@ void Clds::getStateInformation (MemoryBlock& destData)
 {
     // store state information
 
-    // SSP not currently using - untested
     DynamicObject::Ptr v (new DynamicObject());
     v->setProperty("f_freeze",          float(data_.f_freeze));
     v->setProperty("f_position",        float(data_.f_position));
@@ -400,7 +430,6 @@ void Clds::getStateInformation (MemoryBlock& destData)
     v->setProperty("f_reverb",          float(data_.f_reverb));
     v->setProperty("f_mode",            float(data_.f_mode));
     v->setProperty("f_in_gain",         float(data_.f_in_gain));
-    v->setProperty("trig_or_freeze",    float(data_.trig_or_freeze));
 
     v->setProperty("f_mono",            float(data_.f_mono));
     v->setProperty("f_lofi",            float(data_.f_lofi));
@@ -413,8 +442,6 @@ void Clds::getStateInformation (MemoryBlock& destData)
 void Clds::setStateInformation (const void* data, int sizeInBytes)
 {
     // recall state information - created by getStateInformation
-    // SSP not currently using - untested
-
     const char* str = static_cast<const char*>(data);
     auto jsonVar = JSON::parse(String::fromUTF8(str));
 
@@ -429,7 +456,6 @@ void Clds::setStateInformation (const void* data, int sizeInBytes)
     data_.f_reverb      = jsonVar.getProperty("f_reverb"    , 0.5f);
     data_.f_mode        = jsonVar.getProperty("f_mode"      , 0.0f);
     data_.f_in_gain     = jsonVar.getProperty("f_in_gain"   , 0.0f);
-    data_.trig_or_freeze = jsonVar.getProperty("trig_or_freeze" , 0.0f);
 
     data_.f_mono        = jsonVar.getProperty("f_mono"      , 0.0f);
     data_.f_lofi        = jsonVar.getProperty("f_lofi"      , 0.0f);

@@ -84,6 +84,7 @@ struct RngsData {
     std::atomic<float>  f_bypass;
     std::atomic<float>  f_easter_egg;
 
+    //TODO remove
     std::atomic<float>  f_internal_strum;
     std::atomic<float>  f_internal_exciter;
     std::atomic<float>  f_internal_note;

@@ -76,11 +76,33 @@ float Rngs::getParameter (int index)
 
 void Rngs::setParameter (int index, float newValue)
 {
-    // SSP currently sends control information as parameters
-    // see Percussa.h for more info about the parameters below
-
-    if (index < Percussa::sspLast) params_[index] = newValue;
-    AudioProcessor::sendParamChangeMessageToListeners(index, newValue);
+    // this will have to change... as the +/-1 is larger than before
+    // current idea is to move away from sendParamChangeMessageToListeners
+    // to a differ 'changebroadcaster' to free up parameter change for 'proper use'
+    switch(index) {
+        case Percussa::sspEnc1:
+        case Percussa::sspEnc2: 
+        case Percussa::sspEnc3:
+        case Percussa::sspEnc4: 
+        {
+            if (newValue > 0.5) {  
+                // TODO - check shoudl paramValues really hold actual value?
+                params_[index-Percussa::sspFirst]++; 
+                AudioProcessor::sendParamChangeMessageToListeners(index, 1.0f);
+            } else if (newValue < 0.5) { 
+                params_[index-Percussa::sspFirst]--; 
+                AudioProcessor::sendParamChangeMessageToListeners(index, -1.0f);
+            } else {
+                AudioProcessor::sendParamChangeMessageToListeners(index, 0.0f);
+            }
+            break; 
+        }
+        default: {
+            if (index < Percussa::sspLast) params_[index] = newValue;
+            AudioProcessor::sendParamChangeMessageToListeners(index, newValue);
+            break;
+        }
+    }
 }
 
 const String Rngs::getParameterName (int index)
@@ -105,7 +127,7 @@ const String Rngs::getInputChannelName (int channelIndex) const
     case I_DAMPING:      { return String("Damp");}
     case I_POSITION:      { return String("Pos");}
     }
-    return String("Uknown:") + String (channelIndex + 1);
+    return String("unused:") + String (channelIndex + 1);
 }
 
 const String Rngs::getOutputChannelName (int channelIndex) const
@@ -119,7 +141,7 @@ const String Rngs::getOutputChannelName (int channelIndex) const
         return String("Even");
     }
     }
-    return String("Uknown:") + String (channelIndex + 1);
+    return String("unused:") + String (channelIndex + 1);
 }
 
 bool Rngs::isInputChannelStereoPair (int index) const
@@ -279,9 +301,14 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         performance_state.note = note;
         performance_state.tonic = 12.0f + transpose;
 
-        performance_state.internal_exciter = data_.f_internal_exciter > 0.5;
-        performance_state.internal_strum =  data_.f_internal_strum > 0.5;
-        performance_state.internal_note =  data_.f_internal_note > 0.5;
+        //TODO test only
+        data_.f_internal_exciter =  params_[Percussa::sspInEn1 + I_IN ] < 0.5;
+        data_.f_internal_strum =  params_[Percussa::sspInEn1 + I_STRUM ] < 0.5;
+        data_.f_internal_note =  params_[Percussa::sspInEn1 + I_VOCT ] < 0.5;
+
+        performance_state.internal_exciter =  params_[Percussa::sspInEn1 + I_IN ] < 0.5;
+        performance_state.internal_strum =  params_[Percussa::sspInEn1 + I_STRUM ] < 0.5;
+        performance_state.internal_note =  params_[Percussa::sspInEn1 + I_VOCT ] < 0.5;
         performance_state.chord = constrain(chord , 0, rings::kNumChords - 1);;
 
         if (!performance_state.internal_note) {
@@ -374,9 +401,9 @@ void Rngs::writeToJson() {
     v->setProperty("f_model",               float(data_.f_model));
     v->setProperty("f_bypass",              float(data_.f_bypass));
     v->setProperty("f_easter_egg",          float(data_.f_easter_egg));
-    v->setProperty("f_internal_strum",      float(data_.f_internal_strum));
-    v->setProperty("f_internal_exciter",    float(data_.f_internal_exciter));
-    v->setProperty("f_internal_note",       float(data_.f_internal_note));
+    // v->setProperty("f_internal_strum",      float(data_.f_internal_strum));
+    // v->setProperty("f_internal_exciter",    float(data_.f_internal_exciter));
+    // v->setProperty("f_internal_note",       float(data_.f_internal_note));
     v->setProperty("f_in_gain",             float(data_.f_in_gain));
 
 
@@ -423,9 +450,9 @@ void Rngs::readFromJson() {
     data_.f_model = jsonVar.getProperty("f_model",0.0f);
     data_.f_bypass = jsonVar.getProperty("f_bypass",0.0f);
     data_.f_easter_egg = jsonVar.getProperty("f_easter_egg",0.0f);
-    data_.f_internal_strum = jsonVar.getProperty("f_internal_strum",1.0f);
-    data_.f_internal_exciter = jsonVar.getProperty("f_internal_exciter",1.0f);
-    data_.f_internal_note = jsonVar.getProperty("f_internal_note",0.0f);
+    // data_.f_internal_strum = jsonVar.getProperty("f_internal_strum",1.0f);
+    // data_.f_internal_exciter = jsonVar.getProperty("f_internal_exciter",1.0f);
+    // data_.f_internal_note = jsonVar.getProperty("f_internal_note",0.0f);
     data_.f_in_gain = jsonVar.getProperty("f_in_gain",0.0f);
     data_.f_trig=0.0f;
 
@@ -443,10 +470,6 @@ void Rngs::readFromJson() {
 void Rngs::getStateInformation (MemoryBlock& destData)
 {
     // store state information
-
-    // SSP not currently using - untested
-
-
     DynamicObject::Ptr v (new DynamicObject());
     v->setProperty("f_pitch",               float(data_.f_pitch));
     v->setProperty("f_structure",           float(data_.f_structure));
@@ -457,9 +480,9 @@ void Rngs::getStateInformation (MemoryBlock& destData)
     v->setProperty("f_model",               float(data_.f_model));
     v->setProperty("f_bypass",              float(data_.f_bypass));
     v->setProperty("f_easter_egg",          float(data_.f_easter_egg));
-    v->setProperty("f_internal_strum",      float(data_.f_internal_strum));
-    v->setProperty("f_internal_exciter",    float(data_.f_internal_exciter));
-    v->setProperty("f_internal_note",       float(data_.f_internal_note));
+    // v->setProperty("f_internal_strum",      float(data_.f_internal_strum));
+    // v->setProperty("f_internal_exciter",    float(data_.f_internal_exciter));
+    // v->setProperty("f_internal_note",       float(data_.f_internal_note));
     v->setProperty("f_in_gain",             float(data_.f_in_gain));
 
 
@@ -471,10 +494,6 @@ void Rngs::getStateInformation (MemoryBlock& destData)
 void Rngs::setStateInformation (const void* data, int sizeInBytes)
 {
     // recall state information - created by getStateInformation
-
-
-    // SSP not currently using - untested
-
     const char* str=static_cast<const char*>(data);
     auto jsonVar = JSON::parse(String::fromUTF8(str));
 
@@ -487,9 +506,9 @@ void Rngs::setStateInformation (const void* data, int sizeInBytes)
     data_.f_model = jsonVar.getProperty("f_model",0.0f);
     data_.f_bypass = jsonVar.getProperty("f_bypass",0.0f);
     data_.f_easter_egg = jsonVar.getProperty("f_easter_egg",0.0f);
-    data_.f_internal_strum = jsonVar.getProperty("f_internal_strum",1.0f);
-    data_.f_internal_exciter = jsonVar.getProperty("f_internal_exciter",1.0f);
-    data_.f_internal_note = jsonVar.getProperty("f_internal_note",0.0f);
+    // data_.f_internal_strum = jsonVar.getProperty("f_internal_strum",1.0f);
+    // data_.f_internal_exciter = jsonVar.getProperty("f_internal_exciter",1.0f);
+    // data_.f_internal_note = jsonVar.getProperty("f_internal_note",0.0f);
     data_.f_in_gain = jsonVar.getProperty("f_in_gain",0.0f);
 
     data_.f_trig=0.0f;
