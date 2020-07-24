@@ -23,6 +23,8 @@ public:
     void buttonA(bool b);
     void buttonB(bool b);
     void encoder(float e);
+    bool buttonA();
+    bool buttonB();
 
     enum EncMode {
         EM_LEVEL,

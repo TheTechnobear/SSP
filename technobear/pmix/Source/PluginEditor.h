@@ -74,6 +74,8 @@ private:
 	void channelEncoder(unsigned c, float v);
 	void channelButtonA(unsigned c, bool v);
 	void channelButtonB(unsigned c, bool v);
+	bool buttonAState(unsigned c);
+	bool buttonBState(unsigned c);
 
 	SSPButton buttons_[B_MAX];
 	SSPParam  params_[P_MAX];

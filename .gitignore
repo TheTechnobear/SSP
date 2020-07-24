@@ -1,6 +1,8 @@
 
 **/project.xcworkspace/*
 
+*.dsp_cache
+
 
 **/.DS_Store
 *.swp

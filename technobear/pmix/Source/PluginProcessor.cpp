@@ -13,6 +13,59 @@ static const char*  presetProgramDir = "~/SSP/plugin.presets/pmix";
 static const char*  presetProgramDir = "/media/linaro/SYNTHOR/plugins.presets/pmix";
 #endif
 
+
+
+const char* percussaParamsName [] = {
+        "sspEnc1", 
+        "sspEnc2", 
+        "sspEnc3",
+        "sspEnc4", 
+        "sspEncSw1", 
+        "sspEncSw2", 
+        "sspEncSw3", 
+        "sspEncSw4", 
+        "sspSw1", 
+        "sspSw2", 
+        "sspSw3", 
+        "sspSw4", 
+        "sspSw5", 
+        "sspSw6", 
+        "sspSw7", 
+        "sspSw8", 
+        "sspSwLeft", 
+        "sspSwRight", 
+        "sspSwUp", 
+        "sspSwDown", 
+        "sspSwShiftL",
+        "sspSwShiftR" 
+};
+
+const char* percussaParamsText [] = {
+        "Encoder 1", 
+        "Encoder 2", 
+        "Encoder 3",
+        "Encoder 4", 
+        "Encoder 1 Sw", 
+        "Encoder 2 Sw", 
+        "Encoder 3 Sw", 
+        "Encoder 4 Sw", 
+        "Button 1", 
+        "Button 2", 
+        "Button 3", 
+        "Button 4", 
+        "Button 5", 
+        "Button 6", 
+        "Button 7", 
+        "Button 8", 
+        "Button Left", 
+        "Button Right", 
+        "Button Up", 
+        "Button Down", 
+        "Button Shift L",
+        "Button Shift R" 
+};
+
+
 Pmix::Pmix()
 {
     memset(params_, 0, sizeof(params_));
@@ -64,6 +117,7 @@ float Pmix::getParameter (int index)
 
 void Pmix::setParameter (int index, float newValue)
 {
+    // Logger::writeToLog("setParameter: : " + getParameterName(index) + " ->  " + String(newValue));
     // SSP currently sends control information as parameters
     // see Percussa.h for more info about the parameters below
 
@@ -73,11 +127,13 @@ void Pmix::setParameter (int index, float newValue)
 
 const String Pmix::getParameterName (int index)
 {
+    if (index < Percussa::sspLast) return percussaParamsName[index];
     return String();
 }
 
 const String Pmix::getParameterText (int index)
 {
+    if (index < Percussa::sspLast) return percussaParamsText[index];
     return String();
 }
 
@@ -105,12 +161,12 @@ const String Pmix::getOutputChannelName (int channelIndex) const
 
 bool Pmix::isInputChannelStereoPair (int index) const
 {
-    return false;
+    return index <= I_IN_8; 
 }
 
 bool Pmix::isOutputChannelStereoPair (int index) const
 {
-    return false;
+    return index <= O_AUX_3_R; 
 }
 
 bool Pmix::acceptsMidi() const
@@ -188,21 +244,21 @@ void Pmix::prepareToPlay (double sampleRate, int samplesPerBlock)
     // reset the RMS
     for (unsigned ich = 0; ich < I_MAX; ich++) {
         auto& d = inTracks_[ich];
-        d.rms_ = 0.0f;
-        d.rmsHead_ = 0;
-        d.rmsSum_ = 0.0f;
+        d.lvl_ = 0.0f;
+        d.lvlHead_ = 0;
+        d.lvlSum_ = 0.0f;
         for (unsigned i = 0; i < TrackData::MAX_RMS; i++) {
-            d.rmsHistory_[i] = 0.0f;
+            d.lvlHistory_[i] = 0.0f;
         }
     }
 
     for (unsigned och = 0; och < O_MAX; och++) {
         auto& d = outTracks_[och];
-        d.rms_ = 0.0f;
-        d.rmsHead_ = 0;
-        d.rmsSum_ = 0.0f;
+        d.lvl_ = 0.0f;
+        d.lvlHead_ = 0;
+        d.lvlSum_ = 0.0f;
         for (unsigned i = 0; i < TrackData::MAX_RMS; i++) {
-            d.rmsHistory_[i] = 0.0f;
+            d.lvlHistory_[i] = 0.0f;
         }
     }
 }
@@ -244,22 +300,54 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     bool soloed = false;
 
     for (unsigned ich = 0; ich < I_MAX; ich++) {
+        soloed |= inTracks_[ich].solo_;
+    }
+
+    for (int och = 0; och < O_MAX; och++) {
+        outputBuffers_.applyGain(och, 0, n, 0.0f);
+    }
+
+    for (unsigned ich = 0; ich < I_MAX; ich++) {
         //process input channels
-        unsigned intr = inTracks_[ich].dummy_ ? inTracks_[ich].follows_ : ich;
+        auto& inTrack = inTracks_[ich];
+        unsigned inLeadCh = inTrack.dummy_ ? inTrack.follows_ : ich;
+        auto& inLead = inTracks_[inLeadCh];
 
-        soloed |= inTracks_[intr].solo_;
-        float inGain = inTracks_[intr].gain_ + inTracks_[intr].level_[0]; // MASTER
-        auto inbuf = buffer.getReadPointer(ich);
-        inputBuffers_.copyFrom(ich, 0, inbuf, n, inGain);
 
-        float inRMS = inputBuffers_.getRMSLevel(ich, 0, n);
+        bool    muted = inLead.mute_ ||   (soloed && ! inLead.solo_);
+        float   inMGain = inLead.gain_ + inLead.level_[0]; // MASTER
+        auto    inbuf = buffer.getReadPointer(ich);
+        inputBuffers_.copyFrom(ich, 0, inbuf, n, inMGain);
 
-        auto& trd = inTracks_[ich];
-        trd.rmsSum_ -= trd.rmsHistory_[trd.rmsHead_];
-        trd.rmsHistory_[trd.rmsHead_] = inRMS;
-        trd.rmsSum_ += trd.rmsHistory_[trd.rmsHead_];
-        trd.rmsHead_ = (trd.rmsHead_ + 1) % TrackData::MAX_RMS;
-        trd.rms_ = trd.rmsSum_ / TrackData::MAX_RMS;
+        float inlvl = inTrack.useRMS_
+                      ? inputBuffers_.getRMSLevel(ich, 0, n)
+                      : inputBuffers_.getMagnitude(ich, 0, n);
+
+        inTrack.lvlSum_ -= inTrack.lvlHistory_[inTrack.lvlHead_];
+        inTrack.lvlHistory_[inTrack.lvlHead_] = inlvl;
+        inTrack.lvlSum_ += inTrack.lvlHistory_[inTrack.lvlHead_];
+        inTrack.lvlHead_ = (inTrack.lvlHead_ + 1) % TrackData::MAX_RMS;
+        inTrack.lvl_ = inTrack.lvlSum_ / TrackData::MAX_RMS;
+
+
+        for (unsigned o = 0; o < TrackData::OUT_TRACKS; o++) {
+            if (!muted) {
+                auto&  outTL = outTracks_[o * 2];
+                float outGain = outTL.gain_ + outTL.level_[0];
+                float lOutGain = panGain(true,   outTL.pan_);
+                float rOutGain = panGain(false,  outTL.pan_);
+
+                float inGain = o > 0 ? (float) inLead.level_[o] : 1.0f; // master already applied
+                float lInGain = panGain(true,   inLead.pan_);
+                float rInGain = panGain(false,  inLead.pan_);
+
+                float lGain = (inGain * outGain * lOutGain * lInGain);
+                float rGain = (inGain * outGain * rOutGain * rInGain);
+
+                outputBuffers_.addFrom( o * 2     , 0, inbuf, n, lGain);
+                outputBuffers_.addFrom((o * 2) + 1 , 0, inbuf, n, rGain);
+            }
+        }
 
         // notes:
         // mute/solo is not applied until building outputs
@@ -271,61 +359,20 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         // since we need to take care for source of input
     }
 
+    // calc output levels, and copy to vst buffer
+    for (int och = 0; och < O_MAX; och++) {
 
-    // outputs are currently all stereo, so we have to add panning
-    // if were start allow mono aux channels this will change.
-    for (unsigned och = 0; och < O_MAX / 2; och++) {
-        unsigned outtr = och * 2;
-        float lRMS = 0.0f;
-        float rRMS = 0.0f;
+        auto& trd = outTracks_[och];
+        float lvl = trd.useRMS_
+                    ? outputBuffers_.getRMSLevel(och, 0, n)
+                    : outputBuffers_.getMagnitude(och, 0, n);
 
-        outputBuffers_.applyGain(och, 0, n, 0.0f);
-        outputBuffers_.applyGain(och + 1, 0, n, 0.0f);
-        // mute output channel
-        if (outTracks_[outtr].mute_) {
-            lRMS = 0.0f;
-            rRMS = 0.0f;
-        } else {
-            float outGain = outTracks_[outtr].gain_ * outTracks_[outtr].level_[och];
-            float lOutGain = panGain(true,  outTracks_[outtr].pan_);
-            float rOutGain = panGain(false, outTracks_[outtr].pan_);
+        trd.lvlSum_ -= trd.lvlHistory_[trd.lvlHead_];
+        trd.lvlHistory_[trd.lvlHead_] = lvl;
+        trd.lvlSum_ += trd.lvlHistory_[trd.lvlHead_];
+        trd.lvlHead_ = (trd.lvlHead_ + 1) % TrackData::MAX_RMS;
+        trd.lvl_ = trd.lvlSum_ / TrackData::MAX_RMS;
 
-            // process each input channel
-            for (unsigned ich = 0; ich < I_MAX; ich++) {
-
-                unsigned intr = inTracks_[ich].dummy_ ? inTracks_[ich].follows_ : ich;
-                bool muted = inTracks_[intr].mute_ ||   (soloed && ! inTracks_[intr].solo_);
-                if (!muted) {
-                    float inGain = outtr > 0 ? (float) inTracks_[intr].level_[outtr] : 1.0f; // master already applied
-                    float lInGain = panGain(true, inTracks_[intr].pan_);
-                    float rInGain = panGain(false, inTracks_[intr].pan_);
-
-                    auto inbuf = inputBuffers_.getReadPointer(ich);
-                    float lGain = (inGain * outGain * lOutGain * lInGain);
-                    float rGain = (inGain * outGain * rOutGain * rInGain);
-
-                    outputBuffers_.addFrom(outtr        , 0, inbuf, n, lGain);
-                    outputBuffers_.addFrom(outtr + 1    , 0, inbuf, n, rGain);
-                }
-            }
-            // all inputs handled.
-
-            // note: at this stage, not allowing outputs to feed to other outputs!
-            lRMS = outputBuffers_.getRMSLevel(outtr    , 0, n);
-            rRMS = outputBuffers_.getRMSLevel(outtr + 1, 0, n);
-        }
-
-        for (unsigned ot = 0; ot < 2; ot++) {
-            auto& trd = outTracks_[outtr + ot];
-            trd.rmsSum_ -= trd.rmsHistory_[trd.rmsHead_];
-            trd.rmsHistory_[trd.rmsHead_] = (ot == 0 ? lRMS : rRMS);
-            trd.rmsSum_ += trd.rmsHistory_[trd.rmsHead_];
-            trd.rmsHead_ = (trd.rmsHead_ + 1) % TrackData::MAX_RMS;
-            trd.rms_ = trd.rmsSum_ / TrackData::MAX_RMS;
-        }
-    }
-
-    for(int och=0;och<O_MAX;och++) {
         auto buf = outputBuffers_.getReadPointer(och);
         buffer.copyFrom(och, 0, buf, n, 1.0);
     }
