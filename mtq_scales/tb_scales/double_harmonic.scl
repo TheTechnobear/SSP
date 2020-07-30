@@ -1,0 +1,13 @@
+! double_harmonic.scl
+! created by TheTechnobear
+!
+double harmonic
+ 7
+!
+ 100.
+ 400.
+ 500.
+ 700.
+ 800.
+ 1100.
+ 1200.

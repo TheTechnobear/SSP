@@ -1,0 +1,11 @@
+! pentatonic_major.scl
+! created by TheTechnobear
+!
+pentatonic major
+ 5
+!
+ 200.
+ 400.
+ 700.
+ 900.
+ 1200.
