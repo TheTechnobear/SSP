@@ -10,21 +10,19 @@ class SSPChannel: public Component
 public:
     SSPChannel() : data_(nullptr),active_(false) {;}
     void init(const String& label, TrackData* data)  {
-        label_=label;
-        data_=data;
+        label_ = label;
+        data_ = data;
     }
 
     void active(bool a) {
-        if(active_!=a) repaint();
-        active_=a;
+        if (active_ != a) repaint();
+        active_ = a;
     }
     bool active() { return active_;}
 
-    void buttonA(bool b);
-    void buttonB(bool b);
+    void button(unsigned i, bool b);
     void encoder(float e);
-    bool buttonA();
-    bool buttonB();
+    bool button(unsigned i);
 
     enum EncMode {
         EM_LEVEL,
@@ -42,15 +40,15 @@ public:
     };
 
     void buttonMode(ButMode m);
-    void encoderMode(EncMode m); 
+    void encoderMode(EncMode m);
 
 private:
 
-    EncMode encMode_=EM_LEVEL;
-    ButMode butMode_=BM_MUTESOLO;
+    EncMode encMode_ = EM_LEVEL;
+    ButMode butMode_ = BM_MUTESOLO;
     String label_;
-    TrackData* data_=nullptr;
-    bool active_=false;
+    TrackData* data_ = nullptr;
+    bool active_ = false;
 
     void paint(Graphics &g);
     juce_UseDebuggingNewOperator

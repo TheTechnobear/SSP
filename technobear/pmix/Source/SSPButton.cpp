@@ -5,7 +5,7 @@ void SSPButton::paint(Graphics &g) {
     const int w = getWidth();
     const int h = getHeight();
     g.setFont(Font(Font::getDefaultMonospacedFontName(), 36, Font::plain));
- 
+
 
     if (!active_) {
         g.setColour(Colours::black);

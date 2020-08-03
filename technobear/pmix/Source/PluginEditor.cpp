@@ -79,9 +79,9 @@ PmixEditor::PmixEditor (Pmix& p)
 
 
 
-	butMode_ = BM_MUTESOLO;
+	butMode_ = SSPChannel::BM_MUTESOLO;
 	switch (butMode_) {
-	case BM_MUTESOLO: {
+	case SSPChannel::BM_MUTESOLO: {
 		buttons_[B_A_1].label("Solo");
 		buttons_[B_A_2].label("Solo");
 		buttons_[B_A_3].label("Solo");
@@ -119,7 +119,7 @@ PmixEditor::PmixEditor (Pmix& p)
 
 	// params_[P_POS].active(paramActive_ 		== 0);
 
-	paramActive_ = 0;
+	// paramActive_ = 0;
 	// addAndMakeVisible(params_[P_POS]);
 	// addChildComponent(params_[P_PITCH]);
 }
@@ -134,12 +134,12 @@ PmixEditor::~PmixEditor()
 
 void PmixEditor::timerCallback()
 {
-	if (activeParamCount_ > 0 ) {
-		activeParamCount_--;
-		if (activeParamCount_ == 0) {
-			activeParam_ = nullptr;
-		}
-	}
+	// if (activeParamCount_ > 0 ) {
+	// 	activeParamCount_--;
+	// 	if (activeParamCount_ == 0) {
+	// 		activeParam_ = nullptr;
+	// 	}
+	// }
 	repaint();
 }
 
@@ -161,93 +161,18 @@ void PmixEditor::parameterChanged (int index, float value) {
 	if (index < Percussa::sspFirst) return;
 	if (index >= Percussa::sspLast) return;
 
-	//TODO
-	// reconsider active param handling
-	// there are 3 (!) pages of params not two!
-
-	// f_mono      = 0.0f;
-	// f_lofi      = 0.0f;
-
-	unsigned paramActive = paramActive_;
-
 	switch (index) {
 	case Percussa::sspEnc1:
-		switch (paramActive_) {
-		case 0 :  {
-			channelEncoder(0, value);
-			// float v = processor_.data().f_position + value / 100.0f;
-			// v = constrain(v, 0.0f, 1.0f);
-			// processor_.data().f_position = v;
-			// params_[P_POS].value(processor_.data().f_position);
-
-			// if (value) activeParam_ = &params_[P_POS];
-
-			break;
-		}
-		case 1 :  {
-			break;
-		}
-		case 2 : {
-			break;
-		}
-		} //switch paramActive_
-		if (value) {
-			activeParamCount_ = PARAM_COUNTER;
-			activeEncIdx_ = 0;
-		}
+		channelEncoder(0, value);
 		break;
 	case Percussa::sspEnc2:
-		switch (paramActive_) {
-		case 0 :  {
-			channelEncoder(1, value);
-			break;
-		}
-		case 1 :  {
-			break;
-		}
-		case 2 : {
-			break;
-		}
-		} //switch paramActive_
-		if (value) {
-			activeParamCount_ = PARAM_COUNTER;
-			activeEncIdx_ = 1;
-		}
+		channelEncoder(1, value);
 		break;
 	case Percussa::sspEnc3:
-		switch (paramActive_) {
-		case 0 :  {
-			channelEncoder(2, value);
-			break;
-		}
-		case 1 :  {
-			break;
-		}
-		case 2 : {
-		}
-		} //switch paramActive_
-		if (value) {
-			activeParamCount_ = PARAM_COUNTER;
-			activeEncIdx_ = 2;
-		}
+		channelEncoder(2, value);
 		break;
 	case Percussa::sspEnc4:
-		switch (paramActive_) {
-		case 0 :  {
-			channelEncoder(3, value);
-			break;
-		}
-		case 1 :  {
-			break;
-		}
-		case 2 : {
-			break;
-		}
-		} //switch paramActive_
-		if (value) {
-			activeParamCount_ = PARAM_COUNTER;
-			activeEncIdx_ = 3;
-		}
+		channelEncoder(3, value);
 		break;
 	case Percussa::sspEncSw1:
 		break;
@@ -259,74 +184,77 @@ void PmixEditor::parameterChanged (int index, float value) {
 		break;
 	case Percussa::sspSw1:
 		if (paramState_[index] != value && !value) {
-			channelButtonA(0, value);
-			buttons_[B_A_1].active(buttonAState(0));
+			channelButton(0, 0, value);
+			buttons_[B_A_1].active(buttonState(0, 0));
 		}
-		// 	processor_.data().f_freeze =
-		// 	    ! processor_.data().f_freeze;
-		// 	buttons_[B_FREEZE].active(processor_.data().f_freeze > 0.5);
-		// }
 		break;
 	case Percussa::sspSw2:
 		if (paramState_[index] != value && !value) {
-			channelButtonA(1, value);
-			buttons_[B_A_2].active(buttonAState(1));
+			channelButton(1, 0, value);
+			buttons_[B_A_2].active(buttonState(0, 1));
 		}
 		break;
 	case Percussa::sspSw3:
 		if (paramState_[index] != value && !value) {
-			channelButtonA(2, value);
-			buttons_[B_A_3].active(buttonAState(2));
+			channelButton(2, 0, value);
+			buttons_[B_A_3].active(buttonState(0, 2));
 		}
 		break;
 	case Percussa::sspSw4:
 		if (paramState_[index] != value && !value) {
-			channelButtonA(3, value);
-			buttons_[B_A_4].active(buttonAState(3));
+			channelButton(3, 0, value);
+			buttons_[B_A_4].active(buttonState(0, 3));
 		}
 		break;
 	case Percussa::sspSw5:
 		if (paramState_[index] != value && !value) {
-			channelButtonB(0, value);
-			buttons_[B_B_1].active(buttonBState(0));
+			channelButton(0, 1, value);
+			buttons_[B_B_1].active(buttonState(1, 0));
 		}
 		// buttons_[B_HELP].active(value > 0.5);
 		break;
 	case Percussa::sspSw6:
 		if (paramState_[index] != value && !value) {
-			channelButtonB(1, value);
-			buttons_[B_B_2].active(buttonBState(1));
+			channelButton(1, 1, value);
+			buttons_[B_B_2].active(buttonState(1, 1));
 		}
 		break;
 	case Percussa::sspSw7:
 		if (paramState_[index] != value && !value) {
-			channelButtonB(2, value);
-			buttons_[B_B_3].active(buttonBState(2));
+			channelButton(2, 1, value);
+			buttons_[B_B_3].active(buttonState(1, 2));
 		}
 		break;
 	case Percussa::sspSw8:
 		if (paramState_[index] != value && !value) {
-			channelButtonB(3, value);
-			buttons_[B_B_4].active(buttonBState(3));
+			channelButton(3, 1, value);
+			buttons_[B_B_4].active(buttonState(1, 3));
 		}
-		// buttons_[B_WRITE_PR].active(value > 0.5);
-		// if (paramState_[index] != value && !value) {
-		// 	processor_.write();
-		// }
 		break;
-
 	case Percussa::sspSwLeft:
 		buttons_[B_LEFT].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
-			if (paramActive_ == 2) paramActive_ = 0;
-			else paramActive_ = 2;
+			encMode_ = encMode_ > 0 ? encMode_-- : (SSPChannel::EM_MAX - 1) ;
+			auto m = static_cast<SSPChannel::EncMode>(encMode_);
+			for (int i = 0; i < Pmix::I_MAX ; i++) {
+				inTracks_[i].encoderMode(m);
+			}
+			for (int i = 0; i < Pmix::O_MAX ; i++) {
+				outTracks_[i].encoderMode(m);
+			}
 		}
 		break;
 	case Percussa::sspSwRight:
 		buttons_[B_RIGHT].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
-			if (paramActive_ == 2) paramActive_ = 0;
-			else paramActive_ = 2;
+			encMode_ = encMode_ <= (SSPChannel::EM_MAX - 1) ?  encMode_++ : 0 ;
+			auto m = static_cast<SSPChannel::EncMode>(encMode_);
+			for (int i = 0; i < Pmix::I_MAX ; i++) {
+				inTracks_[i].encoderMode(m);
+			}
+			for (int i = 0; i < Pmix::O_MAX ; i++) {
+				outTracks_[i].encoderMode(m);
+			}
 		}
 		break;
 	case Percussa::sspSwUp:
@@ -334,16 +262,18 @@ void PmixEditor::parameterChanged (int index, float value) {
 		buttons_[B_UP].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			activeTracks_ = OUT_14;
-			// if (paramActive_ != 2) {
-			// 	paramActive_ = (paramActive_ + 1 ) % 2;
-			// }
 		}
 		break;
 	case Percussa::sspSwDown:
 		buttons_[B_DOWN].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
-			if (paramActive_ != 2) {
-				paramActive_ = (paramActive_ + 1 ) % 2;
+			butMode_ = butMode_ <= (SSPChannel::BM_MAX - 1) ? butMode_++ : 0 ;
+			auto m = static_cast<SSPChannel::ButMode>(butMode_);
+			for (int i = 0; i < Pmix::I_MAX ; i++) {
+				inTracks_[i].buttonMode(m);
+			}
+			for (int i = 0; i < Pmix::O_MAX ; i++) {
+				outTracks_[i].buttonMode(m);
 			}
 		}
 		break;
@@ -352,9 +282,6 @@ void PmixEditor::parameterChanged (int index, float value) {
 		buttons_[B_SHIFTL].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			activeTracks_ = IN_14;
-			// if (paramActive_ != 2) {
-			// 	paramActive_ = (paramActive_ + 1 ) % 2;
-			// }
 		}
 		break;
 	case Percussa::sspSwShiftR:
@@ -362,18 +289,10 @@ void PmixEditor::parameterChanged (int index, float value) {
 		buttons_[B_SHIFTR].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			activeTracks_ = IN_58;
-			// if (paramActive_ != 2) {
-			// 	paramActive_ = (paramActive_ + 1 ) % 2;
-			// }
 		}
 		break;
 	default:
 		break;
-	}
-
-	if (paramActive != paramActive_) {
-
-		// params_[P_POS].setVisible(paramActive_ 		< 2);
 	}
 
 	paramState_[index] = value;
@@ -407,7 +326,7 @@ void PmixEditor::channelEncoder(unsigned c, float v) {
 }
 
 
-void PmixEditor::channelButtonA(unsigned c, bool v) {
+void PmixEditor::channelButton(unsigned c, unsigned i, bool v) {
 	TrackSelect ts = activeTracks_;
 	if (paramState_[Percussa::sspSwShiftL]) {
 		ts = IN_14;
@@ -419,23 +338,22 @@ void PmixEditor::channelButtonA(unsigned c, bool v) {
 
 	switch (ts) {
 	case IN_14: {
-		inTracks_[c].buttonA(v);
+		inTracks_[c].button(i, v);
 		break;
 	}
 	case IN_58: {
-		inTracks_[c + 4].buttonA(v);
+		inTracks_[c + 4].button(i, v);
 		break;
 	}
 	case OUT_14: {
-		outTracks_[c * 2].buttonA(v);
-		outTracks_[c * 2 + 1].buttonA(v);
+		outTracks_[c * 2].button(i, v);
+		outTracks_[c * 2 + 1].button(i, v);
 		break;
 	}
 	}
 }
 
-
-void PmixEditor::channelButtonB(unsigned c, bool v) {
+bool PmixEditor::buttonState(unsigned c, unsigned i) {
 	TrackSelect ts = activeTracks_;
 	if (paramState_[Percussa::sspSwShiftL]) {
 		ts = IN_14;
@@ -447,76 +365,18 @@ void PmixEditor::channelButtonB(unsigned c, bool v) {
 
 	switch (ts) {
 	case IN_14: {
-		inTracks_[c].buttonB(v);
-		break;
+		return inTracks_[c].button(i);
 	}
 	case IN_58: {
-		inTracks_[c + 4].buttonB(v);
-		break;
+		return inTracks_[c + 4].button(i);
 	}
 	case OUT_14: {
-		outTracks_[c * 2].buttonB(v);
-		outTracks_[c * 2 + 1].buttonB(v);
-		break;
-	}
-	}
-}
-
-
-
-bool PmixEditor::buttonAState(unsigned c) {
-	TrackSelect ts = activeTracks_;
-	if (paramState_[Percussa::sspSwShiftL]) {
-		ts = IN_14;
-	} else if (paramState_[Percussa::sspSwUp]) {
-		ts = OUT_14;
-	} else if (paramState_[Percussa::sspSwShiftR]) {
-		ts = IN_58;
-	}
-
-	switch (ts) {
-	case IN_14: {
-		return inTracks_[c].buttonA();
-	}
-	case IN_58: {
-		return inTracks_[c + 4].buttonA();
-	}
-	case OUT_14: {
-		return outTracks_[c * 2].buttonA() || outTracks_[c * 2  + 1].buttonA();
+		return outTracks_[c * 2].button(i) || outTracks_[c * 2  + 1].button(i);
 	}
 	}
 
 	return false;
 }
-
-
-
-bool PmixEditor::buttonBState(unsigned c) {
-	TrackSelect ts = activeTracks_;
-	if (paramState_[Percussa::sspSwShiftL]) {
-		ts = IN_14;
-	} else if (paramState_[Percussa::sspSwUp]) {
-		ts = OUT_14;
-	} else if (paramState_[Percussa::sspSwShiftR]) {
-		ts = IN_58;
-	}
-
-	switch (ts) {
-	case IN_14: {
-		return inTracks_[c].buttonB();
-	}
-	case IN_58: {
-		return inTracks_[c + 4].buttonB();
-	}
-	case OUT_14: {
-		return outTracks_[c * 2].buttonB() || outTracks_[c * 2  + 1].buttonB();
-	}
-	}
-
-	return false;
-}
-
-
 
 void PmixEditor::drawHelp(Graphics & g) {
 
@@ -588,33 +448,33 @@ void PmixEditor::drawParamBox(Graphics & g) {
 }
 
 
-void PmixEditor::drawEncoderValue(Graphics & g) {
-	if (activeParam_ != nullptr) {
-		unsigned butLeftX = 900 - 1;
-		String val = String::formatted(activeParam_->fmt(), activeParam_->value());
-		if (activeParam_->unit().length()) { val = val + " " + activeParam_->unit();}
+// void PmixEditor::drawEncoderValue(Graphics & g) {
+// 	if (activeParam_ != nullptr) {
+// 		unsigned butLeftX = 900 - 1;
+// 		String val = String::formatted(activeParam_->fmt(), activeParam_->value());
+// 		if (activeParam_->unit().length()) { val = val + " " + activeParam_->unit();}
 
-		static constexpr unsigned pw = unsigned(900.0f / 8.0f);
+// 		static constexpr unsigned pw = unsigned(900.0f / 8.0f);
 
-		unsigned activeParamIdx = (activeEncIdx_ * 2) + paramActive_ % 2;
+// 		unsigned activeParamIdx = (activeEncIdx_ * 2) + paramActive_ % 2;
 
-		g.setColour(Colours::red);
-		g.drawHorizontalLine(40, 0, butLeftX);
-		g.drawVerticalLine(0, 40, paramTopY);
-		g.drawVerticalLine(butLeftX, 40, paramTopY - 1);
-		g.drawHorizontalLine(paramTopY - 1, 0,  activeParamIdx * pw);
-		g.drawHorizontalLine(paramTopY - 1, (activeParamIdx + 1)* pw, butLeftX);
+// 		g.setColour(Colours::red);
+// 		g.drawHorizontalLine(40, 0, butLeftX);
+// 		g.drawVerticalLine(0, 40, paramTopY);
+// 		g.drawVerticalLine(butLeftX, 40, paramTopY - 1);
+// 		g.drawHorizontalLine(paramTopY - 1, 0,  activeParamIdx * pw);
+// 		g.drawHorizontalLine(paramTopY - 1, (activeParamIdx + 1)* pw, butLeftX);
 
-		g.drawVerticalLine(activeParamIdx * pw, paramTopY, 1600 - 1);
-		g.drawVerticalLine((activeParamIdx + 1) * pw, paramTopY, 1600 - 1);
-		// g.drawHorizontalLine(1600-1, activeParamIdx * pw, (activeParamIdx+1)* pw);
+// 		g.drawVerticalLine(activeParamIdx * pw, paramTopY, 1600 - 1);
+// 		g.drawVerticalLine((activeParamIdx + 1) * pw, paramTopY, 1600 - 1);
+// 		// g.drawHorizontalLine(1600-1, activeParamIdx * pw, (activeParamIdx+1)* pw);
 
-		g.setColour(Colours::white);
-		g.setFont(Font(Font::getDefaultMonospacedFontName(), 180, Font::plain));
+// 		g.setColour(Colours::white);
+// 		g.setFont(Font(Font::getDefaultMonospacedFontName(), 180, Font::plain));
 
-		g.drawText(val, 0, 40, butLeftX, paramTopY - 40 - 40, Justification::centred);
-	}
-}
+// 		g.drawText(val, 0, 40, butLeftX, paramTopY - 40 - 40, Justification::centred);
+// 	}
+// }
 
 void PmixEditor::paint(Graphics & g)
 {
@@ -634,7 +494,7 @@ void PmixEditor::paint(Graphics & g)
 	drawMenuBox(g);
 	drawParamBox(g);
 
-	drawEncoderValue(g);
+	// drawEncoderValue(g);
 
 	if (buttons_[B_HELP].active()) {
 		drawHelp(g);

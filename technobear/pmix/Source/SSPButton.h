@@ -9,12 +9,12 @@ class SSPButton: public Component
 public:
     SSPButton() {;}
     void init(const String& label) {
-        label_=label;
+        label_ = label;
     }
     void label(const String& label) {
-        label_=label;
+        label_ = label;
     }
-    void active(bool a) {active_=a;}
+    void active(bool a) {active_ = a;}
     bool active() { return active_;}
 
 private:
@@ -22,5 +22,5 @@ private:
     juce_UseDebuggingNewOperator
 
     String label_;
-    bool active_=false;
+    bool active_ = false;
 };

@@ -86,13 +86,14 @@ void SSPChannel::paint(Graphics &g) {
             g.fillRect(bw , y , bw , fh );
             g.setColour(Colours::black);
         }
-        g.drawText("M", bw ,y, bw, fh, Justification::centred);
+        g.drawText("M", bw , y, bw, fh, Justification::centred);
     }
 }
-bool SSPChannel::buttonA() {
+bool SSPChannel::button(unsigned i) {
     switch (butMode_) {
     case BM_MUTESOLO:
-        return data_->solo_;
+        if (i) return data_->mute_;
+        else  return data_->solo_;
     // case BM_HPF:
     //     break;
     default:
@@ -101,38 +102,15 @@ bool SSPChannel::buttonA() {
     return false;
 }
 
-bool SSPChannel::buttonB() {
-    switch (butMode_) {
-    case BM_MUTESOLO:
-        return data_->mute_;
-    // case BM_HPF:
-    //     break;
-    default:
-        ;
-    }
-    return false;
-}
-
-
-void SSPChannel::buttonA(bool b) {
+void SSPChannel::button(unsigned i, bool b) {
     // Logger::writeToLog("buttonA: " + String(b));
     switch (butMode_) {
     case BM_MUTESOLO:
-        data_->solo_ = !data_->solo_ ;
-        break;
-    // case BM_HPF:
-    //     break;
-    default:
-        ;
-    }
-}
-
-
-void SSPChannel::buttonB(bool b) {
-    // Logger::writeToLog("buttonB: " + String(b));
-    switch (butMode_) {
-    case BM_MUTESOLO:
-        data_->mute_ =  !data_->mute_;
+        if (i) {
+            data_->mute_ =  !data_->mute_;
+        } else {
+            data_->solo_ = !data_->solo_ ;
+        }
         break;
     // case BM_HPF:
     //     break;
@@ -142,16 +120,23 @@ void SSPChannel::buttonB(bool b) {
 }
 
 void SSPChannel::encoder(float e) {
+//        gain_=1.0f;
+
     switch (encMode_) {
     case EM_LEVEL:
+        data_->level_[0] = constrain(data_->level_[0] + e, 0.0f, 1.0f);
         break;
     case EM_PAN:
+        data_->pan_ = constrain(data_->pan_ + e, -1.0f, 1.0f);
         break;
     case EM_AUX1:
+        data_->level_[1] = constrain(data_->level_[1] + e, 0.0f, 1.0f);
         break;
     case EM_AUX2:
+        data_->level_[2] = constrain(data_->level_[2] + e, 0.0f, 1.0f);
         break;
     case EM_AUX3:
+        data_->level_[3] = constrain(data_->level_[3] + e, 0.0f, 1.0f);
         break;
     default:
         ;

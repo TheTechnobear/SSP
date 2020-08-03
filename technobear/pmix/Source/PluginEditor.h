@@ -32,7 +32,7 @@ protected:
 	void drawParamBox(Graphics& g);
 	void drawPmix(Graphics& g);
 	void drawHelp(Graphics& g);
-	void drawEncoderValue(Graphics& g);
+	// void drawEncoderValue(Graphics& g);
 
 	void setMenuBounds(SSPButton& btn, unsigned r);
 	void setParamBounds(SSPParam& par, unsigned enc, unsigned var);
@@ -41,11 +41,6 @@ protected:
 private:
 	Pmix& processor_;
 
-	enum Params {
-		// P_POS,
-		P_MAX
-	};
-
 	enum Buttons {
 		B_A_1,  	// mute
 		B_A_2,
@@ -53,7 +48,7 @@ private:
 		B_A_4,
 
 		B_SHIFTR, 	// in14
-		B_UP, 		// out 
+		B_UP, 		// out
 		B_SHIFTL, 	// in58
 
 		B_B_1, 		// solo
@@ -72,20 +67,14 @@ private:
 	};
 
 	void channelEncoder(unsigned c, float v);
-	void channelButtonA(unsigned c, bool v);
-	void channelButtonB(unsigned c, bool v);
-	bool buttonAState(unsigned c);
-	bool buttonBState(unsigned c);
+	void channelButton(unsigned c, unsigned i, bool v);
+	bool buttonState(unsigned c, unsigned i);
 
 	SSPButton buttons_[B_MAX];
-	SSPParam  params_[P_MAX];
 
 	// display only
 	SSPButton globalBtn_, networkBtn_, plugInBtn_, recBtn_;
 
-	SSPParam* 	activeParam_ = nullptr;
-	unsigned 	activeEncIdx_ = 0;
-	unsigned  	paramActive_ = 0;
 	bool 		paramState_[Percussa::sspLast];
 
 	enum TrackSelect {
@@ -95,19 +84,12 @@ private:
 	} activeTracks_ ;
 
 
-	// this includes non-channel modes!
-    enum ButMode {
-        BM_MUTESOLO,
-        // BM_HPF,
-        BM_MISC,
-        BM_MAX
-    } butMode_;
+	unsigned butMode_;
+	unsigned encMode_;
+
 
 	SSPChannel inTracks_[Pmix::I_MAX];
 	SSPChannel outTracks_[Pmix::O_MAX];
-
-	static constexpr unsigned PARAM_COUNTER = 20;
-	unsigned activeParamCount_ = 0;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PmixEditor)
 };

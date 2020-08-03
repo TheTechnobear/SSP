@@ -18,36 +18,36 @@ struct TrackData {
     }
 
     void makeFollow(unsigned f) {
-        dummy_=true;
-        follows_=f;
+        dummy_ = true;
+        follows_ = f;
     }
 
     void init() {
         level_[0] = 1.0f;
-        for(unsigned i=1;i<OUT_TRACKS;i++) level_[i] = 0.0f;
-        pan_=0.0f;
-        gain_=1.0f;
-        mute_=false;
-        solo_=false;
-        dummy_=false;
-        follows_=0;
+        for (unsigned i = 1; i < OUT_TRACKS; i++) level_[i] = 0.0f;
+        pan_ = 0.0f;
+        gain_ = 1.0f;
+        mute_ = false;
+        solo_ = false;
+        dummy_ = false;
+        follows_ = 0;
     }
 
-    static constexpr unsigned OUT_TRACKS = 3;
+    static constexpr unsigned OUT_TRACKS = 4;
     std::atomic<float>  level_[OUT_TRACKS];  // 0==master, >1 = sends
     std::atomic<float>  pan_;    // -1 to 1
-    std::atomic<float>  gain_;   
-    std::atomic<bool>   mute_; 
-    std::atomic<bool>   solo_; 
+    std::atomic<float>  gain_;
+    std::atomic<bool>   mute_;
+    std::atomic<bool>   solo_;
     std::atomic<float>  lvl_;
 
     // only used by processor
-    bool                useRMS_=false;
+    bool                useRMS_ = false;
     bool                dummy_;
     unsigned            follows_; // dummy
-    static constexpr    unsigned MAX_RMS = 100 ; // 1000 / (48000/129)  = 1 block = 2.8 mS, we want ~ 300mS 
-    unsigned            lvlHead_=0;
-    float               lvlSum_=0.0f;
+    static constexpr    unsigned MAX_RMS = 100 ; // 1000 / (48000/129)  = 1 block = 2.8 mS, we want ~ 300mS
+    unsigned            lvlHead_ = 0;
+    float               lvlSum_ = 0.0f;
     float               lvlHistory_[MAX_RMS];
 };
 
@@ -99,8 +99,8 @@ public:
     unsigned numInTracks() { return  IN_T_MAX;}
     unsigned numOutTracks() { return  OUT_T_MAX;}
 
-    TrackData& inputTrack(unsigned t)   {  return t < IN_T_MAX ? inTracks_[t] : inTracks_[IN_T_MAX-1];}
-    TrackData& outputTrack(unsigned t)  {  return t < OUT_T_MAX ? outTracks_[t] : outTracks_[OUT_T_MAX-1];}
+    TrackData& inputTrack(unsigned t)   {  return t < IN_T_MAX ? inTracks_[t] : inTracks_[IN_T_MAX - 1];}
+    TrackData& outputTrack(unsigned t)  {  return t < OUT_T_MAX ? outTracks_[t] : outTracks_[OUT_T_MAX - 1];}
 
 
 
@@ -127,7 +127,7 @@ public:
         O_AUX_3_R,
         O_MAX
     };
-    
+
 protected:
     float cv2Pitch(float r) {
         // SSP SDK
