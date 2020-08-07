@@ -9,11 +9,6 @@ static constexpr unsigned paramSpaceY = 50;
 PmixEditor::PmixEditor (Pmix& p)
 	: AudioProcessorEditor (&p), processor_ (p)
 {
-	// set this to true to see the parameter values update
-	// in the vst plugin GUI (editor) when turning encoders/
-	// pushing buttons
-	Logger::writeToLog("create PmixEditor()");
-
 	processor_.addListener(this);
 
 	setSize (1600, 480);
@@ -128,8 +123,6 @@ PmixEditor::~PmixEditor()
 {
 	processor_.removeListener(this);
 	stopTimer();
-
-	Logger::writeToLog("destroy PmixEditor()");
 }
 
 void PmixEditor::timerCallback()
@@ -560,22 +553,23 @@ void PmixEditor::resized()
 	// params?
 
 
-	const unsigned space = 15;
+	const unsigned space = 5;
 	const unsigned inStart = space;
-	const unsigned w = 60;
+	const unsigned inw = 90;
 	const unsigned h = 325;
 	const unsigned y = 50;
 
 	const unsigned outStart = 900;
+	const unsigned outw = 70;
 
 	for (unsigned i = 0; i < Pmix::I_MAX; i++) {
-		unsigned x = inStart + (i * (space + w));
-		inTracks_[i].setBounds(x, y, w, h);
+    unsigned x = inStart + (i * (space + inw));
+    inTracks_[i].setBounds(x, y, inw, h);
 	}
 
 	for (unsigned i = 0; i < Pmix::O_MAX; i++) {
-		unsigned x = outStart + (i * (space + w));
-		outTracks_[i].setBounds(x, y, w, h);
+		unsigned x = outStart + (i * (space + outw));
+		outTracks_[i].setBounds(x, y, outw, h);
 	}
 
 

@@ -15,12 +15,13 @@ void SSPChannel::paint(Graphics &g) {
         static constexpr float lvlRed       = rescale(dbRed, dbMin, dbMax, 0.0f, 1.0f);
         static constexpr float lvlYellow    = rescale(dbYellow, dbMin, dbMax, 0.0f, 1.0f);
 
-        static constexpr int fh = 12;
+        static constexpr int fh = 16;
         int h = getHeight();
         int w = getWidth();
         int tbh = h - (fh * 10);
         int barbase = tbh + (2 * fh);
-        int bw = w / 3;
+        int bw = w/2;
+        int bx = w/4;
 
 
         g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
@@ -36,7 +37,8 @@ void SSPChannel::paint(Graphics &g) {
         float f = rescale(db, dbMin, dbMax, 0.0f, 1.0f);
 
         g.setColour(Colours::darkgrey);
-        g.fillRect(bw - 1, barbase + 1, bw + 2, -(tbh + 2));
+        int bl=tbh+2;
+        g.fillRect(bx - 1, barbase - bl, bw + 2, bl);
 
 
         int bh = int (f * float(tbh));
@@ -46,16 +48,19 @@ void SSPChannel::paint(Graphics &g) {
         g.setColour(mute ? Colours::lightgrey : Colours::green);
         int gb = barbase;
         int gh = constrain(bh, 0, ypos - 1);
-        g.fillRect(bw, gb, bw, -gh);
+        bl = gh;
+        g.fillRect(bx, gb-bl, bw, bl);
 
         if (bh > ypos) {
             g.setColour(mute ? Colours::lightgrey : Colours::yellow);
             int yh = constrain(bh, 0, rpos - 1);
-            g.fillRect(bw, barbase - ypos, bw, -(yh - ypos));
+            bl = yh-ypos;
+            g.fillRect(bx, barbase - (ypos + bl), bw, bl);
             if (bh > rpos) {
                 g.setColour(mute ? Colours::lightgrey : Colours::red);
                 int rh = constrain(bh, 0, tbh);
-                g.fillRect(bw, barbase - rpos, bw, -(rh - rpos));
+                bl = rh-rpos;
+                g.fillRect(bx, barbase - (rpos + bl), bw, bl );
             }
         }
 
@@ -69,24 +74,24 @@ void SSPChannel::paint(Graphics &g) {
         // solo
         y += 2 * fh;
         g.setColour(Colours::lightgrey);
-        g.drawRect(bw - 1 , y - 1 , bw + 2 , fh + 2);
+        g.drawRect(bx - 1 , y - 1 , bw + 2 , fh + 2);
         if (data_->solo_) {
             g.setColour(Colours::yellow);
-            g.fillRect(bw , y  , bw , fh );
+            g.fillRect(bx , y  , bw , fh );
             g.setColour(Colours::black);
         }
-        g.drawText("S", bw , y , bw, fh, Justification::centred);
+        g.drawText("S", bx , y , bw, fh, Justification::centred);
 
         // mute
         y += 2 * fh;
         g.setColour(Colours::lightgrey);
-        g.drawRect(bw - 1 , y - 1 , bw + 2 , fh + 2);
+        g.drawRect(bx - 1 , y - 1 , bw + 2 , fh + 2);
         if (mute) {
             g.setColour(Colours::red);
-            g.fillRect(bw , y , bw , fh );
+            g.fillRect(bx , y , bw , fh );
             g.setColour(Colours::black);
         }
-        g.drawText("M", bw , y, bw, fh, Justification::centred);
+        g.drawText("M", bx , y, bw, fh, Justification::centred);
     }
 }
 bool SSPChannel::button(unsigned i) {

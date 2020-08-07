@@ -289,21 +289,25 @@ float panGain(bool left, float p) {
     static constexpr float PIdiv2 = M_PI / 2.0f;
     float pan = (p + 1.0f) / 2.0f;
     if (left) {
-        return std::cosf(pan * PIdiv2);
+        return cosf(pan * PIdiv2);
+        //return std::cosf(pan * PIdiv2);
     }
-    return std::sinf(pan * PIdiv2);
+    return sinf(pan * PIdiv2);
+    //return std::sinf(pan * PIdiv2);
 }
 
 void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
     unsigned n = buffer.getNumSamples();
-    bool soloed = false;
+    bool insoloed = false;
+    bool outsoloed = false;
 
     for (unsigned ich = 0; ich < I_MAX; ich++) {
-        soloed |= inTracks_[ich].solo_;
+        insoloed |= inTracks_[ich].solo_;
     }
 
     for (int och = 0; och < O_MAX; och++) {
+        outsoloed |= outTracks_[och].solo_;
         outputBuffers_.applyGain(och, 0, n, 0.0f);
     }
 
@@ -314,7 +318,7 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         auto& inLead = inTracks_[inLeadCh];
 
 
-        bool    muted = inLead.mute_ ||   (soloed && ! inLead.solo_);
+        bool    inMuted = inLead.mute_ ||   (insoloed && ! inLead.solo_);
         float   inMGain = inLead.gain_ + inLead.level_[0]; // MASTER
         auto    inbuf = buffer.getReadPointer(ich);
         inputBuffers_.copyFrom(ich, 0, inbuf, n, inMGain);
@@ -331,7 +335,7 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 
 
         for (unsigned o = 0; o < TrackData::OUT_TRACKS; o++) {
-            if (!muted) {
+            if (!inMuted) {
                 auto&  outTL = outTracks_[o * 2];
                 float outGain = outTL.gain_ + outTL.level_[0];
                 float lOutGain = panGain(true,   outTL.pan_);
@@ -362,19 +366,26 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     // calc output levels, and copy to vst buffer
     for (int och = 0; och < O_MAX; och++) {
 
-        auto& trd = outTracks_[och];
-        float lvl = trd.useRMS_
+        auto& trk = outTracks_[och];
+        unsigned outLead = trk.dummy_ ? trk.follows_ : och;
+        auto& ltrk = outTracks_[outLead];
+        bool  outMuted = ltrk.mute_ ||   (outsoloed && ! ltrk.solo_);
+
+        float lvl = trk.useRMS_
                     ? outputBuffers_.getRMSLevel(och, 0, n)
                     : outputBuffers_.getMagnitude(och, 0, n);
+        
 
-        trd.lvlSum_ -= trd.lvlHistory_[trd.lvlHead_];
-        trd.lvlHistory_[trd.lvlHead_] = lvl;
-        trd.lvlSum_ += trd.lvlHistory_[trd.lvlHead_];
-        trd.lvlHead_ = (trd.lvlHead_ + 1) % TrackData::MAX_RMS;
-        trd.lvl_ = trd.lvlSum_ / TrackData::MAX_RMS;
+        trk.lvlSum_ -= trk.lvlHistory_[trk.lvlHead_];
+        trk.lvlHistory_[trk.lvlHead_] = lvl;
+        trk.lvlSum_ += trk.lvlHistory_[trk.lvlHead_];
+        trk.lvlHead_ = (trk.lvlHead_ + 1) % TrackData::MAX_RMS;
+        trk.lvl_ = trk.lvlSum_ / TrackData::MAX_RMS;
 
-        auto buf = outputBuffers_.getReadPointer(och);
-        buffer.copyFrom(och, 0, buf, n, 1.0);
+        if(!outMuted) {
+            auto buf = outputBuffers_.getReadPointer(och);
+            buffer.copyFrom(och, 0, buf, n, 1.0);
+        }
     }
 }
 
