@@ -30,9 +30,6 @@ protected:
 
 	void drawMenuBox(Graphics& g);
 	void drawParamBox(Graphics& g);
-	void drawPmix(Graphics& g);
-	void drawHelp(Graphics& g);
-	// void drawEncoderValue(Graphics& g);
 
 	void setMenuBounds(SSPButton& btn, unsigned r);
 	void setParamBounds(SSPParam& par, unsigned enc, unsigned var);

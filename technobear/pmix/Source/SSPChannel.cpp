@@ -146,24 +146,30 @@ void SSPChannel::button(unsigned i, bool b) {
     }
 }
 
-void SSPChannel::encoder(float e) {
+void SSPChannel::encoder(float v) {
+    float e=v;
 //        gain_=1.0f;
 
     switch (encMode_) {
     case EM_LEVEL:
-        data_->level_[0] = constrain(data_->level_[0] + e, 0.0f, 1.0f);
+        e= v / 100.0f ;
+        data_->level_[0] = constrain(data_->level_[0] + e, 0.0f, 4.0f);
         break;
     case EM_PAN:
+        e= v / 100.0f ;
         data_->pan_ = constrain(data_->pan_ + e, -1.0f, 1.0f);
         break;
     case EM_AUX1:
-        data_->level_[1] = constrain(data_->level_[1] + e, 0.0f, 1.0f);
+        e= v / 100.0f ;
+        data_->level_[1] = constrain(data_->level_[1] + e, 0.0f, 4.0f);
         break;
     case EM_AUX2:
-        data_->level_[2] = constrain(data_->level_[2] + e, 0.0f, 1.0f);
+        e= v / 100.0f ;
+        data_->level_[2] = constrain(data_->level_[2] + e, 0.0f, 4.0f);
         break;
     case EM_AUX3:
-        data_->level_[3] = constrain(data_->level_[3] + e, 0.0f, 1.0f);
+        e= v / 100.0f ;
+        data_->level_[3] = constrain(data_->level_[3] + e, 0.0f, 4.0f);
         break;
     default:
         ;
@@ -188,7 +194,7 @@ void SSPChannel::encoderMode(EncMode m) {
 }
 
 void SSPChannel::updateParam(bool newMode) {
-    if (param_ && active_) {
+    if (data_ && param_ && active_) {
         switch (encMode_) {
         case EM_LEVEL:
             if (newMode) param_->label("Level");

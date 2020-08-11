@@ -13,7 +13,14 @@ PmixEditor::PmixEditor (Pmix& p)
 
 	setSize (1600, 480);
 
-	startTimer(POLL_TIME);
+	for (unsigned i = 0; i < TS_MAX; i++) {
+        buttonHeldCount_[i]=0;
+    }
+    encMode_=0;
+    butMode_=0;
+	activeTracks_ = OUT_14;
+	curTracks_ = OUT_14;
+
 
 	globalBtn_.init("G");
 	networkBtn_.init("N");
@@ -42,6 +49,7 @@ PmixEditor::PmixEditor (Pmix& p)
 
 	for (int i = 0; i < 4; i++) {
 		params_[i].init("init");
+		addAndMakeVisible(params_[i]);
 	}
 
 	inTracks_[0].init(&params_[0], "In 1", &processor_.inputTrack(0));
@@ -53,7 +61,7 @@ PmixEditor::PmixEditor (Pmix& p)
 	inTracks_[6].init(&params_[2], "In 7", &processor_.inputTrack(6));
 	inTracks_[7].init(&params_[3], "In 8", &processor_.inputTrack(7));
 	for (unsigned i = 0; i < Pmix::I_MAX; i++) {
-		inTracks_[i].active(true);
+		inTracks_[i].active(false);
 		addAndMakeVisible(inTracks_[i]);
 	}
 
@@ -67,7 +75,7 @@ PmixEditor::PmixEditor (Pmix& p)
 	outTracks_[7].init(nullptr, "Aux 3 R", 	&processor_.outputTrack(7));
 
 	for (unsigned i = 0; i < Pmix::O_MAX; i++) {
-		outTracks_[i].active(true);
+		outTracks_[i].active(false);
 		addAndMakeVisible(outTracks_[i]);
 	}
 
@@ -103,12 +111,10 @@ PmixEditor::PmixEditor (Pmix& p)
 	}
 
 
-	activeTracks_ = OUT_14;
 	trackSelect(activeTracks_, true);
 
-	for (int i = 0; i < 4; i++) {
-		addAndMakeVisible(params_[i]);
-	}
+
+	startTimer(POLL_TIME);
 }
 
 PmixEditor::~PmixEditor()
@@ -215,7 +221,7 @@ void PmixEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSwLeft:
 		buttons_[B_LEFT].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
-			encMode_ = encMode_ > 0 ? encMode_-- : (SSPChannel::EM_MAX - 1) ;
+			encMode_ = encMode_ > 0 ? encMode_ - 1 : (SSPChannel::EM_MAX - 1) ;
 			auto m = static_cast<SSPChannel::EncMode>(encMode_);
 			for (int i = 0; i < Pmix::I_MAX ; i++) {
 				inTracks_[i].encoderMode(m);
@@ -228,7 +234,7 @@ void PmixEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSwRight:
 		buttons_[B_RIGHT].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
-			encMode_ = encMode_ <= (SSPChannel::EM_MAX - 1) ?  encMode_++ : 0 ;
+			encMode_ = encMode_ <= (SSPChannel::EM_MAX - 1) ?  encMode_ + 1 : 0 ;
 			auto m = static_cast<SSPChannel::EncMode>(encMode_);
 			for (int i = 0; i < Pmix::I_MAX ; i++) {
 				inTracks_[i].encoderMode(m);
@@ -285,7 +291,8 @@ void PmixEditor::channelEncoder(unsigned c, float v) {
 		break;
 	}
 	case OUT_14: {
-		outTracks_[c].encoder(v);
+		outTracks_[c * 2].encoder(v);
+		outTracks_[c * 2 + 1].encoder(v);
 		break;
 	}
 	default: break;
@@ -365,32 +372,6 @@ void PmixEditor::trackSelect(TrackSelect ts, bool active) {
 	}
 }
 
-
-void PmixEditor::drawHelp(Graphics & g) {
-
-	unsigned x = 900;
-	unsigned y = 40;
-	unsigned space = 30;
-	unsigned yText = y + space * 2;
-	g.setFont(Font(Font::getDefaultMonospacedFontName(), 40, Font::plain));
-	g.drawSingleLineText("Input/Output Help", x, y);
-
-	y = yText;
-	g.setFont(Font(Font::getDefaultMonospacedFontName(), 18, Font::plain));
-	for (unsigned i = 0; i < Pmix::I_MAX; i++) {
-		String s = String("VST IN[") + String(i) + String("] : " + processor_.getInputChannelName(i));
-		g.drawSingleLineText(s, x, y);	y += space;
-	}
-
-	x = x + 300;
-	y = yText;
-
-	for (unsigned i = 0; i < Pmix::O_MAX; i++) {
-		String s = String("VST OUT[") + String(i) + String("] : " + processor_.getOutputChannelName(i));
-		g.drawSingleLineText(s, x, y);	y += space;
-	}
-}
-
 void PmixEditor::drawMenuBox(Graphics & g) {
 	unsigned y = menuTopY - 1;
 	unsigned x = 1530 - 1;
@@ -435,7 +416,6 @@ void PmixEditor::paint(Graphics & g)
 
 	drawMenuBox(g);
 	drawParamBox(g);
-
 }
 
 
