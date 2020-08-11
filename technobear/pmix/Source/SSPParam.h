@@ -16,19 +16,29 @@ public:
     }
 
     void active(unsigned var) {
-        if (active_ != var) repaint();
-        active_ = var;
+        if (active_ != var) {
+            active_ = var;
+            repaint();
+        }
     }
 
     bool active() { return active_;}
 
     void value(float v) {
-        if (v_ != v) repaint();
-        v_ = v;
+        if (v_ != v)  {
+            v_ = v;
+            repaint();
+        }
+    }
+
+    void label(const String& label) {
+        if (label_ != label) {
+            label_ = label;
+            repaint();
+        }
     }
 
     float value() { return v_;}
-
     const String fmt() { return fmt_;}
     const String unit() { return unit_;}
 

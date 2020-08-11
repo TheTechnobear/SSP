@@ -60,9 +60,6 @@ private:
 		B_DOWN,
 		B_RIGHT,
 
-		B_HELP,
-		B_WRITE_PR,
-
 		B_MAX
 	};
 
@@ -80,14 +77,23 @@ private:
 	enum TrackSelect {
 		IN_14,
 		IN_58,
-		OUT_14
-	} activeTracks_ ;
+		OUT_14,
+		TS_MAX
+	} activeTracks_, curTracks_ ;
 
+
+	void trackSelect(TrackSelect ts, bool active);
 
 	unsigned butMode_;
 	unsigned encMode_;
 
 
+	static constexpr unsigned POLL_TIME = 50; // mSec
+	static constexpr unsigned BUT_COUNTER = POLL_TIME * 10; // 0.5 sec
+	unsigned buttonHeldCount_[TS_MAX];
+
+
+	SSPParam   params_[4];
 	SSPChannel inTracks_[Pmix::I_MAX];
 	SSPChannel outTracks_[Pmix::O_MAX];
 

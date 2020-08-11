@@ -4,20 +4,19 @@
 #include <assert.h>
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
+#include "SSPParam.h"
 
 class SSPChannel: public Component
 {
 public:
-    SSPChannel() : data_(nullptr),active_(false) {;}
-    void init(const String& label, TrackData* data)  {
+    SSPChannel() : data_(nullptr), active_(false), param_(nullptr) {;}
+    void init(SSPParam* param, const String& label, TrackData* data)  {
+        param_ = param;
         label_ = label;
         data_ = data;
     }
 
-    void active(bool a) {
-        if (active_ != a) repaint();
-        active_ = a;
-    }
+    void active(bool);
     bool active() { return active_;}
 
     void button(unsigned i, bool b);
@@ -43,12 +42,15 @@ public:
     void encoderMode(EncMode m);
 
 private:
+    void updateParam(bool newMode = false);
+
 
     EncMode encMode_ = EM_LEVEL;
     ButMode butMode_ = BM_MUTESOLO;
     String label_;
     TrackData* data_ = nullptr;
     bool active_ = false;
+    SSPParam* param_ = nullptr;
 
     void paint(Graphics &g);
     juce_UseDebuggingNewOperator

@@ -13,7 +13,7 @@ PmixEditor::PmixEditor (Pmix& p)
 
 	setSize (1600, 480);
 
-	startTimer(50);
+	startTimer(POLL_TIME);
 
 	globalBtn_.init("G");
 	networkBtn_.init("N");
@@ -36,36 +36,35 @@ PmixEditor::PmixEditor (Pmix& p)
 	buttons_[B_B_2].init("Mute");
 	buttons_[B_B_3].init("Mute");
 	buttons_[B_B_4].init("Mute");
-	// buttons_[B_LEFT].init("-PG");
-	// buttons_[B_DOWN].init("-EN");
-	// buttons_[B_RIGHT].init("+PG");
+	buttons_[B_LEFT].init("-EN");
+	buttons_[B_DOWN].init("MODE");
+	buttons_[B_RIGHT].init("+EN");
 
+	for (int i = 0; i < 4; i++) {
+		params_[i].init("init");
+	}
 
-	// buttons_[B_HELP].init("?");
-	// buttons_[B_WRITE_PR].init("WriPr");
-
-
-	inTracks_[0].init("In 1", &processor_.inputTrack(0));
-	inTracks_[1].init("In 2", &processor_.inputTrack(1));
-	inTracks_[2].init("In 3", &processor_.inputTrack(2));
-	inTracks_[3].init("In 4", &processor_.inputTrack(3));
-	inTracks_[4].init("In 5", &processor_.inputTrack(4));
-	inTracks_[5].init("In 6", &processor_.inputTrack(5));
-	inTracks_[6].init("In 7", &processor_.inputTrack(6));
-	inTracks_[7].init("In 8", &processor_.inputTrack(7));
+	inTracks_[0].init(&params_[0], "In 1", &processor_.inputTrack(0));
+	inTracks_[1].init(&params_[1], "In 2", &processor_.inputTrack(1));
+	inTracks_[2].init(&params_[2], "In 3", &processor_.inputTrack(2));
+	inTracks_[3].init(&params_[3], "In 4", &processor_.inputTrack(3));
+	inTracks_[4].init(&params_[0], "In 5", &processor_.inputTrack(4));
+	inTracks_[5].init(&params_[1], "In 6", &processor_.inputTrack(5));
+	inTracks_[6].init(&params_[2], "In 7", &processor_.inputTrack(6));
+	inTracks_[7].init(&params_[3], "In 8", &processor_.inputTrack(7));
 	for (unsigned i = 0; i < Pmix::I_MAX; i++) {
 		inTracks_[i].active(true);
 		addAndMakeVisible(inTracks_[i]);
 	}
 
-	outTracks_[0].init("Main L", 	&processor_.outputTrack(0));
-	outTracks_[1].init("Main R", 	&processor_.outputTrack(1));
-	outTracks_[2].init("Aux 1 L", 	&processor_.outputTrack(2));
-	outTracks_[3].init("Aux 1 R", 	&processor_.outputTrack(3));
-	outTracks_[4].init("Aux 2 L", 	&processor_.outputTrack(4));
-	outTracks_[5].init("Aux 2 R", 	&processor_.outputTrack(5));
-	outTracks_[6].init("Aux 3 L", 	&processor_.outputTrack(6));
-	outTracks_[7].init("Aux 3 R", 	&processor_.outputTrack(7));
+	outTracks_[0].init(&params_[0], "Main L", 	&processor_.outputTrack(0));
+	outTracks_[1].init(nullptr, "Main R", 	&processor_.outputTrack(1));
+	outTracks_[2].init(&params_[1], "Aux 1 L", 	&processor_.outputTrack(2));
+	outTracks_[3].init(nullptr, "Aux 1 R", 	&processor_.outputTrack(3));
+	outTracks_[4].init(&params_[2], "Aux 2 L", 	&processor_.outputTrack(4));
+	outTracks_[5].init(nullptr, "Aux 2 R", 	&processor_.outputTrack(5));
+	outTracks_[6].init(&params_[3], "Aux 3 L", 	&processor_.outputTrack(6));
+	outTracks_[7].init(nullptr, "Aux 3 R", 	&processor_.outputTrack(7));
 
 	for (unsigned i = 0; i < Pmix::O_MAX; i++) {
 		outTracks_[i].active(true);
@@ -99,24 +98,17 @@ PmixEditor::PmixEditor (Pmix& p)
 	}
 	}
 
-
-
-	// buttons_[B_FREEZE].active(processor_.data().f_freeze > 0.5);
-
-
 	for (int i = 0; i < B_MAX; i++) {
 		addAndMakeVisible(buttons_[i]);
 	}
 
-	// parameters
-	// params_[P_POS].init("Pos");
-	// params_[P_POS].value(processor_.data().f_position);
 
-	// params_[P_POS].active(paramActive_ 		== 0);
+	activeTracks_ = OUT_14;
+	trackSelect(activeTracks_, true);
 
-	// paramActive_ = 0;
-	// addAndMakeVisible(params_[P_POS]);
-	// addChildComponent(params_[P_PITCH]);
+	for (int i = 0; i < 4; i++) {
+		addAndMakeVisible(params_[i]);
+	}
 }
 
 PmixEditor::~PmixEditor()
@@ -127,12 +119,9 @@ PmixEditor::~PmixEditor()
 
 void PmixEditor::timerCallback()
 {
-	// if (activeParamCount_ > 0 ) {
-	// 	activeParamCount_--;
-	// 	if (activeParamCount_ == 0) {
-	// 		activeParam_ = nullptr;
-	// 	}
-	// }
+	for (unsigned i = 0; i < TS_MAX; i++) {
+		if (buttonHeldCount_[i] > 0) buttonHeldCount_[i] -= POLL_TIME;
+	}
 	repaint();
 }
 
@@ -176,52 +165,51 @@ void PmixEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEncSw4:
 		break;
 	case Percussa::sspSw1:
+		buttons_[B_A_1].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			channelButton(0, 0, value);
-			buttons_[B_A_1].active(buttonState(0, 0));
 		}
 		break;
 	case Percussa::sspSw2:
+		buttons_[B_A_2].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			channelButton(1, 0, value);
-			buttons_[B_A_2].active(buttonState(0, 1));
 		}
 		break;
 	case Percussa::sspSw3:
+		buttons_[B_A_3].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			channelButton(2, 0, value);
-			buttons_[B_A_3].active(buttonState(0, 2));
 		}
 		break;
 	case Percussa::sspSw4:
+		buttons_[B_A_4].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			channelButton(3, 0, value);
-			buttons_[B_A_4].active(buttonState(0, 3));
 		}
 		break;
 	case Percussa::sspSw5:
+		buttons_[B_B_1].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			channelButton(0, 1, value);
-			buttons_[B_B_1].active(buttonState(1, 0));
 		}
-		// buttons_[B_HELP].active(value > 0.5);
 		break;
 	case Percussa::sspSw6:
+		buttons_[B_B_2].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			channelButton(1, 1, value);
-			buttons_[B_B_2].active(buttonState(1, 1));
 		}
 		break;
 	case Percussa::sspSw7:
+		buttons_[B_B_3].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			channelButton(2, 1, value);
-			buttons_[B_B_3].active(buttonState(1, 2));
 		}
 		break;
 	case Percussa::sspSw8:
+		buttons_[B_B_4].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
 			channelButton(3, 1, value);
-			buttons_[B_B_4].active(buttonState(1, 3));
 		}
 		break;
 	case Percussa::sspSwLeft:
@@ -251,10 +239,8 @@ void PmixEditor::parameterChanged (int index, float value) {
 		}
 		break;
 	case Percussa::sspSwUp:
-		//TODO : non-latching
-		buttons_[B_UP].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
-			activeTracks_ = OUT_14;
+		if (paramState_[index] != value) {
+			trackSelect(OUT_14, value > 0.5);
 		}
 		break;
 	case Percussa::sspSwDown:
@@ -271,17 +257,13 @@ void PmixEditor::parameterChanged (int index, float value) {
 		}
 		break;
 	case Percussa::sspSwShiftL:
-		//TODO : non-latching
-		buttons_[B_SHIFTL].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
-			activeTracks_ = IN_14;
+		if (paramState_[index] != value) {
+			trackSelect(IN_14, value > 0.5);
 		}
 		break;
 	case Percussa::sspSwShiftR:
-		//TODO : non-latching
-		buttons_[B_SHIFTR].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
-			activeTracks_ = IN_58;
+		if (paramState_[index] != value) {
+			trackSelect(IN_58, value > 0.5);
 		}
 		break;
 	default:
@@ -293,16 +275,7 @@ void PmixEditor::parameterChanged (int index, float value) {
 
 
 void PmixEditor::channelEncoder(unsigned c, float v) {
-	TrackSelect ts = activeTracks_;
-	if (paramState_[Percussa::sspSwShiftL]) {
-		ts = IN_14;
-	} else if (paramState_[Percussa::sspSwUp]) {
-		ts = OUT_14;
-	} else if (paramState_[Percussa::sspSwShiftR]) {
-		ts = IN_58;
-	}
-
-	switch (ts) {
+	switch (curTracks_) {
 	case IN_14: {
 		inTracks_[c].encoder(v);
 		break;
@@ -315,21 +288,13 @@ void PmixEditor::channelEncoder(unsigned c, float v) {
 		outTracks_[c].encoder(v);
 		break;
 	}
+	default: break;
 	}
 }
 
 
 void PmixEditor::channelButton(unsigned c, unsigned i, bool v) {
-	TrackSelect ts = activeTracks_;
-	if (paramState_[Percussa::sspSwShiftL]) {
-		ts = IN_14;
-	} else if (paramState_[Percussa::sspSwUp]) {
-		ts = OUT_14;
-	} else if (paramState_[Percussa::sspSwShiftR]) {
-		ts = IN_58;
-	}
-
-	switch (ts) {
+	switch (curTracks_) {
 	case IN_14: {
 		inTracks_[c].button(i, v);
 		break;
@@ -343,6 +308,7 @@ void PmixEditor::channelButton(unsigned c, unsigned i, bool v) {
 		outTracks_[c * 2 + 1].button(i, v);
 		break;
 	}
+	default: break;
 	}
 }
 
@@ -366,10 +332,39 @@ bool PmixEditor::buttonState(unsigned c, unsigned i) {
 	case OUT_14: {
 		return outTracks_[c * 2].button(i) || outTracks_[c * 2  + 1].button(i);
 	}
+	default: break;
 	}
 
 	return false;
 }
+
+
+void PmixEditor::trackSelect(TrackSelect ts, bool active) {
+	if (active) {
+		buttonHeldCount_[ts] = BUT_COUNTER;
+		curTracks_ = ts;
+	}
+	else {
+		if (buttonHeldCount_[ts] > 0) {
+			activeTracks_ = ts;
+		}
+		curTracks_ = activeTracks_;
+		buttonHeldCount_[ts] = 0;
+	}
+
+	buttons_[B_SHIFTL].active(curTracks_ == IN_14);
+	buttons_[B_UP].active(curTracks_ == OUT_14);
+	buttons_[B_SHIFTR].active(curTracks_ == IN_58);
+
+	for (int i = 0; i < Pmix::I_MAX ; i++) {
+		inTracks_[i].active( (curTracks_ == IN_14 && i < 5 ) || (curTracks_ == IN_58 && i > 4) ) ;
+	}
+
+	for (int i = 0; i < Pmix::O_MAX ; i++) {
+		outTracks_[i].active(curTracks_ == OUT_14);
+	}
+}
+
 
 void PmixEditor::drawHelp(Graphics & g) {
 
@@ -394,23 +389,6 @@ void PmixEditor::drawHelp(Graphics & g) {
 		String s = String("VST OUT[") + String(i) + String("] : " + processor_.getOutputChannelName(i));
 		g.drawSingleLineText(s, x, y);	y += space;
 	}
-}
-
-void PmixEditor::drawPmix(Graphics & g) {
-	// unsigned x = 1100;
-	// unsigned y = 150;
-	// unsigned d = 100;
-	// unsigned sp = 75;
-
-	// g.setColour(Colours::white);
-	// g.fillEllipse(x, y, d, d);
-	// g.fillEllipse(x + sp, y, d, d);
-
-	// x = x - sp / 2;
-	// y = y + sp;
-	// g.fillEllipse(x, y, d, d);
-	// g.fillEllipse(x + sp, y, d, d);
-	// g.fillEllipse(x + (2 * sp), y, d, d);
 }
 
 void PmixEditor::drawMenuBox(Graphics & g) {
@@ -440,35 +418,6 @@ void PmixEditor::drawParamBox(Graphics & g) {
 	}
 }
 
-
-// void PmixEditor::drawEncoderValue(Graphics & g) {
-// 	if (activeParam_ != nullptr) {
-// 		unsigned butLeftX = 900 - 1;
-// 		String val = String::formatted(activeParam_->fmt(), activeParam_->value());
-// 		if (activeParam_->unit().length()) { val = val + " " + activeParam_->unit();}
-
-// 		static constexpr unsigned pw = unsigned(900.0f / 8.0f);
-
-// 		unsigned activeParamIdx = (activeEncIdx_ * 2) + paramActive_ % 2;
-
-// 		g.setColour(Colours::red);
-// 		g.drawHorizontalLine(40, 0, butLeftX);
-// 		g.drawVerticalLine(0, 40, paramTopY);
-// 		g.drawVerticalLine(butLeftX, 40, paramTopY - 1);
-// 		g.drawHorizontalLine(paramTopY - 1, 0,  activeParamIdx * pw);
-// 		g.drawHorizontalLine(paramTopY - 1, (activeParamIdx + 1)* pw, butLeftX);
-
-// 		g.drawVerticalLine(activeParamIdx * pw, paramTopY, 1600 - 1);
-// 		g.drawVerticalLine((activeParamIdx + 1) * pw, paramTopY, 1600 - 1);
-// 		// g.drawHorizontalLine(1600-1, activeParamIdx * pw, (activeParamIdx+1)* pw);
-
-// 		g.setColour(Colours::white);
-// 		g.setFont(Font(Font::getDefaultMonospacedFontName(), 180, Font::plain));
-
-// 		g.drawText(val, 0, 40, butLeftX, paramTopY - 40 - 40, Justification::centred);
-// 	}
-// }
-
 void PmixEditor::paint(Graphics & g)
 {
 	// display 1600x 480
@@ -487,13 +436,6 @@ void PmixEditor::paint(Graphics & g)
 	drawMenuBox(g);
 	drawParamBox(g);
 
-	// drawEncoderValue(g);
-
-	if (buttons_[B_HELP].active()) {
-		drawHelp(g);
-	} else {
-		drawPmix(g);
-	}
 }
 
 
@@ -550,7 +492,10 @@ void PmixEditor::resized()
 	// setButtonBounds(buttons_[B_HELP], 	1, 0);
 	// setButtonBounds(buttons_[B_WRITE_PR], 1, 2);
 
-	// params?
+	// params
+	for (unsigned i = 0; i < 4; i++) {
+		setParamBounds(params_[i], i, 0);
+	}
 
 
 	const unsigned space = 5;
@@ -563,8 +508,8 @@ void PmixEditor::resized()
 	const unsigned outw = 70;
 
 	for (unsigned i = 0; i < Pmix::I_MAX; i++) {
-    unsigned x = inStart + (i * (space + inw));
-    inTracks_[i].setBounds(x, y, inw, h);
+		unsigned x = inStart + (i * (space + inw));
+		inTracks_[i].setBounds(x, y, inw, h);
 	}
 
 	for (unsigned i = 0; i < Pmix::O_MAX; i++) {
