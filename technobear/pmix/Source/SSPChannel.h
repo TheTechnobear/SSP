@@ -20,7 +20,9 @@ public:
     bool active() { return active_;}
 
     void button(unsigned i, bool b);
+    void encbutton(bool b);
     void encoder(float e);
+
     bool button(unsigned i);
 
     enum EncMode {
@@ -29,6 +31,7 @@ public:
         EM_AUX1,
         EM_AUX2,
         EM_AUX3,
+        EM_GAIN,
         EM_MAX
     };
 

@@ -82,40 +82,7 @@ PmixEditor::PmixEditor (Pmix& p)
 
 
 	butMode_ = SSPChannel::BM_SOLOMUTE;
-	switch (butMode_) {
-	case SSPChannel::BM_SOLOMUTE: {
-		buttons_[B_A_1].label("Solo");
-		buttons_[B_A_2].label("Solo");
-		buttons_[B_A_3].label("Solo");
-		buttons_[B_A_4].label("Solo");
-		buttons_[B_B_1].label("Mute");
-		buttons_[B_B_2].label("Mute");
-		buttons_[B_B_3].label("Mute");
-		buttons_[B_B_4].label("Mute");
-	}
-	break;
-	case SSPChannel::BM_CUEAC: {
-		buttons_[B_A_1].label("Cue");
-		buttons_[B_A_2].label("Cue");
-		buttons_[B_A_3].label("Cue");
-		buttons_[B_A_4].label("Cue");
-		buttons_[B_B_1].label("AC");
-		buttons_[B_B_2].label("AC");
-		buttons_[B_B_3].label("AC");
-		buttons_[B_B_4].label("AC");
-	}
-	break;
-	default: {
-		buttons_[B_A_1].label("");
-		buttons_[B_A_2].label("");
-		buttons_[B_A_3].label("");
-		buttons_[B_A_4].label("");
-		buttons_[B_B_1].label("");
-		buttons_[B_B_2].label("");
-		buttons_[B_B_3].label("");
-		buttons_[B_B_4].label("");
-	}
-	}
+	labelButtons();
 
 	for (unsigned i = 0; i < B_MAX; i++) {
 		addAndMakeVisible(buttons_[i]);
@@ -174,12 +141,24 @@ void PmixEditor::parameterChanged (int index, float value) {
 		channelEncoder(3, value);
 		break;
 	case Percussa::sspEncSw1:
+		if (paramState_[index] != value && !value) {
+			channelEncoderButton(0, value);
+		}
 		break;
 	case Percussa::sspEncSw2:
+		if (paramState_[index] != value && !value) {
+			channelEncoderButton(1, value);
+		}
 		break;
 	case Percussa::sspEncSw3:
+		if (paramState_[index] != value && !value) {
+			channelEncoderButton(2, value);
+		}
 		break;
 	case Percussa::sspEncSw4:
+		if (paramState_[index] != value && !value) {
+			channelEncoderButton(3, value);
+		}
 		break;
 	case Percussa::sspSw1:
 		buttons_[B_A_1].active(value > 0.5);
@@ -245,7 +224,7 @@ void PmixEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSwRight:
 		buttons_[B_RIGHT].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
-			encMode_ = encMode_ <= (SSPChannel::EM_MAX - 1) ?  encMode_ + 1 : 0 ;
+			encMode_ = encMode_ < (SSPChannel::EM_MAX - 1) ?  encMode_ + 1 : 0 ;
 			auto m = static_cast<SSPChannel::EncMode>(encMode_);
 			for (unsigned i = 0; i < Pmix::I_MAX ; i++) {
 				inTracks_[i].encoderMode(m);
@@ -263,7 +242,7 @@ void PmixEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSwDown:
 		buttons_[B_DOWN].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
-			butMode_ = butMode_ <= (SSPChannel::BM_MAX - 1) ? butMode_+1 : 0 ;
+			butMode_ = butMode_ < (SSPChannel::BM_MAX - 1) ? butMode_ + 1 : 0 ;
 			auto m = static_cast<SSPChannel::ButMode>(butMode_);
 			for (unsigned i = 0; i < Pmix::I_MAX ; i++) {
 				inTracks_[i].buttonMode(m);
@@ -271,40 +250,7 @@ void PmixEditor::parameterChanged (int index, float value) {
 			for (unsigned i = 0; i < Pmix::O_MAX ; i++) {
 				outTracks_[i].buttonMode(m);
 			}
-			switch (butMode_) {
-			case SSPChannel::BM_SOLOMUTE: {
-				buttons_[B_A_1].label("Solo");
-				buttons_[B_A_2].label("Solo");
-				buttons_[B_A_3].label("Solo");
-				buttons_[B_A_4].label("Solo");
-				buttons_[B_B_1].label("Mute");
-				buttons_[B_B_2].label("Mute");
-				buttons_[B_B_3].label("Mute");
-				buttons_[B_B_4].label("Mute");
-			}
-			break;
-			case SSPChannel::BM_CUEAC: {
-				buttons_[B_A_1].label("Cue");
-				buttons_[B_A_2].label("Cue");
-				buttons_[B_A_3].label("Cue");
-				buttons_[B_A_4].label("Cue");
-				buttons_[B_B_1].label("AC");
-				buttons_[B_B_2].label("AC");
-				buttons_[B_B_3].label("AC");
-				buttons_[B_B_4].label("AC");
-			}
-			break;
-			default: {
-				buttons_[B_A_1].label("");
-				buttons_[B_A_2].label("");
-				buttons_[B_A_3].label("");
-				buttons_[B_A_4].label("");
-				buttons_[B_B_1].label("");
-				buttons_[B_B_2].label("");
-				buttons_[B_B_3].label("");
-				buttons_[B_B_4].label("");
-			}
-			}
+			labelButtons();
 		}
 		break;
 	case Percussa::sspSwShiftL:
@@ -343,6 +289,27 @@ void PmixEditor::channelEncoder(unsigned c, float v) {
 	default: break;
 	}
 }
+
+
+void PmixEditor::channelEncoderButton(unsigned c, bool v) {
+	switch (curTracks_) {
+	case IN_14: {
+		inTracks_[c].encbutton(v);
+		break;
+	}
+	case IN_58: {
+		inTracks_[c + 4].encbutton(v);
+		break;
+	}
+	case OUT_14: {
+		outTracks_[c * 2].encbutton(v);
+		outTracks_[c * 2 + 1].encbutton(v);
+		break;
+	}
+	default: break;
+	}
+}
+
 
 
 void PmixEditor::channelButton(unsigned c, unsigned i, bool v) {
@@ -533,6 +500,42 @@ void PmixEditor::setButtonBounds(SSPButton & btn, unsigned r, unsigned c)
 	btn.setBounds(x, y, w, h);
 }
 
+void PmixEditor::labelButtons() {
+	switch (butMode_) {
+	case SSPChannel::BM_SOLOMUTE: {
+		buttons_[B_A_1].label("Solo");
+		buttons_[B_A_2].label("Solo");
+		buttons_[B_A_3].label("Solo");
+		buttons_[B_A_4].label("Solo");
+		buttons_[B_B_1].label("Mute");
+		buttons_[B_B_2].label("Mute");
+		buttons_[B_B_3].label("Mute");
+		buttons_[B_B_4].label("Mute");
+	}
+	break;
+	case SSPChannel::BM_CUEAC: {
+		buttons_[B_A_1].label("Cue");
+		buttons_[B_A_2].label("Cue");
+		buttons_[B_A_3].label("Cue");
+		buttons_[B_A_4].label("Cue");
+		buttons_[B_B_1].label("AC");
+		buttons_[B_B_2].label("AC");
+		buttons_[B_B_3].label("AC");
+		buttons_[B_B_4].label("AC");
+	}
+	break;
+	default: {
+		buttons_[B_A_1].label("");
+		buttons_[B_A_2].label("");
+		buttons_[B_A_3].label("");
+		buttons_[B_A_4].label("");
+		buttons_[B_B_1].label("");
+		buttons_[B_B_2].label("");
+		buttons_[B_B_3].label("");
+		buttons_[B_B_4].label("");
+	}
+	}
+}
 
 void PmixEditor::resized()
 {

@@ -71,25 +71,25 @@ Pmix::Pmix()
     memset(params_, 0, sizeof(params_));
     initTracks();
 
-    File f(presetProgramDir);
-    if (!f.isDirectory()) {
-        if (f.exists()) {
-            Logger::writeToLog("Unable to create plugin.presets directory for plugin");
-        } else {
-            f.createDirectory();
-        }
-    }
+    // File f(presetProgramDir);
+    // if (!f.isDirectory()) {
+    //     if (f.exists()) {
+    //         Logger::writeToLog("Unable to create plugin.presets directory for plugin");
+    //     } else {
+    //         f.createDirectory();
+    //     }
+    // }
 
-    for (int i = 0; i < NUM_PROGRAM_SLOTS; i++) {
-        String fn(String(presetProgramDir) + File::separatorString + String::formatted("%03.0f", float(i))  + String(".json"));
-        File f(fn);
-        if (!f.exists()) {
-            f.create();
-            currentProgram_ = i;
-            writeToJson();
-        }
-        currentProgram_ = -1;
-    }
+    // for (int i = 0; i < NUM_PROGRAM_SLOTS; i++) {
+    //     String fn(String(presetProgramDir) + File::separatorString + String::formatted("%03.0f", float(i))  + String(".json"));
+    //     File f(fn);
+    //     if (!f.exists()) {
+    //         f.create();
+    //         currentProgram_ = i;
+    //         writeToJson();
+    //     }
+    //     currentProgram_ = -1;
+    // }
 }
 
 Pmix::~Pmix()

@@ -178,11 +178,43 @@ void SSPChannel::encoder(float v) {
         e= v / 100.0f ;
         data_->level_[3] = constrain(data_->level_[3] + e, 0.0f, 4.0f);
         break;
+    case EM_GAIN:
+        e= v / 100.0f ;
+        data_->gain_ = constrain(data_->gain_ + e, 0.0f, 3.0f);
+        break;
     default:
         ;
     }
     updateParam();
 }
+
+
+void SSPChannel::encbutton(bool b) {
+    switch (encMode_) {
+    case EM_LEVEL:
+        data_->level_[0] = data_->level_[0] == 1.0 ? 0.0f : 1.0f;
+        break;
+    case EM_PAN:
+        data_->pan_ = 0.0f;
+        break;
+    case EM_AUX1:
+        data_->level_[1] = data_->level_[1] == 1.0 ? 0.0f : 1.0f;
+        break;
+    case EM_AUX2:
+        data_->level_[2] = data_->level_[2] == 1.0 ? 0.0f : 1.0f;
+        break;
+    case EM_AUX3:
+        data_->level_[3] = data_->level_[3] == 1.0 ? 0.0f : 1.0f;
+        break;
+    case EM_GAIN:
+        break;
+        data_->gain_ = 0.0f;
+    default:
+        ;
+    }
+    updateParam();        
+}
+
 
 
 
@@ -222,6 +254,10 @@ void SSPChannel::updateParam(bool newMode) {
         case EM_AUX3:
             if (newMode) param_->label("Aux3");
             param_->value(data_->level_[3]);
+            break;
+        case EM_GAIN:
+            if (newMode) param_->label("Gain");
+            param_->value(data_->gain_);
             break;
         default:
             ;

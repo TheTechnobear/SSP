@@ -60,9 +60,11 @@ private:
 		B_MAX
 	};
 
+	void channelEncoderButton(unsigned c, bool v);
 	void channelEncoder(unsigned c, float v);
 	void channelButton(unsigned c, unsigned i, bool v);
 	bool buttonState(unsigned c, unsigned i);
+	void labelButtons();
 
 	SSPButton buttons_[B_MAX];
 
