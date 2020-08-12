@@ -47,7 +47,7 @@ PmixEditor::PmixEditor (Pmix& p)
 	buttons_[B_DOWN].init("MODE");
 	buttons_[B_RIGHT].init("+EN");
 
-	for (int i = 0; i < 4; i++) {
+	for (unsigned i = 0; i < 4; i++) {
 		params_[i].init("init");
 		addAndMakeVisible(params_[i]);
 	}
@@ -117,7 +117,7 @@ PmixEditor::PmixEditor (Pmix& p)
 	}
 	}
 
-	for (int i = 0; i < B_MAX; i++) {
+	for (unsigned i = 0; i < B_MAX; i++) {
 		addAndMakeVisible(buttons_[i]);
 	}
 
@@ -234,10 +234,10 @@ void PmixEditor::parameterChanged (int index, float value) {
 		if (paramState_[index] != value && !value) {
 			encMode_ = encMode_ > 0 ? encMode_ - 1 : (SSPChannel::EM_MAX - 1) ;
 			auto m = static_cast<SSPChannel::EncMode>(encMode_);
-			for (int i = 0; i < Pmix::I_MAX ; i++) {
+			for (unsigned i = 0; i < Pmix::I_MAX ; i++) {
 				inTracks_[i].encoderMode(m);
 			}
-			for (int i = 0; i < Pmix::O_MAX ; i++) {
+			for (unsigned i = 0; i < Pmix::O_MAX ; i++) {
 				outTracks_[i].encoderMode(m);
 			}
 		}
@@ -247,10 +247,10 @@ void PmixEditor::parameterChanged (int index, float value) {
 		if (paramState_[index] != value && !value) {
 			encMode_ = encMode_ <= (SSPChannel::EM_MAX - 1) ?  encMode_ + 1 : 0 ;
 			auto m = static_cast<SSPChannel::EncMode>(encMode_);
-			for (int i = 0; i < Pmix::I_MAX ; i++) {
+			for (unsigned i = 0; i < Pmix::I_MAX ; i++) {
 				inTracks_[i].encoderMode(m);
 			}
-			for (int i = 0; i < Pmix::O_MAX ; i++) {
+			for (unsigned i = 0; i < Pmix::O_MAX ; i++) {
 				outTracks_[i].encoderMode(m);
 			}
 		}
@@ -265,10 +265,10 @@ void PmixEditor::parameterChanged (int index, float value) {
 		if (paramState_[index] != value && !value) {
 			butMode_ = butMode_ <= (SSPChannel::BM_MAX - 1) ? butMode_+1 : 0 ;
 			auto m = static_cast<SSPChannel::ButMode>(butMode_);
-			for (int i = 0; i < Pmix::I_MAX ; i++) {
+			for (unsigned i = 0; i < Pmix::I_MAX ; i++) {
 				inTracks_[i].buttonMode(m);
 			}
-			for (int i = 0; i < Pmix::O_MAX ; i++) {
+			for (unsigned i = 0; i < Pmix::O_MAX ; i++) {
 				outTracks_[i].buttonMode(m);
 			}
 			switch (butMode_) {
@@ -365,16 +365,7 @@ void PmixEditor::channelButton(unsigned c, unsigned i, bool v) {
 }
 
 bool PmixEditor::buttonState(unsigned c, unsigned i) {
-	TrackSelect ts = activeTracks_;
-	if (paramState_[Percussa::sspSwShiftL]) {
-		ts = IN_14;
-	} else if (paramState_[Percussa::sspSwUp]) {
-		ts = OUT_14;
-	} else if (paramState_[Percussa::sspSwShiftR]) {
-		ts = IN_58;
-	}
-
-	switch (ts) {
+	switch (curTracks_) {
 	case IN_14: {
 		return inTracks_[c].button(i);
 	}
@@ -408,11 +399,11 @@ void PmixEditor::trackSelect(TrackSelect ts, bool active) {
 	buttons_[B_UP].active(curTracks_ == OUT_14);
 	buttons_[B_SHIFTR].active(curTracks_ == IN_58);
 
-	for (int i = 0; i < Pmix::I_MAX ; i++) {
+	for (unsigned i = 0; i < Pmix::I_MAX ; i++) {
 		inTracks_[i].active( (curTracks_ == IN_14 && i < 5 ) || (curTracks_ == IN_58 && i > 4) ) ;
 	}
 
-	for (int i = 0; i < Pmix::O_MAX ; i++) {
+	for (unsigned i = 0; i < Pmix::O_MAX ; i++) {
 		outTracks_[i].active(curTracks_ == OUT_14);
 	}
 }
@@ -424,7 +415,7 @@ void PmixEditor::drawMenuBox(Graphics & g) {
 	g.setColour(Colours::grey);
 	g.drawVerticalLine(x, y, butTopY);
 	g.drawVerticalLine(1600 - 1, y, butTopY);
-	for (int i = 0; i < 5; i++) {
+	for (unsigned i = 0; i < 5; i++) {
 		g.drawHorizontalLine(y + i * 45, x, 1600 - 1);
 	}
 
@@ -439,7 +430,7 @@ void PmixEditor::drawParamBox(Graphics & g) {
 	g.drawHorizontalLine(y, x, 1600 - 1);
 	g.drawHorizontalLine(y + paramSpaceY, x, 1600 - 1);
 	g.drawHorizontalLine(480 - 1, x, 1600 - 1);
-	for (int i = 0; i < 8; i++ ) {
+	for (unsigned i = 0; i < 8; i++ ) {
 		g.drawVerticalLine(x + i * 100 , butTopY, 480 - 1);
 	}
 }

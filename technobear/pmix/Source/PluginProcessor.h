@@ -26,7 +26,7 @@ struct TrackData {
         level_[0] = 1.0f;
         for (unsigned i = 1; i < OUT_TRACKS; i++) level_[i] = 0.0f;
         pan_ = 0.0f;
-        gain_ = 1.0f;
+        gain_ = 0.0f;
         mute_ = false;
         solo_ = false;
         cue_ = false;

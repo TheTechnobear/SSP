@@ -320,8 +320,9 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 
         bool    inMuted = inLead.mute_ ||   (insoloed && ! inLead.solo_);
         float   inMGain = inLead.gain_ + inLead.level_[0]; // MASTER
-        auto    inbuf = buffer.getReadPointer(ich);
-        inputBuffers_.copyFrom(ich, 0, inbuf, n, inMGain);
+        auto    originbuf = buffer.getReadPointer(ich);
+        inputBuffers_.copyFrom(ich, 0, originbuf, n, inMGain);
+
 
         if(inLead.ac_) {
             for(unsigned i=0;i< buffer.getNumSamples();i++) {
@@ -331,6 +332,7 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
                 inputBuffers_.setSample(ich,i,out);
             }
         }
+        auto    inbuf = inputBuffers_.getReadPointer(ich);
 
         float inlvl = inTrack.useRMS_
                       ? inputBuffers_.getRMSLevel(ich, 0, n)
