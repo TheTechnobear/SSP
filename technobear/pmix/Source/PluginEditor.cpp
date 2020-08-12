@@ -81,9 +81,9 @@ PmixEditor::PmixEditor (Pmix& p)
 
 
 
-	butMode_ = SSPChannel::BM_MUTESOLO;
+	butMode_ = SSPChannel::BM_SOLOMUTE;
 	switch (butMode_) {
-	case SSPChannel::BM_MUTESOLO: {
+	case SSPChannel::BM_SOLOMUTE: {
 		buttons_[B_A_1].label("Solo");
 		buttons_[B_A_2].label("Solo");
 		buttons_[B_A_3].label("Solo");
@@ -92,6 +92,17 @@ PmixEditor::PmixEditor (Pmix& p)
 		buttons_[B_B_2].label("Mute");
 		buttons_[B_B_3].label("Mute");
 		buttons_[B_B_4].label("Mute");
+	}
+	break;
+	case SSPChannel::BM_CUEAC: {
+		buttons_[B_A_1].label("Cue");
+		buttons_[B_A_2].label("Cue");
+		buttons_[B_A_3].label("Cue");
+		buttons_[B_A_4].label("Cue");
+		buttons_[B_B_1].label("AC");
+		buttons_[B_B_2].label("AC");
+		buttons_[B_B_3].label("AC");
+		buttons_[B_B_4].label("AC");
 	}
 	break;
 	default: {
@@ -252,13 +263,47 @@ void PmixEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSwDown:
 		buttons_[B_DOWN].active(value > 0.5);
 		if (paramState_[index] != value && !value) {
-			butMode_ = butMode_ <= (SSPChannel::BM_MAX - 1) ? butMode_++ : 0 ;
+			butMode_ = butMode_ <= (SSPChannel::BM_MAX - 1) ? butMode_+1 : 0 ;
 			auto m = static_cast<SSPChannel::ButMode>(butMode_);
 			for (int i = 0; i < Pmix::I_MAX ; i++) {
 				inTracks_[i].buttonMode(m);
 			}
 			for (int i = 0; i < Pmix::O_MAX ; i++) {
 				outTracks_[i].buttonMode(m);
+			}
+			switch (butMode_) {
+			case SSPChannel::BM_SOLOMUTE: {
+				buttons_[B_A_1].label("Solo");
+				buttons_[B_A_2].label("Solo");
+				buttons_[B_A_3].label("Solo");
+				buttons_[B_A_4].label("Solo");
+				buttons_[B_B_1].label("Mute");
+				buttons_[B_B_2].label("Mute");
+				buttons_[B_B_3].label("Mute");
+				buttons_[B_B_4].label("Mute");
+			}
+			break;
+			case SSPChannel::BM_CUEAC: {
+				buttons_[B_A_1].label("Cue");
+				buttons_[B_A_2].label("Cue");
+				buttons_[B_A_3].label("Cue");
+				buttons_[B_A_4].label("Cue");
+				buttons_[B_B_1].label("AC");
+				buttons_[B_B_2].label("AC");
+				buttons_[B_B_3].label("AC");
+				buttons_[B_B_4].label("AC");
+			}
+			break;
+			default: {
+				buttons_[B_A_1].label("");
+				buttons_[B_A_2].label("");
+				buttons_[B_A_3].label("");
+				buttons_[B_A_4].label("");
+				buttons_[B_B_1].label("");
+				buttons_[B_B_2].label("");
+				buttons_[B_B_3].label("");
+				buttons_[B_B_4].label("");
+			}
 			}
 		}
 		break;
@@ -412,10 +457,61 @@ void PmixEditor::paint(Graphics & g)
 	g.setColour(Colours::yellow);
 	g.drawSingleLineText("pmix performance mixer", 20, 30 );
 	g.setColour(Colours::grey);
-	g.drawSingleLineText("preset : " + String(processor_.getCurrentProgram()), 1400, 30);
+	// g.drawSingleLineText("preset : " + String(processor_.getCurrentProgram()), 1400, 30);
 
 	drawMenuBox(g);
 	drawParamBox(g);
+
+	switch (butMode_) {
+	case SSPChannel::BM_SOLOMUTE: {
+		switch(curTracks_) {
+			case IN_14: {
+				for(unsigned i=0;i<4;i++) buttons_[B_A_1+i].active(processor_.inputTrack(i).solo_);
+				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.inputTrack(i).mute_);
+				break;
+			}
+			case IN_58: {
+				for(unsigned i=0;i<4;i++) buttons_[B_A_1+i].active(processor_.inputTrack(4+i).solo_);
+				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.inputTrack(2+i).mute_);
+				break;
+			}
+			case OUT_14: {
+				for(unsigned i =0;i<4;i++) buttons_[B_A_1+i].active(processor_.outputTrack(i).solo_);
+				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.outputTrack(i).mute_);
+				break;
+			}
+			default:
+				;
+		}
+	}
+	break;
+	case SSPChannel::BM_CUEAC: {
+		switch(curTracks_) {
+			case IN_14: {
+				for(unsigned i=0;i<4;i++) buttons_[B_A_1+i].active(processor_.inputTrack(i).cue_);
+				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.inputTrack(i).ac_);
+				break;
+			}
+			case IN_58: {
+				for(unsigned i=0;i<4;i++) buttons_[B_A_1+i].active(processor_.inputTrack(4+i).cue_);
+				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.inputTrack(2+i).ac_);
+				break;
+			}
+			case OUT_14: {
+				for(unsigned i =0;i<4;i++) buttons_[B_A_1+i].active(processor_.outputTrack(i).cue_);
+				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.outputTrack(i).ac_);
+				break;
+			}
+			default:
+				;
+		}
+	}
+	break;
+
+	default:
+	break;
+	}
+
 }
 
 

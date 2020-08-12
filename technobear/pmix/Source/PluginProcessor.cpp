@@ -323,6 +323,15 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         auto    inbuf = buffer.getReadPointer(ich);
         inputBuffers_.copyFrom(ich, 0, inbuf, n, inMGain);
 
+        if(inLead.ac_) {
+            for(unsigned i=0;i< buffer.getNumSamples();i++) {
+                float out=0.0f;
+                float in=inputBuffers_.getSample(ich,i);
+                dcBlock(in, inTrack.dcX1_, out, inTrack.dcY1_);
+                inputBuffers_.setSample(ich,i,out);
+            }
+        }
+
         float inlvl = inTrack.useRMS_
                       ? inputBuffers_.getRMSLevel(ich, 0, n)
                       : inputBuffers_.getMagnitude(ich, 0, n);
@@ -506,6 +515,12 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 
 void Pmix::initTracks() {
+    for(unsigned ich=0;ich<I_MAX;ich++) {
+        auto& inTrack = inTracks_[ich];
+        //default input tracks to have dc blocking
+        inTrack.ac_=true;
+    }
+
     // outTracks_[0]// main master
     outTracks_[1].makeFollow(0);
     // outTracks_[2]// aux1

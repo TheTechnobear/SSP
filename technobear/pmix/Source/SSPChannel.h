@@ -33,8 +33,8 @@ public:
     };
 
     enum ButMode {
-        BM_MUTESOLO,
-        // BM_HPF,
+        BM_SOLOMUTE,
+        BM_CUEAC,
         BM_MAX
     };
 
@@ -46,7 +46,7 @@ private:
 
 
     EncMode encMode_ = EM_LEVEL;
-    ButMode butMode_ = BM_MUTESOLO;
+    ButMode butMode_ = BM_SOLOMUTE;
     String label_;
     TrackData* data_ = nullptr;
     bool active_ = false;

@@ -29,26 +29,38 @@ struct TrackData {
         gain_ = 1.0f;
         mute_ = false;
         solo_ = false;
+        cue_ = false;
+        ac_ = false;
         dummy_ = false;
         follows_ = 0;
     }
 
     static constexpr unsigned OUT_TRACKS = 4;
+    static constexpr unsigned MASTER = 0;
+    static constexpr unsigned CUE = 1;
+    
     std::atomic<float>  level_[OUT_TRACKS];  // 0==master, >1 = sends
     std::atomic<float>  pan_;    // -1 to 1
     std::atomic<float>  gain_;
     std::atomic<bool>   mute_;
     std::atomic<bool>   solo_;
     std::atomic<float>  lvl_;
+    std::atomic<bool>   cue_;
+    std::atomic<bool>   ac_; 
 
-    // only used by processor
-    bool                useRMS_ = false;
     bool                dummy_;
     unsigned            follows_; // dummy
+
+    // only used by processor
+    // RMS
+    bool                useRMS_ = false;
     static constexpr    unsigned MAX_RMS = 100 ; // 1000 / (48000/129)  = 1 block = 2.8 mS, we want ~ 300mS
     unsigned            lvlHead_ = 0;
     float               lvlSum_ = 0.0f;
     float               lvlHistory_[MAX_RMS];
+
+    // hpf/dc block
+    float               dcX1_=0.0f, dcY1_=0.0f;
 };
 
 
@@ -145,6 +157,16 @@ protected:
     String fileFromIdx(int idx, bool&);
 
 private:
+
+    inline void dcBlock(float x, float& x1 , float&y,float& y1) {
+        // y[n] = x[n] - x[n-1] + a * y[n-1]
+        // example usage
+        // dcBlock(curSample, lastIn, curOut, lastOut)
+        static constexpr float a=0.995f; 
+        y = x - x1 + a * y1;
+        y1=y;
+        x1=x;
+    }
 
     static constexpr unsigned IN_T_MAX = 8;
     static constexpr unsigned OUT_T_MAX = 8;

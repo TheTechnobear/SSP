@@ -118,11 +118,13 @@ void SSPChannel::paint(Graphics &g) {
 }
 bool SSPChannel::button(unsigned i) {
     switch (butMode_) {
-    case BM_MUTESOLO:
+    case BM_SOLOMUTE:
         if (i) return data_->mute_;
         else  return data_->solo_;
-    // case BM_HPF:
-    //     break;
+    case BM_CUEAC:
+        if (i) return data_->ac_;
+        else  return data_->cue_;
+        break;
     default:
         ;
     }
@@ -132,15 +134,20 @@ bool SSPChannel::button(unsigned i) {
 void SSPChannel::button(unsigned i, bool b) {
     // Logger::writeToLog("buttonA: " + String(b));
     switch (butMode_) {
-    case BM_MUTESOLO:
+    case BM_SOLOMUTE:
         if (i) {
             data_->mute_ =  !data_->mute_;
         } else {
             data_->solo_ = !data_->solo_ ;
         }
         break;
-    // case BM_HPF:
-    //     break;
+    case BM_CUEAC:
+        if (i) {
+            data_->ac_ = !data_->ac_ ;
+        } else {
+            data_->cue_ =  !data_->cue_;
+        }
+        break;
     default:
         ;
     }
