@@ -400,7 +400,7 @@ void PmixEditor::trackSelect(TrackSelect ts, bool active) {
 	buttons_[B_SHIFTR].active(curTracks_ == IN_58);
 
 	for (unsigned i = 0; i < Pmix::I_MAX ; i++) {
-		inTracks_[i].active( (curTracks_ == IN_14 && i < 5 ) || (curTracks_ == IN_58 && i > 4) ) ;
+		inTracks_[i].active( (curTracks_ == IN_14 && i < 4 ) || (curTracks_ == IN_58 && i >= 4) ) ;
 	}
 
 	for (unsigned i = 0; i < Pmix::O_MAX ; i++) {
@@ -463,7 +463,7 @@ void PmixEditor::paint(Graphics & g)
 			}
 			case IN_58: {
 				for(unsigned i=0;i<4;i++) buttons_[B_A_1+i].active(processor_.inputTrack(4+i).solo_);
-				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.inputTrack(2+i).mute_);
+				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.inputTrack(4+i).mute_);
 				break;
 			}
 			case OUT_14: {
@@ -485,7 +485,7 @@ void PmixEditor::paint(Graphics & g)
 			}
 			case IN_58: {
 				for(unsigned i=0;i<4;i++) buttons_[B_A_1+i].active(processor_.inputTrack(4+i).cue_);
-				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.inputTrack(2+i).ac_);
+				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.inputTrack(4+i).ac_);
 				break;
 			}
 			case OUT_14: {
