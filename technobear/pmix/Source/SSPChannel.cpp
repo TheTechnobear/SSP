@@ -75,7 +75,7 @@ void SSPChannel::paint(Graphics &g) {
         dbS = lvlSlider > 0.0f ? std::log10(lvlSlider) * 20.0f : -200.f;
         db = constrain(dbS, dbMin, dbMax);
         f = rescale(db, dbMin, dbMax, 0.0f, 1.0f);
-        g.setColour(Colours::lightgrey);
+        g.setColour(Colours::white);
         g.fillRoundedRectangle (bx - 5, barbase - (f * tbh), bw + 10, 5, 5);
 
 
@@ -91,6 +91,7 @@ void SSPChannel::paint(Graphics &g) {
         g.setColour(Colours::lightgrey);
         g.drawLine(bx, y, bx + bw, y, 2);
         unsigned poff = unsigned( float(bw) * ((data_->pan_ + 1.0) / 2.0));
+        g.setColour(Colours::white);
         g.fillRect(bx + poff - 5, y - 5, 10, 10);
 
         // solo
@@ -207,8 +208,8 @@ void SSPChannel::encbutton(bool b) {
         data_->level_[3] = data_->level_[3] == 1.0 ? 0.0f : 1.0f;
         break;
     case EM_GAIN:
-        break;
         data_->gain_ = 0.0f;
+        break;
     default:
         ;
     }

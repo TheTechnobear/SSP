@@ -22,10 +22,10 @@ PmixEditor::PmixEditor (Pmix& p)
 	curTracks_ = OUT_14;
 
 
-	globalBtn_.init("G");
-	networkBtn_.init("N");
-	plugInBtn_.init("P");
-	recBtn_.init("R");
+	globalBtn_.init("G",Colours::red);
+	networkBtn_.init("N",Colours::red);
+	plugInBtn_.init("P",Colours::red);
+	recBtn_.init("R",Colours::red);
 	addAndMakeVisible(globalBtn_);
 	addAndMakeVisible(networkBtn_);
 	addAndMakeVisible(plugInBtn_);
@@ -35,17 +35,17 @@ PmixEditor::PmixEditor (Pmix& p)
 	buttons_[B_A_2].init("Solo");
 	buttons_[B_A_3].init("Solo");
 	buttons_[B_A_4].init("Solo");
-	buttons_[B_SHIFTL].init("IN14");
-	buttons_[B_UP].init("OUT");
-	buttons_[B_SHIFTR].init("IN58");
+	buttons_[B_SHIFTL].init("IN14", Colours::grey, Colours::black);
+	buttons_[B_UP].init("OUT", Colours::red);
+	buttons_[B_SHIFTR].init("IN58", Colours::grey, Colours::black);
 
 	buttons_[B_B_1].init("Mute");
 	buttons_[B_B_2].init("Mute");
 	buttons_[B_B_3].init("Mute");
 	buttons_[B_B_4].init("Mute");
-	buttons_[B_LEFT].init("-EN");
-	buttons_[B_DOWN].init("MODE");
-	buttons_[B_RIGHT].init("+EN");
+	buttons_[B_LEFT].init("-EN", Colours::red);
+	buttons_[B_DOWN].init("MODE", Colours::red);
+	buttons_[B_RIGHT].init("+EN", Colours::red);
 
 	for (unsigned i = 0; i < 4; i++) {
 		params_[i].init("init");

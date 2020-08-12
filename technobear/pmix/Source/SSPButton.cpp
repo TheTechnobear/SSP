@@ -8,13 +8,13 @@ void SSPButton::paint(Graphics &g) {
 
 
     if (!active_) {
-        g.setColour(Colours::black);
+        g.setColour(bg_);
         g.fillRect (0, 0 + 1, w - 2, h - 2);
-        g.setColour(Colours::red);
+        g.setColour(fg_);
     } else {
-        g.setColour(Colours::red);
+        g.setColour(fg_);
         g.fillRect (0, 0 + 1, w - 2, h - 2);
-        g.setColour(Colours::black);
+        g.setColour(bg_);
     }
 
     g.drawText(label_, 0, 0, w, h, Justification::centred);
