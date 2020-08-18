@@ -23,10 +23,11 @@ struct TrackData {
     }
 
     void init() {
-        level_[0] = 1.0f;
-        for (unsigned i = 1; i < OUT_TRACKS; i++) level_[i] = 0.0f;
+        level_[MASTER] = 1.0f;
+        level_[CUE] = 1.0f;
+        for (unsigned i = CUE+1; i < OUT_TRACKS; i++) level_[i] = 0.0f;
         pan_ = 0.0f;
-        gain_ = 0.0f;
+        gain_ = 1.0f;
         mute_ = false;
         solo_ = false;
         cue_ = false;
@@ -39,7 +40,7 @@ struct TrackData {
     static constexpr unsigned MASTER = 0;
     static constexpr unsigned CUE = 1;
 
-    std::atomic<float>  level_[OUT_TRACKS];  // 0==master, >1 = sends
+    std::atomic<float>  level_[OUT_TRACKS];  // 0==master, 1==cue , 2/3 == aux1/2
     std::atomic<float>  pan_;    // -1 to 1
     std::atomic<float>  gain_;
     std::atomic<bool>   mute_;
@@ -131,12 +132,12 @@ public:
     enum {
         O_MAIN_L,
         O_MAIN_R,
+        O_CUE_L,
+        O_CUE_R,
         O_AUX_1_L,
         O_AUX_1_R,
         O_AUX_2_L,
         O_AUX_2_R,
-        O_AUX_3_L,
-        O_AUX_3_R,
         O_MAX
     };
 

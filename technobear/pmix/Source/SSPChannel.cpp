@@ -156,7 +156,6 @@ void SSPChannel::button(unsigned i, bool b) {
 
 void SSPChannel::encoder(float v) {
     float e=v;
-//        gain_=1.0f;
 
     switch (encMode_) {
     case EM_LEVEL:
@@ -208,7 +207,7 @@ void SSPChannel::encbutton(bool b) {
         data_->level_[3] = data_->level_[3] == 1.0 ? 0.0f : 1.0f;
         break;
     case EM_GAIN:
-        data_->gain_ = 0.0f;
+        data_->gain_ = 1.0f;
         break;
     default:
         ;
@@ -245,15 +244,15 @@ void SSPChannel::updateParam(bool newMode) {
             param_->value(data_->pan_);
             break;
         case EM_AUX1:
-            if (newMode) param_->label("Aux1");
+            if (newMode) param_->label("Cue");
             param_->value(data_->level_[1]);
             break;
         case EM_AUX2:
-            if (newMode) param_->label("Aux2");
+            if (newMode) param_->label("Aux1");
             param_->value(data_->level_[2]);
             break;
         case EM_AUX3:
-            if (newMode) param_->label("Aux3");
+            if (newMode) param_->label("Aux2");
             param_->value(data_->level_[3]);
             break;
         case EM_GAIN:

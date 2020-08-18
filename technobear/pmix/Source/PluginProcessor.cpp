@@ -152,12 +152,12 @@ const String Pmix::getOutputChannelName (int channelIndex) const
     switch (channelIndex) {
     case O_MAIN_L:        { return String("Out L");}
     case O_MAIN_R:        { return String("Out R");}
+    case O_CUE_L:         { return String("Cue L");}
+    case O_CUE_R:         { return String("Cue R");}
     case O_AUX_1_L:       { return String("Aux 1 L");}
     case O_AUX_1_R:       { return String("Aux 1 R");}
     case O_AUX_2_L:       { return String("Aux 2 L");}
     case O_AUX_2_R:       { return String("Aux 2 R");}
-    case O_AUX_3_L:       { return String("Aux 3 L");}
-    case O_AUX_3_R:       { return String("Aux 3 R");}
     }
     return String("Uknown:") + String (channelIndex + 1);
 }
@@ -169,7 +169,7 @@ bool Pmix::isInputChannelStereoPair (int index) const
 
 bool Pmix::isOutputChannelStereoPair (int index) const
 {
-    return index <= O_AUX_3_R;
+    return index <= O_AUX_2_R;
 }
 
 bool Pmix::acceptsMidi() const
@@ -352,9 +352,13 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 
 
         for (unsigned o = 0; o < TrackData::OUT_TRACKS; o++) {
-            if (!inMuted) {
+            bool masterCue = 
+                    o > TrackData::CUE
+                ||  (o == TrackData::CUE && inLead.cue_)
+                ||  (o == TrackData::MASTER && !inLead.cue_);
+            if (!inMuted && masterCue) {
                 auto&  outTL = outTracks_[o * 2];
-                float outGain = outTL.gain_ + outTL.level_[0];
+                float outGain = outTL.gain_ * outTL.level_[0];
                 float lOutGain = panGain(true,   outTL.pan_);
                 float rOutGain = panGain(false,  outTL.pan_);
 
@@ -402,6 +406,8 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         if (!outMuted) {
             auto buf = outputBuffers_.getReadPointer(och);
             buffer.copyFrom(och, 0, buf, n, 1.0);
+        } else {
+            buffer.applyGain(och, 0, n, 0.0f);
         }
     }
 }
@@ -489,14 +495,14 @@ void Pmix::readFromJson(juce::var& jsonVar) {
 
 void Pmix::writeTrackXml(TrackData& t, juce::XmlElement& xml) {
     for (int lt = 0; lt < TrackData::OUT_TRACKS; lt++) {
-        xml.setAttribute("level" + String(lt), t.level_[lt]);
+        xml.setAttribute("level" + String(lt), (double) t.level_[lt]);
     }
-    xml.setAttribute("pan", t.pan_);
-    xml.setAttribute("gain", t.gain_);
-    xml.setAttribute("mute", t.mute_);
-    xml.setAttribute("solo", t.solo_);
-    xml.setAttribute("cue", t.cue_);
-    xml.setAttribute("ac", t.ac_);
+    xml.setAttribute("pan",  (double) t.pan_);
+    xml.setAttribute("gain", (double) t.gain_);
+    xml.setAttribute("mute", (bool) t.mute_);
+    xml.setAttribute("solo", (bool) t.solo_);
+    xml.setAttribute("cue",  (bool) t.cue_);
+    xml.setAttribute("ac",   (bool) t.ac_);
     //dummy_
     //follows_
 }
@@ -613,15 +619,16 @@ void Pmix::initTracks() {
         inTrack.ac_ = true;
     }
 
-    // outTracks_[0]// main master
+    // outTracks_[0]// main
     outTracks_[1].makeFollow(0);
-    // outTracks_[2]// aux1
-    outTracks_[3].makeFollow(1);
-    // outTracks_[3]// aux1
-    outTracks_[4].makeFollow(3);
-    // outTracks_[5]// aux1
-    outTracks_[5].makeFollow(5);
-    // outTracks_[6]// aux1
+
+    // outTracks_[2]// cue
+    outTracks_[3].makeFollow(2);
+
+    // outTracks_[4]// aux 1
+    outTracks_[5].makeFollow(4);
+
+    // outTracks_[6]// aux 2
     outTracks_[7].makeFollow(6);
 }
 

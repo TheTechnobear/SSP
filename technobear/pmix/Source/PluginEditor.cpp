@@ -67,12 +67,12 @@ PmixEditor::PmixEditor (Pmix& p)
 
 	outTracks_[0].init(&params_[0], "Main L", 	&processor_.outputTrack(0));
 	outTracks_[1].init(nullptr, "Main R", 	&processor_.outputTrack(1));
-	outTracks_[2].init(&params_[1], "Aux 1 L", 	&processor_.outputTrack(2));
-	outTracks_[3].init(nullptr, "Aux 1 R", 	&processor_.outputTrack(3));
-	outTracks_[4].init(&params_[2], "Aux 2 L", 	&processor_.outputTrack(4));
-	outTracks_[5].init(nullptr, "Aux 2 R", 	&processor_.outputTrack(5));
-	outTracks_[6].init(&params_[3], "Aux 3 L", 	&processor_.outputTrack(6));
-	outTracks_[7].init(nullptr, "Aux 3 R", 	&processor_.outputTrack(7));
+	outTracks_[2].init(&params_[1], "Cue L", 	&processor_.outputTrack(2));
+	outTracks_[3].init(nullptr, "Cue R", 	&processor_.outputTrack(3));
+	outTracks_[4].init(&params_[2], "Aux 1 L", 	&processor_.outputTrack(4));
+	outTracks_[5].init(nullptr, "Aux 1 R", 	&processor_.outputTrack(5));
+	outTracks_[6].init(&params_[3], "Aux 2 L", 	&processor_.outputTrack(6));
+	outTracks_[7].init(nullptr, "Aux 2 R", 	&processor_.outputTrack(7));
 
 	for (unsigned i = 0; i < Pmix::O_MAX; i++) {
 		outTracks_[i].active(false);
@@ -434,8 +434,8 @@ void PmixEditor::paint(Graphics & g)
 				break;
 			}
 			case OUT_14: {
-				for(unsigned i =0;i<4;i++) buttons_[B_A_1+i].active(processor_.outputTrack(i).solo_);
-				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.outputTrack(i).mute_);
+				for(unsigned i =0;i<4;i++) buttons_[B_A_1+i].active(processor_.outputTrack(i*2).solo_);
+				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.outputTrack(i*2).mute_);
 				break;
 			}
 			default:
@@ -456,8 +456,8 @@ void PmixEditor::paint(Graphics & g)
 				break;
 			}
 			case OUT_14: {
-				for(unsigned i =0;i<4;i++) buttons_[B_A_1+i].active(processor_.outputTrack(i).cue_);
-				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.outputTrack(i).ac_);
+				for(unsigned i =0;i<4;i++) buttons_[B_A_1+i].active(processor_.outputTrack(i*2).cue_);
+				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.outputTrack(i*2).ac_);
 				break;
 			}
 			default:
