@@ -14,6 +14,9 @@ static const char*  presetProgramDir = "/media/linaro/SYNTHOR/plugins.presets/pm
 #endif
 
 
+static const char *xmlTag = "PMIX";
+static const char *prefType = ".xml";
+
 
 const char* percussaParamsName [] = {
     "sspEnc1",
@@ -71,25 +74,25 @@ Pmix::Pmix()
     memset(params_, 0, sizeof(params_));
     initTracks();
 
-    // File f(presetProgramDir);
-    // if (!f.isDirectory()) {
-    //     if (f.exists()) {
-    //         Logger::writeToLog("Unable to create plugin.presets directory for plugin");
-    //     } else {
-    //         f.createDirectory();
-    //     }
-    // }
+    File f(presetProgramDir);
+    if (!f.isDirectory()) {
+        if (f.exists()) {
+            Logger::writeToLog("Unable to create plugin.presets directory for plugin");
+        } else {
+            f.createDirectory();
+        }
+    }
 
-    // for (int i = 0; i < NUM_PROGRAM_SLOTS; i++) {
-    //     String fn(String(presetProgramDir) + File::separatorString + String::formatted("%03.0f", float(i))  + String(".json"));
-    //     File f(fn);
-    //     if (!f.exists()) {
-    //         f.create();
-    //         currentProgram_ = i;
-    //         writeToJson();
-    //     }
-    //     currentProgram_ = -1;
-    // }
+    for (int i = 0; i < NUM_PROGRAM_SLOTS; i++) {
+        String fn(String(presetProgramDir) + File::separatorString + String::formatted("%03.0f", float(i)) + String(prefType));
+        File f(fn);
+        if (!f.exists()) {
+            f.create();
+            currentProgram_ = i;
+            writePreset();
+        }
+        currentProgram_ = -1;
+    }
 }
 
 Pmix::~Pmix()
@@ -200,7 +203,7 @@ double Pmix::getTailLengthSeconds() const
 int Pmix::getNumPrograms()
 {
     unsigned c = 0;
-    DirectoryIterator di(File(presetProgramDir), false, "*.json");
+    DirectoryIterator di(File(presetProgramDir), false, "*" + String(prefType));
     while (di.next()) c++;
 
     // NB: some hosts don't cope very well if you tell them there are 0 programs
@@ -220,7 +223,7 @@ void Pmix::setCurrentProgram (int index)
     // SSP calls when program being loaded
     if (currentProgram_ != index) {
         currentProgram_ = index;
-        readFromJson();
+        readPreset();
     }
 }
 
@@ -319,17 +322,20 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 
 
         bool    inMuted = inLead.mute_ ||   (insoloed && ! inLead.solo_);
-        float   inMGain = inLead.gain_ + inLead.level_[0]; // MASTER
+        float   inMGain = inLead.gain_;
         auto    originbuf = buffer.getReadPointer(ich);
         inputBuffers_.copyFrom(ich, 0, originbuf, n, inMGain);
 
+        // TODO: Q. perhaps input buffer are just for RMS?
+        // issue is I only want to do the dcblock once!
 
-        if(inLead.ac_) {
-            for(unsigned i=0;i< buffer.getNumSamples();i++) {
-                float out=0.0f;
-                float in=inputBuffers_.getSample(ich,i);
+
+        if (inLead.ac_) {
+            for (unsigned i = 0; i < buffer.getNumSamples(); i++) {
+                float out = 0.0f;
+                float in = inputBuffers_.getSample(ich, i);
                 dcBlock(in, inTrack.dcX1_, out, inTrack.dcY1_);
-                inputBuffers_.setSample(ich,i,out);
+                inputBuffers_.setSample(ich, i, out);
             }
         }
         auto    inbuf = inputBuffers_.getReadPointer(ich);
@@ -352,7 +358,7 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
                 float lOutGain = panGain(true,   outTL.pan_);
                 float rOutGain = panGain(false,  outTL.pan_);
 
-                float inGain = o > 0 ? (float) inLead.level_[o] : 1.0f; // master already applied
+                float inGain = inLead.level_[o];
                 float lInGain = panGain(true,   inLead.pan_);
                 float rInGain = panGain(false,  inLead.pan_);
 
@@ -385,7 +391,7 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         float lvl = trk.useRMS_
                     ? outputBuffers_.getRMSLevel(och, 0, n)
                     : outputBuffers_.getMagnitude(och, 0, n);
-        
+
 
         trk.lvlSum_ -= trk.lvlHistory_[trk.lvlHead_];
         trk.lvlHistory_[trk.lvlHead_] = lvl;
@@ -393,7 +399,7 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         trk.lvlHead_ = (trk.lvlHead_ + 1) % TrackData::MAX_RMS;
         trk.lvl_ = trk.lvlSum_ / TrackData::MAX_RMS;
 
-        if(!outMuted) {
+        if (!outMuted) {
             auto buf = outputBuffers_.getReadPointer(och);
             buffer.copyFrom(och, 0, buf, n, 1.0);
         }
@@ -410,11 +416,7 @@ AudioProcessorEditor* Pmix::createEditor()
     return new PmixEditor (*this);
 }
 
-void Pmix::write() {
-    writeToJson();
-}
-
-void Pmix::writeToJson() {
+void Pmix::writePreset() {
     if (currentProgram_ < 0) return;
 
 
@@ -428,19 +430,24 @@ void Pmix::writeToJson() {
         f.create();
     }
 
-    DynamicObject::Ptr v (new DynamicObject());
-    // v->setProperty("f_freeze",          float(data_.f_freeze));
 
     FileOutputStream fileStream(f);
     fileStream.setPosition(0);
     fileStream.truncate();
 
-    var jsonVar(v.get());
-    JSON::writeToStream(fileStream, jsonVar);
+    XmlElement xml(xmlTag);
+    writeToXml(xml);
+    xml.writeToStream(fileStream, String(""));
+
+    // DynamicObject::Ptr v (new DynamicObject());
+    // writeToJson(v);
+    // var jsonVar(v.get());
+    // JSON::writeToStream(fileStream, jsonVar);
     fileStream.flush();
 }
 
-void Pmix::readFromJson() {
+
+void Pmix::readPreset() {
     if (currentProgram_ < 0) return;
 
     bool valid = false;
@@ -453,56 +460,139 @@ void Pmix::readFromJson() {
         Logger::writeToLog("Unable to read preset, file !exist : " + String(currentProgram_) + " : " + fn);
     }
 
-
-    auto jsonVar = JSON::parse(f);
-    if (jsonVar == var::null) {
-        Logger::writeToLog("Unable to read preset, unable to parse : " + String(currentProgram_) + " : " + fn);
-        return;
+    XmlDocument xmlFile(f);
+    auto pXML = xmlFile.getDocumentElement();
+    if (pXML) {
+        readFromXml(*pXML);
+        delete pXML;
     }
+    // juce::var jsonVar = JSON::parse(f);
+    // if (jsonVar == var::null) {
+    //     Logger::writeToLog("Unable to read preset, unable to parse : " + String(currentProgram_) + " : " + fn);
+    //     return;
+    // }
 
-    if (!jsonVar.isObject()) {
-        Logger::writeToLog("Unable to read preset, badly format : " + String(currentProgram_) + " : " + fn);
-        return;
-    }
-
-    // data_.f_freeze      = jsonVar.getProperty("f_freeze"    , 0.0f);
+    // if (!jsonVar.isObject()) {
+    //     Logger::writeToLog("Unable to read preset, badly format : " + String(currentProgram_) + " : " + fn);
+    //     return;
+    // }
+    // readFromJson(jsonVar);
 }
+
+void Pmix::writeToJson(DynamicObject::Ptr& v) {
+    // v->setProperty("useRMS",          float(data_.useRMS_));
+}
+
+void Pmix::readFromJson(juce::var& jsonVar) {
+    // data_.useRMS_      = (bool) jsonVar.getProperty("useRMS"    , 0.0f);
+}
+
+void Pmix::writeTrackXml(TrackData& t, juce::XmlElement& xml) {
+    for (int lt = 0; lt < TrackData::OUT_TRACKS; lt++) {
+        xml.setAttribute("level" + String(lt), t.level_[lt]);
+    }
+    xml.setAttribute("pan", t.pan_);
+    xml.setAttribute("gain", t.gain_);
+    xml.setAttribute("mute", t.mute_);
+    xml.setAttribute("solo", t.solo_);
+    xml.setAttribute("cue", t.cue_);
+    xml.setAttribute("ac", t.ac_);
+    //dummy_
+    //follows_
+}
+
+void Pmix::writeToXml(XmlElement& xml) {
+    auto inxml = xml.createNewChildElement("Input");
+    for (unsigned ich = 0; ich < I_MAX; ich++) {
+        //process input channels
+        auto& inTrack = inTracks_[ich];
+        auto txml = inxml->createNewChildElement("T" + String(ich));
+        if (txml) writeTrackXml(inTrack, *txml);
+    }
+
+    auto outxml = xml.createNewChildElement("Output");
+    for (unsigned och = 0; och < O_MAX; och++) {
+        //process input channels
+        auto& outTrack = outTracks_[och];
+        auto txml = outxml->createNewChildElement("T" + String(och));
+        if (txml) writeTrackXml(outTrack, *txml);
+    }
+}
+
+void  Pmix::readTrackXml(TrackData& t, juce::XmlElement& xml) {
+    for (int lt = 0; lt < TrackData::OUT_TRACKS; lt++) {
+        t.level_[lt] = xml.getDoubleAttribute("level" + String(lt), t.level_[lt]);
+    }
+
+    t.pan_  = xml.getDoubleAttribute("pan", t.pan_);
+    t.gain_ = xml.getDoubleAttribute("gain", t.gain_);
+    t.mute_ = xml.getBoolAttribute("mute", t.mute_);
+    t.solo_ = xml.getBoolAttribute("solo", t.solo_);
+    t.cue_  = xml.getBoolAttribute("cue", t.cue_);
+    t.ac_   = xml.getBoolAttribute("ac", t.ac_);
+    //dummy_
+    //follows_
+}
+
+void Pmix::readFromXml(XmlElement& xml) {
+    auto inxml = xml.getChildByName("Input");
+    for (unsigned ich = 0; ich < I_MAX; ich++) {
+        //process input channels
+        auto& inTrack = inTracks_[ich];
+        auto txml = inxml->getChildByName("T" + String(ich));
+        if (txml) readTrackXml(inTrack, *txml);
+        else  Logger::writeToLog("failed to read T" + String(ich));
+    }
+
+    auto outxml = xml.getChildByName("Output");
+    for (unsigned och = 0; och < O_MAX; och++) {
+        //process input channels
+        auto& outTrack = outTracks_[och];
+        auto txml = outxml->getChildByName("T" + String(och));
+        if (txml) readTrackXml(outTrack, *txml);
+    }
+}
+
+
 
 void Pmix::getStateInformation (MemoryBlock& destData)
 {
-    // store state information
+    XmlElement xml(xmlTag);
+    writeToXml(xml);
+    copyXmlToBinary(xml, destData);
 
-    // SSP not currently using - untested
-    DynamicObject::Ptr v (new DynamicObject());
-    // v->setProperty("f_freeze",          float(data_.f_freeze));
-
-    var jsonVar(v.get());
-    String str = JSON::toString(jsonVar, true);
-    destData.append(str.toRawUTF8( ), str.getNumBytesAsUTF8( ) + 1);
+    // DynamicObject::Ptr v (new DynamicObject());
+    // writeToJson(v);
+    // var jsonVar(v.get());
+    // String str = JSON::toString(jsonVar, true);
+    // destData.append(str.toRawUTF8( ), str.getNumBytesAsUTF8( ) + 1);
 }
 
 void Pmix::setStateInformation (const void* data, int sizeInBytes)
 {
-    // recall state information - created by getStateInformation
-    // SSP not currently using - untested
-
-    const char* str = static_cast<const char*>(data);
-    auto jsonVar = JSON::parse(String::fromUTF8(str));
-
-    // data_.f_freeze      = jsonVar.getProperty("f_freeze"    , 0.0f);
+    XmlElement *pXML = getXmlFromBinary(data, sizeInBytes);
+    if (pXML) {
+        // auto root=pXML->getChildByName(xmlTag);
+        // if(root) readFromXml(*root);
+        readFromXml(*pXML);
+        delete pXML;
+    }
+    // const char* str = static_cast<const char*>(data);
+    // auto jsonVar = JSON::parse(String::fromUTF8(str));
+    // readFromJson(jsonVar);
 }
 
 
 String Pmix::fileFromIdx(int idx, bool& found) {
     StringArray files;
-    DirectoryIterator di(File(presetProgramDir), false, "*.json");
+    DirectoryIterator di(File(presetProgramDir), false, "*" + String(prefType));
     while (di.next()) {
         files.add(di.getFile().getFileName());
     }
     files.sort(false);
     if (idx > files.size()) {
         found = false;
-        return String::formatted("%03.0f", float(idx)) + ".json";
+        return String::formatted("%03.0f", float(idx)) + String(prefType);
     }
     found = true;
     return files[idx];
@@ -517,10 +607,10 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 
 void Pmix::initTracks() {
-    for(unsigned ich=0;ich<I_MAX;ich++) {
+    for (unsigned ich = 0; ich < I_MAX; ich++) {
         auto& inTrack = inTracks_[ich];
         //default input tracks to have dc blocking
-        inTrack.ac_=true;
+        inTrack.ac_ = true;
     }
 
     // outTracks_[0]// main master

@@ -38,19 +38,20 @@ struct TrackData {
     static constexpr unsigned OUT_TRACKS = 4;
     static constexpr unsigned MASTER = 0;
     static constexpr unsigned CUE = 1;
-    
+
     std::atomic<float>  level_[OUT_TRACKS];  // 0==master, >1 = sends
     std::atomic<float>  pan_;    // -1 to 1
     std::atomic<float>  gain_;
     std::atomic<bool>   mute_;
     std::atomic<bool>   solo_;
-    std::atomic<float>  lvl_;
     std::atomic<bool>   cue_;
-    std::atomic<bool>   ac_; 
+    std::atomic<bool>   ac_;
 
+    // currently cannot be changed in ui
     bool                dummy_;
     unsigned            follows_; // dummy
 
+    std::atomic<float>  lvl_; // calculated rms/peak level
     // only used by processor
     // RMS
     bool                useRMS_ = false;
@@ -60,7 +61,7 @@ struct TrackData {
     float               lvlHistory_[MAX_RMS];
 
     // hpf/dc block
-    float               dcX1_=0.0f, dcY1_=0.0f;
+    float               dcX1_ = 0.0f, dcY1_ = 0.0f;
 };
 
 
@@ -70,7 +71,6 @@ public:
     Pmix();
     ~Pmix();
 
-    void write();
 
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
@@ -140,6 +140,9 @@ public:
         O_MAX
     };
 
+    void writePreset();
+
+
 protected:
     float cv2Pitch(float r) {
         // SSP SDK
@@ -152,20 +155,31 @@ protected:
         return arg;
     }
 
-    void writeToJson();
-    void readFromJson();
+    void readPreset();
+
+
     String fileFromIdx(int idx, bool&);
 
 private:
 
-    inline void dcBlock(float x, float& x1 , float&y,float& y1) {
+    void writeToJson(juce::DynamicObject::Ptr& v);
+    void readFromJson(juce::var& json);
+
+    void writeToXml(juce::XmlElement& xml);
+    void readFromXml(juce::XmlElement& xml);
+
+    void writeTrackXml(TrackData& t, juce::XmlElement& xml);
+    void readTrackXml(TrackData& t, juce::XmlElement& xml);
+
+
+    inline void dcBlock(float x, float& x1 , float&y, float& y1) {
         // y[n] = x[n] - x[n-1] + a * y[n-1]
         // example usage
         // dcBlock(curSample, lastIn, curOut, lastOut)
-        static constexpr float a=0.995f; 
+        static constexpr float a = 0.995f;
         y = x - x1 + a * y1;
-        y1=y;
-        x1=x;
+        y1 = y;
+        x1 = x;
     }
 
     static constexpr unsigned IN_T_MAX = 8;
