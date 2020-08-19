@@ -173,6 +173,10 @@ protected:
     String fileFromIdx(int idx, bool&);
 
 private:
+
+    void writeToXml(juce::XmlElement& xml);
+    void readFromXml(juce::XmlElement& xml);
+
     int currentProgram_ = -1;
     enum {
         I_IN,

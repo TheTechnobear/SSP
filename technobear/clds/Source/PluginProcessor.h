@@ -156,19 +156,10 @@ protected:
     String fileFromIdx(int idx, bool&);
 
 private:
-    float f_freeze;
-    float f_trig;
-    float f_position;
-    float f_size;
-    float f_pitch;
-    float f_density;
-    float f_texture;
-    float f_mix;
-    float f_spread;
-    float f_feedback;
-    float f_reverb;
-    float f_mode;
-    float f_in_gain;
+
+    void writeToXml(juce::XmlElement& xml);
+    void readFromXml(juce::XmlElement& xml);
+
 
     int currentProgram_ = -1;
     enum {

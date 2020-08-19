@@ -12,6 +12,7 @@ static constexpr unsigned NUM_PROGRAM_SLOTS=20;
     static const char*  presetProgramDir="/media/linaro/SYNTHOR/plugins.presets/rngs";
 #endif
 
+static const char *xmlTag = "RNGS";
 
 Rngs::Rngs()
 {
@@ -467,53 +468,56 @@ void Rngs::readFromJson() {
     data_.string_synth.set_fx(static_cast<rings::FxType>(model));
 }
 
+
+
+
+void Rngs::writeToXml(XmlElement& xml) {
+    xml.setAttribute("f_pitch",               double(data_.f_pitch));
+    xml.setAttribute("f_structure",           double(data_.f_structure));
+    xml.setAttribute("f_brightness",          double(data_.f_brightness));
+    xml.setAttribute("f_damping",             double(data_.f_damping));
+    xml.setAttribute("f_position",            double(data_.f_position));
+    xml.setAttribute("f_polyphony",           double(data_.f_polyphony));
+    xml.setAttribute("f_model",               double(data_.f_model));
+    xml.setAttribute("f_bypass",              bool(data_.f_bypass));
+    xml.setAttribute("f_easter_egg",          bool(data_.f_easter_egg));
+    xml.setAttribute("f_in_gain",             double(data_.f_in_gain));
+}
+
+void Rngs::readFromXml(XmlElement& xml) {
+    data_.f_pitch = xml.getDoubleAttribute("f_pitch",34.0f);
+    data_.f_structure = xml.getDoubleAttribute("f_structure",0.45f);
+    data_.f_brightness = xml.getDoubleAttribute("f_brightness",0.5f);
+    data_.f_damping = xml.getDoubleAttribute("f_damping",0.5f);
+    data_.f_position = xml.getDoubleAttribute("f_position",0.5f);
+    data_.f_polyphony = xml.getDoubleAttribute("f_polyphony",0.0f);
+    data_.f_model = xml.getDoubleAttribute("f_model",0.0f);
+    data_.f_bypass = xml.getBoolAttribute("f_bypass",0.0f);
+    data_.f_easter_egg = xml.getBoolAttribute("f_easter_egg",0.0f);
+    data_.f_in_gain = xml.getDoubleAttribute("f_in_gain",0.0f);
+    data_.f_trig=0.0f;
+}
+
+
 void Rngs::getStateInformation (MemoryBlock& destData)
 {
-    // store state information
-    DynamicObject::Ptr v (new DynamicObject());
-    v->setProperty("f_pitch",               float(data_.f_pitch));
-    v->setProperty("f_structure",           float(data_.f_structure));
-    v->setProperty("f_brightness",          float(data_.f_brightness));
-    v->setProperty("f_damping",             float(data_.f_damping));
-    v->setProperty("f_position",            float(data_.f_position));
-    v->setProperty("f_polyphony",           float(data_.f_polyphony));
-    v->setProperty("f_model",               float(data_.f_model));
-    v->setProperty("f_bypass",              float(data_.f_bypass));
-    v->setProperty("f_easter_egg",          float(data_.f_easter_egg));
-    // v->setProperty("f_internal_strum",      float(data_.f_internal_strum));
-    // v->setProperty("f_internal_exciter",    float(data_.f_internal_exciter));
-    // v->setProperty("f_internal_note",       float(data_.f_internal_note));
-    v->setProperty("f_in_gain",             float(data_.f_in_gain));
-
-
-    var jsonVar(v.get());
-    String str=JSON::toString(jsonVar,true);
-    destData.append(str.toRawUTF8( ), str.getNumBytesAsUTF8( ) + 1);
+    XmlElement xml(xmlTag);
+    writeToXml(xml);
+    copyXmlToBinary(xml, destData);
 }
 
 void Rngs::setStateInformation (const void* data, int sizeInBytes)
 {
-    // recall state information - created by getStateInformation
-    const char* str=static_cast<const char*>(data);
-    auto jsonVar = JSON::parse(String::fromUTF8(str));
-
-    data_.f_pitch = jsonVar.getProperty("f_pitch",34.0f);
-    data_.f_structure = jsonVar.getProperty("f_structure",0.45f);
-    data_.f_brightness = jsonVar.getProperty("f_brightness",0.5f);
-    data_.f_damping = jsonVar.getProperty("f_damping",0.5f);
-    data_.f_position = jsonVar.getProperty("f_position",0.5f);
-    data_.f_polyphony = jsonVar.getProperty("f_polyphony",0.0f);
-    data_.f_model = jsonVar.getProperty("f_model",0.0f);
-    data_.f_bypass = jsonVar.getProperty("f_bypass",0.0f);
-    data_.f_easter_egg = jsonVar.getProperty("f_easter_egg",0.0f);
-    // data_.f_internal_strum = jsonVar.getProperty("f_internal_strum",1.0f);
-    // data_.f_internal_exciter = jsonVar.getProperty("f_internal_exciter",1.0f);
-    // data_.f_internal_note = jsonVar.getProperty("f_internal_note",0.0f);
-    data_.f_in_gain = jsonVar.getProperty("f_in_gain",0.0f);
-
-    data_.f_trig=0.0f;
+    XmlElement *pXML = getXmlFromBinary(data, sizeInBytes);
+    if (pXML) {
+        // auto root=pXML->getChildByName(xmlTag);
+        // if(root) readFromXml(*root);
+        readFromXml(*pXML);
+        delete pXML;
+    }
 
 
+    // initialise again
     auto& part = data_.part;
     int polyphony = constrain(1 << int(data_.f_polyphony) , 1, rings::kMaxPolyphony);
     part.set_polyphony(polyphony);
@@ -521,7 +525,7 @@ void Rngs::setStateInformation (const void* data, int sizeInBytes)
     int imodel = constrain(data_.f_model, 0, rings::ResonatorModel::RESONATOR_MODEL_LAST - 1);
     rings::ResonatorModel model = static_cast<rings::ResonatorModel>(imodel);
     part.set_model(model);
-    data_.string_synth.set_fx(static_cast<rings::FxType>(model));
+    data_.string_synth.set_fx(static_cast<rings::FxType>(model));    
 }
 
 String Rngs::fileFromIdx(int idx, bool& found) {

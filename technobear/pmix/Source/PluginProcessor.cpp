@@ -120,12 +120,33 @@ float Pmix::getParameter (int index)
 
 void Pmix::setParameter (int index, float newValue)
 {
-    // Logger::writeToLog("setParameter: : " + getParameterName(index) + " ->  " + String(newValue));
-    // SSP currently sends control information as parameters
-    // see Percussa.h for more info about the parameters below
-
-    if (index < Percussa::sspLast) params_[index] = newValue;
-    AudioProcessor::sendParamChangeMessageToListeners(index, newValue);
+    // this will have to change... as the +/-1 is larger than before
+    // current idea is to move away from sendParamChangeMessageToListeners
+    // to a differ 'changebroadcaster' to free up parameter change for 'proper use'
+    switch (index) {
+    case Percussa::sspEnc1:
+    case Percussa::sspEnc2:
+    case Percussa::sspEnc3:
+    case Percussa::sspEnc4:
+    {
+        if (newValue > 0.5) {
+            // TODO - check shoudl paramValues really hold actual value?
+            params_[index - Percussa::sspFirst]++;
+            AudioProcessor::sendParamChangeMessageToListeners(index, 1.0f);
+        } else if (newValue < 0.5) {
+            params_[index - Percussa::sspFirst]--;
+            AudioProcessor::sendParamChangeMessageToListeners(index, -1.0f);
+        } else {
+            AudioProcessor::sendParamChangeMessageToListeners(index, 0.0f);
+        }
+        break;
+    }
+    default: {
+        if (index < Percussa::sspLast) params_[index] = newValue;
+        AudioProcessor::sendParamChangeMessageToListeners(index, newValue);
+        break;
+    }
+    }
 }
 
 const String Pmix::getParameterName (int index)

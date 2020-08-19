@@ -15,6 +15,9 @@ static const char*  presetProgramDir = "/media/linaro/SYNTHOR/plugins.presets/cl
 inline float TO_SHORTFRAME(float v)   { return constrain(v * 32767.0f, -32768.0f, 32767.0f);}
 inline float FROM_SHORTFRAME(short v) { return (float(v) / 32768.0f); }
 
+
+static const char *xmlTag = "CLDS";
+
 Clds::Clds()
 {
     memset(params_, 0, sizeof(params_));
@@ -413,53 +416,58 @@ void Clds::readFromJson() {
     data_.f_lofi        = jsonVar.getProperty("f_lofi"      , 0.0f);
 }
 
+
+void Clds::writeToXml(XmlElement& xml) {
+    xml.setAttribute("f_freeze",          double(data_.f_freeze));
+    xml.setAttribute("f_position",        double(data_.f_position));
+    xml.setAttribute("f_size",            double(data_.f_size));
+    xml.setAttribute("f_pitch",           double(data_.f_pitch));
+    xml.setAttribute("f_density",         double(data_.f_density));
+    xml.setAttribute("f_texture",         double(data_.f_texture));
+    xml.setAttribute("f_mix",             double(data_.f_mix));
+    xml.setAttribute("f_spread",          double(data_.f_spread));
+    xml.setAttribute("f_feedback",        double(data_.f_feedback));
+    xml.setAttribute("f_reverb",          double(data_.f_reverb));
+    xml.setAttribute("f_mode",            double(data_.f_mode));
+    xml.setAttribute("f_in_gain",         double(data_.f_in_gain));
+    xml.setAttribute("f_mono",            bool(data_.f_mono));
+    xml.setAttribute("f_lofi",            bool(data_.f_lofi));
+}
+
+void Clds::readFromXml(XmlElement& xml) {
+    data_.f_freeze      = xml.getBoolAttribute("f_freeze"    , 0.0f);
+    data_.f_position    = xml.getDoubleAttribute("f_position"  , 0.5f);
+    data_.f_size        = xml.getDoubleAttribute("f_size"      , 0.5f);
+    data_.f_pitch       = xml.getDoubleAttribute("f_pitch"     , 0.0f);
+    data_.f_density     = xml.getDoubleAttribute("f_density"   , -0.2f);
+    data_.f_mix         = xml.getDoubleAttribute("f_mix"       , 0.5f);
+    data_.f_spread      = xml.getDoubleAttribute("f_spread"    , 0.5f);
+    data_.f_feedback    = xml.getDoubleAttribute("f_feedback"  , 0.1f);
+    data_.f_reverb      = xml.getDoubleAttribute("f_reverb"    , 0.5f);
+    data_.f_mode        = xml.getDoubleAttribute("f_mode"      , 0.0f);
+    data_.f_in_gain     = xml.getDoubleAttribute("f_in_gain"   , 0.0f);
+
+    data_.f_mono        = xml.getBoolAttribute("f_mono"      , 0.0f);
+    data_.f_lofi        = xml.getBoolAttribute("f_lofi"      , 0.0f);
+}
+
+
 void Clds::getStateInformation (MemoryBlock& destData)
 {
-    // store state information
-
-    DynamicObject::Ptr v (new DynamicObject());
-    v->setProperty("f_freeze",          float(data_.f_freeze));
-    v->setProperty("f_position",        float(data_.f_position));
-    v->setProperty("f_size",            float(data_.f_size));
-    v->setProperty("f_pitch",           float(data_.f_pitch));
-    v->setProperty("f_density",         float(data_.f_density));
-    v->setProperty("f_texture",         float(data_.f_texture));
-    v->setProperty("f_mix",             float(data_.f_mix));
-    v->setProperty("f_spread",          float(data_.f_spread));
-    v->setProperty("f_feedback",        float(data_.f_feedback));
-    v->setProperty("f_reverb",          float(data_.f_reverb));
-    v->setProperty("f_mode",            float(data_.f_mode));
-    v->setProperty("f_in_gain",         float(data_.f_in_gain));
-
-    v->setProperty("f_mono",            float(data_.f_mono));
-    v->setProperty("f_lofi",            float(data_.f_lofi));
-
-    var jsonVar(v.get());
-    String str = JSON::toString(jsonVar, true);
-    destData.append(str.toRawUTF8( ), str.getNumBytesAsUTF8( ) + 1);
+    XmlElement xml(xmlTag);
+    writeToXml(xml);
+    copyXmlToBinary(xml, destData);
 }
 
 void Clds::setStateInformation (const void* data, int sizeInBytes)
 {
-    // recall state information - created by getStateInformation
-    const char* str = static_cast<const char*>(data);
-    auto jsonVar = JSON::parse(String::fromUTF8(str));
-
-    data_.f_freeze      = jsonVar.getProperty("f_freeze"    , 0.0f);
-    data_.f_position    = jsonVar.getProperty("f_position"  , 0.5f);
-    data_.f_size        = jsonVar.getProperty("f_size"      , 0.5f);
-    data_.f_pitch       = jsonVar.getProperty("f_pitch"     , 0.0f);
-    data_.f_density     = jsonVar.getProperty("f_density"   , -0.2f);
-    data_.f_mix         = jsonVar.getProperty("f_mix"       , 0.5f);
-    data_.f_spread      = jsonVar.getProperty("f_spread"    , 0.5f);
-    data_.f_feedback    = jsonVar.getProperty("f_feedback"  , 0.1f);
-    data_.f_reverb      = jsonVar.getProperty("f_reverb"    , 0.5f);
-    data_.f_mode        = jsonVar.getProperty("f_mode"      , 0.0f);
-    data_.f_in_gain     = jsonVar.getProperty("f_in_gain"   , 0.0f);
-
-    data_.f_mono        = jsonVar.getProperty("f_mono"      , 0.0f);
-    data_.f_lofi        = jsonVar.getProperty("f_lofi"      , 0.0f);
-
+    XmlElement *pXML = getXmlFromBinary(data, sizeInBytes);
+    if (pXML) {
+        // auto root=pXML->getChildByName(xmlTag);
+        // if(root) readFromXml(*root);
+        readFromXml(*pXML);
+        delete pXML;
+    }
 }
 
 

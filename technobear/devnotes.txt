@@ -1,7 +1,7 @@
 # dev notes
 
 
-#to do for ssp sdk
+#to do for ssp sdk v2
 
 rngs : test I/O names - then remove help
 rngs : test state save/restore - check preset conflict?
