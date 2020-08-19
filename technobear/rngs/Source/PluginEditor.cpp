@@ -39,6 +39,7 @@ RngsEditor::RngsEditor (Rngs& p)
 	buttons_[B_DOWN].init("-EN");
 
 
+	// TODO : should  not be needed, keep for inital test
 	buttons_[B_AUDIO].active(processor_.data().f_internal_exciter < 0.5);
 	buttons_[B_STRUM].active(processor_.data().f_internal_strum < 0.5);
 	buttons_[B_VOCT].active(processor_.data().f_internal_note < 0.5);
@@ -218,29 +219,32 @@ void RngsEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEncSw4:
 		break;
 	case Percussa::sspSw1:
-		if (paramState_[index] != value && !value) {
-			processor_.data().f_internal_exciter =
-			    ! processor_.data().f_internal_exciter;
-			buttons_[B_AUDIO].active(processor_.data().f_internal_exciter < 0.5);
-		}
+		//TODO - should not need using connection state instead
+
+		// if (paramState_[index] != value && !value) {
+		// 	processor_.data().f_internal_exciter =
+		// 	    ! processor_.data().f_internal_exciter;
+		// 	buttons_[B_AUDIO].active(processor_.data().f_internal_exciter < 0.5);
+		// }
 		break;
 	case Percussa::sspSw2:
-		if (paramState_[index] != value && !value) {
-			processor_.data().f_internal_strum =
-			    ! processor_.data().f_internal_strum ;
-			buttons_[B_STRUM].active(processor_.data().f_internal_strum < 0.5);
-		}
+		// if (paramState_[index] != value && !value) {
+		// 	processor_.data().f_internal_strum =
+		// 	    ! processor_.data().f_internal_strum ;
+		// 	buttons_[B_STRUM].active(processor_.data().f_internal_strum < 0.5);
+		// }
 		break;
 	case Percussa::sspSw3:
-		if (paramState_[index] != value && !value) {
-			processor_.data().f_internal_note =
-			    ! processor_.data().f_internal_note;
-			buttons_[B_VOCT].active(processor_.data().f_internal_note < 0.5);
-		}
+		// if (paramState_[index] != value && !value) {
+		// 	processor_.data().f_internal_note =
+		// 	    ! processor_.data().f_internal_note;
+		// 	buttons_[B_VOCT].active(processor_.data().f_internal_note < 0.5);
+		// }
 		break;
 	case Percussa::sspSw4:
 		break;
 	case Percussa::sspSw5:
+		//TODO - should not need if params are named
 		buttons_[B_HELP].active(value > 0.5);
 		break;
 	case Percussa::sspSw6:
@@ -300,6 +304,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 
 void RngsEditor::drawHelp(Graphics& g) {
 
+	//TODO - should not need if params are named
 	unsigned x = 900;
 	unsigned y = 40;
 	unsigned space = 30;
@@ -405,6 +410,12 @@ void RngsEditor::paint(Graphics& g)
 	// display 1600x 480
 	// x= left/right (0..1599)
 	// y= top/botton (0..479)
+
+	//TODO test only
+	buttons_[B_AUDIO].active(processor_.data().f_internal_exciter < 0.5);
+	buttons_[B_STRUM].active(processor_.data().f_internal_strum < 0.5);
+	buttons_[B_VOCT].active(processor_.data().f_internal_note < 0.5);
+
 
 	g.fillAll (Colours::black);
 

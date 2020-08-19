@@ -1,5 +1,8 @@
 # Clds : Texture synthesizer 
 ## Change Log
+1.1.0 requires new ssp firmware ! 
+new cv parameters mix,spread,freeze, feedback,reverb
+
 1.0.0 Initial Release 
 
 ## Developer: TheTechnobear
@@ -8,10 +11,10 @@ https://ko-fi.com/thetechnobear
 
 
 ## Installation
-copy the plugins/*.so to /media/linaro/SYNTHOR/plugins
+copy the plugins/*.so to sdcard /plugins
 
 ## Optional Installation
-copy the presets to /media/linaro/SYNTHOR/
+copy the plugins.presets/* to  sdcard /plugins/plugins.preset 
 (same folder structure)
 
 

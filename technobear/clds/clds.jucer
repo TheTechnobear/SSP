@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="LFrQVa" name="clds" projectType="audioplug" version="1.0.0"
+<JUCERPROJECT id="LFrQVa" name="clds" projectType="audioplug" version="1.1.0"
               bundleIdentifier="com.technobear.clds" includeBinaryInAppConfig="1"
               buildVST="1" buildVST3="0" buildAU="0" buildRTAS="0" buildAAX="0"
               pluginName="clds" pluginDesc="clds" pluginManufacturer="technobear"
-              pluginManufacturerCode="TB" pluginCode="Tcld" pluginChannelConfigs="{8, 2}"
+              pluginManufacturerCode="TB" pluginCode="Tcld" pluginChannelConfigs="{14, 2}"
               pluginIsSynth="0" pluginWantsMidiIn="0" pluginProducesMidiOut="0"
               pluginSilenceInIsSilenceOut="0" pluginEditorRequiresKeys="0"
               pluginAUExportPrefix="cldsAU" pluginRTASCategory="" aaxIdentifier="com.technobear.clds"

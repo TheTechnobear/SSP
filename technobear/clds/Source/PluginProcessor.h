@@ -156,18 +156,35 @@ protected:
     String fileFromIdx(int idx, bool&);
 
 private:
+    float f_freeze;
+    float f_trig;
+    float f_position;
+    float f_size;
+    float f_pitch;
+    float f_density;
+    float f_texture;
+    float f_mix;
+    float f_spread;
+    float f_feedback;
+    float f_reverb;
+    float f_mode;
+    float f_in_gain;
+
     int currentProgram_ = -1;
     enum {
         I_LEFT,
         I_RIGHT,
-        I_TRIG, // also freeze depend on trig or freeze!
+        I_TRIG, 
         I_VOCT,
         I_POS,
         I_SIZE,
         I_DENSITY,
         I_TEXT,
-        // I_FREEZE,
-        // I_BLEND,
+        I_FREEZE,
+        I_MIX,
+        I_SPREAD,
+        I_FEEDBACK,
+        I_REVERB,
         I_MAX
     };
 

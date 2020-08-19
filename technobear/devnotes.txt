@@ -1,0 +1,26 @@
+# dev notes
+
+
+#to do for ssp sdk
+
+rngs : test I/O names - then remove help
+rngs : test state save/restore - check preset conflict?
+rngs : encoder responsiveness  - we only get -/+ 1 now, may be too fast
+rngs : test I/O enabled, internal exciter etc - then remove UI can redundant code
+rngs : test new cv (mix,reverb, spread, feeeback , FREEZE)
+rngs : retest CV trig, since its now not optional with FREEZE
+
+clds : test I/O names - then remove help
+clds : test state save/restore - check preset conflict?
+clds : encoder responsiveness  - we only get -/+ 1 now, may be too fast
+
+
+release: update readme, remove redundancy for new versions (eg, comments about presets)
+
+ssp test: try adding SSP parameters as 'proper parameters' via juce api, check no conflict
+
+future: move away from sendParamChangeMessageToListeners
+future: add proper automation parameters 
+
+
+other: adapt other wip plugins
