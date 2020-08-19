@@ -30,7 +30,6 @@ protected:
 	void drawMenuBox(Graphics& g);
 	void drawParamBox(Graphics& g);
 	void drawRngs(Graphics& g);
-	void drawHelp(Graphics& g);
 	void drawEncoderValue(Graphics& g);
 
 	void setMenuBounds(SSPButton& btn, unsigned r);
@@ -45,10 +44,6 @@ private:
 	SSPButton globalBtn_, networkBtn_, plugInBtn_, recBtn_;
 
 	enum {
-		B_AUDIO, 
-		B_STRUM,
-		B_VOCT,
-		B_HELP,
 		B_WRITE_PR,
 		B_UP,
 		B_DOWN,

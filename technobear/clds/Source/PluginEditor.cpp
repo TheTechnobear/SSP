@@ -28,7 +28,6 @@ CldsEditor::CldsEditor (Clds& p)
 	addAndMakeVisible(plugInBtn_);
 	addAndMakeVisible(recBtn_);
 
-	buttons_[B_HELP].init("?");
 	buttons_[B_FREEZE].init("Frze");
 	buttons_[B_UP].init("+EN");
 	buttons_[B_DOWN].init("-EN");
@@ -300,7 +299,6 @@ void CldsEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSw4:
 		break;
 	case Percussa::sspSw5:
-		buttons_[B_HELP].active(value > 0.5);
 		break;
 	case Percussa::sspSw6:
 		break;
@@ -385,31 +383,6 @@ void CldsEditor::parameterChanged (int index, float value) {
 	paramState_[index] = value;
 }
 
-void CldsEditor::drawHelp(Graphics & g) {
-
-	unsigned x = 900;
-	unsigned y = 40;
-	unsigned space = 30;
-	unsigned yText = y + space * 2;
-	g.setFont(Font(Font::getDefaultMonospacedFontName(), 40, Font::plain));
-	g.drawSingleLineText("Input/Output Help", x, y);
-
-	y = yText;
-	g.setFont(Font(Font::getDefaultMonospacedFontName(), 18, Font::plain));
-	g.drawSingleLineText("VST IN[1] : IN Left", x, y);	y += space;
-	g.drawSingleLineText("VST IN[2] : IN Right", x, y);	y += space;
-	g.drawSingleLineText("VST IN[3] : Trig/Freeze", x, y);	y += space;
-	g.drawSingleLineText("VST IN[4] : V/Oct", x, y);		y += space;
-	g.drawSingleLineText("VST IN[5] : Position", x, y);	y += space;
-	g.drawSingleLineText("VST IN[6] : Size", x, y);	y += space;
-	g.drawSingleLineText("VST IN[7] : Density", x, y);	y += space;
-	g.drawSingleLineText("VST IN[8] : Texture", x, y);	y += space;
-
-	x = x + 300;
-	y = yText;
-	g.drawSingleLineText("VST OUT[1] : OUT Left", x, y);		y += space;
-	g.drawSingleLineText("VST OUT[2] : Out Right", x, y);	y += space;
-}
 
 void CldsEditor::drawClds(Graphics & g) {
 	unsigned x = 1100;
@@ -504,11 +477,7 @@ void CldsEditor::paint(Graphics & g)
 
 	drawEncoderValue(g);
 
-	if (buttons_[B_HELP].active()) {
-		drawHelp(g);
-	} else {
-		drawClds(g);
-	}
+	drawClds(g);
 }
 
 
@@ -550,7 +519,6 @@ void CldsEditor::resized()
 	setButtonBounds(buttons_[B_FREEZE], 0, 0);
 	setButtonBounds(buttons_[B_UP], 	0, 5);
 
-	setButtonBounds(buttons_[B_HELP], 	1, 0);
 	setButtonBounds(buttons_[B_WRITE_PR], 1, 2);
 	setButtonBounds(buttons_[B_LEFT], 	1, 4);
 	setButtonBounds(buttons_[B_DOWN], 	1, 5);

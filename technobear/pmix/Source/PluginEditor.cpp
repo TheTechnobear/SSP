@@ -559,8 +559,6 @@ void PmixEditor::resized()
 	setButtonBounds(buttons_[B_LEFT], 	1, 4);
 	setButtonBounds(buttons_[B_DOWN], 	1, 5);
 	setButtonBounds(buttons_[B_RIGHT], 	1, 6);
-	// setButtonBounds(buttons_[B_HELP], 	1, 0);
-	// setButtonBounds(buttons_[B_WRITE_PR], 1, 2);
 
 	// params
 	for (unsigned i = 0; i < 4; i++) {

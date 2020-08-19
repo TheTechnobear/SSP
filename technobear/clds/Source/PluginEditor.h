@@ -30,7 +30,6 @@ protected:
 	void drawMenuBox(Graphics& g);
 	void drawParamBox(Graphics& g);
 	void drawClds(Graphics& g);
-	void drawHelp(Graphics& g);
 	void drawEncoderValue(Graphics& g);
 
 	void setMenuBounds(SSPButton& btn, unsigned r);
@@ -63,7 +62,6 @@ private:
 		// B_SILENCE,
 		// B_BYPASS,
 		// B_LOFI,
-		B_HELP,
 		B_WRITE_PR,
 
 		B_UP,

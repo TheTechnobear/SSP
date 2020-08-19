@@ -29,20 +29,13 @@ RngsEditor::RngsEditor (Rngs& p)
 	addAndMakeVisible(plugInBtn_);
 	addAndMakeVisible(recBtn_);
 
-	buttons_[B_AUDIO].init("Audio");
-	buttons_[B_STRUM].init("Strum");
-	buttons_[B_VOCT].init("V/Oct");
 	buttons_[B_UP].init("+EN");
 
-	buttons_[B_HELP].init("?");
 	buttons_[B_WRITE_PR].init("WriPr");
 	buttons_[B_DOWN].init("-EN");
 
 
 	// TODO : should  not be needed, keep for inital test
-	buttons_[B_AUDIO].active(processor_.data().f_internal_exciter < 0.5);
-	buttons_[B_STRUM].active(processor_.data().f_internal_strum < 0.5);
-	buttons_[B_VOCT].active(processor_.data().f_internal_note < 0.5);
 	for(unsigned i=0;i<B_MAX;i++) {
 		addAndMakeVisible(buttons_[i]);
 	}
@@ -219,33 +212,14 @@ void RngsEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEncSw4:
 		break;
 	case Percussa::sspSw1:
-		//TODO - should not need using connection state instead
-
-		// if (paramState_[index] != value && !value) {
-		// 	processor_.data().f_internal_exciter =
-		// 	    ! processor_.data().f_internal_exciter;
-		// 	buttons_[B_AUDIO].active(processor_.data().f_internal_exciter < 0.5);
-		// }
 		break;
 	case Percussa::sspSw2:
-		// if (paramState_[index] != value && !value) {
-		// 	processor_.data().f_internal_strum =
-		// 	    ! processor_.data().f_internal_strum ;
-		// 	buttons_[B_STRUM].active(processor_.data().f_internal_strum < 0.5);
-		// }
 		break;
 	case Percussa::sspSw3:
-		// if (paramState_[index] != value && !value) {
-		// 	processor_.data().f_internal_note =
-		// 	    ! processor_.data().f_internal_note;
-		// 	buttons_[B_VOCT].active(processor_.data().f_internal_note < 0.5);
-		// }
 		break;
 	case Percussa::sspSw4:
 		break;
 	case Percussa::sspSw5:
-		//TODO - should not need if params are named
-		buttons_[B_HELP].active(value > 0.5);
 		break;
 	case Percussa::sspSw6:
 		break;
@@ -302,32 +276,6 @@ void RngsEditor::parameterChanged (int index, float value) {
 	paramState_[index] = value;
 }
 
-void RngsEditor::drawHelp(Graphics& g) {
-
-	//TODO - should not need if params are named
-	unsigned x = 900;
-	unsigned y = 40;
-	unsigned space = 30;
-	unsigned yText = y + space * 2;
-	g.setFont(Font(Font::getDefaultMonospacedFontName(), 40, Font::plain));
-	g.drawSingleLineText("Input/Output Help", x, y);
-
-	y = yText;
-	g.setFont(Font(Font::getDefaultMonospacedFontName(), 18, Font::plain));
-	g.drawSingleLineText("VST IN[1] : Audio", x, y);	y += space;
-	g.drawSingleLineText("VST IN[2] : Strum", x, y);	y += space;
-	g.drawSingleLineText("VST IN[3] : V/Oct", x, y);	y += space;
-	g.drawSingleLineText("VST IN[4] : FM", x, y);		y += space;
-	g.drawSingleLineText("VST IN[5] : Structure", x, y);	y += space;
-	g.drawSingleLineText("VST IN[6] : Brightness", x, y);	y += space;
-	g.drawSingleLineText("VST IN[7] : Damping", x, y);	y += space;
-	g.drawSingleLineText("VST IN[8] : Position", x, y);	y += space;
-
-	x = x + 300;
-	y = yText;
-	g.drawSingleLineText("VST OUT[1] : Odd", x, y);		y += space;
-	g.drawSingleLineText("VST OUT[2] : Even", x, y);	y += space;
-}
 
 void RngsEditor::drawRngs(Graphics& g) {
 	unsigned x = 1100;
@@ -411,12 +359,6 @@ void RngsEditor::paint(Graphics& g)
 	// x= left/right (0..1599)
 	// y= top/botton (0..479)
 
-	//TODO test only
-	buttons_[B_AUDIO].active(processor_.data().f_internal_exciter < 0.5);
-	buttons_[B_STRUM].active(processor_.data().f_internal_strum < 0.5);
-	buttons_[B_VOCT].active(processor_.data().f_internal_note < 0.5);
-
-
 	g.fillAll (Colours::black);
 
 	// title
@@ -431,11 +373,7 @@ void RngsEditor::paint(Graphics& g)
 
 	drawEncoderValue(g);	
 
-	if (buttons_[B_HELP].active()) {
-		drawHelp(g);
-	} else {
-		drawRngs(g);
-	}
+	drawRngs(g);
 }
 
 
@@ -474,11 +412,7 @@ void RngsEditor::resized()
 	setMenuBounds(plugInBtn_, 2);
 	setMenuBounds(recBtn_, 3);
 
-	setButtonBounds(buttons_[B_AUDIO], 0, 0);
-	setButtonBounds(buttons_[B_STRUM], 0, 1);
-	setButtonBounds(buttons_[B_VOCT], 0, 2);
 	setButtonBounds(buttons_[B_UP], 0, 5);
-	setButtonBounds(buttons_[B_HELP], 1, 0);
 	setButtonBounds(buttons_[B_WRITE_PR], 1, 2);
 	setButtonBounds(buttons_[B_DOWN], 1, 5);
 
