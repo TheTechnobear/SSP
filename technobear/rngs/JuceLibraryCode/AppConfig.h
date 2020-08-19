@@ -213,7 +213,7 @@
  #define JucePlugin_ManufacturerCode       'TB'
 #endif
 #ifndef  JucePlugin_PluginCode
- #define JucePlugin_PluginCode             'Trng'
+ #define JucePlugin_PluginCode             'RNGS'
 #endif
 #ifndef  JucePlugin_MaxNumInputChannels
  #define JucePlugin_MaxNumInputChannels    8

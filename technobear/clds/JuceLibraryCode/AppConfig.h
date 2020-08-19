@@ -213,7 +213,7 @@
  #define JucePlugin_ManufacturerCode       'TB'
 #endif
 #ifndef  JucePlugin_PluginCode
- #define JucePlugin_PluginCode             'Tcld'
+ #define JucePlugin_PluginCode             'CLDS'
 #endif
 #ifndef  JucePlugin_MaxNumInputChannels
  #define JucePlugin_MaxNumInputChannels    13

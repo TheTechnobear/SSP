@@ -19,7 +19,7 @@ ifeq ($(CONFIG),Debug)
   endif
 
   CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.2.0" -D "JUCE_APP_VERSION_HEX=0x10200" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vst3-sdk -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
-  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -fPIC -O0 -I../../../../mi
+  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -fPIC -O0 -I../../../../mi -I ../common
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -shared -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
   LDDEPS :=
@@ -40,7 +40,7 @@ ifeq ($(CONFIG),Release)
   endif
 
   CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.2.0" -D "JUCE_APP_VERSION_HEX=0x10200" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vst3-sdk -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
-  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -fPIC -O3 -I../../../../mi
+  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -fPIC -O3 -I../../../../mi -I ../common
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -shared -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
   LDDEPS :=
@@ -51,6 +51,9 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/SSP_dd798310.o \
+  $(OBJDIR)/SSPButton_f6a7ad22.o \
+  $(OBJDIR)/SSPParam_83ec7d27.o \
   $(OBJDIR)/string_a13dd610.o \
   $(OBJDIR)/random_3aa6eea.o \
   $(OBJDIR)/atan_dc30eefd.o \
@@ -60,8 +63,6 @@ OBJECTS := \
   $(OBJDIR)/part_f169bfae.o \
   $(OBJDIR)/resonator_c27c1906.o \
   $(OBJDIR)/string_synth_part_3387b1f7.o \
-  $(OBJDIR)/SSPButton_411115c3.o \
-  $(OBJDIR)/SSPParam_8652fc66.o \
   $(OBJDIR)/PluginProcessor_a059e380.o \
   $(OBJDIR)/PluginEditor_94d4fb09.o \
   $(OBJDIR)/juce_audio_basics_2442e4ea.o \
@@ -94,6 +95,21 @@ clean:
 strip:
 	@echo Stripping rngs
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
+
+$(OBJDIR)/SSP_dd798310.o: ../../../common/SSP.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling SSP.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/SSPButton_f6a7ad22.o: ../../../common/SSPButton.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling SSPButton.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/SSPParam_83ec7d27.o: ../../../common/SSPParam.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling SSPParam.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/string_a13dd610.o: ../../../../mi/rings/dsp/string.cc
 	-@mkdir -p $(OBJDIR)
@@ -138,16 +154,6 @@ $(OBJDIR)/resonator_c27c1906.o: ../../../../mi/rings/dsp/resonator.cc
 $(OBJDIR)/string_synth_part_3387b1f7.o: ../../../../mi/rings/dsp/string_synth_part.cc
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling string_synth_part.cc"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/SSPButton_411115c3.o: ../../Source/SSPButton.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling SSPButton.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/SSPParam_8652fc66.o: ../../Source/SSPParam.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling SSPParam.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/PluginProcessor_a059e380.o: ../../Source/PluginProcessor.cpp

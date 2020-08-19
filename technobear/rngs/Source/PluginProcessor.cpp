@@ -1,7 +1,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "Percussa.h"
+#include "SSP.h"
 
 
 static const char *xmlTag = JucePlugin_Name;
@@ -80,15 +80,19 @@ void Rngs::setParameter (int index, float newValue)
     }
 }
 
+
 const String Rngs::getParameterName (int index)
 {
+    if (index < Percussa::sspLast) return percussaParamsName[index];
     return String();
 }
 
 const String Rngs::getParameterText (int index)
 {
+    if (index < Percussa::sspLast) return percussaParamsText[index];
     return String();
 }
+
 
 const String Rngs::getInputChannelName (int channelIndex) const
 {

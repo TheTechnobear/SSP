@@ -1,62 +1,13 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "Percussa.h"
+#include "SSP.h"
 
 #include <cmath>
 
 
 static const char *xmlTag = JucePlugin_Name;
 
-const char* percussaParamsName [] = {
-    "sspEnc1",
-    "sspEnc2",
-    "sspEnc3",
-    "sspEnc4",
-    "sspEncSw1",
-    "sspEncSw2",
-    "sspEncSw3",
-    "sspEncSw4",
-    "sspSw1",
-    "sspSw2",
-    "sspSw3",
-    "sspSw4",
-    "sspSw5",
-    "sspSw6",
-    "sspSw7",
-    "sspSw8",
-    "sspSwLeft",
-    "sspSwRight",
-    "sspSwUp",
-    "sspSwDown",
-    "sspSwShiftL",
-    "sspSwShiftR"
-};
-
-const char* percussaParamsText [] = {
-    "Encoder 1",
-    "Encoder 2",
-    "Encoder 3",
-    "Encoder 4",
-    "Encoder 1 Sw",
-    "Encoder 2 Sw",
-    "Encoder 3 Sw",
-    "Encoder 4 Sw",
-    "Button 1",
-    "Button 2",
-    "Button 3",
-    "Button 4",
-    "Button 5",
-    "Button 6",
-    "Button 7",
-    "Button 8",
-    "Button Left",
-    "Button Right",
-    "Button Up",
-    "Button Down",
-    "Button Shift L",
-    "Button Shift R"
-};
 
 
 Pmix::Pmix()

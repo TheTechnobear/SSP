@@ -1,7 +1,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "Percussa.h"
+#include "SSP.h"
 
 
 inline float TO_SHORTFRAME(float v)   { return constrain(v * 32767.0f, -32768.0f, 32767.0f);}
@@ -72,11 +72,13 @@ void Clds::setParameter (int index, float newValue)
 
 const String Clds::getParameterName (int index)
 {
+    if (index < Percussa::sspLast) return percussaParamsName[index];
     return String();
 }
 
 const String Clds::getParameterText (int index)
 {
+    if (index < Percussa::sspLast) return percussaParamsText[index];
     return String();
 }
 

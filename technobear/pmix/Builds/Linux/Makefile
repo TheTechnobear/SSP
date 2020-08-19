@@ -19,7 +19,7 @@ ifeq ($(CONFIG),Debug)
   endif
 
   CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vst3-sdk -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
-  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -fPIC -O0
+  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -fPIC -O0 -I ../common
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -shared -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
   LDDEPS :=
@@ -40,7 +40,7 @@ ifeq ($(CONFIG),Release)
   endif
 
   CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vst3-sdk -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
-  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -fPIC -O3
+  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -fPIC -O3 -I ../common
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -shared -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
   LDDEPS :=
@@ -51,9 +51,10 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/SSP_dd798310.o \
+  $(OBJDIR)/SSPButton_f6a7ad22.o \
+  $(OBJDIR)/SSPParam_83ec7d27.o \
   $(OBJDIR)/SSPChannel_5cefdcdc.o \
-  $(OBJDIR)/SSPButton_411115c3.o \
-  $(OBJDIR)/SSPParam_8652fc66.o \
   $(OBJDIR)/PluginProcessor_a059e380.o \
   $(OBJDIR)/PluginEditor_94d4fb09.o \
   $(OBJDIR)/juce_audio_basics_2442e4ea.o \
@@ -87,19 +88,24 @@ strip:
 	@echo Stripping pmix
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
 
-$(OBJDIR)/SSPChannel_5cefdcdc.o: ../../Source/SSPChannel.cpp
+$(OBJDIR)/SSP_dd798310.o: ../../../common/SSP.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling SSPChannel.cpp"
+	@echo "Compiling SSP.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/SSPButton_411115c3.o: ../../Source/SSPButton.cpp
+$(OBJDIR)/SSPButton_f6a7ad22.o: ../../../common/SSPButton.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling SSPButton.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/SSPParam_8652fc66.o: ../../Source/SSPParam.cpp
+$(OBJDIR)/SSPParam_83ec7d27.o: ../../../common/SSPParam.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling SSPParam.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/SSPChannel_5cefdcdc.o: ../../Source/SSPChannel.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling SSPChannel.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/PluginProcessor_a059e380.o: ../../Source/PluginProcessor.cpp
