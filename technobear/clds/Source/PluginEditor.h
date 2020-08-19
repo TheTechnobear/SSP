@@ -62,7 +62,6 @@ private:
 		// B_SILENCE,
 		// B_BYPASS,
 		// B_LOFI,
-		B_WRITE_PR,
 
 		B_UP,
 		B_DOWN,

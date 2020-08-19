@@ -100,8 +100,6 @@ public:
     Clds();
     ~Clds();
 
-    void write();
-
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
@@ -150,18 +148,12 @@ protected:
         arg = arg * scale;
         return arg;
     }
-
-    void writeToJson();
-    void readFromJson();
-    String fileFromIdx(int idx, bool&);
-
 private:
 
     void writeToXml(juce::XmlElement& xml);
     void readFromXml(juce::XmlElement& xml);
 
 
-    int currentProgram_ = -1;
     enum {
         I_LEFT,
         I_RIGHT,

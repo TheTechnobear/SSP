@@ -415,7 +415,7 @@ void PmixEditor::paint(Graphics & g)
 	g.setColour(Colours::yellow);
 	g.drawSingleLineText("pmix performance mixer", 20, 30 );
 	g.setColour(Colours::grey);
-	// g.drawSingleLineText("preset : " + String(processor_.getCurrentProgram()), 1400, 30);
+	g.drawSingleLineText("version : " + String(JucePlugin_VersionString), 1400, 30);
 
 	drawMenuBox(g);
 	drawParamBox(g);

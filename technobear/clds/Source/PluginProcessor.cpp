@@ -4,42 +4,16 @@
 #include "Percussa.h"
 
 
-static constexpr unsigned NUM_PROGRAM_SLOTS = 20;
-
-#ifdef __APPLE__
-static const char*  presetProgramDir = "~/SSP/plugin.presets/clds";
-#else
-static const char*  presetProgramDir = "/media/linaro/SYNTHOR/plugins.presets/clds";
-#endif
-
 inline float TO_SHORTFRAME(float v)   { return constrain(v * 32767.0f, -32768.0f, 32767.0f);}
 inline float FROM_SHORTFRAME(short v) { return (float(v) / 32768.0f); }
 
 
-static const char *xmlTag = "CLDS";
+static const char *xmlTag = JucePlugin_Name;
 
 Clds::Clds()
 {
     memset(params_, 0, sizeof(params_));
-    File f(presetProgramDir);
-    if (!f.isDirectory()) {
-        if (f.exists()) {
-            Logger::writeToLog("Unable to create plugin.presets directory for plugin");
-        } else {
-            f.createDirectory();
-        }
-    }
 
-    for (int i = 0; i < NUM_PROGRAM_SLOTS; i++) {
-        String fn(String(presetProgramDir) + File::separatorString + String::formatted("%03.0f", float(i))  + String(".json"));
-        File f(fn);
-        if (!f.exists()) {
-            f.create();
-            currentProgram_ = i;
-            writeToJson();
-        }
-        currentProgram_ = -1;
-    }
 }
 
 Clds::~Clds()
@@ -180,36 +154,22 @@ double Clds::getTailLengthSeconds() const
 
 int Clds::getNumPrograms()
 {
-    unsigned c = 0;
-    DirectoryIterator di(File(presetProgramDir), false, "*.json");
-    while (di.next()) c++;
-
-    // NB: some hosts don't cope very well if you tell them there are 0 programs
-    if (c == 0) c = 1;
-
-    return c;
+    return 1;
 }
 
 int Clds::getCurrentProgram()
 {
     // SSP queries what program is currently loaded
-    return currentProgram_;
+    return 0;
 }
 
 void Clds::setCurrentProgram (int index)
 {
-    // SSP calls when program being loaded
-    if (currentProgram_ != index) {
-        currentProgram_ = index;
-        readFromJson();
-    }
 }
 
 const String Clds::getProgramName (int index)
 {
-    bool valid = false;
-    String  fn = fileFromIdx(index, valid);
-    return fn;
+    return String("");
 }
 
 void Clds::changeProgramName (int index, const String& newName)
@@ -331,91 +291,6 @@ AudioProcessorEditor* Clds::createEditor()
     return new CldsEditor (*this);
 }
 
-void Clds::write() {
-    writeToJson();
-}
-
-void Clds::writeToJson() {
-    if (currentProgram_ < 0) return;
-
-
-    bool valid = false;
-    String  fn = String(presetProgramDir) + File::separatorString + fileFromIdx(currentProgram_, valid);
-    Logger::writeToLog("Writing: " + String(currentProgram_) + " : " + fn);
-    File f(fn);
-
-    if (!valid) {
-        Logger::writeToLog("Unable to write preset, not found, will create : " + String(currentProgram_));
-        f.create();
-    }
-
-    DynamicObject::Ptr v (new DynamicObject());
-    v->setProperty("f_freeze",          float(data_.f_freeze));
-    v->setProperty("f_position",        float(data_.f_position));
-    v->setProperty("f_size",            float(data_.f_size));
-    v->setProperty("f_pitch",           float(data_.f_pitch));
-    v->setProperty("f_density",         float(data_.f_density));
-    v->setProperty("f_texture",         float(data_.f_texture));
-    v->setProperty("f_mix",             float(data_.f_mix));
-    v->setProperty("f_spread",          float(data_.f_spread));
-    v->setProperty("f_feedback",        float(data_.f_feedback));
-    v->setProperty("f_reverb",          float(data_.f_reverb));
-    v->setProperty("f_mode",            float(data_.f_mode));
-    v->setProperty("f_in_gain",         float(data_.f_in_gain));
-
-    v->setProperty("f_mono",            float(data_.f_mono));
-    v->setProperty("f_lofi",            float(data_.f_lofi));
-
-    FileOutputStream fileStream(f);
-    fileStream.setPosition(0);
-    fileStream.truncate();
-
-    var jsonVar(v.get());
-    JSON::writeToStream(fileStream, jsonVar);
-    fileStream.flush();
-}
-
-void Clds::readFromJson() {
-    if (currentProgram_ < 0) return;
-
-    bool valid = false;
-    String  fn = String(presetProgramDir) + File::separatorString + fileFromIdx(currentProgram_, valid);
-
-    File f(fn);
-    Logger::writeToLog("Reading: " + String(currentProgram_) + " : " + fn);
-
-    if (!valid || !f.exists()) {
-        Logger::writeToLog("Unable to read preset, file !exist : " + String(currentProgram_) + " : " + fn);
-    }
-
-
-    auto jsonVar = JSON::parse(f);
-    if (jsonVar == var::null) {
-        Logger::writeToLog("Unable to read preset, unable to parse : " + String(currentProgram_) + " : " + fn);
-        return;
-    }
-
-    if (!jsonVar.isObject()) {
-        Logger::writeToLog("Unable to read preset, badly format : " + String(currentProgram_) + " : " + fn);
-        return;
-    }
-
-    data_.f_freeze      = jsonVar.getProperty("f_freeze"    , 0.0f);
-    data_.f_position    = jsonVar.getProperty("f_position"  , 0.5f);
-    data_.f_size        = jsonVar.getProperty("f_size"      , 0.5f);
-    data_.f_pitch       = jsonVar.getProperty("f_pitch"     , 0.0f);
-    data_.f_density     = jsonVar.getProperty("f_density"   , -0.2f);
-    data_.f_mix         = jsonVar.getProperty("f_mix"       , 0.5f);
-    data_.f_spread      = jsonVar.getProperty("f_spread"    , 0.5f);
-    data_.f_feedback    = jsonVar.getProperty("f_feedback"  , 0.1f);
-    data_.f_reverb      = jsonVar.getProperty("f_reverb"    , 0.5f);
-    data_.f_mode        = jsonVar.getProperty("f_mode"      , 0.0f);
-    data_.f_in_gain     = jsonVar.getProperty("f_in_gain"   , 0.0f);
-
-    data_.f_mono        = jsonVar.getProperty("f_mono"      , 0.0f);
-    data_.f_lofi        = jsonVar.getProperty("f_lofi"      , 0.0f);
-}
-
 
 void Clds::writeToXml(XmlElement& xml) {
     xml.setAttribute("f_freeze",          double(data_.f_freeze));
@@ -469,23 +344,6 @@ void Clds::setStateInformation (const void* data, int sizeInBytes)
         delete pXML;
     }
 }
-
-
-String Clds::fileFromIdx(int idx, bool& found) {
-    StringArray files;
-    DirectoryIterator di(File(presetProgramDir), false, "*.json");
-    while (di.next()) {
-        files.add(di.getFile().getFileName());
-    }
-    files.sort(false);
-    if (idx > files.size()) {
-        found = false;
-        return String::formatted("%03.0f", float(idx)) + ".json";
-    }
-    found = true;
-    return files[idx];
-}
-
 
 // This creates new instances of the plugin..
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()

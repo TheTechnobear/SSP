@@ -117,8 +117,6 @@ public:
     Rngs();
     ~Rngs();
 
-    void write();
-
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
@@ -168,16 +166,10 @@ protected:
         return arg;
     }
 
-    void writeToJson();
-    void readFromJson();
-    String fileFromIdx(int idx, bool&);
-
 private:
 
     void writeToXml(juce::XmlElement& xml);
     void readFromXml(juce::XmlElement& xml);
-
-    int currentProgram_ = -1;
     enum {
         I_IN,
         I_STRUM,

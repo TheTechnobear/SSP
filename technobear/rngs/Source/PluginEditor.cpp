@@ -31,7 +31,6 @@ RngsEditor::RngsEditor (Rngs& p)
 
 	buttons_[B_UP].init("+EN");
 
-	buttons_[B_WRITE_PR].init("WriPr");
 	buttons_[B_DOWN].init("-EN");
 
 
@@ -224,10 +223,6 @@ void RngsEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSw6:
 		break;
 	case Percussa::sspSw7:
-		buttons_[B_WRITE_PR].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
-			processor_.write();
-		}
 		break;
 	case Percussa::sspSw8:
 		break;
@@ -366,7 +361,7 @@ void RngsEditor::paint(Graphics& g)
 	g.setColour(Colours::yellow);
 	g.drawSingleLineText("rngs resonator", 20, 30 );
 	g.setColour(Colours::grey);
-    g.drawSingleLineText("preset : " + String(processor_.getCurrentProgram()),1400,30);
+	g.drawSingleLineText("version : " + String(JucePlugin_VersionString), 1400, 30);
 
 	drawMenuBox(g);
 	drawParamBox(g);
@@ -413,7 +408,6 @@ void RngsEditor::resized()
 	setMenuBounds(recBtn_, 3);
 
 	setButtonBounds(buttons_[B_UP], 0, 5);
-	setButtonBounds(buttons_[B_WRITE_PR], 1, 2);
 	setButtonBounds(buttons_[B_DOWN], 1, 5);
 
 

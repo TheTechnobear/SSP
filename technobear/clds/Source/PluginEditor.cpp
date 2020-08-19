@@ -33,7 +33,6 @@ CldsEditor::CldsEditor (Clds& p)
 	buttons_[B_DOWN].init("-EN");
 	buttons_[B_LEFT].init("-PG");
 	buttons_[B_RIGHT].init("+PG");
-	buttons_[B_WRITE_PR].init("WriPr");
 
 
 	buttons_[B_FREEZE].active(processor_.data().f_freeze > 0.5);
@@ -303,10 +302,6 @@ void CldsEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSw6:
 		break;
 	case Percussa::sspSw7:
-		buttons_[B_WRITE_PR].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
-			processor_.write();
-		}
 		break;
 	case Percussa::sspSw8:
 		break;
@@ -470,7 +465,7 @@ void CldsEditor::paint(Graphics & g)
 	g.setColour(Colours::yellow);
 	g.drawSingleLineText("clds texture synthesizer", 20, 30 );
 	g.setColour(Colours::grey);
-	g.drawSingleLineText("preset : " + String(processor_.getCurrentProgram()), 1400, 30);
+	g.drawSingleLineText("version : " + String(JucePlugin_VersionString), 1400, 30);
 
 	drawMenuBox(g);
 	drawParamBox(g);
@@ -519,7 +514,6 @@ void CldsEditor::resized()
 	setButtonBounds(buttons_[B_FREEZE], 0, 0);
 	setButtonBounds(buttons_[B_UP], 	0, 5);
 
-	setButtonBounds(buttons_[B_WRITE_PR], 1, 2);
 	setButtonBounds(buttons_[B_LEFT], 	1, 4);
 	setButtonBounds(buttons_[B_DOWN], 	1, 5);
 	setButtonBounds(buttons_[B_RIGHT], 	1, 6);

@@ -141,9 +141,6 @@ public:
         O_MAX
     };
 
-    void writePreset();
-
-
 protected:
     float cv2Pitch(float r) {
         // SSP SDK
@@ -156,15 +153,7 @@ protected:
         return arg;
     }
 
-    void readPreset();
-
-
-    String fileFromIdx(int idx, bool&);
-
 private:
-
-    void writeToJson(juce::DynamicObject::Ptr& v);
-    void readFromJson(juce::var& json);
 
     void writeToXml(juce::XmlElement& xml);
     void readFromXml(juce::XmlElement& xml);
@@ -189,9 +178,6 @@ private:
     TrackData inTracks_[IN_T_MAX];
     TrackData outTracks_[OUT_T_MAX];
     void initTracks();
-
-
-    int currentProgram_ = -1;
 
 
     float params_[Percussa::sspLast];

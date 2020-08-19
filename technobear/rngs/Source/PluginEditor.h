@@ -44,7 +44,6 @@ private:
 	SSPButton globalBtn_, networkBtn_, plugInBtn_, recBtn_;
 
 	enum {
-		B_WRITE_PR,
 		B_UP,
 		B_DOWN,
 		B_MAX

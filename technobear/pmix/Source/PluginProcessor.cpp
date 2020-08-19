@@ -5,18 +5,8 @@
 
 #include <cmath>
 
-static constexpr unsigned NUM_PROGRAM_SLOTS = 20;
 
-#ifdef __APPLE__
-static const char*  presetProgramDir = "~/SSP/plugin.presets/pmix";
-#else
-static const char*  presetProgramDir = "/media/linaro/SYNTHOR/plugins.presets/pmix";
-#endif
-
-
-static const char *xmlTag = "PMIX";
-static const char *prefType = ".xml";
-
+static const char *xmlTag = JucePlugin_Name;
 
 const char* percussaParamsName [] = {
     "sspEnc1",
@@ -73,26 +63,6 @@ Pmix::Pmix()
 {
     memset(params_, 0, sizeof(params_));
     initTracks();
-
-    File f(presetProgramDir);
-    if (!f.isDirectory()) {
-        if (f.exists()) {
-            Logger::writeToLog("Unable to create plugin.presets directory for plugin");
-        } else {
-            f.createDirectory();
-        }
-    }
-
-    for (int i = 0; i < NUM_PROGRAM_SLOTS; i++) {
-        String fn(String(presetProgramDir) + File::separatorString + String::formatted("%03.0f", float(i)) + String(prefType));
-        File f(fn);
-        if (!f.exists()) {
-            f.create();
-            currentProgram_ = i;
-            writePreset();
-        }
-        currentProgram_ = -1;
-    }
 }
 
 Pmix::~Pmix()
@@ -223,36 +193,22 @@ double Pmix::getTailLengthSeconds() const
 
 int Pmix::getNumPrograms()
 {
-    unsigned c = 0;
-    DirectoryIterator di(File(presetProgramDir), false, "*" + String(prefType));
-    while (di.next()) c++;
-
-    // NB: some hosts don't cope very well if you tell them there are 0 programs
-    if (c == 0) c = 1;
-
-    return c;
+    return 1;
 }
 
 int Pmix::getCurrentProgram()
 {
     // SSP queries what program is currently loaded
-    return currentProgram_;
+    return 0;
 }
 
-void Pmix::setCurrentProgram (int index)
+void Pmix::setCurrentProgram (int )
 {
-    // SSP calls when program being loaded
-    if (currentProgram_ != index) {
-        currentProgram_ = index;
-        readPreset();
-    }
 }
 
 const String Pmix::getProgramName (int index)
 {
-    bool valid = false;
-    String  fn = fileFromIdx(index, valid);
-    return fn;
+    return String("");
 }
 
 void Pmix::changeProgramName (int index, const String& newName)
@@ -443,76 +399,6 @@ AudioProcessorEditor* Pmix::createEditor()
     return new PmixEditor (*this);
 }
 
-void Pmix::writePreset() {
-    if (currentProgram_ < 0) return;
-
-
-    bool valid = false;
-    String  fn = String(presetProgramDir) + File::separatorString + fileFromIdx(currentProgram_, valid);
-    Logger::writeToLog("Writing: " + String(currentProgram_) + " : " + fn);
-    File f(fn);
-
-    if (!valid) {
-        Logger::writeToLog("Unable to write preset, not found, will create : " + String(currentProgram_));
-        f.create();
-    }
-
-
-    FileOutputStream fileStream(f);
-    fileStream.setPosition(0);
-    fileStream.truncate();
-
-    XmlElement xml(xmlTag);
-    writeToXml(xml);
-    xml.writeToStream(fileStream, String(""));
-
-    // DynamicObject::Ptr v (new DynamicObject());
-    // writeToJson(v);
-    // var jsonVar(v.get());
-    // JSON::writeToStream(fileStream, jsonVar);
-    fileStream.flush();
-}
-
-
-void Pmix::readPreset() {
-    if (currentProgram_ < 0) return;
-
-    bool valid = false;
-    String  fn = String(presetProgramDir) + File::separatorString + fileFromIdx(currentProgram_, valid);
-
-    File f(fn);
-    Logger::writeToLog("Reading: " + String(currentProgram_) + " : " + fn);
-
-    if (!valid || !f.exists()) {
-        Logger::writeToLog("Unable to read preset, file !exist : " + String(currentProgram_) + " : " + fn);
-    }
-
-    XmlDocument xmlFile(f);
-    auto pXML = xmlFile.getDocumentElement();
-    if (pXML) {
-        readFromXml(*pXML);
-        delete pXML;
-    }
-    // juce::var jsonVar = JSON::parse(f);
-    // if (jsonVar == var::null) {
-    //     Logger::writeToLog("Unable to read preset, unable to parse : " + String(currentProgram_) + " : " + fn);
-    //     return;
-    // }
-
-    // if (!jsonVar.isObject()) {
-    //     Logger::writeToLog("Unable to read preset, badly format : " + String(currentProgram_) + " : " + fn);
-    //     return;
-    // }
-    // readFromJson(jsonVar);
-}
-
-void Pmix::writeToJson(DynamicObject::Ptr& v) {
-    // v->setProperty("useRMS",          float(data_.useRMS_));
-}
-
-void Pmix::readFromJson(juce::var& jsonVar) {
-    // data_.useRMS_      = (bool) jsonVar.getProperty("useRMS"    , 0.0f);
-}
 
 void Pmix::writeTrackXml(TrackData& t, juce::XmlElement& xml) {
     for (int lt = 0; lt < TrackData::OUT_TRACKS; lt++) {
@@ -587,12 +473,6 @@ void Pmix::getStateInformation (MemoryBlock& destData)
     XmlElement xml(xmlTag);
     writeToXml(xml);
     copyXmlToBinary(xml, destData);
-
-    // DynamicObject::Ptr v (new DynamicObject());
-    // writeToJson(v);
-    // var jsonVar(v.get());
-    // String str = JSON::toString(jsonVar, true);
-    // destData.append(str.toRawUTF8( ), str.getNumBytesAsUTF8( ) + 1);
 }
 
 void Pmix::setStateInformation (const void* data, int sizeInBytes)
@@ -604,25 +484,6 @@ void Pmix::setStateInformation (const void* data, int sizeInBytes)
         readFromXml(*pXML);
         delete pXML;
     }
-    // const char* str = static_cast<const char*>(data);
-    // auto jsonVar = JSON::parse(String::fromUTF8(str));
-    // readFromJson(jsonVar);
-}
-
-
-String Pmix::fileFromIdx(int idx, bool& found) {
-    StringArray files;
-    DirectoryIterator di(File(presetProgramDir), false, "*" + String(prefType));
-    while (di.next()) {
-        files.add(di.getFile().getFileName());
-    }
-    files.sort(false);
-    if (idx > files.size()) {
-        found = false;
-        return String::formatted("%03.0f", float(idx)) + String(prefType);
-    }
-    found = true;
-    return files[idx];
 }
 
 
