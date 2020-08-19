@@ -1,0 +1,19 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2015
+Project("{E569BE96-C5D8-5910-5AD3-255EEF7ABECC}") = "qvca", "qvca.vcxproj", "{16927990-AFC3-B18D-0D7E-5F93D7196E35}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{16927990-AFC3-B18D-0D7E-5F93D7196E35}.Debug|Win32.ActiveCfg = Debug|Win32
+		{16927990-AFC3-B18D-0D7E-5F93D7196E35}.Debug|Win32.Build.0 = Debug|Win32
+		{16927990-AFC3-B18D-0D7E-5F93D7196E35}.Release|Win32.ActiveCfg = Release|Win32
+		{16927990-AFC3-B18D-0D7E-5F93D7196E35}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
