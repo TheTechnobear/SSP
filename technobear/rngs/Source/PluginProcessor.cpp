@@ -54,6 +54,7 @@ void Rngs::setParameter (int index, float newValue)
     // this will have to change... as the +/-1 is larger than before
     // current idea is to move away from sendParamChangeMessageToListeners
     // to a differ 'changebroadcaster' to free up parameter change for 'proper use'
+    // Logger::writeToLog(getParameterName(index) + ":" + String(newValue));
     switch(index) {
         case Percussa::sspEnc1:
         case Percussa::sspEnc2: 
