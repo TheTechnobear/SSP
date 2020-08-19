@@ -20,18 +20,17 @@ RngsEditor::RngsEditor (Rngs& p)
 	startTimer(50);
 
 
-	globalBtn_.init("G");
-	networkBtn_.init("N");
-	plugInBtn_.init("P");
-	recBtn_.init("R");
+	globalBtn_.init("G",Colours::red);
+	networkBtn_.init("N",Colours::red);
+	plugInBtn_.init("P",Colours::red);
+	recBtn_.init("R",Colours::red);	
 	addAndMakeVisible(globalBtn_);
 	addAndMakeVisible(networkBtn_);
 	addAndMakeVisible(plugInBtn_);
 	addAndMakeVisible(recBtn_);
 
-	buttons_[B_UP].init("+EN");
-
-	buttons_[B_DOWN].init("-EN");
+	buttons_[B_UP].init("+EN",Colours::red);
+	buttons_[B_DOWN].init("-EN",Colours::red);
 
 
 	// TODO : should  not be needed, keep for inital test

@@ -19,20 +19,20 @@ CldsEditor::CldsEditor (Clds& p)
 
 	startTimer(50);
 
-	globalBtn_.init("G");
-	networkBtn_.init("N");
-	plugInBtn_.init("P");
-	recBtn_.init("R");
+	globalBtn_.init("G",Colours::red);
+	networkBtn_.init("N",Colours::red);
+	plugInBtn_.init("P",Colours::red);
+	recBtn_.init("R",Colours::red);	
 	addAndMakeVisible(globalBtn_);
 	addAndMakeVisible(networkBtn_);
 	addAndMakeVisible(plugInBtn_);
 	addAndMakeVisible(recBtn_);
 
 	buttons_[B_FREEZE].init("Frze");
-	buttons_[B_UP].init("+EN");
-	buttons_[B_DOWN].init("-EN");
-	buttons_[B_LEFT].init("-PG");
-	buttons_[B_RIGHT].init("+PG");
+	buttons_[B_UP].init("+EN",Colours::red);
+	buttons_[B_DOWN].init("-EN",Colours::red);
+	buttons_[B_LEFT].init("-PG",Colours::red);
+	buttons_[B_RIGHT].init("+PG",Colours::red);
 
 
 	buttons_[B_FREEZE].active(processor_.data().f_freeze > 0.5);
