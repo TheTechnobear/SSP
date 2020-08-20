@@ -54,6 +54,8 @@ OBJECTS := \
   $(OBJDIR)/SSP_dd798310.o \
   $(OBJDIR)/SSPButton_f6a7ad22.o \
   $(OBJDIR)/SSPParam_83ec7d27.o \
+  $(OBJDIR)/SSPStereoChannel_457136c4.o \
+  $(OBJDIR)/SSPMonoChannel_f083bbf9.o \
   $(OBJDIR)/SSPChannel_5cefdcdc.o \
   $(OBJDIR)/PluginProcessor_a059e380.o \
   $(OBJDIR)/PluginEditor_94d4fb09.o \
@@ -101,6 +103,16 @@ $(OBJDIR)/SSPButton_f6a7ad22.o: ../../../common/SSPButton.cpp
 $(OBJDIR)/SSPParam_83ec7d27.o: ../../../common/SSPParam.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling SSPParam.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/SSPStereoChannel_457136c4.o: ../../Source/SSPStereoChannel.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling SSPStereoChannel.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/SSPMonoChannel_f083bbf9.o: ../../Source/SSPMonoChannel.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling SSPMonoChannel.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/SSPChannel_5cefdcdc.o: ../../Source/SSPChannel.cpp

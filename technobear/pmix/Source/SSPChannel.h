@@ -44,6 +44,8 @@ public:
     void buttonMode(ButMode m);
     void encoderMode(EncMode m);
 
+
+    void paint(Graphics &g);
 private:
     void updateParam(bool newMode = false);
 
@@ -55,6 +57,5 @@ private:
     bool active_ = false;
     SSPParam* param_ = nullptr;
 
-    void paint(Graphics &g);
     juce_UseDebuggingNewOperator
 };

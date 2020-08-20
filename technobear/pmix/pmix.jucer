@@ -21,6 +21,14 @@
       <FILE id="oQBzPh" name="SSPParam.h" compile="0" resource="0" file="../common/SSPParam.h"/>
     </GROUP>
     <GROUP id="{C0553C7B-09BA-4FC3-4E85-F32F355F9FF1}" name="Source">
+      <FILE id="DhEjyq" name="SSPStereoChannel.cpp" compile="1" resource="0"
+            file="Source/SSPStereoChannel.cpp"/>
+      <FILE id="AgFD8M" name="SSPStereoChannel.h" compile="0" resource="0"
+            file="Source/SSPStereoChannel.h"/>
+      <FILE id="ExvokC" name="SSPMonoChannel.cpp" compile="1" resource="0"
+            file="Source/SSPMonoChannel.cpp"/>
+      <FILE id="mWzjUO" name="SSPMonoChannel.h" compile="0" resource="0"
+            file="Source/SSPMonoChannel.h"/>
       <FILE id="QyQYM5" name="SSPChannel.cpp" compile="1" resource="0" file="Source/SSPChannel.cpp"/>
       <FILE id="Fj6eel" name="SSPChannel.h" compile="0" resource="0" file="Source/SSPChannel.h"/>
       <FILE id="MizVfU" name="PluginProcessor.cpp" compile="1" resource="0"

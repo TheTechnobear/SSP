@@ -5,7 +5,9 @@
 
 #include "SSPButton.h"
 #include "SSPParam.h"
-#include "SSPChannel.h"
+#include "SSPMonoChannel.h"
+#include "SSPStereoChannel.h"
+
 
 class PmixEditor  : public AudioProcessorEditor,
 	public AudioProcessorListener,
@@ -92,9 +94,9 @@ private:
 	unsigned buttonHeldCount_[TS_MAX];
 
 
-	SSPParam   params_[4];
-	SSPChannel inTracks_[Pmix::I_MAX];
-	SSPChannel outTracks_[Pmix::O_MAX];
+	SSPParam   			params_[4];
+	SSPMonoChannel		inTracks_[Pmix::I_MAX];
+	SSPStereoChannel 	outTracks_[(Pmix::O_MAX / 2)];
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PmixEditor)
 };

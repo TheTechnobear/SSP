@@ -65,16 +65,12 @@ PmixEditor::PmixEditor (Pmix& p)
 		addAndMakeVisible(inTracks_[i]);
 	}
 
-	outTracks_[0].init(&params_[0], "Main L", 	&processor_.outputTrack(0));
-	outTracks_[1].init(nullptr, "Main R", 	&processor_.outputTrack(1));
-	outTracks_[2].init(&params_[1], "Cue L", 	&processor_.outputTrack(2));
-	outTracks_[3].init(nullptr, "Cue R", 	&processor_.outputTrack(3));
-	outTracks_[4].init(&params_[2], "Aux 1 L", 	&processor_.outputTrack(4));
-	outTracks_[5].init(nullptr, "Aux 1 R", 	&processor_.outputTrack(5));
-	outTracks_[6].init(&params_[3], "Aux 2 L", 	&processor_.outputTrack(6));
-	outTracks_[7].init(nullptr, "Aux 2 R", 	&processor_.outputTrack(7));
+	outTracks_[0].init(&params_[0], "Main", 	&processor_.outputTrack(0), &processor_.outputTrack(1));
+	outTracks_[1].init(&params_[1], "Cue", 		&processor_.outputTrack(2), &processor_.outputTrack(3));
+	outTracks_[2].init(&params_[2], "Aux 1", 	&processor_.outputTrack(4), &processor_.outputTrack(5));
+	outTracks_[3].init(&params_[3], "Aux 2", 	&processor_.outputTrack(6), &processor_.outputTrack(7));
 
-	for (unsigned i = 0; i < Pmix::O_MAX; i++) {
+	for (unsigned i = 0; i < (Pmix::O_MAX / 2); i++) {
 		outTracks_[i].active(false);
 		addAndMakeVisible(outTracks_[i]);
 	}
@@ -216,7 +212,7 @@ void PmixEditor::parameterChanged (int index, float value) {
 			for (unsigned i = 0; i < Pmix::I_MAX ; i++) {
 				inTracks_[i].encoderMode(m);
 			}
-			for (unsigned i = 0; i < Pmix::O_MAX ; i++) {
+			for (unsigned i = 0; i < (Pmix::O_MAX / 2); i++) {
 				outTracks_[i].encoderMode(m);
 			}
 		}
@@ -229,7 +225,7 @@ void PmixEditor::parameterChanged (int index, float value) {
 			for (unsigned i = 0; i < Pmix::I_MAX ; i++) {
 				inTracks_[i].encoderMode(m);
 			}
-			for (unsigned i = 0; i < Pmix::O_MAX ; i++) {
+			for (unsigned i = 0; i < (Pmix::O_MAX / 2); i++) {
 				outTracks_[i].encoderMode(m);
 			}
 		}
@@ -247,7 +243,7 @@ void PmixEditor::parameterChanged (int index, float value) {
 			for (unsigned i = 0; i < Pmix::I_MAX ; i++) {
 				inTracks_[i].buttonMode(m);
 			}
-			for (unsigned i = 0; i < Pmix::O_MAX ; i++) {
+			for (unsigned i = 0; i <(Pmix::O_MAX / 2) ; i++) {
 				outTracks_[i].buttonMode(m);
 			}
 			labelButtons();
@@ -282,8 +278,7 @@ void PmixEditor::channelEncoder(unsigned c, float v) {
 		break;
 	}
 	case OUT_14: {
-		outTracks_[c * 2].encoder(v);
-		outTracks_[c * 2 + 1].encoder(v);
+		outTracks_[c].encoder(v);
 		break;
 	}
 	default: break;
@@ -302,8 +297,7 @@ void PmixEditor::channelEncoderButton(unsigned c, bool v) {
 		break;
 	}
 	case OUT_14: {
-		outTracks_[c * 2].encbutton(v);
-		outTracks_[c * 2 + 1].encbutton(v);
+		outTracks_[c].encbutton(v);
 		break;
 	}
 	default: break;
@@ -323,8 +317,7 @@ void PmixEditor::channelButton(unsigned c, unsigned i, bool v) {
 		break;
 	}
 	case OUT_14: {
-		outTracks_[c * 2].button(i, v);
-		outTracks_[c * 2 + 1].button(i, v);
+		outTracks_[c].button(i, v);
 		break;
 	}
 	default: break;
@@ -340,7 +333,7 @@ bool PmixEditor::buttonState(unsigned c, unsigned i) {
 		return inTracks_[c + 4].button(i);
 	}
 	case OUT_14: {
-		return outTracks_[c * 2].button(i) || outTracks_[c * 2  + 1].button(i);
+		return outTracks_[c].button(i);
 	}
 	default: break;
 	}
@@ -370,7 +363,7 @@ void PmixEditor::trackSelect(TrackSelect ts, bool active) {
 		inTracks_[i].active( (curTracks_ == IN_14 && i < 4 ) || (curTracks_ == IN_58 && i >= 4) ) ;
 	}
 
-	for (unsigned i = 0; i < Pmix::O_MAX ; i++) {
+	for (unsigned i = 0; i < (Pmix::O_MAX / 2); i++) {
 		outTracks_[i].active(curTracks_ == OUT_14);
 	}
 }
@@ -573,17 +566,15 @@ void PmixEditor::resized()
 	const unsigned y = 50;
 
 	const unsigned outStart = 900;
-	const unsigned outw = 70;
+	const unsigned outw = 145;
 
 	for (unsigned i = 0; i < Pmix::I_MAX; i++) {
 		unsigned x = inStart + (i * (space + inw));
 		inTracks_[i].setBounds(x, y, inw, h);
 	}
 
-	for (unsigned i = 0; i < Pmix::O_MAX; i++) {
+	for (unsigned i = 0; i < (Pmix::O_MAX/ 2); i++) {
 		unsigned x = outStart + (i * (space + outw));
 		outTracks_[i].setBounds(x, y, outw, h);
 	}
-
-
 }
