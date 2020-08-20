@@ -243,6 +243,19 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     }
 
     for (unsigned ich = 0; ich < I_MAX; ich++) {
+        bool inEnabled = params_[Percussa::sspInEn1 + ich ] > 0.5f;
+        if(!inEnabled) {
+            auto& inTrack = inTracks_[ich];
+            // zero rms
+            float inlvl = 0.0f;
+            inTrack.lvlSum_ -= inTrack.lvlHistory_[inTrack.lvlHead_];
+            inTrack.lvlHistory_[inTrack.lvlHead_] = inlvl;
+            inTrack.lvlSum_ += inTrack.lvlHistory_[inTrack.lvlHead_];
+            inTrack.lvlHead_ = (inTrack.lvlHead_ + 1) % TrackData::MAX_RMS;
+            inTrack.lvl_ = inTrack.lvlSum_ / TrackData::MAX_RMS;
+            continue;
+        }
+
         //process input channels
         auto& inTrack = inTracks_[ich];
         unsigned inLeadCh = inTrack.dummy_ ? inTrack.follows_ : ich;
@@ -280,10 +293,21 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 
 
         for (unsigned o = 0; o < TrackData::OUT_TRACKS; o++) {
+            bool outEnabled = 
+                params_[Percussa::sspOutEn1 + (o * 2)  ] > 0.5f
+            ||  params_[Percussa::sspOutEn1 + (o * 2 + 1)  ] > 0.5f;
+
+            if(!outEnabled) {
+                // just skip
+                continue;
+            }
+
+
             bool masterCue = 
                     o > TrackData::CUE
                 ||  (o == TrackData::CUE && inLead.cue_)
                 ||  (o == TrackData::MASTER && !inLead.cue_);
+
             if (!inMuted && masterCue) {
                 auto&  outTL = outTracks_[o * 2];
                 float outGain = outTL.gain_ * outTL.level_[0];
@@ -314,6 +338,20 @@ void Pmix::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 
     // calc output levels, and copy to vst buffer
     for (int och = 0; och < O_MAX; och++) {
+        bool outEnabled = params_[Percussa::sspOutEn1 + och ] > 0.5f;
+        if (!outEnabled) {
+            // reset rms
+            auto& trk = outTracks_[och];
+            float lvl = 0.0f;
+            trk.lvlSum_ -= trk.lvlHistory_[trk.lvlHead_];
+            trk.lvlHistory_[trk.lvlHead_] = lvl;
+            trk.lvlSum_ += trk.lvlHistory_[trk.lvlHead_];
+            trk.lvlHead_ = (trk.lvlHead_ + 1) % TrackData::MAX_RMS;
+            trk.lvl_ = trk.lvlSum_ / TrackData::MAX_RMS;
+            // zero output
+            buffer.applyGain(och, 0, n, 0.0f);
+            continue;
+        }
 
         auto& trk = outTracks_[och];
         unsigned outLead = trk.dummy_ ? trk.follows_ : och;
