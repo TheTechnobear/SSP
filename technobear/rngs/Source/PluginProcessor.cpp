@@ -55,29 +55,29 @@ void Rngs::setParameter (int index, float newValue)
     // current idea is to move away from sendParamChangeMessageToListeners
     // to a differ 'changebroadcaster' to free up parameter change for 'proper use'
     // Logger::writeToLog(getParameterName(index) + ":" + String(newValue));
-    switch(index) {
-        case Percussa::sspEnc1:
-        case Percussa::sspEnc2: 
-        case Percussa::sspEnc3:
-        case Percussa::sspEnc4: 
-        {
-            if (newValue > 0.5) {  
-                // TODO - check shoudl paramValues really hold actual value?
-                params_[index-Percussa::sspFirst]++; 
-                AudioProcessor::sendParamChangeMessageToListeners(index, 1.0f);
-            } else if (newValue < 0.5) { 
-                params_[index-Percussa::sspFirst]--; 
-                AudioProcessor::sendParamChangeMessageToListeners(index, -1.0f);
-            } else {
-                AudioProcessor::sendParamChangeMessageToListeners(index, 0.0f);
-            }
-            break; 
+    switch (index) {
+    case Percussa::sspEnc1:
+    case Percussa::sspEnc2:
+    case Percussa::sspEnc3:
+    case Percussa::sspEnc4:
+    {
+        if (newValue > 0.5) {
+            // TODO - check shoudl paramValues really hold actual value?
+            params_[index - Percussa::sspFirst]++;
+            AudioProcessor::sendParamChangeMessageToListeners(index, 1.0f);
+        } else if (newValue < 0.5) {
+            params_[index - Percussa::sspFirst]--;
+            AudioProcessor::sendParamChangeMessageToListeners(index, -1.0f);
+        } else {
+            AudioProcessor::sendParamChangeMessageToListeners(index, 0.0f);
         }
-        default: {
-            if (index < Percussa::sspLast) params_[index] = newValue;
-            AudioProcessor::sendParamChangeMessageToListeners(index, newValue);
-            break;
-        }
+        break;
+    }
+    default: {
+        if (index < Percussa::sspLast) params_[index] = newValue;
+        AudioProcessor::sendParamChangeMessageToListeners(index, newValue);
+        break;
+    }
     }
 }
 
@@ -225,6 +225,7 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     auto n = RingsBlock;
     size_t size = n;
 
+    bool stereoOut = params_[Percussa::sspOutEn1 + O_EVEN ] > 0.5f;
 
     // Rings usually has a blocks size of 16,
     // SSP = 128 (@48k), so split up, so we read the control rate date every 16
@@ -245,7 +246,7 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         }
 
         // control rate
-        float transpose = data_.f_pitch;
+        float transpose = data_.f_pitch + RngsPitchOffset;
         float note = cv2Pitch(buffer.getSample(I_VOCT, bidx));
         float fm = cv2Pitch(buffer.getSample(I_FM, bidx));
         float damping = data_.f_damping + buffer.getSample(I_DAMPING, bidx);
@@ -267,14 +268,9 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         performance_state.note = note;
         performance_state.tonic = 12.0f + transpose;
 
-        //TODO test only
-        data_.f_internal_exciter =  params_[Percussa::sspInEn1 + I_IN ] < 0.5;
-        data_.f_internal_strum =  params_[Percussa::sspInEn1 + I_STRUM ] < 0.5;
-        data_.f_internal_note =  params_[Percussa::sspInEn1 + I_VOCT ] < 0.5;
-
-        performance_state.internal_exciter =  params_[Percussa::sspInEn1 + I_IN ] < 0.5;
-        performance_state.internal_strum =  params_[Percussa::sspInEn1 + I_STRUM ] < 0.5;
-        performance_state.internal_note =  params_[Percussa::sspInEn1 + I_VOCT ] < 0.5;
+        performance_state.internal_exciter =  params_[Percussa::sspInEn1 + I_IN ] < 0.5f;
+        performance_state.internal_strum =  params_[Percussa::sspInEn1 + I_STRUM ] < 0.5f;
+        performance_state.internal_note =  params_[Percussa::sspInEn1 + I_VOCT ] < 0.5f;
         performance_state.chord = constrain(chord , 0, rings::kNumChords - 1);;
 
         if (!performance_state.internal_note) {
@@ -320,11 +316,16 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
             part.Process(performance_state, patch, in, out, aux, size);
         }
 
-        for (int i = 0; i < RingsBlock; i++) {
-            buffer.setSample(O_ODD, bidx + i, out[i]);
-            buffer.setSample(O_EVEN, bidx + i, aux[i]);
+        if (stereoOut) {
+            for (int i = 0; i < RingsBlock; i++) {
+                buffer.setSample(O_ODD, bidx + i, out[i]);
+                buffer.setSample(O_EVEN, bidx + i, aux[i]);
+            }
+        } else {
+            for (int i = 0; i < RingsBlock; i++) {
+                buffer.setSample(O_ODD, bidx + i, (out[i] + aux[i] ) / 2.0f);
+            }
         }
-
     }
 }
 
@@ -353,17 +354,17 @@ void Rngs::writeToXml(XmlElement& xml) {
 }
 
 void Rngs::readFromXml(XmlElement& xml) {
-    data_.f_pitch = xml.getDoubleAttribute("f_pitch",34.0f);
-    data_.f_structure = xml.getDoubleAttribute("f_structure",0.45f);
-    data_.f_brightness = xml.getDoubleAttribute("f_brightness",0.5f);
-    data_.f_damping = xml.getDoubleAttribute("f_damping",0.5f);
-    data_.f_position = xml.getDoubleAttribute("f_position",0.5f);
-    data_.f_polyphony = xml.getDoubleAttribute("f_polyphony",0.0f);
-    data_.f_model = xml.getDoubleAttribute("f_model",0.0f);
-    data_.f_bypass = xml.getBoolAttribute("f_bypass",0.0f);
-    data_.f_easter_egg = xml.getBoolAttribute("f_easter_egg",0.0f);
-    data_.f_in_gain = xml.getDoubleAttribute("f_in_gain",0.0f);
-    data_.f_trig=0.0f;
+    data_.f_pitch = xml.getDoubleAttribute("f_pitch", 0.0f);
+    data_.f_structure = xml.getDoubleAttribute("f_structure", 0.45f);
+    data_.f_brightness = xml.getDoubleAttribute("f_brightness", 0.5f);
+    data_.f_damping = xml.getDoubleAttribute("f_damping", 0.5f);
+    data_.f_position = xml.getDoubleAttribute("f_position", 0.5f);
+    data_.f_polyphony = xml.getDoubleAttribute("f_polyphony", 0.0f);
+    data_.f_model = xml.getDoubleAttribute("f_model", 0.0f);
+    data_.f_bypass = xml.getBoolAttribute("f_bypass", 0.0f);
+    data_.f_easter_egg = xml.getBoolAttribute("f_easter_egg", 0.0f);
+    data_.f_in_gain = xml.getDoubleAttribute("f_in_gain", 0.0f);
+    data_.f_trig = 0.0f;
 }
 
 
@@ -393,7 +394,7 @@ void Rngs::setStateInformation (const void* data, int sizeInBytes)
     int imodel = constrain(data_.f_model, 0, rings::ResonatorModel::RESONATOR_MODEL_LAST - 1);
     rings::ResonatorModel model = static_cast<rings::ResonatorModel>(imodel);
     part.set_model(model);
-    data_.string_synth.set_fx(static_cast<rings::FxType>(model));    
+    data_.string_synth.set_fx(static_cast<rings::FxType>(model));
 }
 
 // This creates new instances of the plugin..

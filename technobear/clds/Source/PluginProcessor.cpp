@@ -202,6 +202,9 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 
     auto n = CloudsBlock;
 
+    bool stereoIn = params_[Percussa::sspInEn1 + I_RIGHT ] > 0.5f;
+    bool stereoOut = params_[Percussa::sspOutEn1 + O_RIGHT ] > 0.5f;
+
     // note: clouds is run at 32khz, we are running at 48khz!
     // Clouds usually has a blocks size of 16,(?)
     // SSP = 128 (@48k), so split up, so we read the control rate date every 16
@@ -214,7 +217,7 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         for (int i = 0; i < n; i++) {
 
             ibuf[i].l = TO_SHORTFRAME(buffer.getSample(I_LEFT, bidx + i) * in_gain);
-            ibuf[i].r = TO_SHORTFRAME(buffer.getSample(I_RIGHT, bidx + i) * in_gain);
+            ibuf[i].r = stereoIn ? TO_SHORTFRAME(buffer.getSample(I_RIGHT, bidx + i) * in_gain) : ibuf[i].l;
 
             if (buffer.getSample(I_TRIG, bidx + i) > 0.5) {
                 trig = true;
@@ -276,9 +279,15 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 
         processor.Process(ibuf, obuf, n);
 
-        for (int i = 0; i < CloudsBlock; i++) {
-            buffer.setSample(O_LEFT, bidx + i, FROM_SHORTFRAME(obuf[i].l));
-            buffer.setSample(O_RIGHT, bidx + i, FROM_SHORTFRAME(obuf[i].r));
+        if (stereoOut) {
+            for (int i = 0; i < CloudsBlock; i++) {
+                buffer.setSample(O_LEFT, bidx + i, FROM_SHORTFRAME(obuf[i].l));
+                buffer.setSample(O_RIGHT, bidx + i, FROM_SHORTFRAME(obuf[i].r));
+            }
+        } else {
+            for (int i = 0; i < CloudsBlock; i++) {
+                buffer.setSample(O_LEFT, bidx + i, ( FROM_SHORTFRAME(obuf[i].l) + FROM_SHORTFRAME(obuf[i].r) ) / 2.0f) ;
+            }
         }
     }
 }

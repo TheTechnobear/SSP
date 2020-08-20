@@ -20,21 +20,21 @@ RngsEditor::RngsEditor (Rngs& p)
 	startTimer(50);
 
 
-	globalBtn_.init("G",Colours::red);
-	networkBtn_.init("N",Colours::red);
-	plugInBtn_.init("P",Colours::red);
-	recBtn_.init("R",Colours::red);	
+	globalBtn_.init("G", Colours::red);
+	networkBtn_.init("N", Colours::red);
+	plugInBtn_.init("P", Colours::red);
+	recBtn_.init("R", Colours::red);
 	addAndMakeVisible(globalBtn_);
 	addAndMakeVisible(networkBtn_);
 	addAndMakeVisible(plugInBtn_);
 	addAndMakeVisible(recBtn_);
 
-	buttons_[B_UP].init("+EN",Colours::red);
-	buttons_[B_DOWN].init("-EN",Colours::red);
+	buttons_[B_UP].init("+EN", Colours::red);
+	buttons_[B_DOWN].init("-EN", Colours::red);
 
 
 	// TODO : should  not be needed, keep for inital test
-	for(unsigned i=0;i<B_MAX;i++) {
+	for (unsigned i = 0; i < B_MAX; i++) {
 		addAndMakeVisible(buttons_[i]);
 	}
 
@@ -66,7 +66,7 @@ RngsEditor::RngsEditor (Rngs& p)
 	params_[P_DAMP].active(!altActive_);
 
 
-	for(unsigned i=0;i<P_MAX;i++) {
+	for (unsigned i = 0; i < P_MAX; i++) {
 		addAndMakeVisible(params_[i]);
 	}
 }
@@ -79,10 +79,10 @@ RngsEditor::~RngsEditor()
 
 void RngsEditor::timerCallback()
 {
-	if(activeParamCount_>0 ) {
+	if (activeParamCount_ > 0 ) {
 		activeParamCount_--;
-		if(activeParamCount_==0) {
-			activeParam_=nullptr;
+		if (activeParamCount_ == 0) {
+			activeParam_ = nullptr;
 		}
 	}
 	repaint();
@@ -113,9 +113,9 @@ void RngsEditor::parameterChanged (int index, float value) {
 	// std::atomic<float>  f_chord;
 	// std::atomic<float>  f_fm;
 
-	// use this if you need to do something special
-	// to process parameter
 	switch (index) {
+
+	// encoders
 	case Percussa::sspEnc1:
 		if (altActive_) {
 			float v = processor_.data().f_position + value / 100.0f;
@@ -123,18 +123,18 @@ void RngsEditor::parameterChanged (int index, float value) {
 			processor_.data().f_position = v;
 			params_[P_POS].value(processor_.data().f_position);
 
-			if(value) activeParam_=&params_[P_POS];
+			if (value) activeParam_ = &params_[P_POS];
 		} else {
 			float v = processor_.data().f_pitch + value / 4.0f;
-			v = constrain(v, 0.0f, 60.0f);
+			v = constrain(v, -30.0f, 30.0f);
 			processor_.data().f_pitch = v;
 			params_[P_PITCH].value(processor_.data().f_pitch);
 
-			if(value) activeParam_=&params_[P_PITCH];
+			if (value) activeParam_ = &params_[P_PITCH];
 		}
-		if(value) {
-			activeParamCount_=PARAM_COUNTER;
-			activeParamIdx_= 0 + altActive_;
+		if (value) {
+			activeParamCount_ = PARAM_COUNTER;
+			activeParamIdx_ = 0 + altActive_;
 		}
 		break;
 	case Percussa::sspEnc2:
@@ -144,7 +144,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 			processor_.data().f_polyphony = v;
 			params_[P_POLY].value((int) processor_.data().f_polyphony);
 
-			if(value) activeParam_=&params_[P_POLY];
+			if (value) activeParam_ = &params_[P_POLY];
 
 		} else {
 			float v = processor_.data().f_structure + value / 100.0f;
@@ -152,11 +152,11 @@ void RngsEditor::parameterChanged (int index, float value) {
 			processor_.data().f_structure = v;
 			params_[P_STRUCT].value(processor_.data().f_structure);
 
-			if(value) activeParam_=&params_[P_STRUCT];
+			if (value) activeParam_ = &params_[P_STRUCT];
 		}
-		if(value) {
-			activeParamCount_=PARAM_COUNTER;
-			activeParamIdx_= 2 + altActive_;
+		if (value) {
+			activeParamCount_ = PARAM_COUNTER;
+			activeParamIdx_ = 2 + altActive_;
 		}
 		break;
 	case Percussa::sspEnc3:
@@ -166,18 +166,18 @@ void RngsEditor::parameterChanged (int index, float value) {
 			processor_.data().f_model = v;
 			params_[P_MODEL].value((int) processor_.data().f_model);
 
-			if(value) activeParam_=&params_[P_MODEL];
+			if (value) activeParam_ = &params_[P_MODEL];
 		} else {
 			float v = processor_.data().f_brightness + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
 			processor_.data().f_brightness = v;
 			params_[P_BRIGHT].value(processor_.data().f_brightness);
 
-			if(value) activeParam_=&params_[P_BRIGHT];
+			if (value) activeParam_ = &params_[P_BRIGHT];
 		}
-		if(value) {
-			activeParamCount_=PARAM_COUNTER;
-			activeParamIdx_= 4 + altActive_;
+		if (value) {
+			activeParamCount_ = PARAM_COUNTER;
+			activeParamIdx_ = 4 + altActive_;
 		}
 		break;
 	case Percussa::sspEnc4:
@@ -187,28 +187,67 @@ void RngsEditor::parameterChanged (int index, float value) {
 			processor_.data().f_in_gain = v;
 			params_[P_IN_GAIN].value(processor_.data().f_in_gain);
 
-			if(value) activeParam_=&params_[P_IN_GAIN];
+			if (value) activeParam_ = &params_[P_IN_GAIN];
 		} else {
 			float v = processor_.data().f_damping + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
 			processor_.data().f_damping = v;
 			params_[P_DAMP].value(processor_.data().f_damping);
 
-			if(value) activeParam_=&params_[P_DAMP];
+			if (value) activeParam_ = &params_[P_DAMP];
 		}
-		if(value) {
-			activeParamCount_=PARAM_COUNTER;
-			activeParamIdx_= 6 + altActive_;
+		if (value) {
+			activeParamCount_ = PARAM_COUNTER;
+			activeParamIdx_ = 6 + altActive_;
 		}
 		break;
+	// encoder switches
 	case Percussa::sspEncSw1:
+		if (value > 0.5f) {
+			if (altActive_) {
+				processor_.data().f_position = 0.5f;
+				params_[P_POS].value(processor_.data().f_position);
+			} else {
+				processor_.data().f_pitch = 0.0f;
+				params_[P_PITCH].value(processor_.data().f_pitch);
+			}
+		}
 		break;
 	case Percussa::sspEncSw2:
+		if (value > 0.5f) {
+			if (altActive_) {
+				processor_.data().f_polyphony = 0.0f;
+				params_[P_POLY].value((int) processor_.data().f_polyphony);
+			} else {
+				processor_.data().f_structure = 0.45f;
+				params_[P_STRUCT].value(processor_.data().f_structure);
+			}
+		}
 		break;
 	case Percussa::sspEncSw3:
+		if (value > 0.5f) {
+			if (altActive_) {
+				processor_.data().f_model = 0.0f;
+				params_[P_MODEL].value((int) processor_.data().f_model);
+			} else {
+				processor_.data().f_brightness = 0.5f;
+				params_[P_BRIGHT].value(processor_.data().f_brightness);
+			}
+		}
 		break;
 	case Percussa::sspEncSw4:
+		if (value > 0.5f) {
+			if (altActive_) {
+				processor_.data().f_in_gain = 0.0f;
+				params_[P_IN_GAIN].value(processor_.data().f_in_gain);
+			} else {
+				processor_.data().f_damping = 0.5f;
+				params_[P_DAMP].value(processor_.data().f_damping);
+			}
+		}
 		break;
+
+	// buttons
 	case Percussa::sspSw1:
 		break;
 	case Percussa::sspSw2:
@@ -321,10 +360,10 @@ void RngsEditor::drawParamBox(Graphics& g) {
 
 
 void RngsEditor::drawEncoderValue(Graphics& g) {
-	if(activeParam_!=nullptr) {
+	if (activeParam_ != nullptr) {
 		unsigned butLeftX = 900 - 1;
-	    String val = String::formatted(activeParam_->fmt(), activeParam_->value());
-        if(activeParam_->unit().length()) { val = val + " " +activeParam_->unit();}
+		String val = String::formatted(activeParam_->fmt(), activeParam_->value());
+		if (activeParam_->unit().length()) { val = val + " " + activeParam_->unit();}
 
 		static constexpr unsigned pw = unsigned(900.0f / 8.0f);
 
@@ -334,10 +373,10 @@ void RngsEditor::drawEncoderValue(Graphics& g) {
 		g.drawVerticalLine(0, 40, paramTopY);
 		g.drawVerticalLine(butLeftX, 40, paramTopY - 1);
 		g.drawHorizontalLine(paramTopY - 1, 0,  activeParamIdx_ * pw);
-		g.drawHorizontalLine(paramTopY - 1, (activeParamIdx_+1)* pw, butLeftX);
+		g.drawHorizontalLine(paramTopY - 1, (activeParamIdx_ + 1)* pw, butLeftX);
 
-		g.drawVerticalLine(activeParamIdx_ * pw, paramTopY, 1600-1);
-		g.drawVerticalLine((activeParamIdx_+1) * pw, paramTopY, 1600-1);
+		g.drawVerticalLine(activeParamIdx_ * pw, paramTopY, 1600 - 1);
+		g.drawVerticalLine((activeParamIdx_ + 1) * pw, paramTopY, 1600 - 1);
 		// g.drawHorizontalLine(1600-1, activeParamIdx_ * pw, (activeParamIdx_+1)* pw);
 
 		g.setColour(Colours::white);
@@ -365,7 +404,7 @@ void RngsEditor::paint(Graphics& g)
 	drawMenuBox(g);
 	drawParamBox(g);
 
-	drawEncoderValue(g);	
+	drawEncoderValue(g);
 
 	drawRngs(g);
 }

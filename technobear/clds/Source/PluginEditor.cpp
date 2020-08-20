@@ -19,20 +19,20 @@ CldsEditor::CldsEditor (Clds& p)
 
 	startTimer(50);
 
-	globalBtn_.init("G",Colours::red);
-	networkBtn_.init("N",Colours::red);
-	plugInBtn_.init("P",Colours::red);
-	recBtn_.init("R",Colours::red);	
+	globalBtn_.init("G", Colours::red);
+	networkBtn_.init("N", Colours::red);
+	plugInBtn_.init("P", Colours::red);
+	recBtn_.init("R", Colours::red);
 	addAndMakeVisible(globalBtn_);
 	addAndMakeVisible(networkBtn_);
 	addAndMakeVisible(plugInBtn_);
 	addAndMakeVisible(recBtn_);
 
 	buttons_[B_FREEZE].init("Frze");
-	buttons_[B_UP].init("+EN",Colours::red);
-	buttons_[B_DOWN].init("-EN",Colours::red);
-	buttons_[B_LEFT].init("-PG",Colours::red);
-	buttons_[B_RIGHT].init("+PG",Colours::red);
+	buttons_[B_UP].init("+EN", Colours::red);
+	buttons_[B_DOWN].init("-EN", Colours::red);
+	buttons_[B_LEFT].init("-PG", Colours::red);
+	buttons_[B_RIGHT].init("+PG", Colours::red);
 
 
 	buttons_[B_FREEZE].active(processor_.data().f_freeze > 0.5);
@@ -142,6 +142,7 @@ void CldsEditor::parameterChanged (int index, float value) {
 	unsigned paramActive = paramActive_;
 
 	switch (index) {
+	// encoders
 	case Percussa::sspEnc1:
 		switch (paramActive_) {
 		case 0 :  {
@@ -276,14 +277,91 @@ void CldsEditor::parameterChanged (int index, float value) {
 			activeEncIdx_ = 3;
 		}
 		break;
+
+
+	// encoder switches
 	case Percussa::sspEncSw1:
+		if (value > 0.5f) {
+			switch (paramActive_) {
+			case 0 :  {
+				processor_.data().f_position = 0.0f;
+				params_[P_POS].value(processor_.data().f_position);
+				break;
+			}
+			case 1 :  {
+				processor_.data().f_mix = 0.0f;
+				params_[P_MIX].value(processor_.data().f_mix);
+				break;
+			}
+			case 2 : {
+				processor_.data().f_pitch = 0.0f;
+				params_[P_PITCH].value(processor_.data().f_pitch);
+				break;
+			}
+			} //switch paramActive_
+		}
 		break;
 	case Percussa::sspEncSw2:
+		if (value > 0.5f) {
+			switch (paramActive_) {
+			case 0 :  {
+				processor_.data().f_size = 0.0f;
+				params_[P_SIZE].value(processor_.data().f_size);
+				break;
+			}
+			case 1 :  {
+				processor_.data().f_spread = 0.0f;
+				params_[P_SPREAD].value(processor_.data().f_spread);
+				break;
+			}
+			case 2 : {
+				processor_.data().f_mode = 0.0f;
+				params_[P_MODE].value((int) processor_.data().f_mode);
+				break;
+			}
+			} //switch paramActive_
+		}
 		break;
 	case Percussa::sspEncSw3:
+		if (value > 0.5f) {
+			switch (paramActive_) {
+			case 0 :  {
+				processor_.data().f_density = 0.0f;
+				params_[P_DENSITY].value(processor_.data().f_density);
+				break;
+			}
+			case 1 :  {
+				processor_.data().f_feedback = 0.0f;
+				params_[P_FEEDBACK].value(processor_.data().f_feedback);
+				break;
+			}
+			case 2 : {
+				processor_.data().f_in_gain = 0.0f;
+				params_[P_IN_GAIN].value(processor_.data().f_in_gain);
+			}
+			} //switch paramActive_
+		}
 		break;
 	case Percussa::sspEncSw4:
+		if (value > 0.5f) {
+			switch (paramActive_) {
+			case 0 :  {
+				processor_.data().f_texture = 0.0f;
+				params_[P_TEXTURE].value(processor_.data().f_texture);
+				break;
+			}
+			case 1 :  {
+				processor_.data().f_reverb = 0.0f;
+				params_[P_REVERB].value(processor_.data().f_reverb);
+				break;
+			}
+			case 2 : {
+				break;
+			}
+			} //switch paramActive_
+		}
 		break;
+	// buttons
 	case Percussa::sspSw1:
 		if (paramState_[index] != value && !value) {
 			processor_.data().f_freeze =

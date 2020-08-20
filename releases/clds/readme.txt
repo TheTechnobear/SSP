@@ -1,7 +1,18 @@
 # Clds : Texture synthesizer 
+
+clds - an implementation of Mutable Instrument Clouds for the Percussa SSP.
+
 ## Change Log
-1.1.0 requires new ssp firmware ! 
-new cv parameters mix,spread,freeze, feedback,reverb
+
+1.2.0 requires new ssp firmware for vst sdk 2 !
+new cv input parameters mix,spread,freeze, feedback,reverb
+separate trig and freeze to different cv inputs
+ssp preset now stores/loads vst parameters
+clicking encoder resets values
+
+note: you will loose presets, as these are now stored in the SSP preset
+
+1.1.0 internal release only - code cleanup
 
 1.0.0 Initial Release 
 
@@ -11,11 +22,11 @@ https://ko-fi.com/thetechnobear
 
 
 ## Installation
-copy the plugins/*.so to sdcard /plugins
+copy `plugins/*.so` to sdcard `/plugins`
 
 ## Optional Installation
-copy the plugins.presets/* to  sdcard /plugins/plugins.preset 
-(same folder structure)
+you may want to copy and rename the demo presets contained in `/presets`
+you may now remove `/plugins.preset` folder on SSP sdcard as its no longer used 
 
 
 ## General Usage 
@@ -23,18 +34,7 @@ copy the plugins.presets/* to  sdcard /plugins/plugins.preset
 The best source of information about this module is the Mutable Instruments Clouds manual
 https://mutable-instruments.net/modules/clouds/manual/
 
-
-note: 
-currently, SSP VSTs are only allowed a maximum of 8 cv inputs - clouds hardware has 9 ;) 
-
-I've left out 'Blend' since I never found it useful on the hardware module.
-since it affects different values based on mode - which is confusing!
-if/when VSTs can have > 8 cv inputs, I will add each 'blend' parameter as a separate cv in.
-
-trig/freeze - this is more problematic, as I actually used these both on the hardware module quite abit.
-so Ive included a button toggle between, which is used - as I tended not to use both at the same time.
-again, hopefully in the future they will be broken out to separate cvs.
-
+This document is based on the LATEST version of the plugin
 
 
 ## Differences
@@ -43,41 +43,10 @@ Generally, I've tried to make as close as possible to the hardware module.
 Clouds hardware runs at 32kHZ sample rate, clds runs on Percussa runs at 48kHz.
 There is currently no lo-fi or mono mode.
 
-
-
-## VST Input/Outputs
-Currently, the SSP does not use the VST's name input/output.
-The help screen ( ? button ) shows the mapping
-
-
-## Presets
-Currently the SSP does **not** save the VST state within the SSP preset.
-Instead, it associates the SSP preset with a numbered preset that the VST manages.
-
-When you start this VST it will create 20 'preset slots' , which you can select and associate with the SSP preset.
-you can then write this **VST preset**  using WriPr within the VST.
-
-this means the 'normal process' is for saving an SSP preset with a particular VST state is:
-a) select a unique VST preset
-b) change when you have the VST sounding as you wish use VST:WriPr.
-c) write the SSP preset  (which will associate this SSP preset with the preset selected in (a)) 
-
-
-### Can you have more than 20 presets?
-Yes, you can create more in /media/linaro/SYNTHOR/plugin.presets/clds
-
-(see note below about number/naming) 
-
-### Can I rename them?
-Yes, but bare in mind the SSP preset holds the 'number' not a name, this is an index into this directory. so preserve the number order, or the SSP **will** load the incorrect preset!
-to circumvent this, I recommend you just append a description to the preset.
-e.g. 
-000.json -> 000-MyAwesomePreset.json
-001.json -> 001-APrettyBell.json
-
-this will preserve the ordering, and so mean your SSP presets will be unaffected.
-
-
+## Input / Outputs
+like MI module, 
+if you only enable LEFT input, then it will treat as mono and use left for right input
+if you only patch the LEFT output, then this will contain a sum of left and right outputs.
 
 ## Tips
 
@@ -93,6 +62,9 @@ Using at other sample rates will lead to incorrect pitch, and possible other odd
 
 
 ## Credits: 
-Mutable Instruments
+
+Percussa SSP - https://www.percussa.com/ 
+
+Mutable Instruments : https://mutable-instruments.net/
 Thanks to Emile for sharing her code with the community.
 please note: this VST in no way endorsed or supported by Mutable Instruments.

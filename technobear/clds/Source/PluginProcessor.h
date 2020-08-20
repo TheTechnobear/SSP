@@ -45,9 +45,7 @@ struct CldsData {
         f_mono      = 0.0f;
         f_lofi      = 0.0f;
 
-        trig_or_freeze = 0.0f;
-
-        processor.Init(
+       processor.Init(
             block_mem, block_mem_sz,
             block_ccm, block_ccm_sz);
 
@@ -87,8 +85,8 @@ struct CldsData {
 
     static constexpr unsigned block_mem_sz =  118784;
     static constexpr unsigned block_ccm_sz =  65536 - 128;
-    //static constexpr unsigned block_mem_sz =  (118784 * 3) / 2; // 48k vs 32k 
-    //static constexpr unsigned block_ccm_sz =  ((65536 - 128) * 3 ) / 2 ; 
+    //static constexpr unsigned block_mem_sz =  (118784 * 3) / 2; // 48k vs 32k
+    //static constexpr unsigned block_ccm_sz =  ((65536 - 128) * 3 ) / 2 ;
     uint8_t* block_mem;
     uint8_t* block_ccm;
 };
@@ -157,7 +155,7 @@ private:
     enum {
         I_LEFT,
         I_RIGHT,
-        I_TRIG, 
+        I_TRIG,
         I_VOCT,
         I_POS,
         I_SIZE,

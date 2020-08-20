@@ -18,7 +18,7 @@ static constexpr unsigned RingsBlock = 16;
 
 struct RngsData {
     RngsData() {
-        f_pitch = 34.0f;
+        f_pitch = 0.0f;
         f_structure = 0.45f;
         f_brightness = 0.5f;
         f_damping = 0.5f;
@@ -29,10 +29,6 @@ struct RngsData {
 
         f_bypass = 0.0f;
         f_easter_egg = 0.0f;
-
-        f_internal_exciter = 1;
-        f_internal_strum = 0;
-        f_internal_note = 1;
 
         f_trig = 0;
 
@@ -71,8 +67,6 @@ struct RngsData {
     // odd = audio out
     // even = audio out
 
-
-
     std::atomic<float>  f_pitch;
     std::atomic<float>  f_structure;
     std::atomic<float>  f_brightness;
@@ -83,11 +77,6 @@ struct RngsData {
 
     std::atomic<float>  f_bypass;
     std::atomic<float>  f_easter_egg;
-
-    //TODO remove
-    std::atomic<float>  f_internal_strum;
-    std::atomic<float>  f_internal_exciter;
-    std::atomic<float>  f_internal_note;
 
     std::atomic<float>  f_in_gain;
 
@@ -154,19 +143,20 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     RngsData& data() { return data_;}
 
-protected: 
+protected:
     float cv2Pitch(float r) {
         // SSP SDK
-        static constexpr float p1 = 0.02325f; // first C note 
-        static constexpr float p2 = 0.21187f; // second C note 
+        static constexpr float p1 = 0.02325f; // first C note
+        static constexpr float p2 = 0.21187f; // second C note
         static constexpr float scale = 12.0f / (p2 - p1);
-        float arg = r; 
-        arg = arg - p1; 
+        float arg = r;
+        arg = arg - p1;
         arg = arg * scale;
         return arg;
     }
 
 private:
+    static constexpr float RngsPitchOffset = 34.0f;
 
     void writeToXml(juce::XmlElement& xml);
     void readFromXml(juce::XmlElement& xml);
