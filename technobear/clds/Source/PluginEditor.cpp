@@ -363,10 +363,10 @@ void CldsEditor::parameterChanged (int index, float value) {
 		break;
 	// buttons
 	case Percussa::sspSw1:
-		if (paramState_[index] != value && !value) {
+		if (paramState_[index] != value && value < 0.5f) {
 			processor_.data().f_freeze =
 			    ! processor_.data().f_freeze;
-			buttons_[B_FREEZE].active(processor_.data().f_freeze > 0.5);
+			buttons_[B_FREEZE].active(processor_.data().f_freeze > 0.5f);
 		}
 		break;
 	case Percussa::sspSw2:
@@ -385,30 +385,30 @@ void CldsEditor::parameterChanged (int index, float value) {
 		break;
 
 	case Percussa::sspSwLeft:
-		buttons_[B_LEFT].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_LEFT].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			if (paramActive_ == 2) paramActive_ = 0;
 			else paramActive_ = 2;
 		}
 		break;
 	case Percussa::sspSwRight:
-		buttons_[B_RIGHT].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_RIGHT].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			if (paramActive_ == 2) paramActive_ = 0;
 			else paramActive_ = 2;
 		}
 		break;
 	case Percussa::sspSwUp:
-		buttons_[B_UP].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_UP].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			if (paramActive_ != 2) {
 				paramActive_ = (paramActive_ + 1 ) % 2;
 			}
 		}
 		break;
 	case Percussa::sspSwDown:
-		buttons_[B_DOWN].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_DOWN].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			if (paramActive_ != 2) {
 				paramActive_ = (paramActive_ + 1 ) % 2;
 			}

@@ -54,21 +54,21 @@ void Rngs::setParameter (int index, float newValue)
     // this will have to change... as the +/-1 is larger than before
     // current idea is to move away from sendParamChangeMessageToListeners
     // to a differ 'changebroadcaster' to free up parameter change for 'proper use'
-    // Logger::writeToLog(getParameterName(index) + ":" + String(newValue));
+    //Logger::writeToLog(getParameterName(index) + ":" + String(newValue));
     switch (index) {
     case Percussa::sspEnc1:
     case Percussa::sspEnc2:
     case Percussa::sspEnc3:
     case Percussa::sspEnc4:
     {
-        if (newValue > 0.5) {
-            // TODO - check shoudl paramValues really hold actual value?
+        if (newValue > 0.5f) {
             params_[index - Percussa::sspFirst]++;
             AudioProcessor::sendParamChangeMessageToListeners(index, 1.0f);
-        } else if (newValue < 0.5) {
+        } else if (newValue < 0.5f) {
             params_[index - Percussa::sspFirst]--;
             AudioProcessor::sendParamChangeMessageToListeners(index, -1.0f);
         } else {
+            params_[index] = 0.0f;
             AudioProcessor::sendParamChangeMessageToListeners(index, 0.0f);
         }
         break;

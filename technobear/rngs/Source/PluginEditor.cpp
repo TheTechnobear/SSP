@@ -269,8 +269,8 @@ void RngsEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSwRight:
 		break;
 	case Percussa::sspSwUp:
-		buttons_[B_UP].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_UP].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			altActive_ = ! altActive_;
 
 			params_[P_PITCH].active(!altActive_);
@@ -285,8 +285,8 @@ void RngsEditor::parameterChanged (int index, float value) {
 		}
 		break;
 	case Percussa::sspSwDown:
-		buttons_[B_DOWN].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_DOWN].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			altActive_ = ! altActive_;
 			params_[P_PITCH].active(!altActive_);
 			params_[P_STRUCT].active(!altActive_);

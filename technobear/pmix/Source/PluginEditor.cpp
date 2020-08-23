@@ -137,76 +137,76 @@ void PmixEditor::parameterChanged (int index, float value) {
 		channelEncoder(3, value);
 		break;
 	case Percussa::sspEncSw1:
-		if (paramState_[index] != value && !value) {
+		if (paramState_[index] != value && value < 0.5f) {
 			channelEncoderButton(0, value);
 		}
 		break;
 	case Percussa::sspEncSw2:
-		if (paramState_[index] != value && !value) {
+		if (paramState_[index] != value && value < 0.5f) {
 			channelEncoderButton(1, value);
 		}
 		break;
 	case Percussa::sspEncSw3:
-		if (paramState_[index] != value && !value) {
+		if (paramState_[index] != value && value < 0.5f) {
 			channelEncoderButton(2, value);
 		}
 		break;
 	case Percussa::sspEncSw4:
-		if (paramState_[index] != value && !value) {
+		if (paramState_[index] != value && value < 0.5f) {
 			channelEncoderButton(3, value);
 		}
 		break;
 	case Percussa::sspSw1:
-		buttons_[B_A_1].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_A_1].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			channelButton(0, 0, value);
 		}
 		break;
 	case Percussa::sspSw2:
-		buttons_[B_A_2].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_A_2].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			channelButton(1, 0, value);
 		}
 		break;
 	case Percussa::sspSw3:
-		buttons_[B_A_3].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_A_3].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			channelButton(2, 0, value);
 		}
 		break;
 	case Percussa::sspSw4:
-		buttons_[B_A_4].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_A_4].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			channelButton(3, 0, value);
 		}
 		break;
 	case Percussa::sspSw5:
-		buttons_[B_B_1].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_B_1].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			channelButton(0, 1, value);
 		}
 		break;
 	case Percussa::sspSw6:
-		buttons_[B_B_2].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_B_2].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			channelButton(1, 1, value);
 		}
 		break;
 	case Percussa::sspSw7:
-		buttons_[B_B_3].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_B_3].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			channelButton(2, 1, value);
 		}
 		break;
 	case Percussa::sspSw8:
-		buttons_[B_B_4].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_B_4].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			channelButton(3, 1, value);
 		}
 		break;
 	case Percussa::sspSwLeft:
-		buttons_[B_LEFT].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_LEFT].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			encMode_ = encMode_ > 0 ? encMode_ - 1 : (SSPChannel::EM_MAX - 1) ;
 			auto m = static_cast<SSPChannel::EncMode>(encMode_);
 			for (unsigned i = 0; i < Pmix::I_MAX ; i++) {
@@ -218,8 +218,8 @@ void PmixEditor::parameterChanged (int index, float value) {
 		}
 		break;
 	case Percussa::sspSwRight:
-		buttons_[B_RIGHT].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_RIGHT].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			encMode_ = encMode_ < (SSPChannel::EM_MAX - 1) ?  encMode_ + 1 : 0 ;
 			auto m = static_cast<SSPChannel::EncMode>(encMode_);
 			for (unsigned i = 0; i < Pmix::I_MAX ; i++) {
@@ -232,12 +232,12 @@ void PmixEditor::parameterChanged (int index, float value) {
 		break;
 	case Percussa::sspSwUp:
 		if (paramState_[index] != value) {
-			trackSelect(OUT_14, value > 0.5);
+			trackSelect(OUT_14, value > 0.5f);
 		}
 		break;
 	case Percussa::sspSwDown:
-		buttons_[B_DOWN].active(value > 0.5);
-		if (paramState_[index] != value && !value) {
+		buttons_[B_DOWN].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
 			butMode_ = butMode_ < (SSPChannel::BM_MAX - 1) ? butMode_ + 1 : 0 ;
 			auto m = static_cast<SSPChannel::ButMode>(butMode_);
 			for (unsigned i = 0; i < Pmix::I_MAX ; i++) {
@@ -251,12 +251,12 @@ void PmixEditor::parameterChanged (int index, float value) {
 		break;
 	case Percussa::sspSwShiftL:
 		if (paramState_[index] != value) {
-			trackSelect(IN_14, value > 0.5);
+			trackSelect(IN_14, value > 0.5f);
 		}
 		break;
 	case Percussa::sspSwShiftR:
 		if (paramState_[index] != value) {
-			trackSelect(IN_58, value > 0.5);
+			trackSelect(IN_58, value > 0.5f);
 		}
 		break;
 	default:

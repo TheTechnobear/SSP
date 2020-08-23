@@ -50,14 +50,14 @@ void Clds::setParameter (int index, float newValue)
     case Percussa::sspEnc3:
     case Percussa::sspEnc4:
     {
-        if (newValue > 0.5) {
-            // TODO - check shoudl paramValues really hold actual value?
+        if (newValue > 0.5f) {
             params_[index - Percussa::sspFirst]++;
             AudioProcessor::sendParamChangeMessageToListeners(index, 1.0f);
-        } else if (newValue < 0.5) {
+        } else if (newValue < 0.5f) {
             params_[index - Percussa::sspFirst]--;
             AudioProcessor::sendParamChangeMessageToListeners(index, -1.0f);
         } else {
+            params_[index] = 0.0f;
             AudioProcessor::sendParamChangeMessageToListeners(index, 0.0f);
         }
         break;
