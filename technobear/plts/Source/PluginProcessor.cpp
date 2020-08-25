@@ -200,12 +200,12 @@ void Plts::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 
     bool stereoOut = params_[Percussa::sspOutEn1 + O_AUX ] > 0.5f;
 
-    // bool voctEn  = params_[Percussa::sspOutEn1 + I_VOCT ] > 0.5f;
-    bool fmEn  = params_[Percussa::sspOutEn1 + I_FM ] > 0.5f;
-    bool timbreEn  = params_[Percussa::sspOutEn1 + I_TIMBRE ] > 0.5f;
-    bool morphEn  = params_[Percussa::sspOutEn1 + I_MORPH ] > 0.5f;
-    bool trigEn  = params_[Percussa::sspOutEn1 + I_TRIG ] > 0.5f;
-    bool levelEn  = params_[Percussa::sspOutEn1 + I_LEVEL ] > 0.5f;
+    // bool voctEn  = params_[Percussa::sspInEn1 + I_VOCT ] > 0.5f;
+    bool fmEn  = params_[Percussa::sspInEn1 + I_FM ] > 0.5f;
+    bool timbreEn  = params_[Percussa::sspInEn1 + I_TIMBRE ] > 0.5f;
+    bool morphEn  = params_[Percussa::sspInEn1 + I_MORPH ] > 0.5f;
+    bool trigEn  = params_[Percussa::sspInEn1 + I_TRIG ] > 0.5f;
+    bool levelEn  = params_[Percussa::sspInEn1 + I_LEVEL ] > 0.5f;
 
     for (int bidx = 0; bidx < buffer.getNumSamples(); bidx += n) {
 
@@ -221,27 +221,32 @@ void Plts::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 
         //todo constrain
 
-        static constexpr float PltsPitchOffset = 0.0f;
+        static constexpr float PltsPitchOffset = 60.0f - 3.044f;
         float pitch = data_.pitch_ + PltsPitchOffset;
 
-        patch.engine = data_.model_ * 16.0f; //check
+        patch.engine = constrain(data_.model_,0.0f,15.0f); //check
 
-        patch.note = 60.f + pitch * 12.f;
+        patch.note = pitch;
+        //patch.note = 60.f + pitch * 12.f;
         patch.harmonics = data_.harmonics_ ;
         patch.timbre = data_.timbre_;
         patch.morph = data_.morph_;
         patch.lpg_colour = data_.lpg_colour_;
         patch.decay = data_.decay_;
 
-        patch.frequency_modulation_amount = 1.0f;
-        patch.timbre_modulation_amount = 1.0f ;
-        patch.morph_modulation_amount = 1.0f;
+        //todo - attenuators act as pitch env etc, when not plugged in!
+        patch.frequency_modulation_amount = 0.0f;
+        patch.timbre_modulation_amount = 0.0f ;
+        patch.morph_modulation_amount = 0.0f;
+        //patch.frequency_modulation_amount = 1.0f;
+        //patch.timbre_modulation_amount = 1.0f ;
+        //patch.morph_modulation_amount = 1.0f;
 
         // Construct modulations
         plaits::Modulations modulations;
         modulations.engine = buffer.getSample(I_MODEL, bidx) / 5.f;
-        modulations.note = cv2Pitch(buffer.getSample(I_VOCT, bidx)) * 12.f;
-        modulations.frequency = cv2Pitch(buffer.getSample(I_FM, bidx)) * 6.f;
+        modulations.note = cv2Pitch(buffer.getSample(I_VOCT, bidx));
+        modulations.frequency = cv2Pitch(buffer.getSample(I_FM, bidx));
         modulations.harmonics = buffer.getSample(I_HARMONICS, bidx) / 5.f;
         modulations.timbre = buffer.getSample(I_TIMBRE, bidx) / 8.f;
         modulations.morph = buffer.getSample(I_MORPH, bidx) / 8.f;
@@ -291,7 +296,7 @@ void Plts::writeToXml(XmlElement& xml) {
     xml.setAttribute("morph",       double(data_.morph_));
 
     xml.setAttribute("model",       double(data_.model_));
-    xml.setAttribute("lpgcolour",  double(data_.lpg_colour_));
+    xml.setAttribute("lpgcolour",   double(data_.lpg_colour_));
     xml.setAttribute("decay",       double(data_.decay_));
 }
 

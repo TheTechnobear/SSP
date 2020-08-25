@@ -106,8 +106,6 @@ protected:
     }
 
 private:
-    static constexpr float PltsPitchOffset = 34.0f;
-
     void writeToXml(juce::XmlElement& xml);
     void readFromXml(juce::XmlElement& xml);
     enum {

@@ -114,8 +114,8 @@ void PltsEditor::parameterChanged (int index, float value) {
 	// encoders
 	case Percussa::sspEnc1:
 		if (altActive_) {
-			float v = processor_.data().model_ + value / 4.0f;
-			v = constrain(v, 0.0f, 16.0f);
+			float v = processor_.data().model_ + value / 1.0f;
+			v = constrain(v, 0.0f, 15.0f);
 			processor_.data().model_ = v;
 			params_[P_MODEL].value(processor_.data().model_);
 
