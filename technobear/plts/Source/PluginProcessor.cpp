@@ -103,7 +103,7 @@ const String Plts::getOutputChannelName (int channelIndex) const
     case O_OUT : {
         return String("Out");
     }
-    case O_EVEN : {
+    case O_AUX : {
         return String("Aux");
     }
     }
@@ -179,7 +179,9 @@ void Plts::prepareToPlay (double sampleRate, int samplesPerBlock)
     // initialisation that you need..
     // this is called by the SSP's software right after loading
     // the plugin and before it starts calling processBlock below
-
+    auto &voice=data_.voice;
+    stmlib::BufferAllocator allocator(data_.shared_buffer, sizeof(data_.shared_buffer));
+    voice.Init(&allocator);
 }
 
 void Plts::releaseResources()
@@ -192,50 +194,80 @@ void Plts::releaseResources()
 
 void Plts::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-    auto& in = data_.in;
-    auto& out = data_.out;
-    auto& aux = data_.aux;
     auto n = PltsBlock;
-    size_t size = n;
+    auto &voice=data_.voice;
+    auto &patch=data_.patch;
 
-    bool stereoOut = params_[Percussa::sspOutEn1 + O_EVEN ] > 0.5f;
+    bool stereoOut = params_[Percussa::sspOutEn1 + O_AUX ] > 0.5f;
+
+    // bool voctEn  = params_[Percussa::sspOutEn1 + I_VOCT ] > 0.5f;
+    bool fmEn  = params_[Percussa::sspOutEn1 + I_FM ] > 0.5f;
+    bool timbreEn  = params_[Percussa::sspOutEn1 + I_TIMBRE ] > 0.5f;
+    bool morphEn  = params_[Percussa::sspOutEn1 + I_MORPH ] > 0.5f;
+    bool trigEn  = params_[Percussa::sspOutEn1 + I_TRIG ] > 0.5f;
+    bool levelEn  = params_[Percussa::sspOutEn1 + I_LEVEL ] > 0.5f;
 
     for (int bidx = 0; bidx < buffer.getNumSamples(); bidx += n) {
 
         bool trig = false;
         for (int i = 0; i < n; i++) {
-            bool trig = buffer.getSample(I_TRIG, bidx + i) > 0.5;
-            if (trig != data_.f_trig && trig) {
-                strum = true;
+            bool t = buffer.getSample(I_TRIG, bidx + i) > 0.5;
+            if (t != data_.trig_ && t) {
+                trig = true;
             }
-            data_.trig_ = trig;
+            data_.trig_ = t;
         }
 
+
+        //todo constrain
+
         static constexpr float PltsPitchOffset = 0.0f;
+        float pitch = data_.pitch_ + PltsPitchOffset;
 
-        // control rate
-        float transpose = data_.pitch_ + PltsPitchOffset;
-        float harm = data_.harmonics_ + buffer.getSample(I_HARMONICS, bidx); //? +
-        float timbre = data_.timbre_ + buffer.getSample(I_TIMBRE, bidx);
-        float morph = data_.morph + buffer.getSample(I_MORPH, bidx);
+        patch.engine = data_.model_ * 16.0f; //check
 
+        patch.note = 60.f + pitch * 12.f;
+        patch.harmonics = data_.harmonics_ ;
+        patch.timbre = data_.timbre_;
+        patch.morph = data_.morph_;
+        patch.lpg_colour = data_.lpg_colour_;
+        patch.decay = data_.decay_;
 
-        // cv only
-        float pitch = cv2Pitch(buffer.getSample(I_VOCT, bidx));
-        float model = data_.model_ + buffer.getSample(I_MODEL, bidx); //? +
-        float fm = cv2Pitch(buffer.getSample(I_FM, bidx));
-        float level = data_.level_ + buffer.getSample(I_LEVEL, bidx); // audio rate? (vca)
+        patch.frequency_modulation_amount = 1.0f;
+        patch.timbre_modulation_amount = 1.0f ;
+        patch.morph_modulation_amount = 1.0f;
 
-        // constrain
+        // Construct modulations
+        plaits::Modulations modulations;
+        modulations.engine = buffer.getSample(I_MODEL, bidx) / 5.f;
+        modulations.note = cv2Pitch(buffer.getSample(I_VOCT, bidx)) * 12.f;
+        modulations.frequency = cv2Pitch(buffer.getSample(I_FM, bidx)) * 6.f;
+        modulations.harmonics = buffer.getSample(I_HARMONICS, bidx) / 5.f;
+        modulations.timbre = buffer.getSample(I_TIMBRE, bidx) / 8.f;
+        modulations.morph = buffer.getSample(I_MORPH, bidx) / 8.f;
+
+        modulations.trigger = data_.trig_;
+        modulations.level = buffer.getSample(I_LEVEL, bidx) / 8.f;
+
+        // modulations.frequency_patched = voctEn;
+        modulations.frequency_patched = fmEn;
+        modulations.timbre_patched = timbreEn;
+        modulations.morph_patched = morphEn;
+        modulations.trigger_patched = trigEn;
+        modulations.level_patched = levelEn;
+
+        // Render frames
+        plaits::Voice::Frame output[PltsBlock];
+        voice.Render(patch, modulations, output, PltsBlock);
 
         if (stereoOut) {
             for (int i = 0; i < PltsBlock; i++) {
-                buffer.setSample(O_OUT, bidx + i, out[i]);
-                buffer.setSample(O_AUX, bidx + i, aux[i]);
+                buffer.setSample(O_OUT, bidx + i, output[i].out / 32768.f);
+                buffer.setSample(O_AUX, bidx + i, output[i].aux / 32768.f);
             }
         } else {
-            for (int i = 0; i < RingsBlock; i++) {
-                buffer.setSample(O_OUT, bidx + i, (out[i] + aux[i] ) / 2.0f);
+            for (int i = 0; i < PltsBlock; i++) {
+                buffer.setSample(O_OUT, bidx + i, (output[i].out / 32768.f + output[i].aux / 32768.f ) / 2.0f);
             }
         }
     }
@@ -257,15 +289,22 @@ void Plts::writeToXml(XmlElement& xml) {
     xml.setAttribute("harmonics",   double(data_.harmonics_));
     xml.setAttribute("timbre",      double(data_.timbre_));
     xml.setAttribute("morph",       double(data_.morph_));
+
     xml.setAttribute("model",       double(data_.model_));
+    xml.setAttribute("lpgcolour",  double(data_.lpg_colour_));
+    xml.setAttribute("decay",       double(data_.decay_));
 }
+
 
 void Plts::readFromXml(XmlElement& xml) {
     data_.pitch_ = xml.getDoubleAttribute("pitch", 0.0f);
     data_.harmonics_ = xml.getDoubleAttribute("harmonics", 0.50f);
     data_.timbre_ = xml.getDoubleAttribute("timbre", 0.5f);
     data_.morph_ = xml.getDoubleAttribute("morph", 0.5f);
+
     data_.model_ = xml.getDoubleAttribute("model", 0.0f);
+    data_.lpg_colour_ = xml.getDoubleAttribute("lpgcolour", 0.5f);
+    data_.decay_ = xml.getDoubleAttribute("decay", 0.5f);
 }
 
 

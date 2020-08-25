@@ -5,10 +5,7 @@
 
 #include <atomic>
 
-// #include "rings/dsp/part.h"
-// #include "rings/dsp/patch.h"
-// #include "rings/dsp/strummer.h"
-// #include "rings/dsp/string_synth_part.h"
+#include "plaits/dsp/voice.h"
 
 inline float constrain(float v, float vMin, float vMax) {
     return std::max<float>(vMin, std::min<float>(vMax, v));
@@ -22,36 +19,34 @@ struct PltsData {
         harmonics_ = 0.50f;
         timbre_ = 0.5f;
         morph_ = 0.5f;
-
         model_ = 0.0f;
-        fm_ = 0.0f;
-        trig_ = 0;
-        level_ = 0.0f;
 
-        iobufsz = PltsBlock;
-        out = new float[iobufsz];
-        aux = new float[iobufsz];
+        lpg_colour_ = 0.5f;
+        decay_ = 0.5f;
+
+        trig_ = 0;
+
     }
     ~PltsData() {
-        delete [] out;
-        delete [] aux;
-        out = nullptr;
-        aux = nullptr;
     }
 
+    plaits::Voice voice;
+    plaits::Patch patch;
+    char shared_buffer[16384];
 
     std::atomic<float>  pitch_;
     std::atomic<float>  harmonics_;
     std::atomic<float>  timbre_;
     std::atomic<float>  morph_;
+
     std::atomic<float>  model_;
+    std::atomic<float>  lpg_colour_;
+    std::atomic<float>  decay_;
+
     std::atomic<float>  fm_;
     std::atomic<float>  trig_;
-
     std::atomic<float>  level_;
 
-    float *out, *aux;
-    int iobufsz;
 };
 
 

@@ -58,9 +58,8 @@ private:
 		P_MORPH,
 
 		P_MODEL,
-		// VCA
-		// LPG
-		// TRANS
+		P_LPG,
+		P_VCA,
 		P_MAX
 	};
 

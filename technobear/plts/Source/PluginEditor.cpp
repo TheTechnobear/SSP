@@ -45,6 +45,8 @@ PltsEditor::PltsEditor (Plts& p)
 	params_[P_MORPH].init("Morph");
 
 	params_[P_MODEL].init("Model", "%1.0f");
+	params_[P_LPG].init("Lpg");
+	params_[P_VCA].init("Vca");
 
 	params_[P_PITCH].value(processor_.data().pitch_);
 	params_[P_HARMONICS].value(processor_.data().harmonics_);
@@ -52,12 +54,18 @@ PltsEditor::PltsEditor (Plts& p)
 	params_[P_MORPH].value(processor_.data().morph_);
 
 	params_[P_MODEL].value(processor_.data().model_);
+	params_[P_LPG].value(processor_.data().lpg_colour_);
+	params_[P_VCA].value(processor_.data().decay_);
 
 	altActive_ = 0;
 	params_[P_PITCH].active(!altActive_);
 	params_[P_HARMONICS].active(!altActive_);
 	params_[P_TIMBRE].active(!altActive_);
 	params_[P_MORPH].active(!altActive_);
+
+	params_[P_MODEL].active(altActive_);
+	params_[P_LPG].active(altActive_);
+	params_[P_VCA].active(altActive_);
 
 
 	for (unsigned i = 0; i < P_MAX; i++) {
@@ -127,7 +135,12 @@ void PltsEditor::parameterChanged (int index, float value) {
 		break;
 	case Percussa::sspEnc2:
 		if (altActive_) {
-			;
+			float v = processor_.data().lpg_colour_ + value / 100.0f;
+			v = constrain(v, 0.0f, 1.0f);
+			processor_.data().lpg_colour_ = v;
+			params_[P_LPG].value(processor_.data().lpg_colour_);
+
+			if (value) activeParam_ = &params_[P_LPG];
 		} else {
 			float v = processor_.data().harmonics_ + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
@@ -143,14 +156,19 @@ void PltsEditor::parameterChanged (int index, float value) {
 		break;
 	case Percussa::sspEnc3:
 		if (altActive_) {
-			;
+			float v = processor_.data().decay_ + value / 100.0f;
+			v = constrain(v, 0.0f, 1.0f);
+			processor_.data().decay_ = v;
+			params_[P_VCA].value(processor_.data().decay_);
+
+			if (value) activeParam_ = &params_[P_VCA];
 		} else {
 			float v = processor_.data().timbre_ + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
 			processor_.data().timbre_ = v;
-			params_[P_TIMRE].value(processor_.data().timbre_);
+			params_[P_TIMBRE].value(processor_.data().timbre_);
 
-			if (value) activeParam_ = &params_[P_TIMRE];
+			if (value) activeParam_ = &params_[P_TIMBRE];
 		}
 		if (value) {
 			activeParamCount_ = PARAM_COUNTER;
@@ -161,7 +179,7 @@ void PltsEditor::parameterChanged (int index, float value) {
 		if (altActive_) {
 			;
 		} else {
-			float v = processor_.data().f_damping + value / 100.0f;
+			float v = processor_.data().morph_ + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
 			processor_.data().morph_ = v;
 			params_[P_MORPH].value(processor_.data().morph_);
@@ -180,15 +198,16 @@ void PltsEditor::parameterChanged (int index, float value) {
 				processor_.data().model_ = 0.0f;
 				params_[P_MODEL].value(processor_.data().model_);
 			} else {
-				processor_.data().f_pitch = 0.0f;
-				params_[P_PITCH].value(processor_.data().f_pitch);
+				processor_.data().pitch_ = 0.0f;
+				params_[P_PITCH].value(processor_.data().pitch_);
 			}
 		}
 		break;
 	case Percussa::sspEncSw2:
 		if (value > 0.5f) {
 			if (altActive_) {
-				;
+				processor_.data().lpg_colour_ = 0.50f;
+				params_[P_LPG].value(processor_.data().lpg_colour_);
 			} else {
 				processor_.data().harmonics_ = 0.50f;
 				params_[P_HARMONICS].value(processor_.data().harmonics_);
@@ -198,7 +217,8 @@ void PltsEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEncSw3:
 		if (value > 0.5f) {
 			if (altActive_) {
-				;
+				processor_.data().decay_ = 0.50f;
+				params_[P_VCA].value(processor_.data().decay_);
 			} else {
 				processor_.data().timbre_ = 0.5f;
 				params_[P_TIMBRE].value(processor_.data().timbre_);
@@ -210,8 +230,8 @@ void PltsEditor::parameterChanged (int index, float value) {
 			if (altActive_) {
 				;
 			} else {
-				processor_.data().f_damping = 0.5f;
-				params_[P_MORPH].value(processor_.data().f_damping);
+				processor_.data().morph_ = 0.5f;
+				params_[P_MORPH].value(processor_.data().morph_);
 			}
 		}
 		break;
@@ -248,6 +268,8 @@ void PltsEditor::parameterChanged (int index, float value) {
 			params_[P_MORPH].active(!altActive_);
 
 			params_[P_MODEL].active(altActive_);
+			params_[P_LPG].active(altActive_);
+			params_[P_VCA].active(altActive_);
 		}
 		break;
 	case Percussa::sspSwDown:
@@ -261,6 +283,8 @@ void PltsEditor::parameterChanged (int index, float value) {
 			params_[P_MORPH].active(!altActive_);
 
 			params_[P_MODEL].active(altActive_);
+			params_[P_LPG].active(altActive_);
+			params_[P_VCA].active(altActive_);
 		}
 		break;
 	case Percussa::sspSwShiftL:
@@ -282,130 +306,132 @@ void PltsEditor::drawPlts(Graphics& g) {
 
 	g.setColour(Colours::white);
 	g.drawEllipse(x, y, d, d, 1);
+}
 
-
-	void PltsEditor::drawMenuBox(Graphics & g) {
-		unsigned y = menuTopY - 1;
-		unsigned x = 1530 - 1;
-		unsigned butTopY = paramTopY;
-		g.setColour(Colours::grey);
-		g.drawVerticalLine(x, y, butTopY);
-		g.drawVerticalLine(1600 - 1, y, butTopY);
-		for (int i = 0; i < 5; i++) {
-			g.drawHorizontalLine(y + i * 45, x, 1600 - 1);
-		}
-
+void PltsEditor::drawMenuBox(Graphics & g) {
+	unsigned y = menuTopY - 1;
+	unsigned x = 1530 - 1;
+	unsigned butTopY = paramTopY;
+	g.setColour(Colours::grey);
+	g.drawVerticalLine(x, y, butTopY);
+	g.drawVerticalLine(1600 - 1, y, butTopY);
+	for (int i = 0; i < 5; i++) {
+		g.drawHorizontalLine(y + i * 45, x, 1600 - 1);
 	}
 
-	void PltsEditor::drawParamBox(Graphics & g) {
-		unsigned butTopY = paramTopY;
+}
+
+void PltsEditor::drawParamBox(Graphics & g) {
+	unsigned butTopY = paramTopY;
+	unsigned butLeftX = 900 - 1;
+	float x = butLeftX;
+	float y = butTopY;
+	g.setColour(Colours::grey);
+	g.drawHorizontalLine(y, x, 1600 - 1);
+	g.drawHorizontalLine(y + paramSpaceY, x, 1600 - 1);
+	g.drawHorizontalLine(480 - 1, x, 1600 - 1);
+	for (int i = 0; i < 8; i++ ) {
+		g.drawVerticalLine(x + i * 100 , butTopY, 480 - 1);
+	}
+}
+
+
+void PltsEditor::drawEncoderValue(Graphics & g) {
+	if (activeParam_ != nullptr) {
 		unsigned butLeftX = 900 - 1;
-		float x = butLeftX;
-		float y = butTopY;
-		g.setColour(Colours::grey);
-		g.drawHorizontalLine(y, x, 1600 - 1);
-		g.drawHorizontalLine(y + paramSpaceY, x, 1600 - 1);
-		g.drawHorizontalLine(480 - 1, x, 1600 - 1);
-		for (int i = 0; i < 8; i++ ) {
-			g.drawVerticalLine(x + i * 100 , butTopY, 480 - 1);
-		}
+		String val = String::formatted(activeParam_->fmt(), activeParam_->value());
+		if (activeParam_->unit().length()) { val = val + " " + activeParam_->unit();}
+
+		static constexpr unsigned pw = unsigned(900.0f / 8.0f);
+
+
+		g.setColour(Colours::red);
+		g.drawHorizontalLine(40, 0, butLeftX);
+		g.drawVerticalLine(0, 40, paramTopY);
+		g.drawVerticalLine(butLeftX, 40, paramTopY - 1);
+		g.drawHorizontalLine(paramTopY - 1, 0,  activeParamIdx_ * pw);
+		g.drawHorizontalLine(paramTopY - 1, (activeParamIdx_ + 1)* pw, butLeftX);
+
+		g.drawVerticalLine(activeParamIdx_ * pw, paramTopY, 1600 - 1);
+		g.drawVerticalLine((activeParamIdx_ + 1) * pw, paramTopY, 1600 - 1);
+		// g.drawHorizontalLine(1600-1, activeParamIdx_ * pw, (activeParamIdx_+1)* pw);
+
+		g.setColour(Colours::white);
+		g.setFont(Font(Font::getDefaultMonospacedFontName(), 180, Font::plain));
+
+		g.drawText(val, 0, 40, butLeftX, paramTopY - 40 - 40, Justification::centred);
 	}
+}
+
+void PltsEditor::paint(Graphics & g)
+{
+	// display 1600x 480
+	// x= left/right (0..1599)
+	// y= top/botton (0..479)
+
+	g.fillAll (Colours::black);
+
+	// title
+	g.setFont(Font(Font::getDefaultMonospacedFontName(), 24, Font::plain));
+	g.setColour(Colours::yellow);
+	g.drawSingleLineText("plts macro oscillator", 20, 30 );
+	g.setColour(Colours::grey);
+	g.drawSingleLineText("version : " + String(JucePlugin_VersionString), 1400, 30);
+
+	drawMenuBox(g);
+	drawParamBox(g);
+
+	drawEncoderValue(g);
+
+	drawPlts(g);
+}
 
 
-	void PltsEditor::drawEncoderValue(Graphics & g) {
-		if (activeParam_ != nullptr) {
-			unsigned butLeftX = 900 - 1;
-			String val = String::formatted(activeParam_->fmt(), activeParam_->value());
-			if (activeParam_->unit().length()) { val = val + " " + activeParam_->unit();}
+void PltsEditor::setMenuBounds(SSPButton & btn, unsigned r) {
+	const int w = 70;
+	const int h = 45;
+	unsigned x = 1530 + 1;
+	unsigned y = menuTopY + (r * h);
+	btn.setBounds(x, y, w, h);
+}
 
-			static constexpr unsigned pw = unsigned(900.0f / 8.0f);
-
-
-			g.setColour(Colours::red);
-			g.drawHorizontalLine(40, 0, butLeftX);
-			g.drawVerticalLine(0, 40, paramTopY);
-			g.drawVerticalLine(butLeftX, 40, paramTopY - 1);
-			g.drawHorizontalLine(paramTopY - 1, 0,  activeParamIdx_ * pw);
-			g.drawHorizontalLine(paramTopY - 1, (activeParamIdx_ + 1)* pw, butLeftX);
-
-			g.drawVerticalLine(activeParamIdx_ * pw, paramTopY, 1600 - 1);
-			g.drawVerticalLine((activeParamIdx_ + 1) * pw, paramTopY, 1600 - 1);
-			// g.drawHorizontalLine(1600-1, activeParamIdx_ * pw, (activeParamIdx_+1)* pw);
-
-			g.setColour(Colours::white);
-			g.setFont(Font(Font::getDefaultMonospacedFontName(), 180, Font::plain));
-
-			g.drawText(val, 0, 40, butLeftX, paramTopY - 40 - 40, Justification::centred);
-		}
-	}
-
-	void PltsEditor::paint(Graphics & g)
-	{
-		// display 1600x 480
-		// x= left/right (0..1599)
-		// y= top/botton (0..479)
-
-		g.fillAll (Colours::black);
-
-		// title
-		g.setFont(Font(Font::getDefaultMonospacedFontName(), 24, Font::plain));
-		g.setColour(Colours::yellow);
-		g.drawSingleLineText("plts macro oscillator", 20, 30 );
-		g.setColour(Colours::grey);
-		g.drawSingleLineText("version : " + String(JucePlugin_VersionString), 1400, 30);
-
-		drawMenuBox(g);
-		drawParamBox(g);
-
-		drawEncoderValue(g);
-
-		drawPlts(g);
-	}
+void PltsEditor::setParamBounds(SSPParam & par, unsigned enc, unsigned var)
+{
+	unsigned h = 2 * paramSpaceY;
+	unsigned w = unsigned(900.0f / 8.0f);
+	unsigned x = ((enc * 2) + var) * w;
+	unsigned y = paramTopY + 5;
+	par.setBounds(x, y, w, h);
+}
 
 
-	void PltsEditor::setMenuBounds(SSPButton & btn, unsigned r) {
-		const int w = 70;
-		const int h = 45;
-		unsigned x = 1530 + 1;
-		unsigned y = menuTopY + (r * h);
-		btn.setBounds(x, y, w, h);
-	}
-
-	void PltsEditor::setParamBounds(SSPParam & par, unsigned enc, unsigned var)
-	{
-		unsigned h = 2 * paramSpaceY;
-		unsigned w = unsigned(900.0f / 8.0f);
-		unsigned x = ((enc * 2) + var) * w;
-		unsigned y = paramTopY + 5;
-		par.setBounds(x, y, w, h);
-	}
+void PltsEditor::setButtonBounds(SSPButton & btn, unsigned r, unsigned c)
+{
+	const int w = 100;
+	const int h = paramSpaceY;
+	unsigned x = 900 + (c * w);
+	unsigned y = paramTopY + (r * h);
+	btn.setBounds(x, y, w, h);
+}
 
 
-	void PltsEditor::setButtonBounds(SSPButton & btn, unsigned r, unsigned c)
-	{
-		const int w = 100;
-		const int h = paramSpaceY;
-		unsigned x = 900 + (c * w);
-		unsigned y = paramTopY + (r * h);
-		btn.setBounds(x, y, w, h);
-	}
+void PltsEditor::resized()
+{
+	setMenuBounds(globalBtn_, 0);
+	setMenuBounds(networkBtn_, 1);
+	setMenuBounds(plugInBtn_, 2);
+	setMenuBounds(recBtn_, 3);
+
+	setButtonBounds(buttons_[B_UP], 0, 5);
+	setButtonBounds(buttons_[B_DOWN], 1, 5);
 
 
-	void PltsEditor::resized()
-	{
-		setMenuBounds(globalBtn_, 0);
-		setMenuBounds(networkBtn_, 1);
-		setMenuBounds(plugInBtn_, 2);
-		setMenuBounds(recBtn_, 3);
+	setParamBounds(params_[P_PITCH], 0, 0);
+	setParamBounds(params_[P_HARMONICS], 1, 0);
+	setParamBounds(params_[P_TIMBRE], 2, 0);
+	setParamBounds(params_[P_MORPH], 3, 0);
 
-		setButtonBounds(buttons_[B_UP], 0, 5);
-		setButtonBounds(buttons_[B_DOWN], 1, 5);
-
-
-		setParamBounds(params_[P_PITCH], 0, 0);
-		setParamBounds(params_[P_HARMONICS], 1, 0);
-		setParamBounds(params_[P_TIMBRE], 2, 0);
-		setParamBounds(params_[P_MORPH], 3, 0);
-
-		setParamBounds(params_[P_MODEL], 0, 1);
-	}
+	setParamBounds(params_[P_MODEL], 0, 1);
+	setParamBounds(params_[P_LPG], 1, 1);
+	setParamBounds(params_[P_VCA], 2, 1);
+}
