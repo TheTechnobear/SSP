@@ -165,7 +165,7 @@ void CldsEditor::parameterChanged (int index, float value) {
 			break;
 		}
 		case 2 : {
-			float v = processor_.data().f_pitch + value / 4.0f;
+			float v = processor_.data().f_pitch + value / 20.0f;
 			v = constrain(v, -48.0f, 48.0f);
 			processor_.data().f_pitch = v;
 			params_[P_PITCH].value(processor_.data().f_pitch);

@@ -125,7 +125,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 
 			if (value) activeParam_ = &params_[P_POS];
 		} else {
-			float v = processor_.data().f_pitch + value / 4.0f;
+			float v = processor_.data().f_pitch + value / 20.0f;
 			v = constrain(v, -30.0f, 30.0f);
 			processor_.data().f_pitch = v;
 			params_[P_PITCH].value(processor_.data().f_pitch);
@@ -219,7 +219,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 				processor_.data().f_polyphony = 0.0f;
 				params_[P_POLY].value((int) processor_.data().f_polyphony);
 			} else {
-				processor_.data().f_structure = 0.45f;
+				processor_.data().f_structure = 0.40f;
 				params_[P_STRUCT].value(processor_.data().f_structure);
 			}
 		}
