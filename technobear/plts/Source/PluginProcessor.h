@@ -16,7 +16,7 @@ static constexpr unsigned PltsBlock = 16;
 struct PltsData {
     PltsData() {
         pitch_ = 0.0f;
-        harmonics_ = 0.50f;
+        harmonics_ = 0.0f;
         timbre_ = 0.5f;
         morph_ = 0.5f;
         model_ = 0.0f;

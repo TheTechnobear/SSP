@@ -303,7 +303,7 @@ void Plts::writeToXml(XmlElement& xml) {
 
 void Plts::readFromXml(XmlElement& xml) {
     data_.pitch_ = xml.getDoubleAttribute("pitch", 0.0f);
-    data_.harmonics_ = xml.getDoubleAttribute("harmonics", 0.50f);
+    data_.harmonics_ = xml.getDoubleAttribute("harmonics", 0.0f);
     data_.timbre_ = xml.getDoubleAttribute("timbre", 0.5f);
     data_.morph_ = xml.getDoubleAttribute("morph", 0.5f);
 

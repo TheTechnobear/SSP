@@ -209,7 +209,7 @@ void PltsEditor::parameterChanged (int index, float value) {
 				processor_.data().lpg_colour_ = 0.50f;
 				params_[P_LPG].value(processor_.data().lpg_colour_);
 			} else {
-				processor_.data().harmonics_ = 0.50f;
+				processor_.data().harmonics_ = 0.0f;
 				params_[P_HARMONICS].value(processor_.data().harmonics_);
 			}
 		}
