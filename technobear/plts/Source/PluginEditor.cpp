@@ -300,12 +300,23 @@ void PltsEditor::parameterChanged (int index, float value) {
 
 void PltsEditor::drawPlts(Graphics& g) {
 	unsigned x = 1100;
-	unsigned y = 150;
-	unsigned d = 100;
-	unsigned sp = 75;
+	unsigned y = 200;
+	unsigned d = 10;
+	unsigned sp = 10;
 
-	g.setColour(Colours::white);
-	g.drawEllipse(x, y, d, d, 1);
+	x=1100;
+	g.setColour(Colours::green);
+	for(unsigned i = 0;i < 8 ; i++ ) {
+		g.fillEllipse(x, y, d, d);
+		x+=sp+d;
+	}
+	x=1100;
+	y+=sp+d;
+	g.setColour(Colours::red);
+	for(unsigned i = 0;i < 8 ; i++ ) {
+		g.fillEllipse(x, y, d, d);
+		x+=sp+d;
+	}
 }
 
 void PltsEditor::drawMenuBox(Graphics & g) {
