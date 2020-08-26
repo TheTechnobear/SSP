@@ -1,0 +1,10 @@
+! 3_semitone.scl
+! created by TheTechnobear
+!
+3 semitone
+ 4
+!
+ 300.
+ 600.
+ 900.
+ 1200.
