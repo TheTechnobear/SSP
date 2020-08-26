@@ -139,7 +139,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 		break;
 	case Percussa::sspEnc2:
 		if (altActive_) {
-			float v = processor_.data().f_polyphony + value / 20.0f;
+			float v = processor_.data().f_polyphony + value / 1.0f;
 			v = constrain(v, 0.0f, 2.0f);
 			processor_.data().f_polyphony = v;
 			params_[P_POLY].value((int) processor_.data().f_polyphony);
@@ -161,7 +161,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 		break;
 	case Percussa::sspEnc3:
 		if (altActive_) {
-			float v = processor_.data().f_model + value / 10.0f;
+			float v = processor_.data().f_model + value / 1.0f;
 			v = constrain(v, 0.0f, 5.0f);
 			processor_.data().f_model = v;
 			params_[P_MODEL].value((int) processor_.data().f_model);
