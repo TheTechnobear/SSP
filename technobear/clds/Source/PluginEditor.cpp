@@ -200,7 +200,7 @@ void CldsEditor::parameterChanged (int index, float value) {
 			break;
 		}
 		case 2 : {
-			float v = processor_.data().f_mode + value / 20.0f;
+			float v = processor_.data().f_mode + value / 1.0f;
 			v = constrain(v, 0.0f, 3.0f);
 			processor_.data().f_mode = v;
 			params_[P_MODE].value((int) processor_.data().f_mode);
