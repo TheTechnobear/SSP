@@ -38,7 +38,6 @@ protected:
 
 private:
 	Plts& processor_;
-	bool altActive_ = false;
 	bool paramState_[Percussa::sspLast];
 
 	SSPButton globalBtn_, networkBtn_, plugInBtn_, recBtn_;
@@ -46,6 +45,8 @@ private:
 	enum {
 		B_UP,
 		B_DOWN,
+		B_LEFT,
+		B_RIGHT,
 		B_MAX
 	};
 
@@ -58,8 +59,13 @@ private:
 		P_MORPH,
 
 		P_MODEL,
+		P_FREQ_MOD,
+		P_TIMBRE_MOD,
+		P_MORPH_MOD,
+
 		P_LPG,
 		P_VCA,
+
 		P_MAX
 	};
 
@@ -67,7 +73,8 @@ private:
 
 
 	SSPParam* 	activeParam_ = nullptr;
-	unsigned 	activeParamIdx_ = 0;
+	unsigned 	activeEncIdx_ = 0;
+	unsigned  	paramActive_ = 0;
 	static constexpr unsigned PARAM_COUNTER = 20;
 	unsigned activeParamCount_ = 0;
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PltsEditor)

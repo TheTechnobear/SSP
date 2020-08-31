@@ -31,6 +31,8 @@ PltsEditor::PltsEditor (Plts& p)
 
 	buttons_[B_UP].init("+EN", Colours::red);
 	buttons_[B_DOWN].init("-EN", Colours::red);
+	buttons_[B_LEFT].init("-PG", Colours::red);
+	buttons_[B_RIGHT].init("+PG", Colours::red);
 
 
 	// TODO : should  not be needed, keep for inital test
@@ -45,6 +47,11 @@ PltsEditor::PltsEditor (Plts& p)
 	params_[P_MORPH].init("Morph");
 
 	params_[P_MODEL].init("Model", "%1.0f");
+
+	params_[P_FREQ_MOD].init("Frq M");
+	params_[P_TIMBRE_MOD].init("Tmb M");
+	params_[P_MORPH_MOD].init("Mrph M");
+
 	params_[P_LPG].init("Lpg");
 	params_[P_VCA].init("Vca");
 
@@ -53,24 +60,44 @@ PltsEditor::PltsEditor (Plts& p)
 	params_[P_TIMBRE].value(processor_.data().timbre_);
 	params_[P_MORPH].value(processor_.data().morph_);
 
+	params_[P_FREQ_MOD].value(processor_.data().freq_mod_);
+	params_[P_TIMBRE_MOD].value(processor_.data().timbre_mod_);
+	params_[P_MORPH_MOD].value(processor_.data().morph_mod_);
+
+
+
 	params_[P_MODEL].value(processor_.data().model_);
 	params_[P_LPG].value(processor_.data().lpg_colour_);
 	params_[P_VCA].value(processor_.data().decay_);
 
-	altActive_ = 0;
-	params_[P_PITCH].active(!altActive_);
-	params_[P_HARMONICS].active(!altActive_);
-	params_[P_TIMBRE].active(!altActive_);
-	params_[P_MORPH].active(!altActive_);
-
-	params_[P_MODEL].active(altActive_);
-	params_[P_LPG].active(altActive_);
-	params_[P_VCA].active(altActive_);
-
-
 	for (unsigned i = 0; i < P_MAX; i++) {
-		addAndMakeVisible(params_[i]);
+		addChildComponent(params_[i]);
 	}
+
+	paramActive_ = 0;
+
+	params_[P_PITCH].setVisible(paramActive_<2);
+	params_[P_HARMONICS].setVisible(paramActive_<2);
+	params_[P_TIMBRE].setVisible(paramActive_<2);
+	params_[P_MORPH].setVisible(paramActive_<2);
+	params_[P_MODEL].setVisible(paramActive_<2);
+	params_[P_FREQ_MOD].setVisible(paramActive_<2);
+	params_[P_TIMBRE_MOD].setVisible(paramActive_<2);
+	params_[P_MORPH_MOD].setVisible(paramActive_<2);
+	params_[P_LPG].setVisible(paramActive_==2);
+	params_[P_VCA].setVisible(paramActive_==2);
+
+	params_[P_PITCH].active(paramActive_==0);
+	params_[P_HARMONICS].active(paramActive_==0);
+	params_[P_TIMBRE].active(paramActive_==0);
+	params_[P_MORPH].active(paramActive_==0);
+	params_[P_MODEL].active(paramActive_==1);
+	params_[P_FREQ_MOD].active(paramActive_==1);
+	params_[P_TIMBRE_MOD].active(paramActive_==1);
+	params_[P_MORPH_MOD].active(paramActive_==1);
+	params_[P_LPG].active(paramActive_==2);
+	params_[P_VCA].active(paramActive_==2);
+
 }
 
 PltsEditor::~PltsEditor()
@@ -109,129 +136,210 @@ void PltsEditor::parameterChanged (int index, float value) {
 	if (index >= Percussa::sspLast) return;
 
 
+	unsigned paramActive = paramActive_;
+	float v=0.0f;
+
 	switch (index) {
 
 	// encoders
 	case Percussa::sspEnc1:
-		if (altActive_) {
-			float v = processor_.data().model_ + value / 1.0f;
-			v = constrain(v, 0.0f, 15.0f);
-			processor_.data().model_ = v;
-			params_[P_MODEL].value(processor_.data().model_);
+		switch(paramActive_) {
+			case 0: 
+				v = processor_.data().pitch_ + value / 20.0f;
+				v = constrain(v, -30.0f, 30.0f); // todo check
+				processor_.data().pitch_ = v;
+				params_[P_PITCH].value(processor_.data().pitch_);
 
-			if (value) activeParam_ = &params_[P_MODEL];
-		} else {
-			float v = processor_.data().pitch_ + value / 20.0f;
-			v = constrain(v, -30.0f, 30.0f); // todo check
-			processor_.data().pitch_ = v;
-			params_[P_PITCH].value(processor_.data().pitch_);
+				if (value) activeParam_ = &params_[P_PITCH];
+				break;
+			case 1: 
+				v = processor_.data().model_ + value / 1.0f;
+				v = constrain(v, 0.0f, 15.0f);
+				processor_.data().model_ = v;
+				params_[P_MODEL].value(processor_.data().model_);
 
-			if (value) activeParam_ = &params_[P_PITCH];
+				if (value) activeParam_ = &params_[P_MODEL];
+				break;
+			case 2: 
+				v = processor_.data().lpg_colour_ + value / 100.0f;
+				v = constrain(v, 0.0f, 1.0f);
+				processor_.data().lpg_colour_ = v;
+				params_[P_LPG].value(processor_.data().lpg_colour_);
+
+				if (value) activeParam_ = &params_[P_LPG];
+				break;
+			default:
+				break;
 		}
 		if (value) {
 			activeParamCount_ = PARAM_COUNTER;
-			activeParamIdx_ = 0 + altActive_;
+			activeEncIdx_ = 0;
 		}
 		break;
 	case Percussa::sspEnc2:
-		if (altActive_) {
-			float v = processor_.data().lpg_colour_ + value / 100.0f;
-			v = constrain(v, 0.0f, 1.0f);
-			processor_.data().lpg_colour_ = v;
-			params_[P_LPG].value(processor_.data().lpg_colour_);
+		switch(paramActive_) {
+			case 0: 
+				v = processor_.data().harmonics_ + value / 100.0f;
+				v = constrain(v, 0.0f, 1.0f);
+				processor_.data().harmonics_ = v;
+				params_[P_HARMONICS].value(processor_.data().harmonics_);
 
-			if (value) activeParam_ = &params_[P_LPG];
-		} else {
-			float v = processor_.data().harmonics_ + value / 100.0f;
-			v = constrain(v, 0.0f, 1.0f);
-			processor_.data().harmonics_ = v;
-			params_[P_HARMONICS].value(processor_.data().harmonics_);
+				if (value) activeParam_ = &params_[P_HARMONICS];
+				break;
+			case 1: 
+				v = processor_.data().freq_mod_ + value / 100.0f;
+				v = constrain(v, -1.0f, 1.0f);
+				processor_.data().freq_mod_ = v;
+				params_[P_FREQ_MOD].value(processor_.data().freq_mod_);
 
-			if (value) activeParam_ = &params_[P_HARMONICS];
+				if (value) activeParam_ = &params_[P_FREQ_MOD];
+				break;
+			case 2: 
+				v = processor_.data().decay_ + value / 100.0f;
+				v = constrain(v, 0.0f, 1.0f);
+				processor_.data().decay_ = v;
+				params_[P_VCA].value(processor_.data().decay_);
+
+				if (value) activeParam_ = &params_[P_VCA];
+				break;
+			default:
+				break;
 		}
 		if (value) {
 			activeParamCount_ = PARAM_COUNTER;
-			activeParamIdx_ = 2 + altActive_;
+			activeEncIdx_ = 1;
 		}
 		break;
 	case Percussa::sspEnc3:
-		if (altActive_) {
-			float v = processor_.data().decay_ + value / 100.0f;
-			v = constrain(v, 0.0f, 1.0f);
-			processor_.data().decay_ = v;
-			params_[P_VCA].value(processor_.data().decay_);
+		switch(paramActive_) {
+			case 0: 
+				v = processor_.data().timbre_ + value / 100.0f;
+				v = constrain(v, 0.0f, 1.0f);
+				processor_.data().timbre_ = v;
+				params_[P_TIMBRE].value(processor_.data().timbre_);
 
-			if (value) activeParam_ = &params_[P_VCA];
-		} else {
-			float v = processor_.data().timbre_ + value / 100.0f;
-			v = constrain(v, 0.0f, 1.0f);
-			processor_.data().timbre_ = v;
-			params_[P_TIMBRE].value(processor_.data().timbre_);
+				if (value) activeParam_ = &params_[P_TIMBRE];
+				break;
+			case 1: 
+				v = processor_.data().timbre_mod_ + value / 100.0f;
+				v = constrain(v, -1.0f, 1.0f);
+				processor_.data().timbre_mod_ = v;
+				params_[P_TIMBRE_MOD].value(processor_.data().timbre_mod_);
 
-			if (value) activeParam_ = &params_[P_TIMBRE];
+				if (value) activeParam_ = &params_[P_TIMBRE_MOD];
+				break;
+			case 2: 
+				break;
+			default:
+				break;
 		}
 		if (value) {
 			activeParamCount_ = PARAM_COUNTER;
-			activeParamIdx_ = 4 + altActive_;
+			activeEncIdx_ = 2;
 		}
 		break;
 	case Percussa::sspEnc4:
-		if (altActive_) {
-			;
-		} else {
-			float v = processor_.data().morph_ + value / 100.0f;
-			v = constrain(v, 0.0f, 1.0f);
-			processor_.data().morph_ = v;
-			params_[P_MORPH].value(processor_.data().morph_);
+		switch(paramActive_) {
+			case 0: 
+				v = processor_.data().morph_ + value / 100.0f;
+				v = constrain(v, 0.0f, 1.0f);
+				processor_.data().morph_ = v;
+				params_[P_MORPH].value(processor_.data().morph_);
 
-			if (value) activeParam_ = &params_[P_MORPH];
+				if (value) activeParam_ = &params_[P_MORPH];
+				break;
+			case 1: 
+				v = processor_.data().morph_mod_ + value / 100.0f;
+				v = constrain(v, -1.0f, 1.0f);
+				processor_.data().morph_mod_ = v;
+				params_[P_MORPH_MOD].value(processor_.data().morph_mod_);
+
+				if (value) activeParam_ = &params_[P_MORPH_MOD];
+				break;
+			case 2: 
+				break;
+			default:
+				break;
 		}
 		if (value) {
 			activeParamCount_ = PARAM_COUNTER;
-			activeParamIdx_ = 6 + altActive_;
+			activeEncIdx_ = 3;
 		}
 		break;
 	// encoder switches
 	case Percussa::sspEncSw1:
-		if (value > 0.5f) {
-			if (altActive_) {
-				processor_.data().model_ = 0.0f;
-				params_[P_MODEL].value(processor_.data().model_);
-			} else {
-				processor_.data().pitch_ = 0.0f;
-				params_[P_PITCH].value(processor_.data().pitch_);
+		if (value < 0.5f) {
+			switch(paramActive_) {
+				case 0: 
+					processor_.data().pitch_ = 0.0f;
+					params_[P_PITCH].value(processor_.data().pitch_);
+					break;
+				case 1: 
+					processor_.data().model_ = 0.0f;
+					params_[P_MODEL].value(processor_.data().model_);
+					break;
+				case 2: 
+					processor_.data().lpg_colour_ = 0.50f;
+					params_[P_LPG].value(processor_.data().lpg_colour_);
+					break;
+				default:
+					break;
 			}
 		}
 		break;
 	case Percussa::sspEncSw2:
-		if (value > 0.5f) {
-			if (altActive_) {
-				processor_.data().lpg_colour_ = 0.50f;
-				params_[P_LPG].value(processor_.data().lpg_colour_);
-			} else {
-				processor_.data().harmonics_ = 0.0f;
-				params_[P_HARMONICS].value(processor_.data().harmonics_);
+		if (value < 0.5f) {
+			switch(paramActive_) {
+				case 0: 
+					processor_.data().harmonics_ = 0.0f;
+					params_[P_HARMONICS].value(processor_.data().harmonics_);
+					break;
+				case 1: 
+					processor_.data().freq_mod_ = 0.0f;
+					params_[P_FREQ_MOD].value(processor_.data().freq_mod_);
+					break;
+				case 2: 
+					processor_.data().decay_ = 0.50f;
+					params_[P_VCA].value(processor_.data().decay_);
+					break;
+				default:
+					break;
 			}
 		}
 		break;
 	case Percussa::sspEncSw3:
-		if (value > 0.5f) {
-			if (altActive_) {
-				processor_.data().decay_ = 0.50f;
-				params_[P_VCA].value(processor_.data().decay_);
-			} else {
-				processor_.data().timbre_ = 0.5f;
-				params_[P_TIMBRE].value(processor_.data().timbre_);
+		if (value < 0.5f) {
+			switch(paramActive_) {
+				case 0: 
+					processor_.data().timbre_ = 0.5f;
+					params_[P_TIMBRE].value(processor_.data().timbre_);
+					break;
+				case 1: 
+					processor_.data().timbre_mod_ = 0.0f;
+					params_[P_TIMBRE_MOD].value(processor_.data().timbre_mod_);
+					break;
+				case 2: 
+					break;
+				default:
+					break;
 			}
 		}
 		break;
 	case Percussa::sspEncSw4:
-		if (value > 0.5f) {
-			if (altActive_) {
-				;
-			} else {
-				processor_.data().morph_ = 0.5f;
-				params_[P_MORPH].value(processor_.data().morph_);
+		if (value < 0.5f) {
+			switch(paramActive_) {
+				case 0: 
+					processor_.data().morph_ = 0.5f;
+					params_[P_MORPH].value(processor_.data().morph_);
+					break;
+				case 1: 
+					processor_.data().morph_mod_ = 0.0f;
+					params_[P_MORPH_MOD].value(processor_.data().morph_mod_);
+					break;
+				case 2: 
+					break;
+				default:
+					break;
 			}
 		}
 		break;
@@ -254,39 +362,36 @@ void PltsEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSw8:
 		break;
 	case Percussa::sspSwLeft:
+		buttons_[B_LEFT].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
+			if (paramActive_ == 2) paramActive_ = 0;
+			else paramActive_ = 2;
+		}
 		break;
 	case Percussa::sspSwRight:
+		buttons_[B_RIGHT].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
+			if (paramActive_ == 2) paramActive_ = 0;
+			else paramActive_ = 2;
+		}
 		break;
 	case Percussa::sspSwUp:
 		buttons_[B_UP].active(value > 0.5f);
 		if (paramState_[index] != value && value < 0.5f) {
-			altActive_ = ! altActive_;
-
-			params_[P_PITCH].active(!altActive_);
-			params_[P_HARMONICS].active(!altActive_);
-			params_[P_TIMBRE].active(!altActive_);
-			params_[P_MORPH].active(!altActive_);
-
-			params_[P_MODEL].active(altActive_);
-			params_[P_LPG].active(altActive_);
-			params_[P_VCA].active(altActive_);
+			if (paramActive_ != 2) {
+				paramActive_ = (paramActive_ + 1 ) % 2;
+			}
 		}
 		break;
 	case Percussa::sspSwDown:
 		buttons_[B_DOWN].active(value > 0.5f);
 		if (paramState_[index] != value && value < 0.5f) {
-			altActive_ = ! altActive_;
-
-			params_[P_PITCH].active(!altActive_);
-			params_[P_HARMONICS].active(!altActive_);
-			params_[P_TIMBRE].active(!altActive_);
-			params_[P_MORPH].active(!altActive_);
-
-			params_[P_MODEL].active(altActive_);
-			params_[P_LPG].active(altActive_);
-			params_[P_VCA].active(altActive_);
+			if (paramActive_ != 2) {
+				paramActive_ = (paramActive_ + 1 ) % 2;
+			}
 		}
 		break;
+
 	case Percussa::sspSwShiftL:
 		break;
 	case Percussa::sspSwShiftR:
@@ -294,6 +399,33 @@ void PltsEditor::parameterChanged (int index, float value) {
 	default:
 		break;
 	}
+
+	if (paramActive != paramActive_) { 
+
+		params_[P_PITCH].setVisible(paramActive_<2);
+		params_[P_HARMONICS].setVisible(paramActive_<2);
+		params_[P_TIMBRE].setVisible(paramActive_<2);
+		params_[P_MORPH].setVisible(paramActive_<2);
+		params_[P_MODEL].setVisible(paramActive_<2);
+		params_[P_FREQ_MOD].setVisible(paramActive_<2);
+		params_[P_TIMBRE_MOD].setVisible(paramActive_<2);
+		params_[P_MORPH_MOD].setVisible(paramActive_<2);
+		params_[P_LPG].setVisible(paramActive_==2);
+		params_[P_VCA].setVisible(paramActive_==2);
+
+		params_[P_PITCH].active(paramActive_==0);
+		params_[P_HARMONICS].active(paramActive_==0);
+		params_[P_TIMBRE].active(paramActive_==0);
+		params_[P_MORPH].active(paramActive_==0);
+		params_[P_MODEL].active(paramActive_==1);
+		params_[P_FREQ_MOD].active(paramActive_==1);
+		params_[P_TIMBRE_MOD].active(paramActive_==1);
+		params_[P_MORPH_MOD].active(paramActive_==1);
+		params_[P_LPG].active(paramActive_==2);
+		params_[P_VCA].active(paramActive_==2);
+	}
+
+
 	paramState_[index] = value;
 }
 
@@ -355,17 +487,18 @@ void PltsEditor::drawEncoderValue(Graphics & g) {
 
 		static constexpr unsigned pw = unsigned(900.0f / 8.0f);
 
+		unsigned activeParamIdx = (activeEncIdx_ * 2) + paramActive_ % 2;
 
 		g.setColour(Colours::red);
 		g.drawHorizontalLine(40, 0, butLeftX);
 		g.drawVerticalLine(0, 40, paramTopY);
 		g.drawVerticalLine(butLeftX, 40, paramTopY - 1);
-		g.drawHorizontalLine(paramTopY - 1, 0,  activeParamIdx_ * pw);
-		g.drawHorizontalLine(paramTopY - 1, (activeParamIdx_ + 1)* pw, butLeftX);
+		g.drawHorizontalLine(paramTopY - 1, 0,  activeParamIdx * pw);
+		g.drawHorizontalLine(paramTopY - 1, (activeParamIdx + 1)* pw, butLeftX);
 
-		g.drawVerticalLine(activeParamIdx_ * pw, paramTopY, 1600 - 1);
-		g.drawVerticalLine((activeParamIdx_ + 1) * pw, paramTopY, 1600 - 1);
-		// g.drawHorizontalLine(1600-1, activeParamIdx_ * pw, (activeParamIdx_+1)* pw);
+		g.drawVerticalLine(activeParamIdx * pw, paramTopY, 1600 - 1);
+		g.drawVerticalLine((activeParamIdx + 1) * pw, paramTopY, 1600 - 1);
+		// g.drawHorizontalLine(1600-1, activeParamIdx * pw, (activeParamIdx+1)* pw);
 
 		g.setColour(Colours::white);
 		g.setFont(Font(Font::getDefaultMonospacedFontName(), 180, Font::plain));
@@ -410,7 +543,7 @@ void PltsEditor::setParamBounds(SSPParam & par, unsigned enc, unsigned var)
 {
 	unsigned h = 2 * paramSpaceY;
 	unsigned w = unsigned(900.0f / 8.0f);
-	unsigned x = ((enc * 2) + var) * w;
+	unsigned x = ((enc * 2) + (var % 2))  * w;
 	unsigned y = paramTopY + 5;
 	par.setBounds(x, y, w, h);
 }
@@ -433,16 +566,22 @@ void PltsEditor::resized()
 	setMenuBounds(plugInBtn_, 2);
 	setMenuBounds(recBtn_, 3);
 
-	setButtonBounds(buttons_[B_UP], 0, 5);
-	setButtonBounds(buttons_[B_DOWN], 1, 5);
+	setButtonBounds(buttons_[B_UP], 	0, 5);
 
+	setButtonBounds(buttons_[B_LEFT], 	1, 4);
+	setButtonBounds(buttons_[B_DOWN], 	1, 5);
+	setButtonBounds(buttons_[B_RIGHT], 	1, 6);
 
-	setParamBounds(params_[P_PITCH], 0, 0);
-	setParamBounds(params_[P_HARMONICS], 1, 0);
-	setParamBounds(params_[P_TIMBRE], 2, 0);
-	setParamBounds(params_[P_MORPH], 3, 0);
+	setParamBounds(params_[P_PITCH], 		0, 0);
+	setParamBounds(params_[P_HARMONICS], 	1, 0);
+	setParamBounds(params_[P_TIMBRE], 		2, 0);
+	setParamBounds(params_[P_MORPH], 		3, 0);
 
-	setParamBounds(params_[P_MODEL], 0, 1);
-	setParamBounds(params_[P_LPG], 1, 1);
-	setParamBounds(params_[P_VCA], 2, 1);
+	setParamBounds(params_[P_MODEL], 		0, 1);
+	setParamBounds(params_[P_FREQ_MOD], 	1, 1);
+	setParamBounds(params_[P_TIMBRE_MOD], 	2, 1);
+	setParamBounds(params_[P_MORPH_MOD], 	3, 1);
+
+	setParamBounds(params_[P_LPG], 			0, 2);
+	setParamBounds(params_[P_VCA], 			1, 2);
 }

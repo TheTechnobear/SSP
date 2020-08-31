@@ -19,13 +19,16 @@ struct PltsData {
         harmonics_ = 0.0f;
         timbre_ = 0.5f;
         morph_ = 0.5f;
-        model_ = 0.0f;
 
+        model_ = 0.0f;
         lpg_colour_ = 0.5f;
         decay_ = 0.5f;
 
-        trig_ = 0;
+        freq_mod_=0.0f;
+        timbre_mod_=0.0f;
+        morph_mod_=0.0f;
 
+        trig_ = 0;
     }
     ~PltsData() {
     }
@@ -47,6 +50,9 @@ struct PltsData {
     std::atomic<float>  trig_;
     std::atomic<float>  level_;
 
+    std::atomic<float>  freq_mod_;
+    std::atomic<float>  timbre_mod_;
+    std::atomic<float>  morph_mod_;
 };
 
 
@@ -117,11 +123,6 @@ private:
         I_MORPH,
         I_FM,
         I_MODEL,
-
-        //TODO?
-        // VCA
-        // LPG
-        // TRANS
 
         I_MAX
     };

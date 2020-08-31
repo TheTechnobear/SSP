@@ -198,7 +198,7 @@ void Plts::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     auto &voice=data_.voice;
     auto &patch=data_.patch;
 
-    bool stereoOut = params_[Percussa::sspOutEn1 + O_AUX ] > 0.5f;
+    bool auxOut = params_[Percussa::sspOutEn1 + O_AUX ] > 0.5f;
 
     // bool voctEn  = params_[Percussa::sspInEn1 + I_VOCT ] > 0.5f;
     bool fmEn  = params_[Percussa::sspInEn1 + I_FM ] > 0.5f;
@@ -234,13 +234,9 @@ void Plts::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         patch.lpg_colour = data_.lpg_colour_;
         patch.decay = data_.decay_;
 
-        //todo - attenuators act as pitch env etc, when not plugged in!
-        patch.frequency_modulation_amount = 0.0f;
-        patch.timbre_modulation_amount = 0.0f ;
-        patch.morph_modulation_amount = 0.0f;
-        //patch.frequency_modulation_amount = 1.0f;
-        //patch.timbre_modulation_amount = 1.0f ;
-        //patch.morph_modulation_amount = 1.0f;
+        patch.frequency_modulation_amount = data_.freq_mod_;
+        patch.timbre_modulation_amount = data_.timbre_mod_ ;
+        patch.morph_modulation_amount = data_.morph_mod_;
 
         // Construct modulations
         plaits::Modulations modulations;
@@ -265,15 +261,16 @@ void Plts::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         plaits::Voice::Frame output[PltsBlock];
         voice.Render(patch, modulations, output, PltsBlock);
 
-        if (stereoOut) {
+        if (auxOut) {
             for (int i = 0; i < PltsBlock; i++) {
                 buffer.setSample(O_OUT, bidx + i, output[i].out / 32768.f);
                 buffer.setSample(O_AUX, bidx + i, output[i].aux / 32768.f);
             }
         } else {
             for (int i = 0; i < PltsBlock; i++) {
-                buffer.setSample(O_OUT, bidx + i, (output[i].out / 32768.f + output[i].aux / 32768.f ) / 2.0f);
+                buffer.setSample(O_OUT, bidx + i, output[i].out / 32768.f);
             }
+            buffer.clear(O_AUX,0,n);
         }
     }
 }
@@ -295,6 +292,12 @@ void Plts::writeToXml(XmlElement& xml) {
     xml.setAttribute("timbre",      double(data_.timbre_));
     xml.setAttribute("morph",       double(data_.morph_));
 
+    xml.setAttribute("freq_mod",    double(data_.freq_mod_));
+    xml.setAttribute("timbre_mod",  double(data_.timbre_mod_));
+    xml.setAttribute("morph_mod",    double(data_.morph_mod_));
+
+
+
     xml.setAttribute("model",       double(data_.model_));
     xml.setAttribute("lpgcolour",   double(data_.lpg_colour_));
     xml.setAttribute("decay",       double(data_.decay_));
@@ -306,6 +309,11 @@ void Plts::readFromXml(XmlElement& xml) {
     data_.harmonics_ = xml.getDoubleAttribute("harmonics", 0.0f);
     data_.timbre_ = xml.getDoubleAttribute("timbre", 0.5f);
     data_.morph_ = xml.getDoubleAttribute("morph", 0.5f);
+
+
+    data_.freq_mod_ = xml.getDoubleAttribute("freq_mod", 0.0f);
+    data_.timbre_mod_ = xml.getDoubleAttribute("timbre_mod", 0.0f);
+    data_.morph_mod_ = xml.getDoubleAttribute("morph_mod", 0.0f);
 
     data_.model_ = xml.getDoubleAttribute("model", 0.0f);
     data_.lpg_colour_ = xml.getDoubleAttribute("lpgcolour", 0.5f);
