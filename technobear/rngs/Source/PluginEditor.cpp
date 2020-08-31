@@ -203,7 +203,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 		break;
 	// encoder switches
 	case Percussa::sspEncSw1:
-		if (value > 0.5f) {
+		if (value < 0.5f) {
 			if (altActive_) {
 				processor_.data().f_position = 0.5f;
 				params_[P_POS].value(processor_.data().f_position);
@@ -214,7 +214,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 		}
 		break;
 	case Percussa::sspEncSw2:
-		if (value > 0.5f) {
+		if (value < 0.5f) {
 			if (altActive_) {
 				processor_.data().f_polyphony = 0.0f;
 				params_[P_POLY].value((int) processor_.data().f_polyphony);
@@ -225,7 +225,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 		}
 		break;
 	case Percussa::sspEncSw3:
-		if (value > 0.5f) {
+		if (value < 0.5f) {
 			if (altActive_) {
 				processor_.data().f_model = 0.0f;
 				params_[P_MODEL].value((int) processor_.data().f_model);
@@ -236,7 +236,7 @@ void RngsEditor::parameterChanged (int index, float value) {
 		}
 		break;
 	case Percussa::sspEncSw4:
-		if (value > 0.5f) {
+		if (value < 0.5f) {
 			if (altActive_) {
 				processor_.data().f_in_gain = 0.0f;
 				params_[P_IN_GAIN].value(processor_.data().f_in_gain);
