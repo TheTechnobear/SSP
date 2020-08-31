@@ -16,6 +16,8 @@ struct Msw8Data {
         useActive_  = false;
         inCount_    = 0;
         outCount_   = 0;
+        lastInSel_  = 0;
+        lastOutSel_  = 0;
     }
     ~Msw8Data() {
     }
@@ -28,6 +30,8 @@ struct Msw8Data {
     // working data
     unsigned inCount_;
     unsigned outCount_;
+    std::atomic<float> lastInSel_;
+    std::atomic<float> lastOutSel_;
 };
 
 
@@ -72,7 +76,12 @@ public:
 
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+
     Msw8Data& data() { return data_;}
+
+    bool isInputEnabled(unsigned idx) { return params_[Percussa::sspInEn1 + I_SIG_1 + idx];}
+    bool isOutputEnabled(unsigned idx) { return params_[Percussa::sspOutEn1 + O_SIG_1 + idx];}
+    void getLastSel(unsigned& in, unsigned& out) { in=data_.lastInSel_, out=data_.lastOutSel_;}
 
 protected:
 
@@ -104,6 +113,7 @@ private:
         O_MAX
     };
 
+    AudioSampleBuffer inputBuffer_;
     Msw8Data data_;
     float params_[Percussa::sspLast];
 

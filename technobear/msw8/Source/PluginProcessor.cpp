@@ -40,7 +40,7 @@ void Msw8::setParameter (int index, float newValue)
     // this will have to change... as the +/-1 is larger than before
     // current idea is to move away from sendParamChangeMessageToListeners
     // to a differ 'changebroadcaster' to free up parameter change for 'proper use'
-    //Logger::writeToLog(getParameterName(index) + ":" + String(newValue));
+    // Logger::writeToLog(getParameterName(index) + ":" + String(newValue));
     switch (index) {
     case Percussa::sspEnc1:
     case Percussa::sspEnc2:
@@ -61,6 +61,27 @@ void Msw8::setParameter (int index, float newValue)
     }
     default: {
         if (index < Percussa::sspLast) params_[index] = newValue;
+
+        static constexpr unsigned inFrom = Percussa::sspInEn1 + I_SIG_1;
+        static constexpr unsigned inTo = Percussa::sspInEn1 + I_SIG_8;
+        static constexpr unsigned outFrom = Percussa::sspOutEn1 + O_SIG_1;
+        static constexpr unsigned outTo = Percussa::sspOutEn1 + O_SIG_8;
+
+        if (index >= inFrom  || index <= inTo) {
+            data_.inCount_ = 0;
+            for (int i = inFrom; i <= inTo ; i++) {
+                data_.inCount_ += (params_[i] > 0.5f);
+            }
+        }
+        if (index >= outFrom || index <= outTo) {
+            data_.outCount_ = 0;
+            for (int i = outFrom; i <= outTo ; i++) {
+                data_.outCount_ += (params_[i] > 0.5f);
+            }
+
+        }
+        // Logger::writeToLog("IO Enabled : " + String(data_.inCount_) + "/" + String(data_.outCount_));
+
         AudioProcessor::sendParamChangeMessageToListeners(index, newValue);
         break;
     }
@@ -179,6 +200,7 @@ void Msw8::changeProgramName (int index, const String& newName)
 
 void Msw8::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    inputBuffer_.setSize(1, samplesPerBlock);
 }
 
 void Msw8::releaseResources()
@@ -191,7 +213,51 @@ void Msw8::releaseResources()
 
 void Msw8::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
+    unsigned n = buffer.getNumSamples();
+    float cvInS = buffer.getSample(I_IN_SEL, 0);
+    float cvOutS = buffer.getSample(I_OUT_SEL, 0);
 
+    unsigned inSIdx = unsigned(((constrain(data_.inSel_ + cvInS, -1.0f, 0.999f) + 1.0f )  * (data_.useActive_ ? data_.inCount_ : 8.0f) ) / 2.0f);
+    unsigned outSIdx = unsigned(((constrain(data_.outSel_ + cvOutS, -1.0f, 0.999f) + 1.0f )  * (data_.useActive_ ? data_.outCount_ : 8.0f) ) / 2.0f);
+
+    unsigned iIdx = 0, oIdx = 0;
+
+    if (data_.useActive_) {
+        for (unsigned x = 0; x < 8; x++) {
+            if (params_[Percussa::sspInEn1 + I_SIG_1 + x] > 0.5f) {
+                if (inSIdx == iIdx) {
+                    break;
+                }
+                iIdx++;
+            }
+        }
+        for (unsigned y = 0; y < 8; y++) {
+            if (params_[Percussa::sspOutEn1 + O_SIG_1 + y] > 0.5f) {
+                if (outSIdx == oIdx) {
+                    break;
+                }
+                oIdx++;
+            }
+        }
+        data_.lastInSel_ = iIdx;
+        data_.lastOutSel_ = oIdx;
+    } else {
+        iIdx = inSIdx;
+        oIdx = outSIdx;
+    }
+    data_.lastInSel_ = iIdx;
+    data_.lastOutSel_ = oIdx;
+
+    bool ioActive = params_[Percussa::sspOutEn1 + O_SIG_1 + oIdx] > 0.5f  && params_[Percussa::sspInEn1 + I_SIG_1 + iIdx] > 0.5f;
+
+    if (ioActive) {
+        inputBuffer_.copyFrom(0, 0, buffer, I_SIG_1 + iIdx, 0, n);
+    }
+    buffer.clear();
+
+    if (ioActive) {
+        buffer.copyFrom(O_SIG_1 + oIdx, 0, inputBuffer_, 0, 0, n);
+    }
 }
 
 bool Msw8::hasEditor() const

@@ -29,7 +29,7 @@ Msw8Editor::Msw8Editor (Msw8& p)
 	addAndMakeVisible(plugInBtn_);
 	addAndMakeVisible(recBtn_);
 
-	buttons_[B_USE_ACTIVE].init("UseAct");
+	buttons_[B_USE_ACTIVE].init("Act");
 
 	// TODO : should  not be needed, keep for inital test
 	for (unsigned i = 0; i < B_MAX; i++) {
@@ -37,8 +37,8 @@ Msw8Editor::Msw8Editor (Msw8& p)
 	}
 
 	// parameters
-	params_[P_IN_SEL].init("In Sel");
-	params_[P_OUT_SEL].init("Out Sel");
+	params_[P_IN_SEL].init("InS");
+	params_[P_OUT_SEL].init("OutS");
 
 	altActive_ = 0;
 	params_[P_IN_SEL].active(!altActive_);
@@ -223,24 +223,49 @@ void Msw8Editor::parameterChanged (int index, float value) {
 
 
 void Msw8Editor::drawMsw8(Graphics& g) {
-	unsigned x = 1100;
-	unsigned y = 150;
-	unsigned d = 100;
-	unsigned sp = 75;
+	int x  = 1000;
+	int y  = 30;
+	int lx = 100;
+	int fh = 18;
+	int sz = fh;
+	int sp = fh;
 
-	g.setColour(Colours::white);
-	g.drawEllipse(x, y, d, d, 1);
-	g.setColour(Colours::green);
-	g.drawEllipse(x + sp, y, d, d, 1);
+	unsigned insel, outsel;
+	processor_.getLastSel(insel, outsel);
 
-	x = x - sp / 2;
-	y = y + sp;
-	g.setColour(Colours::yellow);
-	g.drawEllipse(x, y, d, d, 1);
-	g.setColour(Colours::blue);
-	g.drawEllipse(x + sp, y, d, d, 1);
+	g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
 	g.setColour(Colours::red);
-	g.drawEllipse(x + (2 * sp), y, d, d, 1);
+	g.drawText("Outputs", x + lx, y, (8 * sz) + (7 * sp), fh, Justification::centred);
+	y += sp;
+	g.drawText("Inputs", x, y, lx, fh, Justification::left);
+	for (unsigned xi = 0; xi < 8; xi++) {
+		if (processor_.isOutputEnabled(xi)) {
+			g.setColour(Colours::red);
+		} else {
+			g.setColour(Colours::grey);
+		}
+		g.drawText(String(xi + 1), x + lx + xi * (sz + sp), y, sp + sz, fh, Justification::left);
+	}
+	y += sp;
+
+	for (unsigned yi = 0; yi < 8; yi++) {
+		if (processor_.isInputEnabled(yi)) {
+			g.setColour(Colours::red);
+		} else {
+			g.setColour(Colours::grey);
+		}
+		g.drawText(String(yi + 1), x, y, lx, fh, Justification::left);
+		for (unsigned xi = 0; xi < 8; xi++) {
+			g.setColour(Colours::white);
+
+			if (xi == outsel && yi == insel) {
+				g.fillRect(x + lx + xi * (sz + sp), y , sz, sz);
+			} else {
+				g.drawRect(x + lx + xi * (sz + sp), y , sz, sz, 1);
+			}
+		}
+		y += sp + sz;
+	}
 }
 
 void Msw8Editor::drawMenuBox(Graphics& g) {
