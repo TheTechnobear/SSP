@@ -30,8 +30,8 @@ Msw8Editor::Msw8Editor (Msw8& p)
 	addAndMakeVisible(recBtn_);
 
 	buttons_[B_USE_ACTIVE].init("Act");
+	buttons_[B_USE_ACTIVE].active(processor_.data().useActive_ > 0.5f);
 
-	// TODO : should  not be needed, keep for inital test
 	for (unsigned i = 0; i < B_MAX; i++) {
 		addAndMakeVisible(buttons_[i]);
 	}
@@ -39,6 +39,9 @@ Msw8Editor::Msw8Editor (Msw8& p)
 	// parameters
 	params_[P_IN_SEL].init("InS");
 	params_[P_OUT_SEL].init("OutS");
+
+	params_[P_IN_SEL].value(processor_.data().inSel_);
+	params_[P_OUT_SEL].value(processor_.data().outSel_);
 
 	altActive_ = 0;
 	params_[P_IN_SEL].active(!altActive_);
@@ -144,7 +147,7 @@ void Msw8Editor::parameterChanged (int index, float value) {
 		break;
 	// encoder switches
 	case Percussa::sspEncSw1:
-		if (value > 0.5f) {
+		if (value < 0.5f) {
 			if (altActive_) {
 				;
 			} else {
@@ -154,7 +157,7 @@ void Msw8Editor::parameterChanged (int index, float value) {
 		}
 		break;
 	case Percussa::sspEncSw2:
-		if (value > 0.5f) {
+		if (value < 0.5f) {
 			if (altActive_) {
 				;
 			} else {
@@ -164,7 +167,7 @@ void Msw8Editor::parameterChanged (int index, float value) {
 		}
 		break;
 	case Percussa::sspEncSw3:
-		if (value > 0.5f) {
+		if (value < 0.5f) {
 			if (altActive_) {
 				;
 			} else {
@@ -173,7 +176,7 @@ void Msw8Editor::parameterChanged (int index, float value) {
 		}
 		break;
 	case Percussa::sspEncSw4:
-		if (value > 0.5f) {
+		if (value < 0.5f) {
 			if (altActive_) {
 				;
 			} else {

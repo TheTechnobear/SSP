@@ -79,8 +79,8 @@ public:
 
     Msw8Data& data() { return data_;}
 
-    bool isInputEnabled(unsigned idx) { return params_[Percussa::sspInEn1 + I_SIG_1 + idx];}
-    bool isOutputEnabled(unsigned idx) { return params_[Percussa::sspOutEn1 + O_SIG_1 + idx];}
+    bool isInputEnabled(unsigned idx) { return params_[Percussa::sspInEn1 + I_SIG_1 + idx] > 0.5f;}
+    bool isOutputEnabled(unsigned idx) { return params_[Percussa::sspOutEn1 + O_SIG_1 + idx] > 0.5f;}
     void getLastSel(unsigned& in, unsigned& out) { in=data_.lastInSel_, out=data_.lastOutSel_;}
 
 protected:
