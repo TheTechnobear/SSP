@@ -9,6 +9,8 @@ static const char *xmlTag = JucePlugin_Name;
 PluginProcessor::PluginProcessor()
 {
     memset(params_, 0, sizeof(params_));
+    root_ = 0.0f;
+    scale_ = 0.0f;
 
 }
 
@@ -80,24 +82,34 @@ const String PluginProcessor::getParameterText (int index)
 
 const String PluginProcessor::getInputChannelName (int channelIndex) const
 {
-    // switch (channelIndex) {
-    // case I_LEFT:        { return String("In L");}0
-    // case I_RIGHT:       { return String("In R");}
-    // }
+    switch (channelIndex) {
+    case I_SIG_1:        { return String("In 1");}
+    case I_TRIG_1:       { return String("Trig 1");}
+    case I_SIG_2:        { return String("In 2");}
+    case I_TRIG_2:       { return String("Trig 2");}
+    case I_SIG_3:        { return String("In 3");}
+    case I_TRIG_3:       { return String("Trig 3");}
+    case I_SIG_4:        { return String("In 4");}
+    case I_TRIG_4:       { return String("Trig 4");}
+    case I_SCALE:        { return String("Scale");}
+    case I_ROOT:       { return String("Root");}
+    }
     return String("unused:") + String (channelIndex + 1);
 }
 
 const String PluginProcessor::getOutputChannelName (int channelIndex) const
 {
 
-    // switch (channelIndex) {
-    // case O_LEFT : {
-    //     return String("Out L");
-    // }
-    // case O_RIGHT : {
-    //     return String("Out R");
-    // }
-    // }
+    case O_SIG_1:        { return String("Out 1");}
+    case O_TRIG_1:       { return String("Trig 1");}
+    case O_SIG_2:        { return String("Out 2");}
+    case O_TRIG_2:       { return String("Trig 2");}
+    case O_SIG_3:        { return String("Out 3");}
+    case O_TRIG_3:       { return String("Trig 3");}
+    case O_SIG_4:        { return String("Out 4");}
+    case O_TRIG_4:       { return String("Trig 4");}
+    case O_SCALE:        { return String("Scale");}
+    case O_ROOT:       { return String("Root");}
     return String("unused:") + String (channelIndex + 1);
 }
 
@@ -206,13 +218,13 @@ AudioProcessorEditor* PluginProcessor::createEditor()
 
 
 void PluginProcessor::writeToXml(XmlElement& xml) {
-    // xml.setAttribute("f_freeze",          bool(data_.f_freeze));
-    // xml.setAttribute("f_position",        double(data_.f_position));
+    xml.setAttribute("root",  int(root_));
+    xml.setAttribute("scale", int(scale_));
 }
 
 void PluginProcessor::readFromXml(XmlElement& xml) {
-    // data_.f_freeze      = xml.getBoolAttribute("f_freeze"    , 0.0f);
-    // data_.f_position    = xml.getDoubleAttribute("f_position"  , 0.5f);
+    root_      = xml.getIntAttribute("root"  , 0.0f);
+    scale_    = xml.getIntAttribute("scale" , 0.0f);
 }
 
 

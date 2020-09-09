@@ -40,13 +40,13 @@ private:
 	PluginProcessor& processor_;
 
 	enum Params {
-		P_POS,
-		P_SIZE,
+		P_SCALE,
+		P_ROOT,
 		P_MAX
 	};
 
 	enum Buttons {
-		B_FREEZE,
+		// B_FREEZE,
 
 		B_UP,
 		B_DOWN,
