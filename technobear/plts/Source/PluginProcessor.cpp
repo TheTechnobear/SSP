@@ -240,15 +240,15 @@ void Plts::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 
         // Construct modulations
         plaits::Modulations modulations;
-        modulations.engine = buffer.getSample(I_MODEL, bidx) / 5.f;
+        modulations.engine = buffer.getSample(I_MODEL, bidx);
         modulations.note = cv2Pitch(buffer.getSample(I_VOCT, bidx));
         modulations.frequency = cv2Pitch(buffer.getSample(I_FM, bidx));
-        modulations.harmonics = buffer.getSample(I_HARMONICS, bidx) / 5.f;
-        modulations.timbre = buffer.getSample(I_TIMBRE, bidx) / 8.f;
-        modulations.morph = buffer.getSample(I_MORPH, bidx) / 8.f;
+        modulations.harmonics = buffer.getSample(I_HARMONICS, bidx);
+        modulations.timbre = buffer.getSample(I_TIMBRE, bidx) * 0.625f;
+        modulations.morph = buffer.getSample(I_MORPH, bidx) * 0.625f;
 
         modulations.trigger = data_.trig_;
-        modulations.level = buffer.getSample(I_LEVEL, bidx) / 8.f;
+        modulations.level = buffer.getSample(I_LEVEL, bidx) * 0.625f;
 
         // modulations.frequency_patched = voctEn;
         modulations.frequency_patched = fmEn;
