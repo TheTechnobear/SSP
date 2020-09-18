@@ -215,6 +215,7 @@ void Msw8::releaseResources()
 void Msw8::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
     unsigned n = buffer.getNumSamples();
+    unsigned n2= n /2;
     float cvInS = buffer.getSample(I_IN_SEL, 0);
     float cvOutS = buffer.getSample(I_OUT_SEL, 0);
 
@@ -251,9 +252,8 @@ void Msw8::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     bool liActive = params_[Percussa::sspInEn1 + I_SIG_1 +  data_.lastInIdx_] > 0.5f;
     bool loActive = params_[Percussa::sspOutEn1 + O_SIG_A + data_.lastOutIdx_] > 0.5f;
 
-//    bool soft = data_.soft_;
-    bool soft=true;
-
+    bool soft = data_.soft_;
+    bool ramps= soft && (data_.lastInIdx_ != iIdx || data_.lastOutIdx_ != oIdx);
 
     // copy input to output
     // if soft, then we need to ramp inputs and outputs when they change
@@ -264,64 +264,35 @@ void Msw8::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     }
 
 
+
     if (soft) {
-        if (data_.lastInIdx_ != iIdx) {
-            if (liActive) {
-                // only need in buf if its differ
-                lastBuffer_.copyFrom(0, 0, buffer, data_.lastInIdx_, 0, n);
-                // fade down 0..n/2 , mute n/2..n,
-                lastBuffer_.applyGainRamp(0, 0, n / 2, 1.0f, 0.0f); // ramp down
-                lastBuffer_.applyGain(0, n / 2, n, 0.0f);
-            } else {
-                lastBuffer_.applyGain(0, 0, n, 0.0f);
-            }
+        if (liActive) {
+            // only need in buf if its differ
+            lastBuffer_.copyFrom(0, 0, buffer, I_SIG_1 + data_.lastInIdx_, 0, n);
+        } else {
+            lastBuffer_.applyGain(0, 0, n, 0.0f);
         }
     }
 
+    if(ramps) {
+        lastBuffer_.applyGainRamp(0, 0, n2, 1.0f, 0.0f); // ramp down
+        lastBuffer_.applyGain(0, n2, n2, 0.0f);
 
-    buffer.clear();
-
-
-    if (soft && data_.lastInIdx_ != iIdx) {
-        // mute 0..n/2, fade up n/2.. n
-        inputBuffer_.applyGain(0, 0, n / 2, 0.0f);
-        inputBuffer_.applyGainRamp(0, n / 2, n, 0.f, 1.0f);// ramp up
+        inputBuffer_.applyGain(0, 0, n2, 0.0f);
+        inputBuffer_.applyGainRamp(0, n2, n2, 0.f, 1.0f);// ramp up
     }
+
+   buffer.clear();
 
     if (oActive) {
         buffer.copyFrom(O_SIG_A + oIdx, 0, inputBuffer_, 0, 0, n);
+        if(iIdx!=data_.lastInIdx_) {
+            buffer.addFrom(O_SIG_A + oIdx, 0, lastBuffer_, 0, 0, n2);
+        }
     }
 
-    if (soft) {
-        if (data_.lastOutIdx_ != oIdx) {
-            // output changed
-            if (data_.lastInIdx_ != iIdx) {
-                // copy, ramps already applied
-                if (loActive) {
-                    buffer.copyFrom(O_SIG_A + data_.lastOutIdx_, 0, lastBuffer_, 0, 0, n);
-                }
-            } else {
-                // input buff unchanged, but we need to ramp down old output, ramp up new output
-                if (loActive) {
-                    buffer.copyFrom(O_SIG_A + data_.lastOutIdx_, 0, inputBuffer_, 0, 0, n);
-                    buffer.applyGainRamp(O_SIG_A + data_.lastOutIdx_, 0, n / 2, 1.0f, 0.0f); // ramp down
-                    buffer.applyGain(O_SIG_A + data_.lastOutIdx_, n / 2, n, 0.0f);
-                }
-
-                if (oActive) {
-                    buffer.applyGain(O_SIG_A + oIdx, 0, n / 2, 0.0f);
-                    buffer.applyGainRamp(O_SIG_A + oIdx, n / 2, n, 0.f, 1.0f); // ramp up
-                }
-            }
-        } else {
-            // output unchanged
-            if (data_.lastInIdx_ != iIdx) {
-                // copy, ramps already applied
-                if (oActive) {
-                    buffer.copyFrom(O_SIG_A + oIdx, 0, lastBuffer_, 0, 0, n / 2);
-                }
-            } // else , unchanged so nothing needed
-        }
+    if(oIdx != data_.lastOutIdx_ && loActive) {
+        buffer.copyFrom(O_SIG_A + data_.lastOutIdx_, 0, lastBuffer_, 0, 0, n);
     }
 
     data_.lastInIdx_ = iIdx;
