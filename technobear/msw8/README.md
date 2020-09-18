@@ -58,10 +58,17 @@ both selectors are CV controllable, and are added to the parameter values
 
 however, Msw8 has one more 'trick' up its sleeve :) 
 
-USE ACTIVE - this tells the matrix to only switch between input / outputs that have connections.
+### USE ACTIVE
+tells the matrix to only switch between input / outputs that have connections. (aka active)
 this means we can use this for small matrixs, e.g. 2x2  (doesn't have to be symmetric)
 in this case, steps are 2/ # active connections .. so 2/2 = 1! 
 e.g -1.0 >  <= 0 = sel 1 , 0 > <=1 = sel 2 
+
+### SOFT  
+switching an audio signal abruptly on/off will cause an audio click, 
+due to creating an non-continuous wave.
+with SOFT turned on when a switch is made this click is removed by fading in/out signals.
+this fade is done over one audio buffer, the first half fades out, then second half fades in.
 
 
 note: This document is based on the LATEST version of the plugin
