@@ -281,7 +281,7 @@ void CldsEditor::parameterChanged (int index, float value) {
 
 	// encoder switches
 	case Percussa::sspEncSw1:
-		if (value > 0.5f) {
+		if (value < 0.5f) {
 			switch (paramActive_) {
 			case 0 :  {
 				processor_.data().f_position = 0.0f;
@@ -302,7 +302,7 @@ void CldsEditor::parameterChanged (int index, float value) {
 		}
 		break;
 	case Percussa::sspEncSw2:
-		if (value > 0.5f) {
+		if (value < 0.5f) {
 			switch (paramActive_) {
 			case 0 :  {
 				processor_.data().f_size = 0.0f;
@@ -323,7 +323,7 @@ void CldsEditor::parameterChanged (int index, float value) {
 		}
 		break;
 	case Percussa::sspEncSw3:
-		if (value > 0.5f) {
+		if (value < 0.5f) {
 			switch (paramActive_) {
 			case 0 :  {
 				processor_.data().f_density = 0.0f;
@@ -343,7 +343,7 @@ void CldsEditor::parameterChanged (int index, float value) {
 		}
 		break;
 	case Percussa::sspEncSw4:
-		if (value > 0.5f) {
+		if (value < 0.5f) {
 			switch (paramActive_) {
 			case 0 :  {
 				processor_.data().f_texture = 0.0f;
