@@ -251,7 +251,8 @@ void Msw8::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     bool liActive = params_[Percussa::sspInEn1 + I_SIG_1 +  data_.lastInIdx_] > 0.5f;
     bool loActive = params_[Percussa::sspOutEn1 + O_SIG_A + data_.lastOutIdx_] > 0.5f;
 
-    bool soft = data_.soft_;
+//    bool soft = data_.soft_;
+    bool soft=true;
 
 
     // copy input to output
@@ -304,8 +305,11 @@ void Msw8::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
                 if (loActive) {
                     buffer.copyFrom(O_SIG_A + data_.lastOutIdx_, 0, inputBuffer_, 0, 0, n);
                     buffer.applyGainRamp(O_SIG_A + data_.lastOutIdx_, 0, n / 2, 1.0f, 0.0f); // ramp down
+                    buffer.applyGain(O_SIG_A + data_.lastOutIdx_, n / 2, n, 0.0f);
                 }
+
                 if (oActive) {
+                    buffer.applyGain(O_SIG_A + oIdx, 0, n / 2, 0.0f);
                     buffer.applyGainRamp(O_SIG_A + oIdx, n / 2, n, 0.f, 1.0f); // ramp up
                 }
             }
@@ -346,7 +350,7 @@ void Msw8::readFromXml(XmlElement& xml) {
     data_.inSel_ = xml.getDoubleAttribute("InSel", 0.0f);
     data_.outSel_ = xml.getDoubleAttribute("OutSel", 0.0f);
     data_.useActive_ = xml.getBoolAttribute("UseActive", false);
-    data_.useActive_ = xml.getBoolAttribute("Soft", false);
+    data_.soft_ = xml.getBoolAttribute("Soft", false);
     // data_.inCount_ = 0;
     // data_.outCount_ = 0;
 }

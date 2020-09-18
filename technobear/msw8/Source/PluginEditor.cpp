@@ -30,11 +30,11 @@ Msw8Editor::Msw8Editor (Msw8& p)
 	addAndMakeVisible(recBtn_);
 
 	buttons_[B_USE_ACTIVE].init("Act");
-	buttons_[B_USE_ACTIVE].active(processor_.data().useActive_ > 0.5f);
+	buttons_[B_USE_ACTIVE].active(processor_.data().useActive_);
 
 
 	buttons_[B_SOFT].init("Soft");
-	buttons_[B_SOFT].active(processor_.data().soft_ > 0.5f);
+	buttons_[B_SOFT].active(processor_.data().soft_);
 
 	for (unsigned i = 0; i < B_MAX; i++) {
 		addAndMakeVisible(buttons_[i]);
@@ -194,13 +194,13 @@ void Msw8Editor::parameterChanged (int index, float value) {
 		if (paramState_[index] != value && value < 0.5f) {
 			processor_.data().useActive_ = ! processor_.data().useActive_;
 		}
-		buttons_[B_USE_ACTIVE].active(processor_.data().useActive_ > 0.5f);
+		buttons_[B_USE_ACTIVE].active(processor_.data().useActive_);
 		break;
 	case Percussa::sspSw2:
 		if (paramState_[index] != value && value < 0.5f) {
 			processor_.data().soft_ = ! processor_.data().soft_;
 		}
-		buttons_[B_SOFT].active(processor_.data().soft_ > 0.5f);
+		buttons_[B_SOFT].active(processor_.data().soft_);
 		break;
 	case Percussa::sspSw3:
 		break;
