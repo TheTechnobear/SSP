@@ -63,9 +63,9 @@ void Msw8::setParameter (int index, float newValue)
         if (index < Percussa::sspLast) params_[index] = newValue;
 
         static constexpr unsigned inFrom = Percussa::sspInEn1 + I_SIG_1;
-        static constexpr unsigned inTo = Percussa::sspInEn1 + I_SIG_8;
-        static constexpr unsigned outFrom = Percussa::sspOutEn1 + O_SIG_1;
-        static constexpr unsigned outTo = Percussa::sspOutEn1 + O_SIG_8;
+        static constexpr unsigned inTo = Percussa::sspInEn1 + (I_MAX - 1);
+        static constexpr unsigned outFrom = Percussa::sspOutEn1 + O_SIG_A;
+        static constexpr unsigned outTo = Percussa::sspOutEn1 + (O_MAX - 1);
 
         if (index >= inFrom  || index <= inTo) {
             data_.inCount_ = 0;
@@ -123,14 +123,14 @@ const String Msw8::getOutputChannelName (int channelIndex) const
 {
 
     switch (channelIndex) {
-    case O_SIG_1:       { return String("Out 1");}
-    case O_SIG_2:       { return String("Out 2");}
-    case O_SIG_3:       { return String("Out 3");}
-    case O_SIG_4:       { return String("Out 4");}
-    case O_SIG_5:       { return String("Out 5");}
-    case O_SIG_6:       { return String("Out 6");}
-    case O_SIG_7:       { return String("Out 7");}
-    case O_SIG_8:       { return String("Out 8");}
+    case O_SIG_A:       { return String("Out A");}
+    case O_SIG_B:       { return String("Out B");}
+    case O_SIG_C:       { return String("Out C");}
+    case O_SIG_D:       { return String("Out D");}
+    case O_SIG_E:       { return String("Out E");}
+    case O_SIG_F:       { return String("Out F");}
+    case O_SIG_G:       { return String("Out G");}
+    case O_SIG_H:       { return String("Out H");}
     }
     return String("unused:") + String (channelIndex + 1);
 }
@@ -201,6 +201,7 @@ void Msw8::changeProgramName (int index, const String& newName)
 void Msw8::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     inputBuffer_.setSize(1, samplesPerBlock);
+    lastBuffer_.setSize(1, samplesPerBlock);
 }
 
 void Msw8::releaseResources()
@@ -217,10 +218,10 @@ void Msw8::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
     float cvInS = buffer.getSample(I_IN_SEL, 0);
     float cvOutS = buffer.getSample(I_OUT_SEL, 0);
 
+    // determine indexes of io
+    unsigned iIdx = 0, oIdx = 0;
     unsigned inSIdx = unsigned(((constrain(data_.inSel_ + cvInS, -1.0f, 0.999f) + 1.0f )  * (data_.useActive_ ? data_.inCount_ : 8.0f) ) / 2.0f);
     unsigned outSIdx = unsigned(((constrain(data_.outSel_ + cvOutS, -1.0f, 0.999f) + 1.0f )  * (data_.useActive_ ? data_.outCount_ : 8.0f) ) / 2.0f);
-
-    unsigned iIdx = 0, oIdx = 0;
 
     if (data_.useActive_) {
         for (unsigned x = 0; x < 8; x++) {
@@ -232,32 +233,95 @@ void Msw8::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
             }
         }
         for (unsigned y = 0; y < 8; y++) {
-            if (params_[Percussa::sspOutEn1 + O_SIG_1 + y] > 0.5f) {
+            if (params_[Percussa::sspOutEn1 + O_SIG_A + y] > 0.5f) {
                 if (outSIdx == oIdx) {
                     break;
                 }
                 oIdx++;
             }
         }
-        data_.lastInSel_ = iIdx;
-        data_.lastOutSel_ = oIdx;
     } else {
         iIdx = inSIdx;
         oIdx = outSIdx;
     }
-    data_.lastInSel_ = iIdx;
-    data_.lastOutSel_ = oIdx;
 
-    bool ioActive = params_[Percussa::sspOutEn1 + O_SIG_1 + oIdx] > 0.5f  && params_[Percussa::sspInEn1 + I_SIG_1 + iIdx] > 0.5f;
+    // what io are active
+    bool iActive =  params_[Percussa::sspInEn1 + I_SIG_1 + iIdx] > 0.5f;
+    bool oActive =  params_[Percussa::sspOutEn1 + O_SIG_A + oIdx] > 0.5f;
+    bool liActive = params_[Percussa::sspInEn1 + I_SIG_1 +  data_.lastInIdx_] > 0.5f;
+    bool loActive = params_[Percussa::sspOutEn1 + O_SIG_A + data_.lastOutIdx_] > 0.5f;
 
-    if (ioActive) {
+    bool soft = data_.soft_;
+
+
+    // copy input to output
+    // if soft, then we need to ramp inputs and outputs when they change
+    if (iActive) {
         inputBuffer_.copyFrom(0, 0, buffer, I_SIG_1 + iIdx, 0, n);
+    } else {
+        inputBuffer_.applyGain(0, 0, n, 0.0f);
     }
+
+
+    if (soft) {
+        if (data_.lastInIdx_ != iIdx) {
+            if (liActive) {
+                // only need in buf if its differ
+                lastBuffer_.copyFrom(0, 0, buffer, data_.lastInIdx_, 0, n);
+                // fade down 0..n/2 , mute n/2..n,
+                lastBuffer_.applyGainRamp(0, 0, n / 2, 1.0f, 0.0f); // ramp down
+                lastBuffer_.applyGain(0, n / 2, n, 0.0f);
+            } else {
+                lastBuffer_.applyGain(0, 0, n, 0.0f);
+            }
+        }
+    }
+
+
     buffer.clear();
 
-    if (ioActive) {
-        buffer.copyFrom(O_SIG_1 + oIdx, 0, inputBuffer_, 0, 0, n);
+
+    if (soft && data_.lastInIdx_ != iIdx) {
+        // mute 0..n/2, fade up n/2.. n
+        inputBuffer_.applyGain(0, 0, n / 2, 0.0f);
+        inputBuffer_.applyGainRamp(0, n / 2, n, 0.f, 1.0f);// ramp up
     }
+
+    if (oActive) {
+        buffer.copyFrom(O_SIG_A + oIdx, 0, inputBuffer_, 0, 0, n);
+    }
+
+    if (soft) {
+        if (data_.lastOutIdx_ != oIdx) {
+            // output changed
+            if (data_.lastInIdx_ != iIdx) {
+                // copy, ramps already applied
+                if (loActive) {
+                    buffer.copyFrom(O_SIG_A + data_.lastOutIdx_, 0, lastBuffer_, 0, 0, n);
+                }
+            } else {
+                // input buff unchanged, but we need to ramp down old output, ramp up new output
+                if (loActive) {
+                    buffer.copyFrom(O_SIG_A + data_.lastOutIdx_, 0, inputBuffer_, 0, 0, n);
+                    buffer.applyGainRamp(O_SIG_A + data_.lastOutIdx_, 0, n / 2, 1.0f, 0.0f); // ramp down
+                }
+                if (oActive) {
+                    buffer.applyGainRamp(O_SIG_A + oIdx, n / 2, n, 0.f, 1.0f); // ramp up
+                }
+            }
+        } else {
+            // output unchanged
+            if (data_.lastInIdx_ != iIdx) {
+                // copy, ramps already applied
+                if (oActive) {
+                    buffer.copyFrom(O_SIG_A + oIdx, 0, lastBuffer_, 0, 0, n / 2);
+                }
+            } // else , unchanged so nothing needed
+        }
+    }
+
+    data_.lastInIdx_ = iIdx;
+    data_.lastOutIdx_ = oIdx;
 }
 
 bool Msw8::hasEditor() const
@@ -275,12 +339,14 @@ void Msw8::writeToXml(XmlElement& xml) {
     xml.setAttribute("InSel",       double(data_.inSel_));
     xml.setAttribute("OutSel",      double(data_.outSel_));
     xml.setAttribute("UseActive",   double(data_.useActive_));
+    xml.setAttribute("Soft",   double(data_.soft_));
 }
 
 void Msw8::readFromXml(XmlElement& xml) {
     data_.inSel_ = xml.getDoubleAttribute("InSel", 0.0f);
     data_.outSel_ = xml.getDoubleAttribute("OutSel", 0.0f);
     data_.useActive_ = xml.getBoolAttribute("UseActive", false);
+    data_.useActive_ = xml.getBoolAttribute("Soft", false);
     // data_.inCount_ = 0;
     // data_.outCount_ = 0;
 }

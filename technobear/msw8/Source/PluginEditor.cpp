@@ -32,6 +32,10 @@ Msw8Editor::Msw8Editor (Msw8& p)
 	buttons_[B_USE_ACTIVE].init("Act");
 	buttons_[B_USE_ACTIVE].active(processor_.data().useActive_ > 0.5f);
 
+
+	buttons_[B_SOFT].init("Soft");
+	buttons_[B_SOFT].active(processor_.data().soft_ > 0.5f);
+
 	for (unsigned i = 0; i < B_MAX; i++) {
 		addAndMakeVisible(buttons_[i]);
 	}
@@ -193,6 +197,10 @@ void Msw8Editor::parameterChanged (int index, float value) {
 		buttons_[B_USE_ACTIVE].active(processor_.data().useActive_ > 0.5f);
 		break;
 	case Percussa::sspSw2:
+		if (paramState_[index] != value && value < 0.5f) {
+			processor_.data().soft_ = ! processor_.data().soft_;
+		}
+		buttons_[B_SOFT].active(processor_.data().soft_ > 0.5f);
 		break;
 	case Percussa::sspSw3:
 		break;
@@ -247,7 +255,9 @@ void Msw8Editor::drawMsw8(Graphics& g) {
 		} else {
 			g.setColour(Colours::grey);
 		}
-		g.drawText(String(xi + 1), x + lx + xi * (sz + sp), y, sp + sz, fh, Justification::left);
+		char chout[2]="A";
+		chout[0]='A'+ xi;
+		g.drawText(String(chout), x + lx + xi * (sz + sp), y, sp + sz, fh, Justification::left);
 	}
 	y += sp;
 
@@ -386,6 +396,7 @@ void Msw8Editor::resized()
 	setMenuBounds(recBtn_, 3);
 
 	setButtonBounds(buttons_[B_USE_ACTIVE], 0, 0);
+	setButtonBounds(buttons_[B_SOFT], 0, 1);
 
 	setParamBounds(params_[P_IN_SEL], 0, 0);
 	setParamBounds(params_[P_OUT_SEL], 1, 0);

@@ -45,6 +45,7 @@ private:
 
 	enum {
 		B_USE_ACTIVE,
+		B_SOFT,
 		B_MAX
 	};
 
