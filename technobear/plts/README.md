@@ -36,13 +36,13 @@ Using at other sample rates may lead to incorrect pitch, and possible other oddi
 
 ### FM / Morph / Timbre modulations are not working !?
 This is a 'plaits' feature - theres built in 'attenuverters', which I default to zero (see next tip!), 
-you should turn these postive or negative to apply some modulation.
+you should turn these positive or negative to apply some modulation.
 Why? we already have attenuation in the SSP... indeed but for compatiblity with 'internal modulation' we need, see below.
 
 
 ### when I trig plaits I get some wierd modulation, why?
 When the FM, Morph and Timbre CV inputs are not connected, Plaits has a built in envelope modulation for these parameters,
-this can be postive or negative (0 = no modulation).
+this can be positive or negative (0 = no modulation).
 This is particular useful for percussive sounds, e.g. you can do a kick drums pitch env just by altering the FM modulation amount.
 
 
@@ -51,5 +51,5 @@ This is particular useful for percussive sounds, e.g. you can do a kick drums pi
 Percussa SSP - https://www.percussa.com/ 
 
 Mutable Instruments : https://www.mutable.com/ 
-Thanks to Emile for sharing her code with the community.
+Thanks to Emilie for sharing her code with the community.
 please note: this VST in no way endorsed or supported by Mutable Instruments.
