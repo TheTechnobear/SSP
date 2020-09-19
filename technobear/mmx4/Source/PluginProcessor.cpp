@@ -9,6 +9,7 @@ static const char *xmlTag = JucePlugin_Name;
 PluginProcessor::PluginProcessor()
 {
     memset(params_, 0, sizeof(params_));
+    memset(vca_, 0, sizeof(vca_));
     ac_ = false;
 }
 
@@ -104,7 +105,7 @@ const String PluginProcessor::getInputChannelName (int channelIndex) const
 const String PluginProcessor::getOutputChannelName (int channelIndex) const
 {
 
-    if (channelIndex <= O_SIG_AR) {
+    if (channelIndex <= O_SIG_DR) {
         String n = "Out ";
         unsigned idx = (channelIndex / 2);
         char buf[2] = "A";
@@ -183,6 +184,7 @@ void PluginProcessor::changeProgramName (int index, const String& newName)
 
 void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+
     outBufs_.setSize(MAX_SIG_OUT * 2, samplesPerBlock);
     workBuf_.setSize(1, samplesPerBlock);
 }
@@ -194,7 +196,7 @@ void PluginProcessor::releaseResources()
 }
 
 void PluginProcessor::calcBuffer(AudioSampleBuffer& buffer, unsigned in, unsigned vca, unsigned n) {
-    workBuf_.copyFrom(0, 0, buffer, in,0, n);
+    workBuf_.copyFrom(0, 0, buffer, in, 0, n);
     float* wflts = workBuf_.getWritePointer(0);
     const float* vcaflts = buffer.getReadPointer(vca);
     FloatVectorOperations::multiply(wflts, vcaflts, n);
@@ -209,37 +211,49 @@ void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiM
         outBufs_.applyGain(i, 0, n, 0.0f);
     }
 
+
     for (unsigned out = 0; out < MAX_SIG_OUT; out++) {
-        bool outL = O_SIG_AL + out * 2;
-        bool outR = O_SIG_AR + out * 2;
+        unsigned outL = O_SIG_AL + (out * 2);
+        unsigned outR = O_SIG_AR + (out * 2);
         bool outEnabledL = params_[Percussa::sspOutEn1 + outL ] > 0.5f;
         bool outEnabledR = params_[Percussa::sspOutEn1 + outR ] > 0.5f;
         if (outEnabledL || outEnabledR ) {
 
             for (unsigned in = 0; in < MAX_SIG_IN; in++) {
-                bool inL = I_SIG_1L + out * 2;
-                bool inR = I_SIG_1R + out * 2;
+                unsigned inL = I_SIG_1L + (in * 2);
+                unsigned inR = I_SIG_1R + (in * 2);
                 bool inEnabledL = params_[Percussa::sspInEn1 + inL ] > 0.5f;
                 bool inEnabledR = params_[Percussa::sspInEn1 + inR ] > 0.5f;
 
-                bool vcaI = (in * 4) + out + I_VCA_1A;
+                unsigned vcaI = (in * 4) + out + I_VCA_1A;
                 bool vcaEnabled = params_[Percussa::sspInEn1 + vcaI ] > 0.5f;
 
                 float vca = vca_[in][out];
 
-                if (inEnabledL) {
-                    if (vcaEnabled) {
-                        calcBuffer(buffer, inL, vcaI, n);
+                if(vcaEnabled) {
+                    // vca cv enable
+                    float* vcaflts = buffer.getWritePointer(vcaI);
+                    FloatVectorOperations::add(vcaflts, vca, n); // add param
+
+                    if (inEnabledL) {
+                        workBuf_.copyFrom(0, 0, buffer, inL, 0, n);
+                        float* wflts = workBuf_.getWritePointer(0);
+                        FloatVectorOperations::multiply(wflts, vcaflts, n);
                         outBufs_.addFrom(outL, 0, workBuf_, 0, 0, n, vca);
-                    } else {
+                    }
+                    if (inEnabledR) {
+                        workBuf_.copyFrom(0, 0, buffer, inR, 0, n);
+                        float* wflts = workBuf_.getWritePointer(0);
+                        FloatVectorOperations::multiply(wflts, vcaflts, n);
+                        outBufs_.addFrom(outR, 0, workBuf_, 0, 0, n, vca);
+                    }
+
+                } else {
+                    // vca cv not enabled
+                    if (inEnabledL) {
                         outBufs_.addFrom(outL, 0, buffer, inL, 0, n, vca);
                     }
-                }
-                if (inEnabledR) {
-                    if (vcaEnabled) {
-                        calcBuffer(buffer, inR, vcaI, n);
-                        outBufs_.addFrom(outR, 0, workBuf_, 0, n, vca);
-                    } else {
+                    if (inEnabledR) {
                         outBufs_.addFrom(outR, 0, buffer, inR, 0, n, vca);
                     }
                 }
@@ -248,19 +262,19 @@ void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiM
     }
 
     for (unsigned out = 0; out < MAX_SIG_OUT; out++) {
-        bool outL = O_SIG_AL + out * 2;
-        bool outR = O_SIG_AR + out * 2;
+        unsigned outL = O_SIG_AL + out * 2;
+        unsigned outR = O_SIG_AR + out * 2;
         bool outEnabledL = params_[Percussa::sspOutEn1 + outL ] > 0.5f;
         bool outEnabledR = params_[Percussa::sspOutEn1 + outR ] > 0.5f;
 
         if (outEnabledL) {
-            buffer.copyFrom(outL, 0, outBufs_,outL,0, n);
+            buffer.copyFrom(outL, 0, outBufs_, outL, 0, n);
         } else {
             buffer.applyGain(outL, 0, n, 0.0f);
         }
 
         if (outEnabledR) {
-            buffer.copyFrom(outR, 0, outBufs_,outR,0, n);
+            buffer.copyFrom(outR, 0, outBufs_, outR, 0, n);
         } else {
             buffer.applyGain(outR, 0, n, 0.0f);
         }
@@ -280,10 +294,22 @@ AudioProcessorEditor* PluginProcessor::createEditor()
 
 void PluginProcessor::writeToXml(XmlElement& xml) {
     xml.setAttribute("ac",  bool(ac_));
+    for (unsigned out = 0; out < MAX_SIG_OUT; out++) {
+        for (unsigned in = 0; in < MAX_SIG_IN; in++) {
+            String key = "VCA_" + String(in) + "_" + String(out);
+            xml.setAttribute(key,  double(vca_[in][out]));
+        }
+    }
 }
 
 void PluginProcessor::readFromXml(XmlElement& xml) {
     ac_      = xml.getBoolAttribute("ac"  , false);
+    for (unsigned out = 0; out < MAX_SIG_OUT; out++) {
+        for (unsigned in = 0; in < MAX_SIG_IN; in++) {
+            String key = "VCA_" + String(in) + "_" + String(out);
+            vca_[in][out] = xml.getDoubleAttribute(key, 0.0f);
+        }
+    }
 }
 
 

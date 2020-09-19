@@ -92,9 +92,7 @@ public:
 protected:
 
 private:
-    void writeToXml(juce::XmlElement& xml);
-    void readFromXml(juce::XmlElement& xml);
-    enum {
+        enum {
         I_IN_SEL,
         I_OUT_SEL,
         I_SIG_1,
@@ -118,6 +116,14 @@ private:
         O_SIG_H,
         O_MAX
     };
+
+public:
+    static constexpr unsigned MAX_SIG_IN = (I_SIG_8 - I_SIG_1) + 1;
+    static constexpr unsigned MAX_SIG_OUT = (O_SIG_H - O_SIG_A) + 1;
+
+private:
+    void writeToXml(juce::XmlElement& xml);
+    void readFromXml(juce::XmlElement& xml);
 
     AudioSampleBuffer lastBuffer_;
     AudioSampleBuffer inputBuffer_;

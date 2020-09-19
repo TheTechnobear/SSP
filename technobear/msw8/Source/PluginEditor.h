@@ -29,7 +29,7 @@ protected:
 
 	void drawMenuBox(Graphics& g);
 	void drawParamBox(Graphics& g);
-	void drawMsw8(Graphics& g);
+	void drawGrid(Graphics& g);
 	void drawEncoderValue(Graphics& g);
 
 	void setMenuBounds(SSPButton& btn, unsigned r);

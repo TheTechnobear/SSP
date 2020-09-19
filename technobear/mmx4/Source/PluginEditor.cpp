@@ -43,17 +43,40 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 	}
 
 	// parameters
-	// params_[P_SCALE].init("Scale");
-	// params_[P_ROOT].init("Root");
-
-	// params_[P_POS].value(processor_.data().f_position);
-	// params_[P_SIZE].value(processor_.data().f_size);
-	// params_[P_SCALE].active(paramActive_ 		== 0);
-	// params_[P_ROOT].active(paramActive_ 	== 0);
+	params_[P_VCA_1A].init("VCA 1A");
+	params_[P_VCA_1B].init("VCA 1B");
+	params_[P_VCA_1C].init("VCA 1C");
+	params_[P_VCA_1D].init("VCA 1D");
+	params_[P_VCA_2A].init("VCA 2A");
+	params_[P_VCA_2B].init("VCA 2B");
+	params_[P_VCA_2C].init("VCA 2C");
+	params_[P_VCA_2D].init("VCA 2D");
+	params_[P_VCA_3A].init("VCA 3A");
+	params_[P_VCA_3B].init("VCA 3B");
+	params_[P_VCA_3C].init("VCA 3C");
+	params_[P_VCA_3D].init("VCA 3D");
+	params_[P_VCA_4A].init("VCA 4A");
+	params_[P_VCA_4B].init("VCA 4B");
+	params_[P_VCA_4C].init("VCA 4C");
+	params_[P_VCA_4D].init("VCA 4D");
 
 	paramActive_ = 0;
-	// addAndMakeVisible(params_[P_SCALE]);
-	// addAndMakeVisible(params_[P_ROOT]);
+	for (unsigned i = P_VCA_1A; i <= P_VCA_4D; i++) {
+		unsigned vca = i - P_VCA_1A;
+		bool active = (vca / PluginProcessor::MAX_SIG_OUT) == paramActive_;
+
+		params_[i].value(
+		    processor_.getVCA(
+		        vca / PluginProcessor::MAX_SIG_OUT,
+		        vca % PluginProcessor::MAX_SIG_OUT));
+		params_[i].active(active);
+
+		if (active) {
+			addAndMakeVisible(params_[i]);
+		} else {
+			addChildComponent(params_[i]);
+		}
+	}
 }
 
 PluginEditor::~PluginEditor()
@@ -96,125 +119,44 @@ void PluginEditor::parameterChanged (int index, float value) {
 	switch (index) {
 	// encoders
 	case Percussa::sspEnc1:
-		switch (paramActive_) {
-		case 0 :  {
-			// float v = processor_.data().scale_ + value / 100.0f;
-			// v = constrain(v, 0.0f, 1.0f);
-			// processor_.scale_ = v;
-			// params_[P_POS].value(processor_.data().scale_);
-
-			// if (value) activeParam_ = &params_[P_SCALE];
-			break;
-		}
-		case 1 :  {
-			break;
-		}
-		case 2 : {
-			break;
-		}
-		} //switch paramActive_
-		if (value) {
-			activeParamCount_ = PARAM_COUNTER;
-			activeEncIdx_ = 0;
-		}
-		break;
 	case Percussa::sspEnc2:
-		switch (paramActive_) {
-		case 0 :  {
-			// float v = processor_.root_ + value / 100.0f;
-			// v = constrain(v, 0.0f, 1.0f);
-			// processor_.root_ = v;
-			// params_[P_ROOT].value(processor_.root_);
-
-			// if (value) activeParam_ = &params_[P_ROOT];
-			break;
-			case 1 :  {
-				break;
-			}
-			case 2 : {
-				break;
-			}
+	case Percussa::sspEnc3:
+	case Percussa::sspEnc4:
+		if (paramActive_ < PluginProcessor::MAX_SIG_IN)  {
+			unsigned out = index - Percussa::sspEnc1;
+			unsigned in = paramActive_;
+			float v = processor_.getVCA(in, out) + value / 100.0f;
+			v = constrain(v, -4.0f, 4.0f);
+			processor_.setVCA(in, out, v);
+			unsigned pidx = P_VCA_1A + (in * PluginProcessor::MAX_SIG_OUT) + out;
+			params_[pidx].value(v);
+			if (value) activeParam_ = &params_[pidx];
 		}
-		} //switch paramActive_
+
 		if (value) {
 			activeParamCount_ = PARAM_COUNTER;
-			activeEncIdx_ = 1;
+			activeEncIdx_ = index - Percussa::sspEnc1;
 		}
-		break;
-	case Percussa::sspEnc3:
-		// switch (paramActive_) {
-		// case 0 :  {
-		// 	break;
-		// }
-		// case 1 :  {
-		// 	break;
-		// }
-		// case 2 : {
-		// 	break;
-		// }
-		// } //switch paramActive_
-		// if (value) {
-		// 	activeParamCount_ = PARAM_COUNTER;
-		// 	activeEncIdx_ = 2;
-		// }
-		break;
-	case Percussa::sspEnc4:
-		// switch (paramActive_) {
-		// case 0 :  {
-		// 	break;
-		// }
-		// case 1 :  {
-		// 	break;
-		// }
-		// case 2 : {
-		// 	break;
-		// }
-		// } //switch paramActive_
-		// if (value) {
-		// 	activeParamCount_ = PARAM_COUNTER;
-		// 	activeEncIdx_ = 3;
-		// }
 		break;
 
 
 	// encoder switches
 	case Percussa::sspEncSw1:
-		if (value < 0.5f) {
-			switch (paramActive_) {
-			case 0 :  {
-				// processor_.scale_ = 0.0f;
-				// params_[P_SCALE].value(processor_.scale_);
-				break;
-			}
-			case 1 :  {
-				break;
-			}
-			case 2 : {
-				break;
-			}
-			} //switch paramActive_
-		}
-		break;
 	case Percussa::sspEncSw2:
-		if (value < 0.5f) {
-			switch (paramActive_) {
-			case 0 :  {
-				// processor_.root_ = 0.0f;
-				// params_[P_ROOT].value(processor_.root_);
-				break;
-			}
-			case 1 :  {
-				break;
-			}
-			case 2 : {
-				break;
-			}
-			} //switch paramActive_
-		}
-		break;
 	case Percussa::sspEncSw3:
-		break;
 	case Percussa::sspEncSw4:
+		if (value < 0.5f) {
+			if (paramActive_ < PluginProcessor::MAX_SIG_IN)  {
+				unsigned out = index - Percussa::sspEncSw1;
+				unsigned in = paramActive_;
+				float v = processor_.getVCA(in, out);
+				if (v == 0.0f) v = 1.0f;
+				else v = 0.0f;
+				processor_.setVCA(in, out, v);
+				unsigned pidx = P_VCA_1A + (in * PluginProcessor::MAX_SIG_OUT) + out;
+				params_[pidx].value(v);
+			}
+		}
 		break;
 	// buttons
 	case Percussa::sspSw1:
@@ -254,20 +196,20 @@ void PluginEditor::parameterChanged (int index, float value) {
 		// }
 		break;
 	case Percussa::sspSwUp:
-		// buttons_[B_UP].active(value > 0.5f);
-		// if (paramState_[index] != value && value < 0.5f) {
-		// 	if (paramActive_ != 2) {
-		// 		paramActive_ = (paramActive_ + 1 ) % 2;
-		// 	}
-		// }
+		buttons_[B_UP].active(value > 0.5f);
+		if (paramState_[index] > 0.5f && value < 0.5f) {
+			if (paramActive_ > 0) {
+				paramActive_--;
+			} else {
+				paramActive_ = PluginProcessor::MAX_SIG_IN - 1;
+			}
+		}
 		break;
 	case Percussa::sspSwDown:
-		// buttons_[B_DOWN].active(value > 0.5f);
-		// if (paramState_[index] != value && value < 0.5f) {
-		// 	if (paramActive_ != 2) {
-		// 		paramActive_ = (paramActive_ + 1 ) % 2;
-		// 	}
-		// }
+		buttons_[B_DOWN].active(value > 0.5f);
+		if (paramState_[index] > 0.5f && value < 0.5f) {
+			paramActive_ = (paramActive_ + 1 ) % PluginProcessor::MAX_SIG_IN;
+		}
 		break;
 	case Percussa::sspSwShiftL:
 		break;
@@ -279,37 +221,72 @@ void PluginEditor::parameterChanged (int index, float value) {
 
 	if (paramActive != paramActive_) {
 
-		// params_[P_SCALE].setVisible(paramActive_ 	< 2);
-		// params_[P_ROOT].setVisible(paramActive_ 	< 2);
-		// params_[P_PITCH].setVisible(paramActive_ 	== 2);
-		// params_[P_MODE].setVisible(paramActive_ 	== 2);
-		// params_[P_IN_GAIN].setVisible(paramActive_ 	== 2);
+		for (unsigned i = P_VCA_1A; i <= P_VCA_4D; i++) {
+			unsigned vca = i - P_VCA_1A;
+			bool active = (vca / PluginProcessor::MAX_SIG_OUT) == paramActive_;
 
-
-		// params_[P_SCALE].active(paramActive_ 		== 0);
-		// params_[P_ROOT].active(paramActive_ 		== 1);
-		// params_[P_PITCH].active(paramActive_ 	== 2);
+			params_[i].active(active);
+			params_[i].setVisible(active);
+		}
 	}
 
 	paramState_[index] = value;
 }
 
 
+void PluginEditor::drawGrid(Graphics& g) {
+	int x  = 200;
+	int y  = 30;
+	int lx = 100;
+	int fh = 24;
+	int szx = fh * 4;
+	int szy = fh * 2;
+	int sp = fh;
+
+	g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+	g.setColour(Colours::red);
+	g.drawText("Outputs", x + lx, y,
+	           (PluginProcessor::MAX_SIG_OUT * szx) + ((PluginProcessor::MAX_SIG_OUT - 1)  * sp),
+	           fh, Justification::centred);
+	y += sp;
+	g.drawText("Inputs", x, y, lx, fh, Justification::left);
+	for (unsigned xi = 0; xi < PluginProcessor::MAX_SIG_OUT; xi++) {
+		if (processor_.isOutputEnabled(xi * 2) + processor_.isOutputEnabled(xi * 2 + 1) ) {
+			g.setColour(Colours::red);
+		} else {
+			g.setColour(Colours::grey);
+		}
+		char chout[2] = "A";
+		chout[0] = 'A' + xi;
+		g.drawText(String(chout), x + lx + xi * (szx + sp), y, sp + szx, fh, Justification::left);
+	}
+	y += sp;
+
+	for (unsigned yi = 0; yi < PluginProcessor::MAX_SIG_IN; yi++) {
+		if (processor_.isInputEnabled(yi * 2) || processor_.isInputEnabled(yi * 2 + 1)) {
+			g.setColour(Colours::red);
+		} else {
+			g.setColour(Colours::grey);
+		}
+		g.drawText(String(yi + 1), x, y, lx, fh, Justification::left);
+		for (unsigned xi = 0; xi < PluginProcessor::MAX_SIG_OUT; xi++) {
+			g.setColour(Colours::white);
+
+			float vca = processor_.getVCA(yi, xi);
+			String v = "-";
+			if (vca <= -0.01f || vca >= 0.01f) v = String::formatted("%4.2f", vca);
+			g.drawText(v, x + lx + xi * (szx + sp), y , sp + szx, fh, Justification::left);
+		}
+		y += sp + szy;
+	}
+}
+
+
 void PluginEditor::drawIcon(Graphics & g) {
-	unsigned x = 1100;
-	unsigned y = 150;
-	unsigned d = 100;
-	unsigned sp = 75;
-
-	g.setColour(Colours::white);
-	g.fillEllipse(x, y, d, d);
-	g.fillEllipse(x + sp, y, d, d);
-
-	// x = x - sp / 2;
-	// y = y + sp;
-	// g.fillEllipse(x, y, d, d);
-	// g.fillEllipse(x + sp, y, d, d);
-	// g.fillEllipse(x + (2 * sp), y, d, d);
+	// unsigned x = 1100;
+	// unsigned y = 150;
+	// unsigned d = 100;
+	// unsigned sp = 75;
 }
 
 void PluginEditor::drawMenuBox(Graphics & g) {
@@ -389,6 +366,7 @@ void PluginEditor::paint(Graphics & g)
 	drawEncoderValue(g);
 
 	drawIcon(g);
+	drawGrid(g);
 }
 
 
@@ -428,16 +406,18 @@ void PluginEditor::resized()
 	setMenuBounds(recBtn_, 3);
 
 	// setButtonBounds(buttons_[B_FREEZE], 0, 0);
-	// setButtonBounds(buttons_[B_UP], 	0, 5);
+	setButtonBounds(buttons_[B_UP], 	0, 5);
 
 	// setButtonBounds(buttons_[B_LEFT], 	1, 4);
-	// setButtonBounds(buttons_[B_DOWN], 	1, 5);
+	setButtonBounds(buttons_[B_DOWN], 	1, 5);
 	// setButtonBounds(buttons_[B_RIGHT], 	1, 6);
 
-	// setParamBounds(params_[P_SCALE], 		0, 0);
-	// setParamBounds(params_[P_ROOT], 	1, 0);
 
-	// setParamBounds(params_[P_MIX], 		0, 1);
+	for (unsigned i = P_VCA_1A; i <= P_VCA_4D; i++) {
+		unsigned vca = i - P_VCA_1A;
+		unsigned out = vca % PluginProcessor::MAX_SIG_OUT;
+		// unsigned in = vca / PluginProcessor::MAX_SIG_OUT;
+		setParamBounds(params_[i], out, 0);
 
-	// setParamBounds(params_[P_PITCH], 	0, 2);
+	}
 }

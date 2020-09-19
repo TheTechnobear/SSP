@@ -233,7 +233,7 @@ void Msw8Editor::parameterChanged (int index, float value) {
 }
 
 
-void Msw8Editor::drawMsw8(Graphics& g) {
+void Msw8Editor::drawGrid(Graphics& g) {
 	int x  = 1000;
 	int y  = 30;
 	int lx = 100;
@@ -249,7 +249,7 @@ void Msw8Editor::drawMsw8(Graphics& g) {
 	g.drawText("Outputs", x + lx, y, (8 * sz) + (7 * sp), fh, Justification::centred);
 	y += sp;
 	g.drawText("Inputs", x, y, lx, fh, Justification::left);
-	for (unsigned xi = 0; xi < 8; xi++) {
+	for (unsigned xi = 0; xi < Msw8::MAX_SIG_OUT; xi++) {
 		if (processor_.isOutputEnabled(xi)) {
 			g.setColour(Colours::red);
 		} else {
@@ -261,14 +261,14 @@ void Msw8Editor::drawMsw8(Graphics& g) {
 	}
 	y += sp;
 
-	for (unsigned yi = 0; yi < 8; yi++) {
+	for (unsigned yi = 0; yi < Msw8::MAX_SIG_IN; yi++) {
 		if (processor_.isInputEnabled(yi)) {
 			g.setColour(Colours::red);
 		} else {
 			g.setColour(Colours::grey);
 		}
 		g.drawText(String(yi + 1), x, y, lx, fh, Justification::left);
-		for (unsigned xi = 0; xi < 8; xi++) {
+		for (unsigned xi = 0; xi < Msw8::MAX_SIG_OUT; xi++) {
 			g.setColour(Colours::white);
 
 			if (xi == outsel && yi == insel) {
@@ -356,7 +356,7 @@ void Msw8Editor::paint(Graphics& g)
 
 	drawEncoderValue(g);
 
-	drawMsw8(g);
+	drawGrid(g);
 }
 
 

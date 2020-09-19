@@ -31,6 +31,7 @@ protected:
 	void drawParamBox(Graphics& g);
 	void drawIcon(Graphics& g);
 	void drawEncoderValue(Graphics& g);
+    void drawGrid(Graphics& g);
 
 	void setMenuBounds(SSPButton& btn, unsigned r);
 	void setParamBounds(SSPParam& par, unsigned enc, unsigned var);
@@ -51,7 +52,7 @@ private:
         P_VCA_3A,
         P_VCA_3B,
         P_VCA_3C,
-        p_VCA_3D,
+        P_VCA_3D,
         P_VCA_4A,
         P_VCA_4B,
         P_VCA_4C,
