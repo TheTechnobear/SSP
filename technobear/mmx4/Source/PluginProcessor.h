@@ -62,10 +62,6 @@ public:
 
 
 private:
-
-    void calcBuffer(AudioSampleBuffer& buffer, unsigned in, unsigned vca, unsigned n);
-
-
     void writeToXml(juce::XmlElement& xml);
     void readFromXml(juce::XmlElement& xml);
 

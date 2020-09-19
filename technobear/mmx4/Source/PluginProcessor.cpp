@@ -195,13 +195,6 @@ void PluginProcessor::releaseResources()
     // spare memory, etc.
 }
 
-void PluginProcessor::calcBuffer(AudioSampleBuffer& buffer, unsigned in, unsigned vca, unsigned n) {
-    workBuf_.copyFrom(0, 0, buffer, in, 0, n);
-    float* wflts = workBuf_.getWritePointer(0);
-    const float* vcaflts = buffer.getReadPointer(vca);
-    FloatVectorOperations::multiply(wflts, vcaflts, n);
-}
-
 void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
     unsigned n = buffer.getNumSamples();
