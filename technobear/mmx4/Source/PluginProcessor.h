@@ -48,10 +48,13 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    void setVCA(unsigned i, unsigned o, float v) { vca_[i][o]=v;}
-    void getVCA(unsigned i, unsigned o) { return vca_[i][o];}
+    void  setVCA(unsigned i, unsigned o, float v) { vca_[i][o] = v;}
+    float getVCA(unsigned i, unsigned o) { return vca_[i][o];}
 
 private:
+
+    void calcBuffer(AudioSampleBuffer& buffer, unsigned in, unsigned vca, unsigned n);
+
 
     void writeToXml(juce::XmlElement& xml);
     void readFromXml(juce::XmlElement& xml);
@@ -98,13 +101,15 @@ private:
 
     float params_[Percussa::sspLast];
 
-    static constexpr unsigned MAX_SIG_IN=4;
-    static constexpr unsigned MAX_SIG_OUT=4;
-    
-    std::atomic<float> vca_[MAX_SIG_IN][MAX_SIG_OUT];
-    std::atomic<bool> ac_=false;
+    static constexpr unsigned MAX_SIG_IN = 4;
+    static constexpr unsigned MAX_SIG_OUT = 4;
 
-    AudioSampleBuffer buffer_;
+    std::atomic<float> vca_[MAX_SIG_IN][MAX_SIG_OUT];
+    std::atomic<bool> ac_;
+
+    AudioSampleBuffer outBufs_;
+    AudioSampleBuffer workBuf_;
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };

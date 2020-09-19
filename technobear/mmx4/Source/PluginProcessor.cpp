@@ -84,7 +84,7 @@ const String PluginProcessor::getInputChannelName (int channelIndex) const
         String n = "In ";
         unsigned idx = (channelIndex / 2) + 1;
         n = n + String(idx);
-        if (n % 2 == 0) { n = n + String("L");}
+        if (channelIndex % 2 == 0) { n = n + String("L");}
         else { n = n + String("R");}
         return n;
     } else if (channelIndex <= I_VCA_4D) {
@@ -92,7 +92,7 @@ const String PluginProcessor::getInputChannelName (int channelIndex) const
         String n = "Vca ";
         unsigned in = (idx / 4)  + 1;
         unsigned out = idx % 4;
-        char buf[2] = 'A';
+        char buf[2] = "A";
         buf[0] = 'A' + out;
         n = n + String(in) + String(buf);
         return n;
@@ -107,10 +107,10 @@ const String PluginProcessor::getOutputChannelName (int channelIndex) const
     if (channelIndex <= O_SIG_AR) {
         String n = "Out ";
         unsigned idx = (channelIndex / 2);
-        char buf[2] = 'A';
+        char buf[2] = "A";
         buf[0] = 'A' + idx;
         n = n + String(buf);
-        if (n % 2 == 0) { n = n + String("L");}
+        if (channelIndex % 2 == 0) { n = n + String("L");}
         else { n = n + String("R");}
         return n;
     }
@@ -183,7 +183,8 @@ void PluginProcessor::changeProgramName (int index, const String& newName)
 
 void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    buffer_.setSize(MAX_SIG_OUT * 2, samplesPerBlock);
+    outBufs_.setSize(MAX_SIG_OUT * 2, samplesPerBlock);
+    workBuf_.setSize(1, samplesPerBlock);
 }
 
 void PluginProcessor::releaseResources()
@@ -192,67 +193,78 @@ void PluginProcessor::releaseResources()
     // spare memory, etc.
 }
 
+void PluginProcessor::calcBuffer(AudioSampleBuffer& buffer, unsigned in, unsigned vca, unsigned n) {
+    workBuf_.copyFrom(0, 0, buffer, in,0, n);
+    float* wflts = workBuf_.getWritePointer(0);
+    const float* vcaflts = buffer.getReadPointer(vca);
+    FloatVectorOperations::multiply(wflts, vcaflts, n);
+}
+
 void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
     unsigned n = buffer.getNumSamples();
 
-    // bool stereoIn = params_[Percussa::sspInEn1 + I_RIGHT ] > 0.5f;
-    // bool stereoOut = params_[Percussa::sspOutEn1 + O_RIGHT ] > 0.5f;
-    // for (int i = 0; i < buffer.getNumSamples(); i++) {
-    //     buffer.getSample(I_LEFT, 0 );
-    // }
-
-
-    // copy input buffers
-    // for(unsigned i=0;i< MAX_SIG_IN;i++) {
-    //     unsigned idx = i*2;
-    //     if(params_[I_SIG_1L+ idx] > 0.5f)
-    //         buffer.copyFrom(idx, 0, buffer, I_SIG_1L idx 0, n);
-    //     else 
-    //         buffer.applyGain(idx, 0, n, 0.0f;)
-        
-    //     idx++;
-
-    //     if(params_[I_SIG_1L+ idx] > 0.5f)
-    //         buffer.copyFrom(idx, 0, buffer, I_SIG_1L idx 0, n);
-    //     else 
-    //         buffer.applyGain(idx, 0, n, 0.0f;)
-
-    // }
-
-
-    for(unsigned i=0;i< MAX_SIG_OUT*2;i++) {
+    for (unsigned i = 0; i < MAX_SIG_OUT * 2; i++) {
         //clear output buffer
-        buffer_.applyGain(i, 0, n,0.0f);
+        outBufs_.applyGain(i, 0, n, 0.0f);
     }
 
-    for(unsigned out=0;out<MAX_SIG_OUT;out++) {
-        for(unsigned in=0;in<MAX_SIG_IN;in++) {
-            float vca=vca_[in][out];
+    for (unsigned out = 0; out < MAX_SIG_OUT; out++) {
+        bool outL = O_SIG_AL + out * 2;
+        bool outR = O_SIG_AR + out * 2;
+        bool outEnabledL = params_[Percussa::sspOutEn1 + outL ] > 0.5f;
+        bool outEnabledR = params_[Percussa::sspOutEn1 + outR ] > 0.5f;
+        if (outEnabledL || outEnabledR ) {
 
-            // neen a tmp buffer there, to copy into, then i can use the multiply vector on it
-            
-            float* inl= buffer.getReadPointer((in*2)+I_SIG_1L);
-            float* inl= buffer.getReadPointer((in*2)+I_SIG_1R);
-            float* vcavec= buffer.getReadPointer((in*4) +out+ I_VCA_1A);
+            for (unsigned in = 0; in < MAX_SIG_IN; in++) {
+                bool inL = I_SIG_1L + out * 2;
+                bool inR = I_SIG_1R + out * 2;
+                bool inEnabledL = params_[Percussa::sspInEn1 + inL ] > 0.5f;
+                bool inEnabledR = params_[Percussa::sspInEn1 + inR ] > 0.5f;
 
-            multiply(inl,vcavec);
-            multiply(inr,vcavec);
+                bool vcaI = (in * 4) + out + I_VCA_1A;
+                bool vcaEnabled = params_[Percussa::sspInEn1 + vcaI ] > 0.5f;
 
-            addTo(outl, inl, vca);
-            addTo(outr, inr, vca);
+                float vca = vca_[in][out];
 
+                if (inEnabledL) {
+                    if (vcaEnabled) {
+                        calcBuffer(buffer, inL, vcaI, n);
+                        outBufs_.addFrom(outL, 0, workBuf_, 0, 0, n, vca);
+                    } else {
+                        outBufs_.addFrom(outL, 0, buffer, inL, 0, n, vca);
+                    }
+                }
+                if (inEnabledR) {
+                    if (vcaEnabled) {
+                        calcBuffer(buffer, inR, vcaI, n);
+                        outBufs_.addFrom(outR, 0, workBuf_, 0, n, vca);
+                    } else {
+                        outBufs_.addFrom(outR, 0, buffer, inR, 0, n, vca);
+                    }
+                }
+            }
+        }
+    }
+
+    for (unsigned out = 0; out < MAX_SIG_OUT; out++) {
+        bool outL = O_SIG_AL + out * 2;
+        bool outR = O_SIG_AR + out * 2;
+        bool outEnabledL = params_[Percussa::sspOutEn1 + outL ] > 0.5f;
+        bool outEnabledR = params_[Percussa::sspOutEn1 + outR ] > 0.5f;
+
+        if (outEnabledL) {
+            buffer.copyFrom(outL, 0, outBufs_,outL,0, n);
+        } else {
+            buffer.applyGain(outL, 0, n, 0.0f);
         }
 
+        if (outEnabledR) {
+            buffer.copyFrom(outR, 0, outBufs_,outR,0, n);
+        } else {
+            buffer.applyGain(outR, 0, n, 0.0f);
+        }
     }
-    
-
-
-
-    // for (int i = 0; i < buffer.getNumSamples(); i++) {
-    //     buffer.setSample(O_LEFT,i,0 );
-    // }
-
 }
 
 bool PluginProcessor::hasEditor() const

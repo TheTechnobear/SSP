@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<FILTERGRAPH>
+  <FILTER uid="1" x="0.5" y="0.1" uiLastX="0" uiLastY="0">
+    <PLUGIN name="Audio Input" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="Raw Material Software" version="1.0" file="" uid="246006c0"
+            isInstrument="0" fileTime="0" numInputs="0" numOutputs="12" isShell="0"/>
+    <STATE>0.</STATE>
+  </FILTER>
+  <FILTER uid="2" x="0.25" y="0.1" uiLastX="0" uiLastY="0">
+    <PLUGIN name="Midi Input" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="Raw Material Software" version="1.0" file="" uid="cb5fde0b"
+            isInstrument="0" fileTime="0" numInputs="0" numOutputs="0" isShell="0"/>
+    <STATE>0.</STATE>
+  </FILTER>
+  <FILTER uid="3" x="0.5" y="0.9" uiLastX="0" uiLastY="0">
+    <PLUGIN name="Audio Output" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="Raw Material Software" version="1.0" file="" uid="724248cb"
+            isInstrument="0" fileTime="0" numInputs="2" numOutputs="0" isShell="0"/>
+    <STATE>0.</STATE>
+  </FILTER>
+  <FILTER uid="6" x="0.4775" y="0.625926" uiLastX="0" uiLastY="0">
+    <PLUGIN name="pmix" format="VST" category="Effect" manufacturer="technobear"
+            version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/pmix.vst"
+            uid="504d4958" isInstrument="0" fileTime="174251e5150" numInputs="8"
+            numOutputs="8" isShell="0"/>
+    <STATE>1798.CMlaKA....fQBMDZ....A.USIgE....Y....A.............................................................................................................................................................................fAlY0PxDRWF...7.WaogmO7jjavUGc9vCUv.BakYWYrASOhDiHfvVY1UFawziHwHBHrUlckwlL8HBLh.BakYWYrMSOh.iHf.WXt0iHvHBHmEVZt0iHwHBHsUGck0iHvHBHy8Fau0iHvHBHiUWY8HBLh.RXi0iHwHxK9vCUw.BakYWYrASOhDiHfvVY1UFawziHwHBHrUlckwlL8HBLh.BakYWYrMSOh.iHf.WXt0iHvHBHmEVZt0iHwHBHsUGck0iHvHBHy8Fau0iHvHBHiUWY8HBLh.RXi0iHwHxK9vCUx.BakYWYrASOhDiHfvVY1UFawziHwHBHrUlckwlL8HBLh.BakYWYrMSOh.iHf.WXt0iHvHBHmEVZt0iHwHBHsUGck0iHvHBHy8Fau0iHvHBHiUWY8HBLh.RXi0iHwHxK9vCUy.BakYWYrASOhDiHfvVY1UFawziHwHBHrUlckwlL8HBLh.BakYWYrMSOh.iHf.WXt0iHvHBHmEVZt0iHwHBHsUGck0iHvHBHy8Fau0iHvHBHiUWY8HBLh.RXi0iHwHxK9vCUz.BakYWYrASOhDiHfvVY1UFawziHwHBHrUlckwlL8HBLh.BakYWYrMSOh.iHf.WXt0iHvHBHmEVZt0iHwHBHsUGck0iHvHBHy8Fau0iHvHBHiUWY8HBLh.RXi0iHwHxK9vCU0.BakYWYrASOhDiHfvVY1UFawziHwHBHrUlckwlL8HBLh.BakYWYrMSOh.iHf.WXt0iHvHBHmEVZt0iHwHBHsUGck0iHvHBHy8Fau0iHvHBHiUWY8HBLh.RXi0iHwHxK9vCU1.BakYWYrASOhDiHfvVY1UFawziHwHBHrUlckwlL8HBLh.BakYWYrMSOh.iHf.WXt0iHvHBHmEVZt0iHwHBHsUGck0iHvHBHy8Fau0iHvHBHiUWY8HBLh.RXi0iHwHxK9vCU2.BakYWYrASOhDiHfvVY1UFawziHwHBHrUlckwlL8HBLh.BakYWYrMSOh.iHf.WXt0iHvHBHmEVZt0iHwHBHsUGck0iHvHBHy8Fau0iHvHBHiUWY8HBLh.RXi0iHwHxK9vyKI4Fb0QmO77TczAWcz4COTACHrUlckwFL8HRLh.BakYWYrESOhDiHfvVY1UFaxziHvHBHrUlckw1L8HBLh.Bbg4VOh.iHfbVXo4VOhDiHfzVczUVOh.iHfL2ar8VOh.iHfLVck0iHvHBHgMVOh.iHu3COTECHrUlckwFL8HRLh.BakYWYrESOhDiHfvVY1UFaxziHvHBHrUlckw1L8HBLh.Bbg4VOh.iHfbVXo4VOhDiHfzVczUVOh.iHfL2ar8VOh.iHfLVck0iHvHBHgMVOh.iHu3COTICHrUlckwFL8HRLh.BakYWYrESOhDiHfvVY1UFaxziHvHBHrUlckw1L8HBLh.Bbg4VOh.iHfbVXo4VOhDiHfzVczUVOh.iHfL2ar8VOh.iHfLVck0iHvHBHgMVOh.iHu3COTMCHrUlckwFL8HRLh.BakYWYrESOhDiHfvVY1UFaxziHvHBHrUlckw1L8HBLh.Bbg4VOh.iHfbVXo4VOhDiHfzVczUVOh.iHfL2ar8VOh.iHfLVck0iHvHBHgMVOh.iHu3COTQCHrUlckwFL8HRLh.BakYWYrESOhDiHfvVY1UFaxziHvHBHrUlckw1L8HBLh.Bbg4VOh.iHfbVXo4VOhDiHfzVczUVOh.iHfL2ar8VOh.iHfLVck0iHvHBHgMVOh.iHu3COTUCHrUlckwFL8HRLh.BakYWYrESOhDiHfvVY1UFaxziHvHBHrUlckw1L8HBLh.Bbg4VOh.iHfbVXo4VOhDiHfzVczUVOh.iHfL2ar8VOh.iHfLVck0iHvHBHgMVOh.iHu3COTYCHrUlckwFL8HRLh.BakYWYrESOhDiHfvVY1UFaxziHvHBHrUlckw1L8HBLh.Bbg4VOh.iHfbVXo4VOhDiHfzVczUVOh.iHfL2ar8VOh.iHfLVck0iHvHBHgMVOh.iHu3COTcCHrUlckwFL8HRLh.BakYWYrESOhDiHfvVY1UFaxziHvHBHrUlckw1L8HBLh.Bbg4VOh.iHfbVXo4VOhDiHfzVczUVOh.iHfL2ar8VOh.iHfLVck0iHvHBHgMVOh.iHu3COu7TczAWcz4COu.WaogmO..</STATE>
+  </FILTER>
+  <FILTER uid="7" x="0.5675" y="0.424074" uiLastX="" uiLastY="">
+    <PLUGIN name="mmx4" format="VST" category="Effect" manufacturer="technobear"
+            version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/mmx4.vst"
+            uid="4d4d5834" isInstrument="0" fileTime="174a67fd6b0" numInputs="24"
+            numOutputs="8" isShell="0"/>
+    <STATE>183.CMlaKA....fQBMDZ....AzTSXQC....Y....A...............................................................................................................................................................................WX0PxDhC....7zVa3QCHgMVOh.iHu3C.</STATE>
+  </FILTER>
+  <CONNECTION srcFilter="1" srcChannel="0" dstFilter="7" dstChannel="0"/>
+  <CONNECTION srcFilter="1" srcChannel="1" dstFilter="7" dstChannel="1"/>
+  <CONNECTION srcFilter="6" srcChannel="0" dstFilter="3" dstChannel="0"/>
+  <CONNECTION srcFilter="6" srcChannel="1" dstFilter="3" dstChannel="1"/>
+  <CONNECTION srcFilter="7" srcChannel="0" dstFilter="6" dstChannel="0"/>
+  <CONNECTION srcFilter="7" srcChannel="1" dstFilter="6" dstChannel="1"/>
+</FILTERGRAPH>

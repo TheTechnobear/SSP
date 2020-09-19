@@ -52,8 +52,8 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 	// params_[P_ROOT].active(paramActive_ 	== 0);
 
 	paramActive_ = 0;
-	addAndMakeVisible(params_[P_SCALE]);
-	addAndMakeVisible(params_[P_ROOT]);
+	// addAndMakeVisible(params_[P_SCALE]);
+	// addAndMakeVisible(params_[P_ROOT]);
 }
 
 PluginEditor::~PluginEditor()
@@ -98,12 +98,12 @@ void PluginEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEnc1:
 		switch (paramActive_) {
 		case 0 :  {
-			float v = processor_.data().scale_ + value / 100.0f;
-			v = constrain(v, 0.0f, 1.0f);
-			processor_.scale_ = v;
-			params_[P_POS].value(processor_.data().scale_);
+			// float v = processor_.data().scale_ + value / 100.0f;
+			// v = constrain(v, 0.0f, 1.0f);
+			// processor_.scale_ = v;
+			// params_[P_POS].value(processor_.data().scale_);
 
-			if (value) activeParam_ = &params_[P_SCALE];
+			// if (value) activeParam_ = &params_[P_SCALE];
 			break;
 		}
 		case 1 :  {
@@ -121,19 +121,19 @@ void PluginEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEnc2:
 		switch (paramActive_) {
 		case 0 :  {
-			float v = processor_.root_ + value / 100.0f;
-			v = constrain(v, 0.0f, 1.0f);
-			processor_.root_ = v;
-			params_[P_ROOT].value(processor_.root_);
+			// float v = processor_.root_ + value / 100.0f;
+			// v = constrain(v, 0.0f, 1.0f);
+			// processor_.root_ = v;
+			// params_[P_ROOT].value(processor_.root_);
 
-			if (value) activeParam_ = &params_[P_ROOT];
+			// if (value) activeParam_ = &params_[P_ROOT];
 			break;
-		case 1 :  {
-			break;
-		}
-		case 2 : {
-			break;
-		}
+			case 1 :  {
+				break;
+			}
+			case 2 : {
+				break;
+			}
 		}
 		} //switch paramActive_
 		if (value) {
@@ -182,8 +182,8 @@ void PluginEditor::parameterChanged (int index, float value) {
 		if (value < 0.5f) {
 			switch (paramActive_) {
 			case 0 :  {
-				processor_.scale_ = 0.0f;
-				params_[P_SCALE].value(processor_.scale_);
+				// processor_.scale_ = 0.0f;
+				// params_[P_SCALE].value(processor_.scale_);
 				break;
 			}
 			case 1 :  {
@@ -193,14 +193,14 @@ void PluginEditor::parameterChanged (int index, float value) {
 				break;
 			}
 			} //switch paramActive_
-		// }
+		}
 		break;
 	case Percussa::sspEncSw2:
 		if (value < 0.5f) {
 			switch (paramActive_) {
 			case 0 :  {
-				processor_.root_ = 0.0f;
-				params_[P_ROOT].value(processor_.root_);
+				// processor_.root_ = 0.0f;
+				// params_[P_ROOT].value(processor_.root_);
 				break;
 			}
 			case 1 :  {
@@ -210,6 +210,7 @@ void PluginEditor::parameterChanged (int index, float value) {
 				break;
 			}
 			} //switch paramActive_
+		}
 		break;
 	case Percussa::sspEncSw3:
 		break;
