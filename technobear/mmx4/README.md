@@ -27,19 +27,40 @@ This document is based on the LATEST version of the plugin
 A matrix mixer allows inputs to be mixed to multiple outputs.
 In the case of this plugin each input ( 1 - 4 ) is stereo, and also each output ( A - D).
 
-the user can mix with the parameters on the UI or also via CV.
+the user can mix with the parameters on the UI and also via CV.
 
-the mixing can be consider like a bipolar vca or attenuverter, so can also be used to invert signals.
+the mixing can be consider like a bipolar vca or attenuverter, so can also be used to invert signals (with negative vca)
 
-all mixing is done at audio rate, though can of course be used for CV mixing as well.
 
-the 'level' is per input/output pair e.g.  2D, 3B , and there is no pan control.
+notes:
+- the 'level' is per input/output pair e.g.  2D, 3B 
+- all mixing is done at audio rate
+- the parameter vca value is **added** to any incoming vca cv
 
-all gain levels are linear
+
 
 
 ## Tips
 
+## click encoder
+this will set a non-zero value to zero (i.e. clear it) , or a zero/clear value to 1.0
+
+
+### CV mixing
+the matrix mixer can be for audio or cv mixing, mixing cvs can open up a whole new world of modulation shapes.
+
+
+### Using vca cv
+
+you can use either bipolar cv (e.g. LFO) or unipolar (ENV) for the vca input.
+BUT should should remember a negative value will **invert** the wave form (which can be fun)
+
+IF you do not want this and prefer it going to zero you have two choices
+a) use the Percussa's excellent scale and offset controls  e.g. scale by 0.5 and offset  by +1.0
+b) use the VCA level on the UI and set to 1.0 ... this will make it go from 0.0 to 2.0 , so it'll be loud unless you scale it ;) 
+
+
+### Stereo
 whilst the mixer is stereo, you can use if for mono signal, the mixer is optimised to only calculate for the input and outputs connected.
 
 also there is not 'connection' between left and right channels, the limitation is they use the same vcas.
