@@ -239,13 +239,13 @@ void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiM
                         workBuf_.copyFrom(0, 0, buffer, inL, 0, n);
                         float* wflts = workBuf_.getWritePointer(0);
                         FloatVectorOperations::multiply(wflts, vcaflts, n);
-                        outBufs_.addFrom(outL, 0, workBuf_, 0, 0, n, vca);
+                        outBufs_.addFrom(outL, 0, workBuf_, 0, 0, n);
                     }
                     if (inEnabledR) {
                         workBuf_.copyFrom(0, 0, buffer, inR, 0, n);
                         float* wflts = workBuf_.getWritePointer(0);
                         FloatVectorOperations::multiply(wflts, vcaflts, n);
-                        outBufs_.addFrom(outR, 0, workBuf_, 0, 0, n, vca);
+                        outBufs_.addFrom(outR, 0, workBuf_, 0, 0, n);
                     }
 
                 } else {
