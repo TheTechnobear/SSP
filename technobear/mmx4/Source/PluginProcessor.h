@@ -56,6 +56,7 @@ public:
 
     void  setVCA(unsigned i, unsigned o, float v) { vca_[i][o] = v;}
     float getVCA(unsigned i, unsigned o) { return vca_[i][o];}
+    float getVCACV(unsigned i, unsigned o) { return lastVcaCV_[i][o];}
 
     bool isInputEnabled(unsigned idx) { return params_[Percussa::sspInEn1 + I_SIG_1L + idx] > 0.5f;}
     bool isOutputEnabled(unsigned idx) { return params_[Percussa::sspOutEn1 + O_SIG_AL + idx] > 0.5f;}
@@ -105,12 +106,13 @@ private:
         O_MAX
     };
 
-public: 
+public:
     static constexpr unsigned MAX_SIG_IN = (I_SIG_4L - I_SIG_1L) / 2 + 1 ;
     static constexpr unsigned MAX_SIG_OUT = ( O_SIG_DL - O_SIG_AL) / 2 + 1;
 
 private:
     std::atomic<float> vca_[MAX_SIG_IN][MAX_SIG_OUT];
+    std::atomic<float> lastVcaCV_[MAX_SIG_IN][MAX_SIG_OUT];
     float params_[Percussa::sspLast];
 
     std::atomic<bool> ac_;

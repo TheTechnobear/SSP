@@ -10,6 +10,7 @@ PluginProcessor::PluginProcessor()
 {
     memset(params_, 0, sizeof(params_));
     memset(vca_, 0, sizeof(vca_));
+    memset(lastVcaCV_, 0, sizeof(lastVcaCV_));
     ac_ = false;
 }
 
@@ -204,7 +205,6 @@ void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiM
         outBufs_.applyGain(i, 0, n, 0.0f);
     }
 
-
     for (unsigned out = 0; out < MAX_SIG_OUT; out++) {
         unsigned outL = O_SIG_AL + (out * 2);
         unsigned outR = O_SIG_AR + (out * 2);
@@ -223,9 +223,10 @@ void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiM
 
                 float vca = vca_[in][out];
 
-                if(vcaEnabled) {
+                if (vcaEnabled) {
                     // vca cv enable
                     float* vcaflts = buffer.getWritePointer(vcaI);
+                    lastVcaCV_[in][out] = vcaflts[0]; // without vca, we add this in UI
                     FloatVectorOperations::add(vcaflts, vca, n); // add param
 
                     if (inEnabledL) {
@@ -243,6 +244,7 @@ void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiM
 
                 } else {
                     // vca cv not enabled
+                    lastVcaCV_[in][out] = 0.0f;
                     if (inEnabledL) {
                         outBufs_.addFrom(outL, 0, buffer, inL, 0, n, vca);
                     }
@@ -250,6 +252,10 @@ void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiM
                         outBufs_.addFrom(outR, 0, buffer, inR, 0, n, vca);
                     }
                 }
+            }
+        } else {
+            for (unsigned in = 0; in < MAX_SIG_IN; in++) {
+                lastVcaCV_[in][out] = 0.0f;
             }
         }
     }
