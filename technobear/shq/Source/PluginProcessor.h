@@ -63,7 +63,7 @@ public:
     float lastSig(unsigned i) { return lastSig_[i];}
 
 private:
-
+    float processCV(float value, float scale, float root);
     void writeToXml(juce::XmlElement& xml);
     void readFromXml(juce::XmlElement& xml);
 
@@ -101,8 +101,11 @@ private:
     std::atomic<unsigned> scale_;
     std::atomic<unsigned> root_;
 
-    static constexpr unsigned MAX_SIG=4;
+    static constexpr unsigned MAX_SIG = 4;
     std::atomic<float> lastSig_[MAX_SIG];
+    std::atomic<float> lastTrig_[MAX_SIG];
+
+    Random randomGen_;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)

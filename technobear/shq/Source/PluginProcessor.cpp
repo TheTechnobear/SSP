@@ -9,9 +9,11 @@ static const char *xmlTag = JucePlugin_Name;
 PluginProcessor::PluginProcessor()
 {
     memset(params_, 0, sizeof(params_));
+    memset(lastTrig_, 0, sizeof(lastTrig_));
+    memset(lastSig_, 0, sizeof(lastSig_));
     root_ = 0.0f;
     scale_ = 0.0f;
-
+    randomGen_.setSeedRandomly();
 }
 
 PluginProcessor::~PluginProcessor()
@@ -100,16 +102,16 @@ const String PluginProcessor::getInputChannelName (int channelIndex) const
 const String PluginProcessor::getOutputChannelName (int channelIndex) const
 {
 
-    case O_SIG_1:        { return String("Out 1");}
-    case O_TRIG_1:       { return String("Trig 1");}
-    case O_SIG_2:        { return String("Out 2");}
-    case O_TRIG_2:       { return String("Trig 2");}
-    case O_SIG_3:        { return String("Out 3");}
-    case O_TRIG_3:       { return String("Trig 3");}
-    case O_SIG_4:        { return String("Out 4");}
-    case O_TRIG_4:       { return String("Trig 4");}
-    case O_SCALE:        { return String("Scale");}
-    case O_ROOT:       { return String("Root");}
+case O_SIG_1:        { return String("Out 1");}
+case O_TRIG_1:       { return String("Trig 1");}
+case O_SIG_2:        { return String("Out 2");}
+case O_TRIG_2:       { return String("Trig 2");}
+case O_SIG_3:        { return String("Out 3");}
+case O_TRIG_3:       { return String("Trig 3");}
+case O_SIG_4:        { return String("Out 4");}
+case O_TRIG_4:       { return String("Trig 4");}
+case O_SCALE:        { return String("Scale");}
+case O_ROOT:       { return String("Root");}
     return String("unused:") + String (channelIndex + 1);
 }
 
@@ -190,67 +192,123 @@ void PluginProcessor::releaseResources()
     // spare memory, etc.
 }
 
+float PluginProcessor::processCV(float v, float scale, float root) {
+    return v;
+}
+
+
 void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
+    unsigned n = buffer.getNumSamples();
 
-    // bool stereoIn = params_[Percussa::sspInEn1 + I_RIGHT ] > 0.5f;
-    // bool stereoOut = params_[Percussa::sspOutEn1 + O_RIGHT ] > 0.5f;
-    // for (int i = 0; i < buffer.getNumSamples(); i++) {
-    //     buffer.getSample(I_LEFT, 0 );
-    // }
+    bool inTrigE[MAX_SIG];
+    bool inCvE[MAX_SIG];
+    bool outTrigE[MAX_SIG];
+    bool outCvE[MAX_SIG];
 
-
-    // for (int i = 0; i < buffer.getNumSamples(); i++) {
-    //     buffer.setSample(O_LEFT,i,0 );
-    // }
-
-}
-
-bool PluginProcessor::hasEditor() const
-{
-    return true;
-}
-
-AudioProcessorEditor* PluginProcessor::createEditor()
-{
-    return new PluginEditor (*this);
-}
-
-
-void PluginProcessor::writeToXml(XmlElement& xml) {
-    xml.setAttribute("root",  int(root_));
-    xml.setAttribute("scale", int(scale_));
-}
-
-void PluginProcessor::readFromXml(XmlElement& xml) {
-    root_      = xml.getIntAttribute("root"  , 0.0f);
-    scale_    = xml.getIntAttribute("scale" , 0.0f);
-}
-
-
-void PluginProcessor::getStateInformation (MemoryBlock& destData)
-{
-    XmlElement xml(xmlTag);
-    writeToXml(xml);
-    copyXmlToBinary(xml, destData);
-}
-
-void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
-{
-    XmlElement *pXML = getXmlFromBinary(data, sizeInBytes);
-    if (pXML) {
-        // auto root=pXML->getChildByName(xmlTag);
-        // if(root) readFromXml(*root);
-        readFromXml(*pXML);
-        delete pXML;
+    for (unsigned i = 0; i < MAX_SIG; i++) {
+        inTrigE[i] = params_[Percussa::sspInEn1 + I_TRIG_1 ] > 0.5f;
+        inCvE[i] = params_[Percussa::sspInEn1 + I_SIG_1 ] > 0.5f;
+        outTrigE[i] = params_[Percussa::sspOutEn1 + O_SIG_1 ] > 0.5f;
+        outCvE[i] = params_[Percussa::sspOutEn1 + O_TRIG_1 ] > 0.5f;
     }
-}
+
+
+    for (unsigned idx = 0; idx < n; idx++) {
+        // for each sample
+        bool trigAbove = false;
+        bool trig[MAX_SIG];
+
+
+        for (unsigned i = 0; i < MAX_SIG; i++) {
+            bool trigged = false;
+            if (inTrigE[i]) {
+                // trig in enabled
+
+                trig[i] = buffer.getSample(I_TRIG_1 + sigo , idx) > 0.5;
+                if (trig != lastTrig_[i] && trig) {
+                    trigged = true;
+                    trigAbove = true;
+                } else {
+                    trigAbove = false;
+                }
+            } else {
+                // trig not enabled
+                if (i != 0) trig[i] = trig[i - 1];
+                else trig[i] = 0;
+
+                if (trigAbove) {
+                    trigged = true;
+                }
+            }
+
+            if (trigged) {
+                // triggered...
+                if (inCvE) {
+                    v = buffer.getSample(I_SIG_1 + sigo, idx);
+                } else {
+                    // no cv input... use random
+                    v = (randomGen_.nextFloat() * 2.0f) - 1.0f
+                }
+
+                float scale = scale_ + buffer.getSample(I_SCALE,i);
+                float root = scale_ + buffer.getSample(I_ROOT,i);
+                v = processCV(v,scale,root);
+                lastSig_[i] = v;
+            }
+
+            //
+            lastTrig_[i] = trig;
+            buffer.setSample(O_TRIG_1 + sigo, trig[i]);
+            buffer.setSample(O_SIG_1 + sigo, lastSig_[i]);
+        }
+    }
+
+    bool PluginProcessor::hasEditor() const
+    {
+        return true;
+    }
+
+    AudioProcessorEditor* PluginProcessor::createEditor()
+    {
+        return new PluginEditor (*this);
+    }
+
+
+    void PluginProcessor::writeToXml(XmlElement & xml) {
+        xml.setAttribute("root",  int(root_));
+        xml.setAttribute("scale", int(scale_));
+    }
+
+    void PluginProcessor::readFromXml(XmlElement & xml) {
+        root_ = xml.getIntAttribute("root"  , 0.0f);
+        scale_ = xml.getIntAttribute("scale" , 0.0f);
+    }
+
+
+    void PluginProcessor::getStateInformation (MemoryBlock & destData)
+    {
+        XmlElement xml(xmlTag);
+        writeToXml(xml);
+        copyXmlToBinary(xml, destData);
+    }
+
+    void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
+    {
+        XmlElement *pXML = getXmlFromBinary(data, sizeInBytes);
+        if (pXML) {
+            // auto root=pXML->getChildByName(xmlTag);
+            // if(root) readFromXml(*root);
+            readFromXml(*pXML);
+            delete pXML;
+        }
+    }
 
 // This creates new instances of the plugin..
-AudioProcessor* JUCE_CALLTYPE createPluginFilter()
-{
-    return new PluginProcessor();
-}
+    AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+    {
+        return new PluginProcessor();
+    }
 
 
 
