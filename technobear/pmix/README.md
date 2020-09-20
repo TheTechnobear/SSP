@@ -3,6 +3,7 @@
 a performance mixer for the Percussa SSP
 
 ## Change Log
+1.0.1 Show channels if channels are enabled/disabled
 1.0.0 Initial Release 
 
 ## Developer: TheTechnobear
