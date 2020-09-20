@@ -11,13 +11,16 @@ class SSPMonoChannel: public Component
 public:
     SSPMonoChannel();
     void init(SSPParam* param, const String& label, TrackData* data)  {
-        label_=label;
-        data_=data;
+        label_ = label;
+        data_ = data;
         channel_.init(param, label, data);
     }
 
     void active(bool b ) { channel_.active(b);}
     bool active() { return channel_.active();}
+
+    void enabled(bool b ) { channel_.enabled(b);}
+    bool enabled() { return channel_.enabled();}
 
     void button(unsigned i, bool b) { channel_.button(i, b);}
     void encbutton(bool b) { channel_.encbutton(b);}

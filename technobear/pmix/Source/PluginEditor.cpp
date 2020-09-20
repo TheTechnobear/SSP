@@ -14,18 +14,18 @@ PmixEditor::PmixEditor (Pmix& p)
 	setSize (1600, 480);
 
 	for (unsigned i = 0; i < TS_MAX; i++) {
-        buttonHeldCount_[i]=0;
-    }
-    encMode_=0;
-    butMode_=0;
+		buttonHeldCount_[i] = 0;
+	}
+	encMode_ = 0;
+	butMode_ = 0;
 	activeTracks_ = OUT_14;
 	curTracks_ = OUT_14;
 
 
-	globalBtn_.init("G",Colours::red);
-	networkBtn_.init("N",Colours::red);
-	plugInBtn_.init("P",Colours::red);
-	recBtn_.init("R",Colours::red);
+	globalBtn_.init("G", Colours::red);
+	networkBtn_.init("N", Colours::red);
+	plugInBtn_.init("P", Colours::red);
+	recBtn_.init("R", Colours::red);
 	addAndMakeVisible(globalBtn_);
 	addAndMakeVisible(networkBtn_);
 	addAndMakeVisible(plugInBtn_);
@@ -243,7 +243,7 @@ void PmixEditor::parameterChanged (int index, float value) {
 			for (unsigned i = 0; i < Pmix::I_MAX ; i++) {
 				inTracks_[i].buttonMode(m);
 			}
-			for (unsigned i = 0; i <(Pmix::O_MAX / 2) ; i++) {
+			for (unsigned i = 0; i < (Pmix::O_MAX / 2) ; i++) {
 				outTracks_[i].buttonMode(m);
 			}
 			labelButtons();
@@ -412,55 +412,62 @@ void PmixEditor::paint(Graphics & g)
 
 	drawMenuBox(g);
 	drawParamBox(g);
+	for (unsigned i = 0; i < Pmix::I_MAX; i++) {
+		inTracks_[i].enabled(processor_.isInputEnabled(i));
+	}
+
+	for (unsigned i = 0; i < (Pmix::O_MAX / 2); i++) {
+		outTracks_[i].enabled(processor_.isOutputEnabled(i * 2) || processor_.isOutputEnabled(i * 2 + 1 ));
+	}
 
 	switch (butMode_) {
 	case SSPChannel::BM_SOLOMUTE: {
-		switch(curTracks_) {
-			case IN_14: {
-				for(unsigned i=0;i<4;i++) buttons_[B_A_1+i].active(processor_.inputTrack(i).solo_);
-				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.inputTrack(i).mute_);
-				break;
-			}
-			case IN_58: {
-				for(unsigned i=0;i<4;i++) buttons_[B_A_1+i].active(processor_.inputTrack(4+i).solo_);
-				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.inputTrack(4+i).mute_);
-				break;
-			}
-			case OUT_14: {
-				for(unsigned i =0;i<4;i++) buttons_[B_A_1+i].active(processor_.outputTrack(i*2).solo_);
-				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.outputTrack(i*2).mute_);
-				break;
-			}
-			default:
-				;
+		switch (curTracks_) {
+		case IN_14: {
+			for (unsigned i = 0; i < 4; i++) buttons_[B_A_1 + i].active(processor_.inputTrack(i).solo_);
+			for (unsigned i = 0; i < 4; i++) buttons_[B_B_1 + i].active(processor_.inputTrack(i).mute_);
+			break;
+		}
+		case IN_58: {
+			for (unsigned i = 0; i < 4; i++) buttons_[B_A_1 + i].active(processor_.inputTrack(4 + i).solo_);
+			for (unsigned i = 0; i < 4; i++) buttons_[B_B_1 + i].active(processor_.inputTrack(4 + i).mute_);
+			break;
+		}
+		case OUT_14: {
+			for (unsigned i = 0; i < 4; i++) buttons_[B_A_1 + i].active(processor_.outputTrack(i * 2).solo_);
+			for (unsigned i = 0; i < 4; i++) buttons_[B_B_1 + i].active(processor_.outputTrack(i * 2).mute_);
+			break;
+		}
+		default:
+			;
 		}
 	}
 	break;
 	case SSPChannel::BM_CUEAC: {
-		switch(curTracks_) {
-			case IN_14: {
-				for(unsigned i=0;i<4;i++) buttons_[B_A_1+i].active(processor_.inputTrack(i).cue_);
-				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.inputTrack(i).ac_);
-				break;
-			}
-			case IN_58: {
-				for(unsigned i=0;i<4;i++) buttons_[B_A_1+i].active(processor_.inputTrack(4+i).cue_);
-				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.inputTrack(4+i).ac_);
-				break;
-			}
-			case OUT_14: {
-				for(unsigned i =0;i<4;i++) buttons_[B_A_1+i].active(processor_.outputTrack(i*2).cue_);
-				for(unsigned i=0;i<4;i++) buttons_[B_B_1+i].active(processor_.outputTrack(i*2).ac_);
-				break;
-			}
-			default:
-				;
+		switch (curTracks_) {
+		case IN_14: {
+			for (unsigned i = 0; i < 4; i++) buttons_[B_A_1 + i].active(processor_.inputTrack(i).cue_);
+			for (unsigned i = 0; i < 4; i++) buttons_[B_B_1 + i].active(processor_.inputTrack(i).ac_);
+			break;
+		}
+		case IN_58: {
+			for (unsigned i = 0; i < 4; i++) buttons_[B_A_1 + i].active(processor_.inputTrack(4 + i).cue_);
+			for (unsigned i = 0; i < 4; i++) buttons_[B_B_1 + i].active(processor_.inputTrack(4 + i).ac_);
+			break;
+		}
+		case OUT_14: {
+			for (unsigned i = 0; i < 4; i++) buttons_[B_A_1 + i].active(processor_.outputTrack(i * 2).cue_);
+			for (unsigned i = 0; i < 4; i++) buttons_[B_B_1 + i].active(processor_.outputTrack(i * 2).ac_);
+			break;
+		}
+		default:
+			;
 		}
 	}
 	break;
 
 	default:
-	break;
+		break;
 	}
 
 }
@@ -573,7 +580,7 @@ void PmixEditor::resized()
 		inTracks_[i].setBounds(x, y, inw, h);
 	}
 
-	for (unsigned i = 0; i < (Pmix::O_MAX/ 2); i++) {
+	for (unsigned i = 0; i < (Pmix::O_MAX / 2); i++) {
 		unsigned x = outStart + (i * (space + outw));
 		outTracks_[i].setBounds(x, y, outw, h);
 	}

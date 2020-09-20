@@ -19,6 +19,9 @@ public:
     void active(bool);
     bool active() { return active_;}
 
+    void enabled(bool);
+    bool enabled() { return enabled_;}
+
     void button(unsigned i, bool b);
     void encbutton(bool b);
     void encoder(float e);
@@ -56,6 +59,7 @@ private:
     TrackData* data_ = nullptr;
     bool active_ = false;
     SSPParam* param_ = nullptr;
+    bool enabled_ = false;
 
     juce_UseDebuggingNewOperator
 };

@@ -12,7 +12,11 @@ void SSPStereoChannel::paint (Graphics& g)  {
     int w = getWidth();
 
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
-    g.setColour(Colours::lightgrey);
+    if (enabled()) {
+        g.setColour(Colours::red);
+    } else {
+        g.setColour(Colours::lightgrey);
+    }
     g.drawText(label_, 0 , 0 , w, fh, Justification::centred);
 
     int tbh = h - (fh * 10);
