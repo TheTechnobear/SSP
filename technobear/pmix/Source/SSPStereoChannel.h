@@ -11,9 +11,9 @@ class SSPStereoChannel: public Component
 public:
     SSPStereoChannel();
     void init(SSPParam* param, const String& label, TrackData* lData, TrackData* rData)  {
-        label_=label;
-        lData_=lData;
-        rData_=rData;
+        label_ = label;
+        lData_ = lData;
+        rData_ = rData;
         lChannel_.init(param, label, lData);
         rChannel_.init(param, "", rData_);
     }
@@ -21,6 +21,9 @@ public:
     // note left is considered 'lead' channel, for mono purposes
     void active(bool b ) { lChannel_.active(b); rChannel_.active(b);}
     bool active() { return lChannel_.active();}
+
+    void enabled(bool b ) { lChannel_.enabled(b); rChannel_.enabled(b);}
+    bool enabled() { return lChannel_.enabled();}
 
     void button(unsigned i, bool b) { lChannel_.button(i, b); rChannel_.button(i, b);}
     void encbutton(bool b) { lChannel_.encbutton(b); rChannel_.encbutton(b);}

@@ -66,5 +66,5 @@ Using at other sample rates will lead to incorrect pitch, and possible other odd
 Percussa SSP - https://www.percussa.com/ 
 
 Mutable Instruments : https://mutable-instruments.net/
-Thanks to Emile for sharing her code with the community.
+Thanks to Emilie for sharing her code with the community.
 please note: this VST in no way endorsed or supported by Mutable Instruments.

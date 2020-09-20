@@ -25,7 +25,7 @@ struct TrackData {
     void init() {
         level_[MASTER] = 1.0f;
         level_[CUE] = 1.0f;
-        for (unsigned i = CUE+1; i < OUT_TRACKS; i++) level_[i] = 0.0f;
+        for (unsigned i = CUE + 1; i < OUT_TRACKS; i++) level_[i] = 0.0f;
         pan_ = 0.0f;
         gain_ = 1.0f;
         mute_ = false;
@@ -115,6 +115,8 @@ public:
     TrackData& inputTrack(unsigned t)   {  return t < IN_T_MAX ? inTracks_[t] : inTracks_[IN_T_MAX - 1];}
     TrackData& outputTrack(unsigned t)  {  return t < OUT_T_MAX ? outTracks_[t] : outTracks_[OUT_T_MAX - 1];}
 
+    bool isInputEnabled(unsigned idx) { return idx < IN_T_MAX ?  params_[Percussa::sspInEn1 + I_IN_1 + idx] > 0.5f : false ;}
+    bool isOutputEnabled(unsigned idx) { return idx < OUT_T_MAX ? params_[Percussa::sspOutEn1 + O_MAIN_L + idx] > 0.5f : false ;}
 
 
     enum {
