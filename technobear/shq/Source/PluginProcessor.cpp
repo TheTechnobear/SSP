@@ -8,11 +8,13 @@ static const char *xmlTag = JucePlugin_Name;
 
 PluginProcessor::PluginProcessor()
 {
+    root_ = 0.0f;
+    scale_ = 0.0f;
+    quant_ = false;
+
     memset(params_, 0, sizeof(params_));
     memset(lastTrig_, 0, sizeof(lastTrig_));
     memset(lastSig_, 0, sizeof(lastSig_));
-    root_ = 0.0f;
-    scale_ = 0.0f;
     randomGen_.setSeedRandomly();
 }
 
@@ -94,7 +96,7 @@ const String PluginProcessor::getInputChannelName (int channelIndex) const
     case I_SIG_4:        { return String("In 4");}
     case I_TRIG_4:       { return String("Trig 4");}
     case I_SCALE:        { return String("Scale");}
-    case I_ROOT:       { return String("Root");}
+    case I_ROOT:         { return String("Root");}
     }
     return String("unused:") + String (channelIndex + 1);
 }
@@ -102,16 +104,18 @@ const String PluginProcessor::getInputChannelName (int channelIndex) const
 const String PluginProcessor::getOutputChannelName (int channelIndex) const
 {
 
-case O_SIG_1:        { return String("Out 1");}
-case O_TRIG_1:       { return String("Trig 1");}
-case O_SIG_2:        { return String("Out 2");}
-case O_TRIG_2:       { return String("Trig 2");}
-case O_SIG_3:        { return String("Out 3");}
-case O_TRIG_3:       { return String("Trig 3");}
-case O_SIG_4:        { return String("Out 4");}
-case O_TRIG_4:       { return String("Trig 4");}
-case O_SCALE:        { return String("Scale");}
-case O_ROOT:       { return String("Root");}
+    switch (channelIndex) {
+    case O_SIG_1:        { return String("Out 1");}
+    case O_TRIG_1:       { return String("Trig 1");}
+    case O_SIG_2:        { return String("Out 2");}
+    case O_TRIG_2:       { return String("Trig 2");}
+    case O_SIG_3:        { return String("Out 3");}
+    case O_TRIG_3:       { return String("Trig 3");}
+    case O_SIG_4:        { return String("Out 4");}
+    case O_TRIG_4:       { return String("Trig 4");}
+    case O_SCALE:        { return String("Scale");}
+    case O_ROOT:         { return String("Root");}
+    }
     return String("unused:") + String (channelIndex + 1);
 }
 
@@ -193,6 +197,20 @@ void PluginProcessor::releaseResources()
 }
 
 float PluginProcessor::processCV(float v, float scale, float root) {
+    if(quant_) {
+        constexpr float halfSemi= 0.5/12.0f;
+        constexpr bool roundUp=true;
+        float voct=cv2Pitch(v) + (roundUp ? halfSemi : 0.0f);
+        int oct = int(voct);
+        float notef =  voct - float(oct);
+        float semif = notef * 12.0f;
+        unsigned semi = unsigned(semif);
+        quantizer_.quantize(root_,scale_,oct,semi);
+
+        float pv=float(oct)+(float(semi)/12.0f);
+        float qv=pitch2Cv(pv);
+        return qv;        
+    }
     return v;
 }
 
@@ -218,6 +236,7 @@ void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiM
         // for each sample
         bool trigAbove = false;
         bool trig[MAX_SIG];
+        unsigned sigo = idx * 2;
 
 
         for (unsigned i = 0; i < MAX_SIG; i++) {
@@ -225,8 +244,8 @@ void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiM
             if (inTrigE[i]) {
                 // trig in enabled
 
-                trig[i] = buffer.getSample(I_TRIG_1 + sigo , idx) > 0.5;
-                if (trig != lastTrig_[i] && trig) {
+                trig[i] = buffer.getSample(I_TRIG_1 + sigo , idx) > 0.5f;
+                if (trig[i] != lastTrig_[i] && trig[i]) {
                     trigged = true;
                     trigAbove = true;
                 } else {
@@ -240,75 +259,79 @@ void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiM
                 if (trigAbove) {
                     trigged = true;
                 }
-            }
+            } // if trig enabled
 
             if (trigged) {
                 // triggered...
-                if (inCvE) {
+                float v = 0.0f;
+                if (inCvE[i]) {
                     v = buffer.getSample(I_SIG_1 + sigo, idx);
                 } else {
                     // no cv input... use random
-                    v = (randomGen_.nextFloat() * 2.0f) - 1.0f
+                    v = (randomGen_.nextFloat() * 2.0f) - 1.0f;
                 }
 
-                float scale = scale_ + buffer.getSample(I_SCALE,i);
-                float root = scale_ + buffer.getSample(I_ROOT,i);
-                v = processCV(v,scale,root);
+                float scale = scale_ + buffer.getSample(I_SCALE, i);
+                float root = scale_ + buffer.getSample(I_ROOT, i);
+                v = processCV(v, scale, root);
                 lastSig_[i] = v;
-            }
+            } //if triggered
 
-            //
-            lastTrig_[i] = trig;
-            buffer.setSample(O_TRIG_1 + sigo, trig[i]);
-            buffer.setSample(O_SIG_1 + sigo, lastSig_[i]);
-        }
+            lastTrig_[i] = trig[i];
+            buffer.setSample(O_TRIG_1 + sigo, i, trig[i]);
+            buffer.setSample(O_SIG_1 + sigo, i, lastSig_[i]);
+        } // for sig pair
+    } // for each samplle
+}
+
+
+bool PluginProcessor::hasEditor() const
+{
+    return true;
+}
+
+AudioProcessorEditor* PluginProcessor::createEditor()
+{
+    return new PluginEditor (*this);
+}
+
+
+void PluginProcessor::writeToXml(XmlElement & xml) {
+    xml.setAttribute("root",  int(root_));
+    xml.setAttribute("scale", int(scale_));
+    xml.setAttribute("quant", bool(quant_));
+}
+
+void PluginProcessor::readFromXml(XmlElement & xml) {
+    root_ = xml.getIntAttribute("root"  , 0.0f);
+    scale_ = xml.getIntAttribute("scale" , 0.0f);
+    quant_ = xml.getBoolAttribute("quant" , false);
+}
+
+
+void PluginProcessor::getStateInformation (MemoryBlock & destData)
+{
+    XmlElement xml(xmlTag);
+    writeToXml(xml);
+    copyXmlToBinary(xml, destData);
+}
+
+void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
+{
+    XmlElement *pXML = getXmlFromBinary(data, sizeInBytes);
+    if (pXML) {
+        // auto root=pXML->getChildByName(xmlTag);
+        // if(root) readFromXml(*root);
+        readFromXml(*pXML);
+        delete pXML;
     }
-
-    bool PluginProcessor::hasEditor() const
-    {
-        return true;
-    }
-
-    AudioProcessorEditor* PluginProcessor::createEditor()
-    {
-        return new PluginEditor (*this);
-    }
-
-
-    void PluginProcessor::writeToXml(XmlElement & xml) {
-        xml.setAttribute("root",  int(root_));
-        xml.setAttribute("scale", int(scale_));
-    }
-
-    void PluginProcessor::readFromXml(XmlElement & xml) {
-        root_ = xml.getIntAttribute("root"  , 0.0f);
-        scale_ = xml.getIntAttribute("scale" , 0.0f);
-    }
-
-
-    void PluginProcessor::getStateInformation (MemoryBlock & destData)
-    {
-        XmlElement xml(xmlTag);
-        writeToXml(xml);
-        copyXmlToBinary(xml, destData);
-    }
-
-    void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
-    {
-        XmlElement *pXML = getXmlFromBinary(data, sizeInBytes);
-        if (pXML) {
-            // auto root=pXML->getChildByName(xmlTag);
-            // if(root) readFromXml(*root);
-            readFromXml(*pXML);
-            delete pXML;
-        }
-    }
+}
 
 // This creates new instances of the plugin..
-    AudioProcessor* JUCE_CALLTYPE createPluginFilter()
-    {
-        return new PluginProcessor();
-    }
+AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+{
+    return new PluginProcessor();
+}
 
 
 

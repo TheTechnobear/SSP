@@ -46,7 +46,7 @@ private:
 	};
 
 	enum Buttons {
-		// B_FREEZE,
+		B_QUANT,
 
 		B_UP,
 		B_DOWN,

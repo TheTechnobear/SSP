@@ -54,6 +54,7 @@ OBJECTS := \
   $(OBJDIR)/SSP_dd798310.o \
   $(OBJDIR)/SSPButton_f6a7ad22.o \
   $(OBJDIR)/SSPParam_83ec7d27.o \
+  $(OBJDIR)/Quantizer_6b0e3e42.o \
   $(OBJDIR)/PluginProcessor_a059e380.o \
   $(OBJDIR)/PluginEditor_94d4fb09.o \
   $(OBJDIR)/juce_audio_basics_2442e4ea.o \
@@ -100,6 +101,11 @@ $(OBJDIR)/SSPButton_f6a7ad22.o: ../../../common/SSPButton.cpp
 $(OBJDIR)/SSPParam_83ec7d27.o: ../../../common/SSPParam.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling SSPParam.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/Quantizer_6b0e3e42.o: ../../Source/Quantizer.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling Quantizer.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/PluginProcessor_a059e380.o: ../../Source/PluginProcessor.cpp

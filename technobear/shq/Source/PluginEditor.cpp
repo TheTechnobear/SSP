@@ -28,14 +28,13 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 	addAndMakeVisible(plugInBtn_);
 	addAndMakeVisible(recBtn_);
 
-	// buttons_[B_FREEZE].init("Frze");
+	buttons_[B_QUANT].init("Quant");
 	buttons_[B_UP].init("+EN", Colours::red);
 	buttons_[B_DOWN].init("-EN", Colours::red);
 	buttons_[B_LEFT].init("-PG", Colours::red);
 	buttons_[B_RIGHT].init("+PG", Colours::red);
 
-
-	// buttons_[B_FREEZE].active(processor_.data().f_freeze > 0.5);
+	buttons_[B_QUANT].active(processor_.quant() > 0.5);
 
 
 	for (int i = 0; i < B_MAX; i++) {
@@ -46,10 +45,11 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 	params_[P_SCALE].init("Scale");
 	params_[P_ROOT].init("Root");
 
-	// params_[P_POS].value(processor_.data().f_position);
-	// params_[P_SIZE].value(processor_.data().f_size);
-	params_[P_SCALE].active(paramActive_ 		== 0);
-	params_[P_ROOT].active(paramActive_ 	== 0);
+	params_[P_SCALE].value(processor_.scale());
+	params_[P_ROOT].value(processor_.root());;
+
+	params_[P_SCALE].active(paramActive_ == 0);
+	params_[P_ROOT].active(paramActive_  == 0);
 
 	paramActive_ = 0;
 	addAndMakeVisible(params_[P_SCALE]);
@@ -98,10 +98,10 @@ void PluginEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEnc1:
 		switch (paramActive_) {
 		case 0 :  {
-			float v = processor_.data().scale_ + value / 100.0f;
+			float v = processor_.scale() + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
-			processor_.scale_ = v;
-			params_[P_POS].value(processor_.data().scale_);
+			processor_.scale(v);
+			params_[P_SCALE].value(processor_.scale());
 
 			if (value) activeParam_ = &params_[P_SCALE];
 			break;
@@ -121,19 +121,19 @@ void PluginEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEnc2:
 		switch (paramActive_) {
 		case 0 :  {
-			float v = processor_.root_ + value / 100.0f;
+			float v = processor_.root() + value / 100.0f;
 			v = constrain(v, 0.0f, 1.0f);
-			processor_.root_ = v;
-			params_[P_ROOT].value(processor_.root_);
+			processor_.root(v);
+			params_[P_ROOT].value(processor_.root());
 
 			if (value) activeParam_ = &params_[P_ROOT];
 			break;
+		}
 		case 1 :  {
 			break;
 		}
 		case 2 : {
 			break;
-		}
 		}
 		} //switch paramActive_
 		if (value) {
@@ -182,8 +182,8 @@ void PluginEditor::parameterChanged (int index, float value) {
 		if (value < 0.5f) {
 			switch (paramActive_) {
 			case 0 :  {
-				processor_.scale_ = 0.0f;
-				params_[P_SCALE].value(processor_.scale_);
+				processor_.scale(0.0f);
+				params_[P_SCALE].value(processor_.scale());
 				break;
 			}
 			case 1 :  {
@@ -193,14 +193,14 @@ void PluginEditor::parameterChanged (int index, float value) {
 				break;
 			}
 			} //switch paramActive_
-		// }
+		}
 		break;
 	case Percussa::sspEncSw2:
 		if (value < 0.5f) {
 			switch (paramActive_) {
 			case 0 :  {
-				processor_.root_ = 0.0f;
-				params_[P_ROOT].value(processor_.root_);
+				processor_.root(0.0f);
+				params_[P_ROOT].value(processor_.root());
 				break;
 			}
 			case 1 :  {
@@ -210,6 +210,7 @@ void PluginEditor::parameterChanged (int index, float value) {
 				break;
 			}
 			} //switch paramActive_
+		}
 		break;
 	case Percussa::sspEncSw3:
 		break;
@@ -217,11 +218,10 @@ void PluginEditor::parameterChanged (int index, float value) {
 		break;
 	// buttons
 	case Percussa::sspSw1:
-		// if (paramState_[index] != value && value < 0.5f) {
-		// 	processor_.data().f_freeze =
-		// 	    ! processor_.data().f_freeze;
-		// 	buttons_[B_FREEZE].active(processor_.data().f_freeze > 0.5f);
-		// }
+		if (paramState_[index] != value && value < 0.5f) {
+			processor_.quant(! processor_.quant());
+			buttons_[B_QUANT].active(processor_.quant() > 0.5f);
+		}
 		break;
 	case Percussa::sspSw2:
 		break;
@@ -277,17 +277,10 @@ void PluginEditor::parameterChanged (int index, float value) {
 	}
 
 	if (paramActive != paramActive_) {
-
-		params_[P_SCALE].setVisible(paramActive_ 	< 2);
-		params_[P_ROOT].setVisible(paramActive_ 	< 2);
-		// params_[P_PITCH].setVisible(paramActive_ 	== 2);
-		// params_[P_MODE].setVisible(paramActive_ 	== 2);
-		// params_[P_IN_GAIN].setVisible(paramActive_ 	== 2);
-
-
-		params_[P_SCALE].active(paramActive_ 		== 0);
-		params_[P_ROOT].active(paramActive_ 		== 1);
-		// params_[P_PITCH].active(paramActive_ 	== 2);
+		params_[P_SCALE].setVisible(paramActive_ == 0);
+		params_[P_ROOT].setVisible(paramActive_ == 0);
+		params_[P_SCALE].active(paramActive_ == 0);
+		params_[P_ROOT].active(paramActive_  == 1);
 	}
 
 	paramState_[index] = value;
@@ -426,7 +419,7 @@ void PluginEditor::resized()
 	setMenuBounds(plugInBtn_, 2);
 	setMenuBounds(recBtn_, 3);
 
-	// setButtonBounds(buttons_[B_FREEZE], 0, 0);
+	setButtonBounds(buttons_[B_QUANT], 0, 0);
 	// setButtonBounds(buttons_[B_UP], 	0, 5);
 
 	// setButtonBounds(buttons_[B_LEFT], 	1, 4);
@@ -435,8 +428,4 @@ void PluginEditor::resized()
 
 	setParamBounds(params_[P_SCALE], 		0, 0);
 	setParamBounds(params_[P_ROOT], 	1, 0);
-
-	// setParamBounds(params_[P_MIX], 		0, 1);
-
-	// setParamBounds(params_[P_PITCH], 	0, 2);
 }

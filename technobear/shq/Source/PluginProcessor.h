@@ -6,15 +6,12 @@
 
 #include <atomic>
 
-class Scales {
-public:
-    Scales() {;}
-    ~Scales() {;}
-    // unsigned floatToInt(float f) { return unsigned(f * MAX_SCALE);}
-    // const String& getName(unsigned s) {}
-    // static constexpr unsigned MAX_SCALE=1;
-};
+#include "Quantizer.h"
 
+
+inline float constrain(float v, float vMin, float vMax) {
+    return std::max<float>(vMin, std::min<float>(vMax, v));
+}
 
 class PluginProcessor  : public AudioProcessor
 {
@@ -58,11 +55,48 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    unsigned getScale() { return scale_;}
-    unsigned getRoot() { return root_;}
+    unsigned scale() { return scale_;}
+    void scale(unsigned v) { scale_ = v;}
+
+    unsigned root() { return root_;}
+    void root(unsigned v) {root_ = v;}
+
+    bool quant() { return quant_;}
+    void quant(bool v) {quant_ = v;}
+
     float lastSig(unsigned i) { return lastSig_[i];}
 
+    Quantizer& quantizer() { return quantizer_;}
+
 private:
+
+    float cv2Pitch(float r) {
+        // SSP SDK
+        static constexpr float p1 = 0.02325f; // first C note
+        static constexpr float p2 = 0.21187f; // second C note
+        static constexpr float scale = 12.0f / (p2 - p1);
+        float arg = r;
+        arg = arg - p1;
+        arg = arg * scale;
+        return arg;
+    }
+
+    float pitch2Cv(float r) {
+        static constexpr float p1 = 0.02325f; // first C note
+        static constexpr float p2 = 0.21187f; // second C note
+        static constexpr float iscale = (p2 - p1) / 12.0f;
+
+
+        // cv2vo = (r - c1) * (12 / (c2-c1))
+        // vo2cv = r / ( 12 / (c2-c1) ) + c1
+        // alt?
+        // vo2cv = r * ( c2-c1 / 12)  + c1 
+        float arg = r;
+        arg = arg * iscale; 
+        arg = arg + p1;
+        return arg;
+    }
+
     float processCV(float value, float scale, float root);
     void writeToXml(juce::XmlElement& xml);
     void readFromXml(juce::XmlElement& xml);
@@ -98,14 +132,16 @@ private:
     float params_[Percussa::sspLast];
 
 
-    std::atomic<unsigned> scale_;
-    std::atomic<unsigned> root_;
+    std::atomic<unsigned>   scale_;
+    std::atomic<unsigned>   root_;
+    std::atomic<bool>       quant_;
 
     static constexpr unsigned MAX_SIG = 4;
     std::atomic<float> lastSig_[MAX_SIG];
     std::atomic<float> lastTrig_[MAX_SIG];
 
     Random randomGen_;
+    Quantizer quantizer_;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
