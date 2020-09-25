@@ -26,6 +26,8 @@ public:
     void paint (Graphics&) override;
 
 private:
+    String getNoteValue(float f);
+
     std::atomic<float> lastX_;
     std::atomic<float> lastY_;
     std::atomic<float> lastZ_;

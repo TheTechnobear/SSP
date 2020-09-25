@@ -10,8 +10,8 @@ class AgConstant : public Algo {
 public:
     AgConstant() {
         lastA_ = lastB_ = 0.0f;
-        params_.push_back(std::make_shared<AgFloatParam>("A", "Constant 1", 1.0f, 0.0f, 1.0f, 0.1f));
-        params_.push_back(std::make_shared<AgFloatParam>("B", "Constant 2", 0.5f, 0.0f, 1.0f, 0.1f));
+        params_.push_back(std::make_shared<AgFloatParam>("A", "Constant 1", 1.0f, -1.0f, 1.0f, 0.005f));
+        params_.push_back(std::make_shared<AgFloatParam>("B", "Constant 2", 0.5f, -1.0f, 1.0f, 0.01f));
         A_=params_[0]->floatVal();
         B_=params_[1]->floatVal();
     }
