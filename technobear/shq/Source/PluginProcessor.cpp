@@ -197,19 +197,18 @@ void PluginProcessor::releaseResources()
 }
 
 float PluginProcessor::processCV(float v, float scale, float root) {
-    if(quant_) {
-        constexpr float halfSemi= 0.5/12.0f;
-        constexpr bool roundUp=true;
-        float voct=cv2Pitch(v) + (roundUp ? halfSemi : 0.0f);
-        int oct = int(voct);
-        float notef =  voct - float(oct);
-        float semif = notef * 12.0f;
-        unsigned semi = unsigned(semif);
-        quantizer_.quantize(root_,scale_,oct,semi);
+    if (quant_) {
+        constexpr float halfSemi = 0.5;
+        constexpr bool roundUp = true;
+        // cv2pitch, returns fractional semitones 0 = C
+        float semif = cv2Pitch(v) + (roundUp ? halfSemi : 0.0f);
+        int oct = int(semif) % 12;
+        unsigned semi = unsigned(semif - (oct * 12));
+        quantizer_.quantize(root_, scale_, oct, semi);
 
-        float pv=float(oct)+(float(semi)/12.0f);
-        float qv=pitch2Cv(pv);
-        return qv;        
+        float pv = float(oct * 12.0f) + float(semi);
+        float qv = pitch2Cv(pv);
+        return qv;
     }
     return v;
 }
