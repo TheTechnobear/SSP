@@ -213,7 +213,7 @@
  #define JucePlugin_ManufacturerCode       'TB'
 #endif
 #ifndef  JucePlugin_PluginCode
- #define JucePlugin_PluginCode             'SHQ'
+ #define JucePlugin_PluginCode             'SWAT'
 #endif
 #ifndef  JucePlugin_MaxNumInputChannels
  #define JucePlugin_MaxNumInputChannels    3

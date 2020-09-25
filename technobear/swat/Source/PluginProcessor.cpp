@@ -11,6 +11,9 @@ static const char *xmlTag = JucePlugin_Name;
 void PluginProcessor::initAlgos() {
 
     algos_[A_P_ADDER] = std::make_shared<AgPrecAdder>();
+    algos_[A_CONSTANT] = std::make_shared<AgConstant>();
+    algos_[A_DISPLAY] = std::make_shared<AgDisplay>();
+
     algoN_ = A_P_ADDER;
     algo_ = algos_[algoN_];
 }
@@ -21,6 +24,14 @@ PluginProcessor::PluginProcessor()
 {
     memset(params_, 0, sizeof(params_));
     initAlgos();
+#ifdef __APPLE__
+    {
+        // gets tedious enabling these during testing ;)
+        for (unsigned i = Percussa::sspInEn1; i <= Percussa::sspInEn24; i++) params_[i] = 1.0f;
+        for (unsigned i = Percussa::sspOutEn1; i <= Percussa::sspOutEn24; i++) params_[i] = 1.0f;
+    }
+
+#endif
 }
 
 PluginProcessor::~PluginProcessor()
@@ -193,8 +204,8 @@ void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiM
         bool inEnabledY = params_[Percussa::sspInEn1 + I_Y_1 ] > 0.5f;
         bool inEnabledZ = params_[Percussa::sspInEn1 + I_Z_1 ] > 0.5f;
 
-        float* outA = outEnabledA ? buffer.getWritePointer(0) : nullptr;
-        float* outB = outEnabledB ? buffer.getWritePointer(1) : nullptr;
+        float* outA = outEnabledA ? outBufs_.getWritePointer(0) : nullptr;
+        float* outB = outEnabledB ? outBufs_.getWritePointer(1) : nullptr;
 
         const float* inX = inEnabledX ? buffer.getReadPointer(I_X_1) : nullptr;
         const float* inY = inEnabledY ? buffer.getReadPointer(I_Y_1) : nullptr;
@@ -207,11 +218,11 @@ void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiM
     if (outEnabledA) {
         buffer.copyFrom(O_A_1, 0, outBufs_, 0, 0, n);
     } else {
-        buffer.applyGain(O_B_1, 0, n, 0.0f);
+        buffer.applyGain(O_A_1, 0, n, 0.0f);
     }
 
     if (outEnabledB) {
-        buffer.copyFrom(O_A_1, 0, outBufs_, 1, 0, n);
+        buffer.copyFrom(O_B_1, 0, outBufs_, 1, 0, n);
     } else {
         buffer.applyGain(O_B_1, 0, n, 0.0f);
     }
@@ -229,15 +240,23 @@ AudioProcessorEditor* PluginProcessor::createEditor()
 
 
 void PluginProcessor::writeToXml(XmlElement& xml) {
-    // xml.setAttribute("x1", double(x_));
-    // xml.setAttribute("y1", double(y_));
-    // xml.setAttribute("z1", double(z_));
+    auto axml = xml.createNewChildElement("algo1");
+    axml->setAttribute("algo", int(algoN_));
+    algo_->writeToXml(*axml);
 }
 
 void PluginProcessor::readFromXml(XmlElement& xml) {
-    // x_      = xml.getDoubleAttribute("x1"  , 0.0f);
-    // y_      = xml.getDoubleAttribute("y1"  , 0.0f);
-    // z_      = xml.getDoubleAttribute("z1"  , 0.0f);
+
+    auto axml = xml.getChildByName("algo1");
+    if (axml) {
+        algoN_ = axml->getIntAttribute("algo"  , 0) % A_MAX;
+        algo_  = algos_[algoN_];
+        algo_->readFromXml(*axml);
+    } else {
+        // Logger::writeToLog("algo1 not found");
+        algoN_ = 0;
+        algo_  = algos_[algoN_];
+    }
 }
 
 

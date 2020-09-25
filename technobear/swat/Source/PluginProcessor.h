@@ -54,6 +54,11 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     std::shared_ptr<Algo> algo() { return algo_;}
+    void nextAlgo() {
+        algoN_ = (algoN_ + 1)  % A_MAX ;
+        algo_ = algos_[algoN_];
+        // Logger::writeToLog("algo# " + String(algoN_));
+    }
 
 private:
 

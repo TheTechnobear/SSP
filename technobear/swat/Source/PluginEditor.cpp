@@ -158,12 +158,13 @@ void PluginEditor::parameterChanged (int index, float value) {
 		// }
 		break;
 	case Percussa::sspSwDown:
-		// buttons_[B_DOWN].active(value > 0.5f);
-		// if (paramState_[index] != value && value < 0.5f) {
-		// 	if (paramActive_ != 2) {
-		// 		paramActive_ = (paramActive_ + 1 ) % 2;
-		// 	}
-		// }
+		buttons_[B_DOWN].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
+			processor_.nextAlgo();
+			// if (paramActive_ != 2) {
+			// 	paramActive_ = (paramActive_ + 1 ) % 2;
+			// }
+		}
 		break;
 	case Percussa::sspSwShiftL:
 		break;
@@ -301,7 +302,7 @@ void PluginEditor::resized()
 	// setButtonBounds(buttons_[B_UP], 	0, 5);
 
 	// setButtonBounds(buttons_[B_LEFT], 	1, 4);
-	// setButtonBounds(buttons_[B_DOWN], 	1, 5);
+	setButtonBounds(buttons_[B_DOWN], 	1, 5);
 	// setButtonBounds(buttons_[B_RIGHT], 	1, 6);
 
 	// setParamBounds(params_[P_X],	0, 0);

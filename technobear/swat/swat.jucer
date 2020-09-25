@@ -4,7 +4,7 @@
               bundleIdentifier="com.technobear.swat" includeBinaryInAppConfig="1"
               buildVST="1" buildVST3="0" buildAU="0" buildRTAS="0" buildAAX="0"
               pluginName="swat" pluginDesc="swat" pluginManufacturer="technobear"
-              pluginManufacturerCode="TB" pluginCode="SHQ" pluginChannelConfigs="{3, 2}"
+              pluginManufacturerCode="TB" pluginCode="SWAT" pluginChannelConfigs="{3, 2}"
               pluginIsSynth="0" pluginWantsMidiIn="0" pluginProducesMidiOut="0"
               pluginSilenceInIsSilenceOut="0" pluginEditorRequiresKeys="0"
               pluginAUExportPrefix="swatAU" pluginRTASCategory="" aaxIdentifier="com.technobear.swat"
@@ -12,6 +12,8 @@
               companyName="Technobear" companyWebsite="www.technobear.com">
   <MAINGROUP id="LI9Efo" name="swat">
     <GROUP id="{0AFA0A1B-1C8B-C1D2-5BB2-D3EC2D5A0D73}" name="algos">
+      <FILE id="HAX1Pr" name="AgDisplay.cpp" compile="1" resource="0" file="Source/algos/AgDisplay.cpp"/>
+      <FILE id="kcmzPp" name="AgDisplay.h" compile="0" resource="0" file="Source/algos/AgDisplay.h"/>
       <FILE id="HJI9A1" name="AgSimple.cpp" compile="1" resource="0" file="Source/algos/AgSimple.cpp"/>
       <FILE id="gTYT64" name="AgSimple.h" compile="0" resource="0" file="Source/algos/AgSimple.h"/>
       <FILE id="a14HFI" name="Algos.h" compile="0" resource="0" file="Source/algos/Algos.h"/>

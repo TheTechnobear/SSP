@@ -8,16 +8,26 @@ void Algo::paint (Graphics& g) {
     drawHelp(g);
 }
 
-void Algo::encoder(unsigned, int) {
-
+void Algo::encoder(unsigned enc, int dir) {
+    if (enc < params_.size()) {
+        if (dir > 0.0f) {
+            params_[enc]->inc();
+        } else if (dir < 0.0f) {
+            params_[enc]->dec();
+        }
+    }
 }
 
-void Algo::button(unsigned, bool) {
+void Algo::button(unsigned btn, bool state) {
 
 }
 
 void Algo::encswitch(unsigned enc, bool state) {
-    
+    if (enc < params_.size()) {
+        if (state < 0.5f) {
+            params_[enc]->reset();
+        }
+    }
 }
 
 
@@ -34,26 +44,41 @@ void Algo::drawHelp(Graphics& g) {
     g.setFont(Font(Font::getDefaultMonospacedFontName(), 18, Font::plain));
     g.setColour(Colours::white);
 
-    std::string delimiter = "\n";
     std::string::size_type pos = 0;
     std::string::size_type prev = 0;
-    std::string str=description();
-    while ((pos = str.find(delimiter, prev)) != std::string::npos)
+    std::string str = description();
+    while ((pos = str.find("\n", prev)) != std::string::npos)
     {
         g.drawSingleLineText(str.substr(prev, pos - prev), x, y);
         y += space;
         prev = pos + 1;
     }
-
-    // To get the last substring (or only, if delimiter is not found)
     g.drawSingleLineText(str.substr(prev), x, y);
     y += space;
 
-    // x = x + 300;
-    // y = yText;
-    // g.drawSingleLineText("column 2", x, y);        y += space;
+    x = x + 300;
+    y = yText;
+    for (auto p : params_) {
+        g.drawSingleLineText(p->name() + " : " + p->desc(), x, y); y += space;
+    }
 }
 
+
+void Algo::writeToXml(juce::XmlElement& xml) {
+    for (auto p : params_) {
+        xml.setAttribute(p->name().c_str(), double(p->floatVal()));
+    }
+}
+
+void Algo::readFromXml(juce::XmlElement& xml) {
+    for (auto p : params_) {
+        if (xml.hasAttribute(p->name().c_str())) {
+            p->floatVal(xml.getDoubleAttribute(p->name().c_str(), 0.0f));
+        } else {
+            p->reset();
+        }
+    }
+}
 
 //AgFloatParam
 void AgFloatParam::inc() {

@@ -51,6 +51,7 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/AgDisplay_9c3990ce.o \
   $(OBJDIR)/AgSimple_cd618e30.o \
   $(OBJDIR)/SSP_dd798310.o \
   $(OBJDIR)/SSPButton_f6a7ad22.o \
@@ -88,6 +89,11 @@ clean:
 strip:
 	@echo Stripping swat
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
+
+$(OBJDIR)/AgDisplay_9c3990ce.o: ../../Source/algos/AgDisplay.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling AgDisplay.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/AgSimple_cd618e30.o: ../../Source/algos/AgSimple.cpp
 	-@mkdir -p $(OBJDIR)
