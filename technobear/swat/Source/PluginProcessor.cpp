@@ -6,17 +6,25 @@
 
 static const char *xmlTag = JucePlugin_Name;
 
+#include "algos/Algos.h"
+
+void PluginProcessor::initAlgos() {
+
+    algos_[A_P_ADDER] = std::make_shared<AgPrecAdder>();
+    algoN_ = A_P_ADDER;
+    algo_ = algos_[algoN_];
+}
+
+
+
 PluginProcessor::PluginProcessor()
 {
     memset(params_, 0, sizeof(params_));
-
-    algoN_ = A_TEST;
-    algo_ = new Algo_Test();
+    initAlgos();
 }
 
 PluginProcessor::~PluginProcessor()
 {
-    delete algo_;
 }
 
 const String PluginProcessor::getName() const

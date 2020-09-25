@@ -51,10 +51,11 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
-  $(OBJDIR)/Algo_f4e69d5c.o \
+  $(OBJDIR)/AgSimple_cd618e30.o \
   $(OBJDIR)/SSP_dd798310.o \
   $(OBJDIR)/SSPButton_f6a7ad22.o \
   $(OBJDIR)/SSPParam_83ec7d27.o \
+  $(OBJDIR)/Algo_f4e69d5c.o \
   $(OBJDIR)/PluginProcessor_a059e380.o \
   $(OBJDIR)/PluginEditor_94d4fb09.o \
   $(OBJDIR)/juce_audio_basics_2442e4ea.o \
@@ -88,9 +89,9 @@ strip:
 	@echo Stripping swat
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
 
-$(OBJDIR)/Algo_f4e69d5c.o: ../../Source/Algo.cpp
+$(OBJDIR)/AgSimple_cd618e30.o: ../../Source/algos/AgSimple.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Algo.cpp"
+	@echo "Compiling AgSimple.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/SSP_dd798310.o: ../../../common/SSP.cpp
@@ -106,6 +107,11 @@ $(OBJDIR)/SSPButton_f6a7ad22.o: ../../../common/SSPButton.cpp
 $(OBJDIR)/SSPParam_83ec7d27.o: ../../../common/SSPParam.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling SSPParam.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/Algo_f4e69d5c.o: ../../Source/Algo.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling Algo.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/PluginProcessor_a059e380.o: ../../Source/PluginProcessor.cpp

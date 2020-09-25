@@ -40,9 +40,9 @@ private:
 	PluginProcessor& processor_;
 
 	enum Params {
-		P_X,
-		P_Y,
-		P_Z,
+		// P_X,
+		// P_Y,
+		// P_Z,
 		P_MAX
 	};
 

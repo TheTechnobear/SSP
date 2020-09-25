@@ -11,9 +11,10 @@
               pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="3.1.1"
               companyName="Technobear" companyWebsite="www.technobear.com">
   <MAINGROUP id="LI9Efo" name="swat">
-    <GROUP id="{0AFA0A1B-1C8B-C1D2-5BB2-D3EC2D5A0D73}" name="algo">
-      <FILE id="ICydlx" name="Algo.cpp" compile="1" resource="0" file="Source/Algo.cpp"/>
-      <FILE id="Iuz6rh" name="Algo.h" compile="0" resource="0" file="Source/Algo.h"/>
+    <GROUP id="{0AFA0A1B-1C8B-C1D2-5BB2-D3EC2D5A0D73}" name="algos">
+      <FILE id="HJI9A1" name="AgSimple.cpp" compile="1" resource="0" file="Source/algos/AgSimple.cpp"/>
+      <FILE id="gTYT64" name="AgSimple.h" compile="0" resource="0" file="Source/algos/AgSimple.h"/>
+      <FILE id="a14HFI" name="Algos.h" compile="0" resource="0" file="Source/algos/Algos.h"/>
     </GROUP>
     <GROUP id="{25204765-C7B6-BBE9-F2C9-38FA8623CE70}" name="common">
       <FILE id="WY0Dkt" name="SSP.cpp" compile="1" resource="0" file="../common/SSP.cpp"/>
@@ -25,6 +26,8 @@
       <FILE id="o1FUDf" name="SSPParam.h" compile="0" resource="0" file="../common/SSPParam.h"/>
     </GROUP>
     <GROUP id="{C0553C7B-09BA-4FC3-4E85-F32F355F9FF1}" name="Source">
+      <FILE id="Iuz6rh" name="Algo.h" compile="0" resource="0" file="Source/Algo.h"/>
+      <FILE id="ICydlx" name="Algo.cpp" compile="1" resource="0" file="Source/Algo.cpp"/>
       <FILE id="MizVfU" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="gntTug" name="PluginProcessor.h" compile="0" resource="0"

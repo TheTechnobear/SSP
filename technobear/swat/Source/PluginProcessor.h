@@ -5,10 +5,8 @@
 #include "Percussa.h"
 
 #include <atomic>
-
-inline float constrain(float v, float vMin, float vMax) {
-    return std::max<float>(vMin, std::min<float>(vMax, v));
-}
+#include <unordered_map>
+#include <memory>
 
 #include "Algo.h"
 
@@ -55,9 +53,11 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    Algo* algo() { return algo_;}
+    std::shared_ptr<Algo> algo() { return algo_;}
 
 private:
+
+    void initAlgos();
 
     void writeToXml(juce::XmlElement& xml);
     void readFromXml(juce::XmlElement& xml);
@@ -77,14 +77,9 @@ private:
 
     float params_[Percussa::sspLast];
 
-    enum AlgoDef {
-        A_TEST,
-        A_MAX
-    };
-
-
+    std::unordered_map<unsigned, std::shared_ptr<Algo>> algos_;
     std::atomic<unsigned> algoN_;
-    Algo* algo_=nullptr;
+    std::shared_ptr<Algo> algo_ = nullptr;
 
     AudioSampleBuffer outBufs_;
 

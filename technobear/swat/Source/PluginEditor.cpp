@@ -43,22 +43,22 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 	}
 
 	// parameters
-	params_[P_X].init("X");
-	params_[P_Y].init("Y");
-	params_[P_Z].init("Z");
+	// params_[P_X].init("X");
+	// params_[P_Y].init("Y");
+	// params_[P_Z].init("Z");
 
-	params_[P_X].value(processor_.algo()->x());
-	params_[P_Y].value(processor_.algo()->y());
-	params_[P_Z].value(processor_.algo()->z());
+	// params_[P_X].value(processor_.algo()->x());
+	// params_[P_Y].value(processor_.algo()->y());
+	// params_[P_Z].value(processor_.algo()->z());
 
-	params_[P_X].active(paramActive_ 	== 0);
-	params_[P_Y].active(paramActive_ 	== 0);
-	params_[P_Z].active(paramActive_ 	== 0);
+	// params_[P_X].active(paramActive_ 	== 0);
+	// params_[P_Y].active(paramActive_ 	== 0);
+	// params_[P_Z].active(paramActive_ 	== 0);
 
 	paramActive_ = 0;
-	addAndMakeVisible(params_[P_X]);
-	addAndMakeVisible(params_[P_Y]);
-	addAndMakeVisible(params_[P_Z]);
+	// addAndMakeVisible(params_[P_X]);
+	// addAndMakeVisible(params_[P_Y]);
+	// addAndMakeVisible(params_[P_Z]);
 }
 
 PluginEditor::~PluginEditor()
@@ -101,169 +101,39 @@ void PluginEditor::parameterChanged (int index, float value) {
 	switch (index) {
 	// encoders
 	case Percussa::sspEnc1:
-		switch (paramActive_) {
-		case 0 :  {
-			float v = processor_.algo()->x() + value / 100.0f;
-			v = constrain(v, -1.0f, 1.0f);
-			processor_.algo()->x(v);
-			params_[P_X].value(processor_.algo()->x());
-
-			if (value) activeParam_ = &params_[P_X];
-			break;
-		}
-		case 1 :  {
-			break;
-		}
-		case 2 : {
-			break;
-		}
-		} //switch paramActive_
-		if (value) {
-			activeParamCount_ = PARAM_COUNTER;
-			activeEncIdx_ = 0;
-		}
-		break;
 	case Percussa::sspEnc2:
-		switch (paramActive_) {
-		case 0 :  {
-			float v = processor_.algo()->y() + value / 100.0f;
-			v = constrain(v, -1.0f, 1.0f);
-			processor_.algo()->y(v);
-			params_[P_Y].value(processor_.algo()->y());
-
-			if (value) activeParam_ = &params_[P_Y];
-			break;
-		}
-		case 1 :  {
-			break;
-		}
-		case 2 : {
-			break;
-		}
-		} //switch paramActive_
-		if (value) {
-			activeParamCount_ = PARAM_COUNTER;
-			activeEncIdx_ = 1;
-		}
-		break;
 	case Percussa::sspEnc3:
-		switch (paramActive_) {
-		case 0 :  {
-			float v = processor_.algo()->z() + value / 100.0f;
-			v = constrain(v, -1.0f, 1.0f);
-			processor_.algo()->z(v);
-			params_[P_Z].value(processor_.algo()->z());
-
-			if (value) activeParam_ = &params_[P_Z];
-			break;
-		}
-		case 1 :  {
-			break;
-		}
-		case 2 : {
-			break;
-		}
-		} //switch paramActive_
+	case Percussa::sspEnc4: {
+		processor_.algo()->encoder(index -Percussa::sspEnc1, value);
 		if (value) {
 			activeParamCount_ = PARAM_COUNTER;
-			activeEncIdx_ = 2;
+			activeEncIdx_ = index -Percussa::sspEnc1;
 		}
-		break;
-	case Percussa::sspEnc4:
-		// switch (paramActive_) {
-		// case 0 :  {
-		// 	break;
-		// }
-		// case 1 :  {
-		// 	break;
-		// }
-		// case 2 : {
-		// 	break;
-		// }
-		// } //switch paramActive_
-		// if (value) {
-		// 	activeParamCount_ = PARAM_COUNTER;
-		// 	activeEncIdx_ = 3;
-		// }
-		break;
-
-
-	// encoder switches
+	}
+	break;
 	case Percussa::sspEncSw1:
-		if (value < 0.5f) {
-			switch (paramActive_) {
-			case 0 :  {
-				processor_.algo()->x(0.0f);
-				params_[P_X].value(processor_.algo()->x());
-				break;
-			}
-			case 1 :  {
-				break;
-			}
-			case 2 : {
-				break;
-			}
-			} //switch paramActive_
-		}
-		break;
 	case Percussa::sspEncSw2:
-		if (value < 0.5f) {
-			switch (paramActive_) {
-			case 0 :  {
-				processor_.algo()->y(0.0f);
-				params_[P_Y].value(processor_.algo()->y());
-				break;
-			}
-			case 1 :  {
-				break;
-			}
-			case 2 : {
-				break;
-			}
-			} //switch paramActive_
-		}
-		break;
 	case Percussa::sspEncSw3:
-		if (value < 0.5f) {
-			switch (paramActive_) {
-			case 0 :  {
-				processor_.algo()->z(0.0f);
-				params_[P_Z].value(processor_.algo()->z());
-				break;
-			}
-			case 1 :  {
-				break;
-			}
-			case 2 : {
-				break;
-			}
-			} //switch paramActive_
-		}
+	case Percussa::sspEncSw4: {
+		processor_.algo()->encswitch(index -Percussa::sspEnc1,value);
 		break;
-	case Percussa::sspEncSw4:
-		break;
+	}
 	// buttons
 	case Percussa::sspSw1:
-		// if (paramState_[index] != value && value < 0.5f) {
-		// 	processor_.algo()->f_freeze =
-		// 	    ! processor_.algo()->f_freeze;
-		// 	buttons_[B_FREEZE].active(processor_.algo()->f_freeze > 0.5f);
-		// }
-		break;
 	case Percussa::sspSw2:
-		break;
 	case Percussa::sspSw3:
-		break;
 	case Percussa::sspSw4:
-		break;
 	case Percussa::sspSw5:
-		break;
 	case Percussa::sspSw6:
-		break;
 	case Percussa::sspSw7:
+	case Percussa::sspSw8: {
+		if (value < 0.5f) {
+			processor_.algo()->button(index -Percussa::sspSw1,value);
+		}
 		break;
-	case Percussa::sspSw8:
-		break;
+	}
+
+
 
 	case Percussa::sspSwLeft:
 		// buttons_[B_LEFT].active(value > 0.5f);
@@ -305,34 +175,11 @@ void PluginEditor::parameterChanged (int index, float value) {
 
 	if (paramActive != paramActive_) {
 
-		params_[P_X].setVisible(paramActive_ == 0);
-		params_[P_Y].setVisible(paramActive_ == 0);
-		params_[P_Z].setVisible(paramActive_ == 0);
-		// params_[P_PITCH].setVisible(paramActive_ 	== 2);
-		// params_[P_MODE].setVisible(paramActive_ 	== 2);
-		// params_[P_IN_GAIN].setVisible(paramActive_ 	== 2);
-
-
-		params_[P_X].active(paramActive_	== 0);
-		params_[P_Y].active(paramActive_ 	== 0);
-		params_[P_Z].active(paramActive_ 	== 0);
-		// params_[P_PITCH].active(paramActive_ 	== 2);
+		// params_[P_X].setVisible(paramActive_ == 0);
+		// params_[P_X].active(paramActive_	== 0);
 	}
 
 	paramState_[index] = value;
-}
-
-
-void PluginEditor::drawHelp(Graphics & g) {
-	// unsigned x = 1100;
-	// unsigned y = 150;
-	// unsigned d = 100;
-	// unsigned sp = 75;
-
-	// g.setColour(Colours::white);
-	// g.fillEllipse(x, y, d, d);
-	// g.fillEllipse(x + sp, y, d, d);
-
 }
 
 void PluginEditor::drawMenuBox(Graphics & g) {
@@ -411,7 +258,7 @@ void PluginEditor::paint(Graphics & g)
 
 	drawEncoderValue(g);
 
-	drawHelp(g);
+	processor_.algo()->paint(g);
 }
 
 
@@ -457,10 +304,7 @@ void PluginEditor::resized()
 	// setButtonBounds(buttons_[B_DOWN], 	1, 5);
 	// setButtonBounds(buttons_[B_RIGHT], 	1, 6);
 
-	setParamBounds(params_[P_X],	0, 0);
-	setParamBounds(params_[P_Y],	1, 0);
-	setParamBounds(params_[P_Z],	2, 0);
-
-	// setParamBounds(params_[P_MIX], 		0, 1);
-	// setParamBounds(params_[P_PITCH], 	0, 2);
+	// setParamBounds(params_[P_X],	0, 0);
+	// setParamBounds(params_[P_Y],	1, 0);
+	// setParamBounds(params_[P_Z],	2, 0);
 }
