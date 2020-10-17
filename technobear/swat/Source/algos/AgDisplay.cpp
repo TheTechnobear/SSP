@@ -41,11 +41,7 @@ static const char tonics[MAX_TONICS][3] = {
 };
 
 String AgDisplay::getNoteValue(float f) {
-    float voct=cv2Pitch(f);
-#if __APPLE__
-    voct = f* (12.0f / 0.2f);
-#endif 
-
+    float voct=cv2Pitch(f) + 60.0f; // -5v = 0
     int oct = voct / 12;
     unsigned note = unsigned(voct) % MAX_TONICS;
     unsigned cents = (voct - floorf(voct)) * 100; 

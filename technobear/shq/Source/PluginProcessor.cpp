@@ -15,6 +15,15 @@ PluginProcessor::PluginProcessor()
     memset(params_, 0, sizeof(params_));
     memset(lastTrig_, 0, sizeof(lastTrig_));
     memset(lastSig_, 0, sizeof(lastSig_));
+
+#ifdef __APPLE__
+    {
+        // gets tedious enabling these during testing ;)
+        for (unsigned i = Percussa::sspInEn1; i <= Percussa::sspInEn24; i++) params_[i] = 1.0f;
+        for (unsigned i = Percussa::sspOutEn1; i <= Percussa::sspOutEn24; i++) params_[i] = 1.0f;
+    }
+#endif
+
     randomGen_.setSeedRandomly();
 }
 
@@ -200,13 +209,16 @@ float PluginProcessor::processCV(float v, float scale, float root) {
     if (quant_) {
         constexpr float halfSemi = 0.5;
         constexpr bool roundUp = true;
-        // cv2pitch, returns fractional semitones 0 = C
-        float semif = cv2Pitch(v) + (roundUp ? halfSemi : 0.0f);
-        int oct = int(semif) % 12;
-        unsigned semi = unsigned(semif - (oct * 12));
-        quantizer_.quantize(root_, scale_, oct, semi);
+        // cv2pitch, returns fractional semitones e.g 24.0 = C2
+        float voct = cv2Pitch(v) + 60.f + (roundUp ? halfSemi : 0.0f); // -5v = 0
 
-        float pv = float(oct * 12.0f) + float(semi);
+        int oct = voct / 12;
+        unsigned note = unsigned(voct) % MAX_TONICS;
+        // Logger::writeToLog("float " + String(v) + " voct " + String(voct) + " oct " + String(oct) + " note " + String(note));
+
+        quantizer_.quantize(root_, scale_, oct, note);
+
+        float pv = float(oct * 12.0f) + float(note) - 60.0f ;
         float qv = pitch2Cv(pv);
         return qv;
     }
@@ -235,10 +247,8 @@ void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiM
         // for each sample
         bool trigAbove = false;
         bool trig[MAX_SIG];
-        unsigned sigo = idx * 2;
-
-
         for (unsigned i = 0; i < MAX_SIG; i++) {
+            unsigned sigo = i * 2;
             bool trigged = false;
             if (inTrigE[i]) {
                 // trig in enabled

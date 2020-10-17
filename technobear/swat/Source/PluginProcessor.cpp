@@ -30,7 +30,6 @@ PluginProcessor::PluginProcessor()
         for (unsigned i = Percussa::sspInEn1; i <= Percussa::sspInEn24; i++) params_[i] = 1.0f;
         for (unsigned i = Percussa::sspOutEn1; i <= Percussa::sspOutEn24; i++) params_[i] = 1.0f;
     }
-
 #endif
 }
 
