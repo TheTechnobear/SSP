@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<FILTERGRAPH>
+  <FILTER uid="1" x="0.5" y="0.1" uiLastX="0" uiLastY="0">
+    <PLUGIN name="Audio Input" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="Raw Material Software" version="1.0" file="" uid="246006c0"
+            isInstrument="0" fileTime="0" numInputs="0" numOutputs="12" isShell="0"/>
+    <STATE>0.</STATE>
+  </FILTER>
+  <FILTER uid="2" x="0.25" y="0.1" uiLastX="0" uiLastY="0">
+    <PLUGIN name="Midi Input" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="Raw Material Software" version="1.0" file="" uid="cb5fde0b"
+            isInstrument="0" fileTime="0" numInputs="0" numOutputs="0" isShell="0"/>
+    <STATE>0.</STATE>
+  </FILTER>
+  <FILTER uid="3" x="0.5" y="0.9" uiLastX="0" uiLastY="0">
+    <PLUGIN name="Audio Output" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="Raw Material Software" version="1.0" file="" uid="724248cb"
+            isInstrument="0" fileTime="0" numInputs="2" numOutputs="0" isShell="0"/>
+    <STATE>0.</STATE>
+  </FILTER>
+  <FILTER uid="5" x="0.40875" y="0.301852" uiLastX="1025" uiLastY="766">
+    <PLUGIN name="swat" format="VST" category="Effect" manufacturer="technobear"
+            version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/swat.vst"
+            uid="53574154" isInstrument="0" fileTime="174c5dff170" numInputs="3"
+            numOutputs="2" isShell="0"/>
+    <STATE>234.CMlaKA....fQBMDZ....AL0UAQE....Y....A...............................................................................................................................................................................JY0PxDRP....7L2cgQmO7DFam8VLfDFam8VOhDiHfDTOh.iK1jSN4jSN4HCNzbCMzHiMxXSN0LiHfHTOh.iK0HxK9vyKycWXz4C.</STATE>
+  </FILTER>
+  <FILTER uid="6" x="0.59375" y="0.3" uiLastX="1379" uiLastY="564">
+    <PLUGIN name="swat" format="VST" category="Effect" manufacturer="technobear"
+            version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/swat.vst"
+            uid="53574154" isInstrument="0" fileTime="174c5dff170" numInputs="3"
+            numOutputs="2" isShell="0"/>
+    <STATE>213.CMlaKA....fQBMDZ....AL0UAQE....Y....A...............................................................................................................................................................................0X0PxDBK....7L2cgQmO7DFam8VLfDFam8VOhDiHfDTOhDiHfHTOh.iK0HxK9vyKycWXz4C.</STATE>
+  </FILTER>
+  <FILTER uid="7" x="0.4525" y="0.464815" uiLastX="937" uiLastY="823">
+    <PLUGIN name="swat" format="VST" category="Effect" manufacturer="technobear"
+            version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/swat.vst"
+            uid="53574154" isInstrument="0" fileTime="174c5dff170" numInputs="3"
+            numOutputs="2" isShell="0"/>
+    <STATE>210.CMlaKA....fQBMDZ....AL0UAQE....Y....A...............................................................................................................................................................................xX0PxDRJ....7L2cgQmO7DFam8VLfDFam8VOh.iHfLUau8Fcn0iHvHxK9vyKycWXz4C.</STATE>
+  </FILTER>
+  <FILTER uid="8" x="0.45125" y="0.609259" uiLastX="698" uiLastY="779">
+    <PLUGIN name="swat" format="VST" category="Effect" manufacturer="technobear"
+            version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/swat.vst"
+            uid="53574154" isInstrument="0" fileTime="174c5dff170" numInputs="3"
+            numOutputs="2" isShell="0"/>
+    <STATE>199.CMlaKA....fQBMDZ....AL0UAQE....Y....A...............................................................................................................................................................................mX0PxDhG....7L2cgQmO7DFam8VLfDFam8VOhHiHu3COuL2cgQmO..</STATE>
+  </FILTER>
+  <CONNECTION srcFilter="5" srcChannel="0" dstFilter="7" dstChannel="0"/>
+  <CONNECTION srcFilter="6" srcChannel="1" dstFilter="7" dstChannel="1"/>
+  <CONNECTION srcFilter="6" srcChannel="0" dstFilter="8" dstChannel="2"/>
+  <CONNECTION srcFilter="7" srcChannel="0" dstFilter="8" dstChannel="0"/>
+  <CONNECTION srcFilter="7" srcChannel="1" dstFilter="8" dstChannel="1"/>
+</FILTERGRAPH>

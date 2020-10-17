@@ -1,0 +1,94 @@
+#include "Algo.h"
+
+#include "../JuceLibraryCode/JuceHeader.h"
+
+
+//Algo
+void Algo::paint (Graphics& g) {
+    drawHelp(g);
+}
+
+void Algo::encoder(unsigned enc, int dir) {
+    if (enc < params_.size()) {
+        if (dir > 0.0f) {
+            params_[enc]->inc();
+        } else if (dir < 0.0f) {
+            params_[enc]->dec();
+        }
+    }
+}
+
+void Algo::button(unsigned btn, bool state) {
+
+}
+
+void Algo::encswitch(unsigned enc, bool state) {
+    if (enc < params_.size()) {
+        if (state < 0.5f) {
+            params_[enc]->reset();
+        }
+    }
+}
+
+
+void Algo::drawHelp(Graphics& g) {
+    unsigned x = 900;
+    unsigned y = 40;
+    unsigned space = 30;
+    unsigned yText = y + space;
+    g.setColour(Colours::yellow);
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), 40, Font::plain));
+    g.drawSingleLineText(name(), x, y);
+
+    y = yText;
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), 18, Font::plain));
+    g.setColour(Colours::white);
+
+    std::string::size_type pos = 0;
+    std::string::size_type prev = 0;
+    std::string str = description();
+    while ((pos = str.find("\n", prev)) != std::string::npos)
+    {
+        g.drawSingleLineText(str.substr(prev, pos - prev), x, y);
+        y += space;
+        prev = pos + 1;
+    }
+    g.drawSingleLineText(str.substr(prev), x, y);
+    y += space;
+
+    x = x + 300;
+    y = yText;
+    for (auto p : params_) {
+        g.drawSingleLineText(p->name() + " : " + p->desc(), x, y); y += space;
+    }
+}
+
+
+void Algo::writeToXml(juce::XmlElement& xml) {
+    for (auto p : params_) {
+        xml.setAttribute(p->name().c_str(), double(p->floatVal()));
+    }
+}
+
+void Algo::readFromXml(juce::XmlElement& xml) {
+    for (auto p : params_) {
+        if (xml.hasAttribute(p->name().c_str())) {
+            p->floatVal(xml.getDoubleAttribute(p->name().c_str(), 0.0f));
+        } else {
+            p->reset();
+        }
+    }
+}
+
+//AgFloatParam
+void AgFloatParam::inc() {
+    val_ = constrain(val_ + step_, min_, max_);
+}
+
+void AgFloatParam::dec() {
+    val_ = constrain(val_ - step_, min_, max_);
+}
+
+void AgFloatParam::reset() {
+    val_ = constrain(init_, min_, max_);
+}
