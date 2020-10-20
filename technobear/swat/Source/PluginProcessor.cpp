@@ -10,11 +10,11 @@ static const char *xmlTag = JucePlugin_Name;
 
 void PluginProcessor::initAlgos() {
 
-    algos_[A_P_ADDER] = std::make_shared<AgPrecAdder>();
-    algos_[A_CONSTANT] = std::make_shared<AgConstant>();
     algos_[A_DISPLAY] = std::make_shared<AgDisplay>();
-
-    algoN_ = A_P_ADDER;
+    algos_[A_CONSTANT] = std::make_shared<AgConstant>();
+    algos_[A_P_ADDER] = std::make_shared<AgPrecAdder>();
+    algos_[A_MIN_MAX] = std::make_shared<AgMinMax>();
+    algoN_ = A_DISPLAY;
     algo_ = algos_[algoN_];
 }
 

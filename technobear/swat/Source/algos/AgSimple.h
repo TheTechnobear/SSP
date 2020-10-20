@@ -41,7 +41,7 @@ class AgPrecAdder : public Algo {
 public:
     AgPrecAdder() {
         lastA_ = lastB_ = 0.0f;
-        params_.push_back(std::make_shared<AgFloatParam>("Smooth", "Smoothing of Z", 0.0f, 0.0f, 1.0f, 0.1f));
+        // params_.push_back(std::make_shared<AgFloatParam>("Smooth", "Smoothing of Z", 0.0f, 0.0f, 1.0f, 1.0f));
     }
 
     // general
@@ -68,3 +68,36 @@ private:
     std::atomic<float> lastA_;
     std::atomic<float> lastB_;
 };
+
+
+class AgMinMax : public Algo {
+public:
+    AgMinMax() {
+        lastA_ = lastB_ = 0.0f;
+    }
+
+    // general
+    std::string name() override { return "Min / Max"; }
+    std::string description() {
+        return
+            "A = min(X,Y)\n"
+            "B = max(X,Y)\n"
+            "Z gate"
+            ;
+    }
+
+    // audio thread
+    virtual void process( const float* x, const float* y, const float* z,
+                          float* a, float* b, unsigned n) override;
+    // UI thread
+    void paint (Graphics&) override;
+
+private:
+    std::atomic<float> lastA_;
+    std::atomic<float> lastB_;
+};
+
+
+
+
+

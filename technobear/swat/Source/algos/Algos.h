@@ -4,9 +4,10 @@
 
 
 enum AlgoDef {
-    A_P_ADDER,  // AgPrecAdder
-    A_CONSTANT, // AgConstant
     A_DISPLAY,  // AgDisplay
+    A_CONSTANT, // AgConstant
+    A_P_ADDER,  // AgPrecAdder
+    A_MIN_MAX,   // AgMinMax
     A_MAX
 };
 

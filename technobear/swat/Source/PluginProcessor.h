@@ -60,6 +60,13 @@ public:
         // Logger::writeToLog("algo# " + String(algoN_));
     }
 
+    void prevAlgo() {
+        algoN_ = algoN_ > 0  ? algoN_ - 1 : A_MAX - 1 ;
+        algo_ = algos_[algoN_];
+        // Logger::writeToLog("algo# " + String(algoN_));
+    }
+
+
 private:
 
     void initAlgos();
