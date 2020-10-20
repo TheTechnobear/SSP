@@ -1,5 +1,6 @@
 #pragma once
 
+static constexpr unsigned MAX_SCALES = 87;
 static constexpr unsigned MAX_TONICS = 12;
 
 class Quantizer {

@@ -4,7 +4,7 @@
 #include "PluginProcessor.h"
 
 #include "SSPButton.h"
-#include "SSPParam.h"
+#include "SSPListParam.h"
 
 class PluginEditor  : public AudioProcessorEditor,
 	public AudioProcessorListener,
@@ -33,7 +33,7 @@ protected:
 	void drawEncoderValue(Graphics& g);
 
 	void setMenuBounds(SSPButton& btn, unsigned r);
-	void setParamBounds(SSPParam& par, unsigned enc, unsigned var);
+	void setParamBounds(SSPListParam& par, unsigned enc, unsigned var);
 	void setButtonBounds(SSPButton& btn, unsigned r, unsigned c);
 
 private:
@@ -57,12 +57,12 @@ private:
 	};
 
 	SSPButton buttons_[B_MAX];
-	SSPParam  params_[P_MAX];
+	SSPListParam  params_[P_MAX];
 
 	// display only
 	SSPButton globalBtn_, networkBtn_, plugInBtn_, recBtn_;
 
-	SSPParam* 	activeParam_ = nullptr;
+	SSPListParam* 	activeParam_ = nullptr;
 	unsigned 	activeEncIdx_ = 0;
 	unsigned  	paramActive_ = 0;
 	bool paramState_[Percussa::sspLast];

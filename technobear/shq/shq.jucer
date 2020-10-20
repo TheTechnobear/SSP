@@ -12,6 +12,9 @@
               companyName="Technobear" companyWebsite="www.technobear.com">
   <MAINGROUP id="LI9Efo" name="shq">
     <GROUP id="{25204765-C7B6-BBE9-F2C9-38FA8623CE70}" name="common">
+      <FILE id="lXN1d1" name="SSPListParam.cpp" compile="1" resource="0"
+            file="../common/SSPListParam.cpp"/>
+      <FILE id="mHnfmv" name="SSPListParam.h" compile="0" resource="0" file="../common/SSPListParam.h"/>
       <FILE id="WY0Dkt" name="SSP.cpp" compile="1" resource="0" file="../common/SSP.cpp"/>
       <FILE id="Y21RGu" name="SSP.h" compile="0" resource="0" file="../common/SSP.h"/>
       <FILE id="I5CfAe" name="Percussa.h" compile="0" resource="0" file="../common/Percussa.h"/>

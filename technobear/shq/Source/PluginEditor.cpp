@@ -6,6 +6,7 @@ static constexpr unsigned paramTopY = 380 - 1;
 static constexpr unsigned paramSpaceY = 50;
 
 
+
 PluginEditor::PluginEditor (PluginProcessor& p)
 	: AudioProcessorEditor (&p), processor_ (p)
 {
@@ -42,8 +43,18 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 	}
 
 	// parameters
-	params_[P_SCALE].init("Scale");
-	params_[P_ROOT].init("Root");
+	std::vector<std::string> scales;
+	auto& q=processor_.quantizer();
+	for(auto i=0;i<MAX_SCALES;i++) {
+		scales.push_back(q.getScaleName(i));
+	}
+	params_[P_SCALE].init("Scale",scales);
+
+	std::vector<std::string> tonics;
+	for(auto i=0;i<MAX_TONICS;i++) {
+		tonics.push_back(q.getTonicName(i));
+	}
+	params_[P_ROOT].init("Root", tonics);
 
 	params_[P_SCALE].value(processor_.scale());
 	params_[P_ROOT].value(processor_.root());;
@@ -98,11 +109,8 @@ void PluginEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEnc1:
 		switch (paramActive_) {
 		case 0 :  {
-			float v = processor_.scale() + value / 100.0f;
-			v = constrain(v, 0.0f, 1.0f);
-			processor_.scale(v);
-			params_[P_SCALE].value(processor_.scale());
-
+			params_[P_SCALE].encoder(value);			
+			processor_.scale(params_[P_SCALE].value());
 			if (value) activeParam_ = &params_[P_SCALE];
 			break;
 		}
@@ -121,11 +129,8 @@ void PluginEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEnc2:
 		switch (paramActive_) {
 		case 0 :  {
-			float v = processor_.root() + value / 100.0f;
-			v = constrain(v, 0.0f, 1.0f);
-			processor_.root(v);
-			params_[P_ROOT].value(processor_.root());
-
+			params_[P_ROOT].encoder(value);			
+			processor_.root(params_[P_ROOT].value());
 			if (value) activeParam_ = &params_[P_ROOT];
 			break;
 		}
@@ -335,8 +340,9 @@ void PluginEditor::drawParamBox(Graphics & g) {
 void PluginEditor::drawEncoderValue(Graphics & g) {
 	if (activeParam_ != nullptr) {
 		unsigned butLeftX = 900 - 1;
-		String val = String::formatted(activeParam_->fmt(), activeParam_->value());
-		if (activeParam_->unit().length()) { val = val + " " + activeParam_->unit();}
+		String val = activeParam_->fmtValue();
+		// String val = String::formatted(activeParam_->fmt(), activeParam_->value());
+		// if (activeParam_->unit().length()) { val = val + " " + activeParam_->unit();}
 
 		static constexpr unsigned pw = unsigned(900.0f / 8.0f);
 
@@ -354,7 +360,12 @@ void PluginEditor::drawEncoderValue(Graphics & g) {
 		// g.drawHorizontalLine(1600-1, activeParamIdx * pw, (activeParamIdx+1)* pw);
 
 		g.setColour(Colours::white);
-		g.setFont(Font(Font::getDefaultMonospacedFontName(), 180, Font::plain));
+
+		unsigned nC= val.length();
+		unsigned fh = (butLeftX - 40) / nC ;
+		fh = fh > 180 ? 180 : fh; 
+
+		g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
 
 		g.drawText(val, 0, 40, butLeftX, paramTopY - 40 - 40, Justification::centred);
 	}
@@ -392,7 +403,7 @@ void PluginEditor::setMenuBounds(SSPButton & btn, unsigned r) {
 	btn.setBounds(x, y, w, h);
 }
 
-void PluginEditor::setParamBounds(SSPParam & par, unsigned enc, unsigned var)
+void PluginEditor::setParamBounds(SSPListParam & par, unsigned enc, unsigned var)
 {
 	unsigned h = 2 * paramSpaceY;
 	unsigned w = unsigned(900.0f / 8.0f);

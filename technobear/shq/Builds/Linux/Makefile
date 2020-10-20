@@ -51,6 +51,7 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/SSPListParam_b15103a9.o \
   $(OBJDIR)/SSP_dd798310.o \
   $(OBJDIR)/SSPButton_f6a7ad22.o \
   $(OBJDIR)/SSPParam_83ec7d27.o \
@@ -87,6 +88,11 @@ clean:
 strip:
 	@echo Stripping shq
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
+
+$(OBJDIR)/SSPListParam_b15103a9.o: ../../../common/SSPListParam.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling SSPListParam.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/SSP_dd798310.o: ../../../common/SSP.cpp
 	-@mkdir -p $(OBJDIR)
