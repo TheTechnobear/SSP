@@ -4,12 +4,12 @@
 
 // Display algos
 
-#include "Algo.h"
+#include "../Algo.h"
 
 class AgDisplay : public Algo {
 public:
     AgDisplay() {
-        ;
+        lastX_=lastY_=lastZ_=0.0f;
     }
 
     // general

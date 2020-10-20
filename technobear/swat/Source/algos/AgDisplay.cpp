@@ -1,4 +1,5 @@
-#include "Algo.h"
+#include "AgDisplay.h"
+#include "Algos.h"
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
@@ -7,9 +8,9 @@ void AgDisplay::process(
     float* a, float* b,
     unsigned n) {
 
-    if (x) lastX_ = x[0];
-    if (y) lastY_ = y[0];
-    if (z) lastZ_ = z[0];
+    if (x != nullptr) lastX_ = x[0];
+    if (y != nullptr) lastY_ = y[0];
+    if (z != nullptr) lastZ_ = z[0];
 
 
     if (a != nullptr) {

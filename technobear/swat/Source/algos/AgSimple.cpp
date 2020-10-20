@@ -1,4 +1,6 @@
-#include "Algo.h"
+#include "AgSimple.h"
+#include "Algos.h"
+
 
 #include "../JuceLibraryCode/JuceHeader.h"
 

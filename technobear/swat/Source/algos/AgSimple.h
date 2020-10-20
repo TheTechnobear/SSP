@@ -4,7 +4,7 @@
 
 // Simple algorithms
 
-#include "Algo.h"
+#include "../Algo.h"
 
 class AgConstant : public Algo {
 public:

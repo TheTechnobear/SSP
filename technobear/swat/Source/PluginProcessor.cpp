@@ -193,35 +193,34 @@ void PluginProcessor::releaseResources()
 
 void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
+    unsigned idx=0;
+
     unsigned n = buffer.getNumSamples();
 
     bool outEnabledA = params_[Percussa::sspOutEn1 + O_A_1 ] > 0.5f;
     bool outEnabledB = params_[Percussa::sspOutEn1 + O_B_1 ] > 0.5f;
 
-    if (outEnabledA || outEnabledB) {
-        bool inEnabledX = params_[Percussa::sspInEn1 + I_X_1 ] > 0.5f;
-        bool inEnabledY = params_[Percussa::sspInEn1 + I_Y_1 ] > 0.5f;
-        bool inEnabledZ = params_[Percussa::sspInEn1 + I_Z_1 ] > 0.5f;
+    bool inEnabledX = params_[Percussa::sspInEn1 + I_X_1 ] > 0.5f;
+    bool inEnabledY = params_[Percussa::sspInEn1 + I_Y_1 ] > 0.5f;
+    bool inEnabledZ = params_[Percussa::sspInEn1 + I_Z_1 ] > 0.5f;
 
-        float* outA = outEnabledA ? outBufs_.getWritePointer(0) : nullptr;
-        float* outB = outEnabledB ? outBufs_.getWritePointer(1) : nullptr;
+    float* outA = outEnabledA ? outBufs_.getWritePointer(idx) : nullptr;
+    float* outB = outEnabledB ? outBufs_.getWritePointer(idx + 1) : nullptr;
 
-        const float* inX = inEnabledX ? buffer.getReadPointer(I_X_1) : nullptr;
-        const float* inY = inEnabledY ? buffer.getReadPointer(I_Y_1) : nullptr;
-        const float* inZ = inEnabledZ ? buffer.getReadPointer(I_Z_1) : nullptr;
+    const float* inX = inEnabledX ? buffer.getReadPointer(I_X_1) : nullptr;
+    const float* inY = inEnabledY ? buffer.getReadPointer(I_Y_1) : nullptr;
+    const float* inZ = inEnabledZ ? buffer.getReadPointer(I_Z_1) : nullptr;
 
-        algo_->process(inX, inY, inZ, outA, outB, n);
-    }
-
+    algo_->process(inX, inY, inZ, outA, outB, n);
 
     if (outEnabledA) {
-        buffer.copyFrom(O_A_1, 0, outBufs_, 0, 0, n);
+        buffer.copyFrom(O_A_1, 0, outBufs_, idx, 0, n);
     } else {
         buffer.applyGain(O_A_1, 0, n, 0.0f);
     }
 
     if (outEnabledB) {
-        buffer.copyFrom(O_B_1, 0, outBufs_, 1, 0, n);
+        buffer.copyFrom(O_B_1, 0, outBufs_, idx + 1, 0, n);
     } else {
         buffer.applyGain(O_B_1, 0, n, 0.0f);
     }

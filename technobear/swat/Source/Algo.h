@@ -4,7 +4,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include <atomic>
-
+#include <vector>
+#include <memory>
 
 
 inline float constrain(float v, float vMin, float vMax) {
