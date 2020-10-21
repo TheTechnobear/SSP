@@ -53,23 +53,29 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    std::shared_ptr<Algo> algo() { return algo_;}
-    void nextAlgo() {
-        algoN_ = (algoN_ + 1)  % A_MAX ;
-        algo_ = algos_[algoN_];
-        // Logger::writeToLog("algo# " + String(algoN_));
+    static constexpr unsigned MAX_ENG = 4;
+
+    std::shared_ptr<Algo> algo(unsigned e) { if (e < MAX_ENG) return algo_[e]; else return nullptr;}
+    void nextAlgo(unsigned e) {
+        if (e < MAX_ENG) {
+            algoN_[e] = (algoN_[e] + 1)  % A_MAX ;
+            algo_[e] = createAlgo(algoN_[e]);
+            // Logger::writeToLog("algo# " + String(algoN_));
+        }
     }
 
-    void prevAlgo() {
-        algoN_ = algoN_ > 0  ? algoN_ - 1 : A_MAX - 1 ;
-        algo_ = algos_[algoN_];
-        // Logger::writeToLog("algo# " + String(algoN_));
+    void prevAlgo(unsigned e) {
+        if (e < MAX_ENG) {
+            algoN_[e] = algoN_[e] > 0  ? algoN_[e] - 1 : A_MAX - 1 ;
+            algo_[e] = createAlgo(algoN_[e]);
+            // Logger::writeToLog("algo# " + String(algoN_));
+        }
     }
 
 
 private:
 
-    void initAlgos();
+    std::shared_ptr<Algo> createAlgo(unsigned);
 
     void writeToXml(juce::XmlElement& xml);
     void readFromXml(juce::XmlElement& xml);
@@ -78,20 +84,34 @@ private:
         I_X_1,
         I_Y_1,
         I_Z_1,
+        I_X_2,
+        I_Y_2,
+        I_Z_2,
+        I_X_3,
+        I_Y_3,
+        I_Z_3,
+        I_X_4,
+        I_Y_4,
+        I_Z_4,
         I_MAX
     };
 
     enum {
         O_A_1,
         O_B_1,
+        O_A_2,
+        O_B_2,
+        O_A_3,
+        O_B_3,
+        O_A_4,
+        O_B_4,
         O_MAX
     };
 
     float params_[Percussa::sspLast];
 
-    std::unordered_map<unsigned, std::shared_ptr<Algo>> algos_;
-    std::atomic<unsigned> algoN_;
-    std::shared_ptr<Algo> algo_ = nullptr;
+    std::atomic<unsigned> algoN_[MAX_ENG];
+    std::shared_ptr<Algo> algo_[MAX_ENG];
 
     AudioSampleBuffer outBufs_;
 

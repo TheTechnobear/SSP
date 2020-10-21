@@ -28,14 +28,11 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 	addAndMakeVisible(plugInBtn_);
 	addAndMakeVisible(recBtn_);
 
-	// buttons_[B_FREEZE].init("Frze");
 	buttons_[B_UP].init("+EN", Colours::red);
 	buttons_[B_DOWN].init("-EN", Colours::red);
 	buttons_[B_LEFT].init("-PG", Colours::red);
 	buttons_[B_RIGHT].init("+PG", Colours::red);
 
-
-	// buttons_[B_FREEZE].active(processor_.algo()->f_freeze > 0.5);
 
 
 	for (int i = 0; i < B_MAX; i++) {
@@ -104,10 +101,10 @@ void PluginEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEnc2:
 	case Percussa::sspEnc3:
 	case Percussa::sspEnc4: {
-		processor_.algo()->encoder(index -Percussa::sspEnc1, value);
+		processor_.algo(activeEngine_)->encoder(index - Percussa::sspEnc1, value);
 		if (value) {
 			activeParamCount_ = PARAM_COUNTER;
-			activeEncIdx_ = index -Percussa::sspEnc1;
+			activeEncIdx_ = index - Percussa::sspEnc1;
 		}
 	}
 	break;
@@ -115,7 +112,7 @@ void PluginEditor::parameterChanged (int index, float value) {
 	case Percussa::sspEncSw2:
 	case Percussa::sspEncSw3:
 	case Percussa::sspEncSw4: {
-		processor_.algo()->encswitch(index -Percussa::sspEnc1,value);
+		processor_.algo(activeEngine_)->encswitch(index - Percussa::sspEnc1, value);
 		break;
 	}
 	// buttons
@@ -128,7 +125,7 @@ void PluginEditor::parameterChanged (int index, float value) {
 	case Percussa::sspSw7:
 	case Percussa::sspSw8: {
 		if (value < 0.5f) {
-			processor_.algo()->button(index -Percussa::sspSw1,value);
+			processor_.algo(activeEngine_)->button(index - Percussa::sspSw1, value);
 		}
 		break;
 	}
@@ -136,35 +133,29 @@ void PluginEditor::parameterChanged (int index, float value) {
 
 
 	case Percussa::sspSwLeft:
-		// buttons_[B_LEFT].active(value > 0.5f);
-		// if (paramState_[index] != value && value < 0.5f) {
-		// 	if (paramActive_ == 2) paramActive_ = 0;
-		// 	else paramActive_ = 2;
-		// }
+		buttons_[B_LEFT].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
+			if (activeEngine_ > 0) activeEngine_--;
+			else activeEngine_ = PluginProcessor::MAX_ENG - 1;
+		}
 		break;
 	case Percussa::sspSwRight:
-		// buttons_[B_RIGHT].active(value > 0.5f);
-		// if (paramState_[index] != value && value < 0.5f) {
-		// 	if (paramActive_ == 2) paramActive_ = 0;
-		// 	else paramActive_ = 2;
-		// }
+		buttons_[B_RIGHT].active(value > 0.5f);
+		if (paramState_[index] != value && value < 0.5f) {
+			if (activeEngine_ + 1 < PluginProcessor::MAX_ENG) activeEngine_++;
+			else activeEngine_ = 0;
+		}
 		break;
 	case Percussa::sspSwUp:
 		buttons_[B_UP].active(value > 0.5f);
 		if (paramState_[index] != value && value < 0.5f) {
-			processor_.prevAlgo();
-			// if (paramActive_ != 2) {
-			// 	paramActive_ = (paramActive_ + 1 ) % 2;
-			// }
+			processor_.prevAlgo(activeEngine_);
 		}
 		break;
 	case Percussa::sspSwDown:
 		buttons_[B_DOWN].active(value > 0.5f);
 		if (paramState_[index] != value && value < 0.5f) {
-			processor_.nextAlgo();
-			// if (paramActive_ != 2) {
-			// 	paramActive_ = (paramActive_ + 1 ) % 2;
-			// }
+			processor_.nextAlgo(activeEngine_);
 		}
 		break;
 	case Percussa::sspSwShiftL:
@@ -254,13 +245,15 @@ void PluginEditor::paint(Graphics & g)
 	g.drawSingleLineText("swat swiss army tool", 20, 30 );
 	g.setColour(Colours::grey);
 	g.drawSingleLineText("version : " + String(JucePlugin_VersionString), 1400, 30);
+	g.setColour(Colours::grey);
+	g.drawSingleLineText("Instance : " + String(activeEngine_), 20, 60 );
 
 	drawMenuBox(g);
 	drawParamBox(g);
 
 	drawEncoderValue(g);
 
-	processor_.algo()->paint(g);
+	processor_.algo(activeEngine_)->paint(g);
 }
 
 
@@ -302,9 +295,9 @@ void PluginEditor::resized()
 	// setButtonBounds(buttons_[B_FREEZE], 0, 0);
 	setButtonBounds(buttons_[B_UP], 	0, 5);
 
-	// setButtonBounds(buttons_[B_LEFT], 	1, 4);
+	setButtonBounds(buttons_[B_LEFT], 	1, 4);
 	setButtonBounds(buttons_[B_DOWN], 	1, 5);
-	// setButtonBounds(buttons_[B_RIGHT], 	1, 6);
+	setButtonBounds(buttons_[B_RIGHT], 	1, 6);
 
 	// setParamBounds(params_[P_X],	0, 0);
 	// setParamBounds(params_[P_Y],	1, 0);

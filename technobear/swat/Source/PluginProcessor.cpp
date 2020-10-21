@@ -8,22 +8,15 @@ static const char *xmlTag = JucePlugin_Name;
 
 #include "algos/Algos.h"
 
-void PluginProcessor::initAlgos() {
-
-    algos_[A_DISPLAY] = std::make_shared<AgDisplay>();
-    algos_[A_CONSTANT] = std::make_shared<AgConstant>();
-    algos_[A_P_ADDER] = std::make_shared<AgPrecAdder>();
-    algos_[A_MIN_MAX] = std::make_shared<AgMinMax>();
-    algoN_ = A_DISPLAY;
-    algo_ = algos_[algoN_];
-}
-
-
 
 PluginProcessor::PluginProcessor()
 {
     memset(params_, 0, sizeof(params_));
-    initAlgos();
+    for (auto e = 0; e < MAX_ENG; e++) {
+        algoN_[e] = A_DISPLAY;
+        algo_[e] = createAlgo(algoN_[e]);
+    }
+
 #ifdef __APPLE__
     {
         // gets tedious enabling these during testing ;)
@@ -35,6 +28,16 @@ PluginProcessor::PluginProcessor()
 
 PluginProcessor::~PluginProcessor()
 {
+}
+
+std::shared_ptr<Algo>  PluginProcessor::createAlgo(unsigned a) {
+    switch (a) {
+    case A_DISPLAY  : return std::make_shared<AgDisplay>();
+    case A_CONSTANT : return std::make_shared<AgConstant>();
+    case A_P_ADDER  : return std::make_shared<AgPrecAdder>();
+    case A_MIN_MAX  : return std::make_shared<AgMinMax>();
+    }
+    return std::make_shared<AgDisplay>();
 }
 
 const String PluginProcessor::getName() const
@@ -104,6 +107,15 @@ const String PluginProcessor::getInputChannelName (int channelIndex) const
     case I_X_1: { return String("X 1");}
     case I_Y_1: { return String("Y 1");}
     case I_Z_1: { return String("Z 1");}
+    case I_X_2: { return String("X 2");}
+    case I_Y_2: { return String("Y 2");}
+    case I_Z_2: { return String("Z 2");}
+    case I_X_3: { return String("X 3");}
+    case I_Y_3: { return String("Y 3");}
+    case I_Z_3: { return String("Z 3");}
+    case I_X_4: { return String("X 4");}
+    case I_Y_4: { return String("Y 4");}
+    case I_Z_4: { return String("Z 4");}
     }
     return String("unused:") + String (channelIndex + 1);
 }
@@ -113,6 +125,12 @@ const String PluginProcessor::getOutputChannelName (int channelIndex) const
     switch (channelIndex) {
     case O_A_1: { return String("A 1");}
     case O_B_1: { return String("B 1");}
+    case O_A_2: { return String("A 2");}
+    case O_B_2: { return String("B 2");}
+    case O_A_3: { return String("A 3");}
+    case O_B_3: { return String("B 3");}
+    case O_A_4: { return String("A 4");}
+    case O_B_4: { return String("B 4");}
     }
     return String("unused:") + String (channelIndex + 1);
 }
@@ -182,7 +200,7 @@ void PluginProcessor::changeProgramName (int index, const String& newName)
 
 void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    outBufs_.setSize(2, samplesPerBlock);
+    outBufs_.setSize(2 * MAX_ENG, samplesPerBlock);
 }
 
 void PluginProcessor::releaseResources()
@@ -193,36 +211,39 @@ void PluginProcessor::releaseResources()
 
 void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-    unsigned idx=0;
-
     unsigned n = buffer.getNumSamples();
 
-    bool outEnabledA = params_[Percussa::sspOutEn1 + O_A_1 ] > 0.5f;
-    bool outEnabledB = params_[Percussa::sspOutEn1 + O_B_1 ] > 0.5f;
+    for (auto e = 0; e < MAX_ENG; e++) {
+        unsigned sigi = e * 3;
+        unsigned sigo = e * 2;
 
-    bool inEnabledX = params_[Percussa::sspInEn1 + I_X_1 ] > 0.5f;
-    bool inEnabledY = params_[Percussa::sspInEn1 + I_Y_1 ] > 0.5f;
-    bool inEnabledZ = params_[Percussa::sspInEn1 + I_Z_1 ] > 0.5f;
+        bool outEnabledA = params_[Percussa::sspOutEn1 + O_A_1 + sigo] > 0.5f;
+        bool outEnabledB = params_[Percussa::sspOutEn1 + O_B_1 + sigo] > 0.5f;
 
-    float* outA = outEnabledA ? outBufs_.getWritePointer(idx) : nullptr;
-    float* outB = outEnabledB ? outBufs_.getWritePointer(idx + 1) : nullptr;
+        bool inEnabledX = params_[Percussa::sspInEn1 + I_X_1 + sigi] > 0.5f;
+        bool inEnabledY = params_[Percussa::sspInEn1 + I_Y_1 + sigi] > 0.5f;
+        bool inEnabledZ = params_[Percussa::sspInEn1 + I_Z_1 + sigi] > 0.5f;
 
-    const float* inX = inEnabledX ? buffer.getReadPointer(I_X_1) : nullptr;
-    const float* inY = inEnabledY ? buffer.getReadPointer(I_Y_1) : nullptr;
-    const float* inZ = inEnabledZ ? buffer.getReadPointer(I_Z_1) : nullptr;
+        float* outA = outEnabledA ? outBufs_.getWritePointer(sigo) : nullptr;
+        float* outB = outEnabledB ? outBufs_.getWritePointer(sigo + 1) : nullptr;
 
-    algo_->process(inX, inY, inZ, outA, outB, n);
+        const float* inX = inEnabledX ? buffer.getReadPointer(I_X_1 + sigi) : nullptr;
+        const float* inY = inEnabledY ? buffer.getReadPointer(I_Y_1 + sigi) : nullptr;
+        const float* inZ = inEnabledZ ? buffer.getReadPointer(I_Z_1 + sigi) : nullptr;
 
-    if (outEnabledA) {
-        buffer.copyFrom(O_A_1, 0, outBufs_, idx, 0, n);
-    } else {
-        buffer.applyGain(O_A_1, 0, n, 0.0f);
-    }
+        algo_[e]->process(inX, inY, inZ, outA, outB, n);
 
-    if (outEnabledB) {
-        buffer.copyFrom(O_B_1, 0, outBufs_, idx + 1, 0, n);
-    } else {
-        buffer.applyGain(O_B_1, 0, n, 0.0f);
+        if (outEnabledA) {
+            buffer.copyFrom(O_A_1 + sigo, 0, outBufs_, sigo, 0, n);
+        } else {
+            buffer.applyGain(O_A_1 + sigo, 0, n, 0.0f);
+        }
+
+        if (outEnabledB) {
+            buffer.copyFrom(O_B_1 + sigo, 0, outBufs_, sigo + 1, 0, n);
+        } else {
+            buffer.applyGain(O_B_1 + sigo, 0, n, 0.0f);
+        }
     }
 }
 
@@ -238,22 +259,25 @@ AudioProcessorEditor* PluginProcessor::createEditor()
 
 
 void PluginProcessor::writeToXml(XmlElement& xml) {
-    auto axml = xml.createNewChildElement("algo1");
-    axml->setAttribute("algo", int(algoN_));
-    algo_->writeToXml(*axml);
+    for (auto e = 0; e < MAX_ENG; e++) {
+        auto axml = xml.createNewChildElement("algo" + String(e + 1));
+        axml->setAttribute("algo", int(algoN_[e]));
+        algo_[e]->writeToXml(*axml);
+    }
 }
 
 void PluginProcessor::readFromXml(XmlElement& xml) {
-
-    auto axml = xml.getChildByName("algo1");
-    if (axml) {
-        algoN_ = axml->getIntAttribute("algo"  , 0) % A_MAX;
-        algo_  = algos_[algoN_];
-        algo_->readFromXml(*axml);
-    } else {
-        // Logger::writeToLog("algo1 not found");
-        algoN_ = 0;
-        algo_  = algos_[algoN_];
+    for (auto e = 0; e < MAX_ENG; e++) {
+        auto axml = xml.getChildByName("algo" + String(e + 1));
+        if (axml) {
+            algoN_[e] = axml->getIntAttribute("algo", 0) % A_MAX;
+            algo_[e] = createAlgo(algoN_[e]);
+            algo_[e]->readFromXml(*axml);
+        } else {
+            // Logger::writeToLog("algo1 not found");
+            algoN_[e] = 0;
+            algo_[e] = createAlgo(algoN_[e]);
+        }
     }
 }
 

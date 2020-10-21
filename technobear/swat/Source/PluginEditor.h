@@ -66,6 +66,7 @@ private:
 	SSPParam* 	activeParam_ = nullptr;
 	unsigned 	activeEncIdx_ = 0;
 	unsigned  	paramActive_ = 0;
+	unsigned    activeEngine_ = 0;
 	bool paramState_[Percussa::sspLast];
 
 	static constexpr unsigned PARAM_COUNTER = 20;
