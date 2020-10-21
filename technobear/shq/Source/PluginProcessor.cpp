@@ -236,10 +236,11 @@ void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiM
     bool outCvE[MAX_SIG];
 
     for (unsigned i = 0; i < MAX_SIG; i++) {
-        inTrigE[i] = params_[Percussa::sspInEn1 + I_TRIG_1 ] > 0.5f;
-        inCvE[i] = params_[Percussa::sspInEn1 + I_SIG_1 ] > 0.5f;
-        outTrigE[i] = params_[Percussa::sspOutEn1 + O_SIG_1 ] > 0.5f;
-        outCvE[i] = params_[Percussa::sspOutEn1 + O_TRIG_1 ] > 0.5f;
+        unsigned sigo = i * 2;
+        inTrigE[i] = params_[Percussa::sspInEn1 + I_TRIG_1 + sigo] > 0.5f;
+        inCvE[i] = params_[Percussa::sspInEn1 + I_SIG_1 + sigo] > 0.5f;
+        outTrigE[i] = params_[Percussa::sspOutEn1 + O_SIG_1 + sigo] > 0.5f;
+        outCvE[i] = params_[Percussa::sspOutEn1 + O_TRIG_1 + sigo] > 0.5f;
     }
 
 
@@ -280,15 +281,15 @@ void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiM
                     v = (randomGen_.nextFloat() * 2.0f) - 1.0f;
                 }
 
-                float scale = scale_ + buffer.getSample(I_SCALE, i);
-                float root = scale_ + buffer.getSample(I_ROOT, i);
+                float scale = scale_ + buffer.getSample(I_SCALE, idx);
+                float root = root_ + buffer.getSample(I_ROOT, idx);
                 v = processCV(v, scale, root);
                 lastSig_[i] = v;
             } //if triggered
 
             lastTrig_[i] = trig[i];
-            buffer.setSample(O_TRIG_1 + sigo, i, trig[i]);
-            buffer.setSample(O_SIG_1 + sigo, i, lastSig_[i]);
+            buffer.setSample(O_TRIG_1 + sigo, idx, trig[i]);
+            buffer.setSample(O_SIG_1 + sigo, idx, lastSig_[i]);
         } // for sig pair
     } // for each samplle
 }
