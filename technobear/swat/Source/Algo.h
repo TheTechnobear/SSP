@@ -75,11 +75,11 @@ public:
     float cv2Pitch(float r) {
 #ifndef __APPLE__        
         // SSP SDK
-        static constexpr float p1 = 0.02325f; // first C note
-        static constexpr float p2 = 0.21187f; // second C note
+        static constexpr float p1 = 0.02325f; // first A note
+        static constexpr float p2 = 0.21187f; // second A note
 #else 
-        static constexpr float p1 = 0.0f; // first C note
-        static constexpr float p2 = 0.2f; // second C note
+        static constexpr float p1 = 0.0f; // first A note
+        static constexpr float p2 = 0.2f; // second A note
 #endif         
         static constexpr float scale = 12.0f / (p2 - p1);
         float arg = r;
