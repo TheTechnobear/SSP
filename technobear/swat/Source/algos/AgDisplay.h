@@ -13,6 +13,7 @@ public:
     }
 
     // general
+    unsigned type() override { return A_DISPLAY;}
     std::string name() override { return "Display"; }
     std::string description() {
         return

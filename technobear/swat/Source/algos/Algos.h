@@ -1,8 +1,5 @@
 #pragma once
 
-// includes all algos for easy inclusion
-
-
 enum AlgoDef {
     A_DISPLAY,  // AgDisplay
     A_CONSTANT, // AgConstant

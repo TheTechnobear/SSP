@@ -12,9 +12,16 @@ static const char *xmlTag = JucePlugin_Name;
 PluginProcessor::PluginProcessor()
 {
     memset(params_, 0, sizeof(params_));
+
+    algoDisplayOrder_.push_back(A_DISPLAY);
+    algoDisplayOrder_.push_back(A_CONSTANT);
+    algoDisplayOrder_.push_back(A_P_ADDER);
+    algoDisplayOrder_.push_back(A_MIN_MAX);
+
+    assert(algoDisplayOrder_.size() == A_MAX);
+
     for (auto e = 0; e < MAX_ENG; e++) {
-        algoN_[e] = A_DISPLAY;
-        algo_[e] = createAlgo(algoN_[e]);
+        algo_[e] = createAlgo(A_DISPLAY);
     }
 
 #ifdef __APPLE__
@@ -261,7 +268,7 @@ AudioProcessorEditor* PluginProcessor::createEditor()
 void PluginProcessor::writeToXml(XmlElement& xml) {
     for (auto e = 0; e < MAX_ENG; e++) {
         auto axml = xml.createNewChildElement("algo" + String(e + 1));
-        axml->setAttribute("algo", int(algoN_[e]));
+        axml->setAttribute("algo", int(algo_[e]->type()));
         algo_[e]->writeToXml(*axml);
     }
 }
@@ -270,13 +277,12 @@ void PluginProcessor::readFromXml(XmlElement& xml) {
     for (auto e = 0; e < MAX_ENG; e++) {
         auto axml = xml.getChildByName("algo" + String(e + 1));
         if (axml) {
-            algoN_[e] = axml->getIntAttribute("algo", 0) % A_MAX;
-            algo_[e] = createAlgo(algoN_[e]);
+            unsigned t = axml->getIntAttribute("algo", 0) % A_MAX;
+            algo_[e] = createAlgo(t);
             algo_[e]->readFromXml(*axml);
         } else {
             // Logger::writeToLog("algo1 not found");
-            algoN_[e] = 0;
-            algo_[e] = createAlgo(algoN_[e]);
+            algo_[e] = createAlgo(A_DISPLAY);
         }
     }
 }

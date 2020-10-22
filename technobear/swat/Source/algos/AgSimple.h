@@ -8,7 +8,7 @@
 
 class AgConstant : public Algo {
 public:
-    AgConstant() {
+    AgConstant(){
         lastA_ = lastB_ = 0.0f;
         params_.push_back(std::make_shared<AgFloatParam>("A", "Constant 1", 1.0f, -1.0f, 1.0f, 0.005f));
         params_.push_back(std::make_shared<AgFloatParam>("B", "Constant 2", 0.5f, -1.0f, 1.0f, 0.01f));
@@ -16,6 +16,7 @@ public:
         B_=params_[1]->floatVal();
     }
 
+    unsigned type() override { return A_CONSTANT;}
     std::string name() override { return "Constant"; }
     std::string description() {
         return
@@ -45,6 +46,7 @@ public:
     }
 
     // general
+    unsigned type() override { return A_P_ADDER;}
     std::string name() override { return "Precision Adder"; }
     std::string description() {
         return
@@ -77,6 +79,7 @@ public:
     }
 
     // general
+    unsigned type() override { return A_MIN_MAX;}
     std::string name() override { return "Min / Max"; }
     std::string description() {
         return

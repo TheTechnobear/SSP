@@ -3,13 +3,13 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Percussa.h"
+#include "Algo.h"
 
 #include <atomic>
 #include <unordered_map>
 #include <memory>
-
-#include "Algo.h"
-
+#include <vector>
+#include <algorithm>
 
 class PluginProcessor  : public AudioProcessor
 {
@@ -58,17 +58,25 @@ public:
     std::shared_ptr<Algo> algo(unsigned e) { if (e < MAX_ENG) return algo_[e]; else return nullptr;}
     void nextAlgo(unsigned e) {
         if (e < MAX_ENG) {
-            algoN_[e] = (algoN_[e] + 1)  % A_MAX ;
-            algo_[e] = createAlgo(algoN_[e]);
-            // Logger::writeToLog("algo# " + String(algoN_));
+            unsigned t = algo_[e]->type();
+            std::vector<unsigned>::iterator it = std::find(algoDisplayOrder_.begin(), algoDisplayOrder_.end(), t);
+            if (it == algoDisplayOrder_.end() || it == algoDisplayOrder_.end() - 1) it = algoDisplayOrder_.begin();
+            else it++;
+            t = *it;
+            // Logger::writeToLog("algo# " + String(t));
+            algo_[e] = createAlgo(t);
         }
     }
 
     void prevAlgo(unsigned e) {
         if (e < MAX_ENG) {
-            algoN_[e] = algoN_[e] > 0  ? algoN_[e] - 1 : A_MAX - 1 ;
-            algo_[e] = createAlgo(algoN_[e]);
-            // Logger::writeToLog("algo# " + String(algoN_));
+            unsigned t = algo_[e]->type();
+            std::vector<unsigned>::iterator it = std::find(algoDisplayOrder_.begin(), algoDisplayOrder_.end(), t);
+            if (it == algoDisplayOrder_.end() || it == algoDisplayOrder_.begin()) it = algoDisplayOrder_.end() - 1;
+            else it--;
+            t = *it;
+            // Logger::writeToLog("algo# " + String(t));
+            algo_[e] = createAlgo(t);
         }
     }
 
@@ -110,10 +118,11 @@ private:
 
     float params_[Percussa::sspLast];
 
-    std::atomic<unsigned> algoN_[MAX_ENG];
     std::shared_ptr<Algo> algo_[MAX_ENG];
 
     AudioSampleBuffer outBufs_;
+
+    std::vector<unsigned> algoDisplayOrder_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };

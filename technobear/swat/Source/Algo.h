@@ -53,6 +53,7 @@ public:
     virtual ~Algo() {;}
 
     // general
+    virtual unsigned type() = 0;
     virtual std::string name() = 0;
     virtual std::string description() = 0;
 
