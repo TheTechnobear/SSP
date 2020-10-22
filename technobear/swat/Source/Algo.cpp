@@ -2,6 +2,20 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
+// Helper /////////////////////////////////////////////////////////////////////
+void drawAB(Graphics& g, float A, float B) {
+    unsigned space = 32;
+    unsigned fh = 32;
+    unsigned x = space;
+    unsigned y = 100;
+    g.setColour(Colours::white);
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+
+    g.drawSingleLineText("A : " + String(A), x, y);
+    y += space * 2;
+    g.drawSingleLineText("B : " + String(B), x, y);
+}
+
 
 //Algo
 void Algo::paint (Graphics& g) {
@@ -92,3 +106,6 @@ void AgFloatParam::dec() {
 void AgFloatParam::reset() {
     val_ = constrain(init_, min_, max_);
 }
+
+
+

@@ -293,20 +293,14 @@ void PluginEditor::parameterChanged (int index, float value) {
 
 
 void PluginEditor::drawIcon(Graphics & g) {
-	unsigned x = 1100;
-	unsigned y = 150;
-	unsigned d = 100;
-	unsigned sp = 75;
+	// unsigned x = 1100;
+	// unsigned y = 150;
+	// unsigned d = 100;
+	// unsigned sp = 75;
 
-	g.setColour(Colours::white);
-	g.fillEllipse(x, y, d, d);
-	g.fillEllipse(x + sp, y, d, d);
-
-	// x = x - sp / 2;
-	// y = y + sp;
+	// g.setColour(Colours::white);
 	// g.fillEllipse(x, y, d, d);
 	// g.fillEllipse(x + sp, y, d, d);
-	// g.fillEllipse(x + (2 * sp), y, d, d);
 }
 
 void PluginEditor::drawMenuBox(Graphics & g) {

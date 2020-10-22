@@ -45,7 +45,6 @@ private:
 };
 
 
-
 // base for all algorithms
 class Algo {
 public:
@@ -91,6 +90,10 @@ public:
 
     std::vector<std::shared_ptr<AlgoParam>> params_;
 };
+
+// simple helper
+void drawAB(Graphics& g, float A, float B);
+
 
 
 #include "algos/Algos.h"

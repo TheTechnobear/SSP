@@ -12,7 +12,6 @@ public:
         lastX_=lastY_=lastZ_=0.0f;
     }
 
-    // general
     unsigned type() override { return A_DISPLAY;}
     std::string name() override { return "Display"; }
     std::string description() {

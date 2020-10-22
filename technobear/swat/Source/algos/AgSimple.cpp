@@ -4,6 +4,12 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
+
+
+// Algos ////////////////////////////////////////////////////////////////////////
+
+// "A = Constant 1\n"
+// "B = Constant 2\n"
 void AgConstant::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
@@ -23,19 +29,7 @@ void AgConstant::process(
     }
 }
 
-void AgConstant::paint (Graphics& g) {
-    Algo::paint(g);
-
-    unsigned space = 32;
-    unsigned fh = 32;
-    unsigned x = space;
-    unsigned y = 100;
-    g.setColour(Colours::white);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
-    g.drawSingleLineText("A : " + String(lastA_), x, y);
-    y += space * 2;
-    g.drawSingleLineText("B : " + String(lastB_), x, y);
-}
+///////////////////////////////////////////////////////////////////////////////
 
 
 // "Precision Adder\n"
@@ -65,21 +59,6 @@ void AgPrecAdder::process(
     }
 }
 
-void AgPrecAdder::paint (Graphics& g) {
-    Algo::paint(g);
-
-    unsigned space = 32;
-    unsigned fh = 32;
-    unsigned x = space;
-    unsigned y = 100;
-    g.setColour(Colours::white);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
-
-    g.drawSingleLineText("A : " + String(lastA_), x, y);
-    y += space * 2;
-    g.drawSingleLineText("B : " + String(lastB_), x, y);
-}
-
 // void AgPrecAdder::encoder(unsigned enc, int dir) {
 //     Algo::encoder(enc, dir);
 // }
@@ -92,6 +71,8 @@ void AgPrecAdder::paint (Graphics& g) {
 // void AgPrecAdder::encswitch(unsigned enc, bool state) {
 //     Algo::encswitch(btn, state);
 // }
+
+///////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -124,20 +105,73 @@ void AgMinMax::process(
     }
 }
 
-void AgMinMax::paint (Graphics& g) {
-    Algo::paint(g);
+///////////////////////////////////////////////////////////////////////////////
 
-    unsigned space = 32;
-    unsigned fh = 32;
-    unsigned x = space;
-    unsigned y = 100;
-    g.setColour(Colours::white);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
 
-    g.drawSingleLineText("A : " + String(lastA_), x, y);
-    y += space * 2;
-    g.drawSingleLineText("B : " + String(lastB_), x, y);
+
+// "A = Z > 1 , X else Y\n"
+// "B = Z > 1 , Y else Z\n"
+// "Z switch"
+void AgSwitch::process(
+    const float* x, const float* y, const float* z,
+    float* a, float* b,
+    unsigned n) {
+
+    bool gate = true;
+    if (z != nullptr) gate = z[0];
+
+    if (a != nullptr) {
+        if (gate) {
+            if (x) FloatVectorOperations::copy(a, x, n);
+            else FloatVectorOperations::fill(a, 0.0, n);
+        } else {
+            if (y) FloatVectorOperations::copy(a, y, n);
+            else FloatVectorOperations::fill(a, 0.0, n);
+        }
+
+        lastA_ = a[0];
+    }
+
+    if (b != nullptr) {
+        if (!gate) {
+            if (x) FloatVectorOperations::copy(b, x, n);
+            else FloatVectorOperations::fill(b, 0.0, n);
+        } else {
+            if (y) FloatVectorOperations::copy(b, y, n);
+            else FloatVectorOperations::fill(b, 0.0, n);
+        }
+
+        lastB_ = b[0];
+    }
 }
 
+///////////////////////////////////////////////////////////////////////////////
 
+// "A = X == Y , 1  else 0\n"
+// "B = X != Y , 1  else 0\n"
+// "Z hold"
+void AgEqual::process(
+    const float* x, const float* y, const float* z,
+    float* a, float* b,
+    unsigned n) {
 
+    bool gate = true;
+    float x0 = 0.0f, y0 = 0.0f;
+    if (z != nullptr) gate = z[0];
+
+    if (x != nullptr) x0 = x[0];
+    if (y != nullptr) y0 = y[0];
+
+    if (gate) {
+        lastA_ = x0 == y0;
+        lastB_ = x0 != y0;
+    }
+
+    if (a != nullptr) {
+        FloatVectorOperations::fill(a, lastA_ , n);
+    }
+
+    if (b != nullptr) {
+        FloatVectorOperations::fill(b, lastB_ , n);
+    }
+}

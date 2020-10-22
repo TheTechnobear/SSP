@@ -17,6 +17,8 @@ PluginProcessor::PluginProcessor()
     algoDisplayOrder_.push_back(A_CONSTANT);
     algoDisplayOrder_.push_back(A_P_ADDER);
     algoDisplayOrder_.push_back(A_MIN_MAX);
+    algoDisplayOrder_.push_back(A_SWITCH);
+    algoDisplayOrder_.push_back(A_EQUAL);
 
     assert(algoDisplayOrder_.size() == A_MAX);
 
