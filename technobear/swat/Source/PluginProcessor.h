@@ -73,7 +73,7 @@ public:
             unsigned t = algo_[e]->type();
             std::vector<unsigned>::iterator it = std::find(algoDisplayOrder_.begin(), algoDisplayOrder_.end(), t);
             if (it == algoDisplayOrder_.end() || it == algoDisplayOrder_.begin()) it = algoDisplayOrder_.end() - 1;
-            else it--;
+            else  it--;
             t = *it;
             // Logger::writeToLog("algo# " + String(t));
             algo_[e] = createAlgo(t);

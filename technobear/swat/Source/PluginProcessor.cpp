@@ -9,19 +9,40 @@ static const char *xmlTag = JucePlugin_Name;
 #include "algos/Algos.h"
 
 
+
+std::shared_ptr<Algo>  PluginProcessor::createAlgo(unsigned a) {
+    switch (a) {
+    case A_DISPLAY      : return std::make_shared<AgDisplay>();
+    case A_CONSTANT     : return std::make_shared<AgConstant>();
+    case A_P_ADDER      : return std::make_shared<AgPrecAdder>();
+    case A_MIN_MAX      : return std::make_shared<AgMinMax>();
+    case A_SWITCH       : return std::make_shared<AgSwitch>();
+    case A_EQUAL        : return std::make_shared<AgEqual>();
+    case A_CONSTANT_N   : return std::make_shared<AgConstantN>();
+    case A_EQUAL_N      : return std::make_shared<AgEqualN>();
+    case A_DELAY        : return std::make_shared<AgDelay>();
+    default: 
+        assert(false);
+    }
+    return std::make_shared<AgDisplay>();
+}
+
+
 PluginProcessor::PluginProcessor()
 {
-    memset(params_, 0, sizeof(params_));
-
     algoDisplayOrder_.push_back(A_DISPLAY);
     algoDisplayOrder_.push_back(A_CONSTANT);
     algoDisplayOrder_.push_back(A_P_ADDER);
     algoDisplayOrder_.push_back(A_MIN_MAX);
     algoDisplayOrder_.push_back(A_SWITCH);
     algoDisplayOrder_.push_back(A_EQUAL);
+    algoDisplayOrder_.push_back(A_CONSTANT_N);
+    algoDisplayOrder_.push_back(A_EQUAL_N);
+    algoDisplayOrder_.push_back(A_DELAY);
 
     assert(algoDisplayOrder_.size() == A_MAX);
 
+    memset(params_, 0, sizeof(params_));
     for (auto e = 0; e < MAX_ENG; e++) {
         algo_[e] = createAlgo(A_DISPLAY);
     }
@@ -39,15 +60,6 @@ PluginProcessor::~PluginProcessor()
 {
 }
 
-std::shared_ptr<Algo>  PluginProcessor::createAlgo(unsigned a) {
-    switch (a) {
-    case A_DISPLAY  : return std::make_shared<AgDisplay>();
-    case A_CONSTANT : return std::make_shared<AgConstant>();
-    case A_P_ADDER  : return std::make_shared<AgPrecAdder>();
-    case A_MIN_MAX  : return std::make_shared<AgMinMax>();
-    }
-    return std::make_shared<AgDisplay>();
-}
 
 const String PluginProcessor::getName() const
 {
@@ -209,6 +221,7 @@ void PluginProcessor::changeProgramName (int index, const String& newName)
 
 void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    Algo::setSampleRate(sampleRate);
     outBufs_.setSize(2 * MAX_ENG, samplesPerBlock);
 }
 

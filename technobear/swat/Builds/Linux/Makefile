@@ -51,6 +51,9 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/AgLogic_f4cf632a.o \
+  $(OBJDIR)/AgDelay_3fee92cf.o \
+  $(OBJDIR)/AgMusical_97bda61c.o \
   $(OBJDIR)/AgDisplay_9c3990ce.o \
   $(OBJDIR)/AgSimple_cd618e30.o \
   $(OBJDIR)/SSP_dd798310.o \
@@ -89,6 +92,21 @@ clean:
 strip:
 	@echo Stripping swat
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
+
+$(OBJDIR)/AgLogic_f4cf632a.o: ../../Source/algos/AgLogic.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling AgLogic.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/AgDelay_3fee92cf.o: ../../Source/algos/AgDelay.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling AgDelay.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/AgMusical_97bda61c.o: ../../Source/algos/AgMusical.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling AgMusical.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/AgDisplay_9c3990ce.o: ../../Source/algos/AgDisplay.cpp
 	-@mkdir -p $(OBJDIR)

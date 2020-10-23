@@ -8,8 +8,8 @@
 
 // Algos ////////////////////////////////////////////////////////////////////////
 
-// "A = Constant 1\n"
-// "B = Constant 2\n"
+// "A = Constant A + X\n"
+// "B = Constant B + Y\n"
 void AgConstant::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
@@ -18,14 +18,18 @@ void AgConstant::process(
     B_ = params_[1]->floatVal();
 
     if (a != nullptr) {
-        FloatVectorOperations::fill(a, A_, n);
-        lastA_ = a[0];
+        if (x) FloatVectorOperations::copy(a, x, n);
+        else FloatVectorOperations::fill(a, 0.0f, n);
+        FloatVectorOperations::add(a, A_, n);
+        lastA_=a[0];
     }
 
 
     if (b != nullptr) {
-        FloatVectorOperations::fill(b, B_, n);
-        lastB_ = b[0];
+        if (y) FloatVectorOperations::copy(b, y, n);
+        else FloatVectorOperations::fill(b, 0.0f, n);
+        FloatVectorOperations::add(b, B_, n);
+        lastB_=b[0];
     }
 }
 

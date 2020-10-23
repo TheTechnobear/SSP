@@ -18,6 +18,10 @@ void drawAB(Graphics& g, float A, float B) {
 
 
 //Algo
+
+double Algo::sampleRate_ = 48000.0f;
+
+
 void Algo::paint (Graphics& g) {
     drawHelp(g);
 }
@@ -72,8 +76,11 @@ void Algo::drawHelp(Graphics& g) {
 
     x = x + 300;
     y = yText;
+
+    unsigned enc=1;
     for (auto p : params_) {
-        g.drawSingleLineText(p->name() + " : " + p->desc(), x, y); y += space;
+        g.drawSingleLineText("Enc " + String(enc) + " : " +p->name() + " - " + p->desc(), x, y); y += space;
+        enc++;
     }
 }
 

@@ -89,17 +89,13 @@ private:
     float pitch2Cv(float r) {
 #ifndef __APPLE__        
         // SSP SDK
-        static constexpr float p1 = 0.02325f; // first C note
-        static constexpr float p2 = 0.21187f; // second C note
+        static constexpr float p1 = 0.02325f; // first A note
+        static constexpr float p2 = 0.21187f; // second A note
 #else 
-        static constexpr float p1 = 0.0f; // first C note
-        static constexpr float p2 = 0.2f; // second C note
+        static constexpr float p1 = 0.0f; // first A note
+        static constexpr float p2 = 0.2f; // second A note
 #endif         
         static constexpr float iscale = (p2 - p1) / 12.0f;
-        // cv2vo = (r - c1) * (12 / (c2-c1))
-        // vo2cv = r / ( 12 / (c2-c1) ) + c1
-        // alt?
-        // vo2cv = r * ( c2-c1 / 12)  + c1 
         float arg = r;
         arg = arg * iscale; 
         arg = arg + p1;

@@ -12,8 +12,8 @@ class AgConstant : public Algo {
 public:
     AgConstant() {
         lastA_ = lastB_ = 0.0f;
-        params_.push_back(std::make_shared<AgFloatParam>("A", "Constant 1", 1.0f, -1.0f, 1.0f, 0.005f));
-        params_.push_back(std::make_shared<AgFloatParam>("B", "Constant 2", 0.5f, -1.0f, 1.0f, 0.01f));
+        params_.push_back(std::make_shared<AgFloatParam>("A", "Constant", 1.0f, -1.0f, 1.0f, 0.005f));
+        params_.push_back(std::make_shared<AgFloatParam>("B", "Constant", 0.5f, -1.0f, 1.0f, 0.01f));
         A_ = params_[0]->floatVal();
         B_ = params_[1]->floatVal();
     }
@@ -22,8 +22,8 @@ public:
     std::string name() override { return "Constant"; }
     std::string description() {
         return
-            "A = Constant 1\n"
-            "B = Constant 2\n"
+            "A = Constant A + X\n"
+            "B = Constant B + Y\n"
             ;
     }
 

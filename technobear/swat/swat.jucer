@@ -12,6 +12,12 @@
               companyName="Technobear" companyWebsite="www.technobear.com">
   <MAINGROUP id="LI9Efo" name="swat">
     <GROUP id="{0AFA0A1B-1C8B-C1D2-5BB2-D3EC2D5A0D73}" name="algos">
+      <FILE id="niCOoS" name="AgLogic.cpp" compile="1" resource="0" file="Source/algos/AgLogic.cpp"/>
+      <FILE id="cgYox4" name="AgLogic.h" compile="0" resource="0" file="Source/algos/AgLogic.h"/>
+      <FILE id="US7qRr" name="AgDelay.cpp" compile="1" resource="0" file="Source/algos/AgDelay.cpp"/>
+      <FILE id="wQYqgn" name="AgDelay.h" compile="0" resource="0" file="Source/algos/AgDelay.h"/>
+      <FILE id="d9pAwW" name="AgMusical.cpp" compile="1" resource="0" file="Source/algos/AgMusical.cpp"/>
+      <FILE id="Eb3fyr" name="AgMusical.h" compile="0" resource="0" file="Source/algos/AgMusical.h"/>
       <FILE id="HAX1Pr" name="AgDisplay.cpp" compile="1" resource="0" file="Source/algos/AgDisplay.cpp"/>
       <FILE id="kcmzPp" name="AgDisplay.h" compile="0" resource="0" file="Source/algos/AgDisplay.h"/>
       <FILE id="HJI9A1" name="AgSimple.cpp" compile="1" resource="0" file="Source/algos/AgSimple.cpp"/>
