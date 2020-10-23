@@ -10,6 +10,9 @@ enum AlgoDef {
     A_CONSTANT_N,   // AgConstantN  - Musical 
     A_EQUAL_N,      // AgEqualN     - Musical 
     A_DELAY,        // AgDelay      - Delay
+    A_LOGIC_AND,    // AgLogicAnd   - Logic
+    A_LOGIC_OR,     // AgLogicOr    - Logic
+    A_LOGIC_XOR,    // AgLogicXor    - Logic
     A_MAX
 };
 
@@ -17,3 +20,4 @@ enum AlgoDef {
 #include "AgDisplay.h"
 #include "AgMusical.h"
 #include "AgDelay.h"
+#include "AgLogic.h"
