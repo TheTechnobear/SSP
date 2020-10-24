@@ -117,4 +117,15 @@ void AgFloatParam::reset() {
 }
 
 
+//AgIntParam
+void AgIntParam::inc() {
+    val_ = constrain(val_ + step_, min_, max_);
+}
 
+void AgIntParam::dec() {
+    val_ = constrain(val_ - step_, min_, max_);
+}
+
+void AgIntParam::reset() {
+    val_ = constrain(init_, min_, max_);
+}

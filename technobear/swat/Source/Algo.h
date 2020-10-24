@@ -14,7 +14,7 @@ inline float constrain(float v, float vMin, float vMax) {
 
 class AlgoParam {
 public:
-    AlgoParam(const std::string& n,const std::string& d) : name_(n), desc_(d) {;}
+    AlgoParam(const std::string& n, const std::string& d) : name_(n), desc_(d) {;}
     std::string name() { return name_;}
     std::string desc() { return desc_;}
     virtual void inc() = 0;
@@ -31,9 +31,9 @@ private:
 class AgFloatParam : public AlgoParam {
 public:
     AgFloatParam(
-        const std::string& n, const std::string& d, 
+        const std::string& n, const std::string& d,
         float init = 0.0f, float min = 0.0f, float max = 1.0f, float step = 0.01f)
-        : AlgoParam(n,d), val_(init), init_(init), min_(min), max_(max), step_(step)  {;}
+        : AlgoParam(n, d), val_(init), init_(init), min_(min), max_(max), step_(step)  {;}
     void inc() override;
     void dec() override;
     void reset() override;
@@ -43,6 +43,24 @@ private:
     float val_;
     float init_, min_, max_, step_;
 };
+
+
+class AgIntParam : public AlgoParam {
+public:
+    AgIntParam(
+        const std::string& n, const std::string& d,
+        int init = 0 , int min = 0, int max = 127, int step = 1)
+        : AlgoParam(n, d), val_(init), init_(init), min_(min), max_(max), step_(step)  {;}
+    void inc() override;
+    void dec() override;
+    void reset() override;
+    float floatVal() override { return (float) val_;}
+    void  floatVal(float v) override { val_ = constrain(int(v), min_, max_);}
+private:
+    int val_;
+    int init_, min_, max_, step_;
+};
+
 
 
 // base for all algorithms
@@ -73,14 +91,14 @@ public:
     void readFromXml(juce::XmlElement& xml);
 
     static float cv2Pitch(float r) {
-#ifndef __APPLE__        
+#ifndef __APPLE__
         // SSP SDK
         static constexpr float p1 = 0.02325f; // first A note
         static constexpr float p2 = 0.21187f; // second A note
-#else 
+#else
         static constexpr float p1 = 0.0f; // first A note
         static constexpr float p2 = 0.2f; // second A note
-#endif         
+#endif
         static constexpr float scale = 12.0f / (p2 - p1);
         float arg = r;
         arg = arg - p1;
@@ -90,23 +108,23 @@ public:
 
 
     float pitch2Cv(float r) {
-#ifndef __APPLE__        
+#ifndef __APPLE__
         // SSP SDK
         static constexpr float p1 = 0.02325f; // first A note
         static constexpr float p2 = 0.21187f; // second A note
-#else 
+#else
         static constexpr float p1 = 0.0f; // first A note
         static constexpr float p2 = 0.2f; // second A note
-#endif         
+#endif
         static constexpr float iscale = (p2 - p1) / 12.0f;
         float arg = r;
-        arg = arg * iscale; 
+        arg = arg * iscale;
         arg = arg + p1;
         return arg;
     }
 
     static double   getSampleRate() { return sampleRate_;}
-    static void     setSampleRate(double sr) { sampleRate_=sr;}
+    static void     setSampleRate(double sr) { sampleRate_ = sr;}
 
     std::vector<std::shared_ptr<AlgoParam>> params_;
     static double sampleRate_;

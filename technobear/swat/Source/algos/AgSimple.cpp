@@ -222,6 +222,7 @@ void AgMapVV::process(
             FloatVectorOperations::copy(a, x, n);
             FloatVectorOperations::multiply(a, scale, n);
             FloatVectorOperations::add(a, offset, n);
+            for(auto i=0;i < n;i++) a[i]=constrain(a[i],minOut_,maxOut_);
         }
         else  {
             FloatVectorOperations::fill(a, minOut_, n);
@@ -234,6 +235,7 @@ void AgMapVV::process(
             FloatVectorOperations::copy(b, y, n);
             FloatVectorOperations::multiply(b, scale, n);
             FloatVectorOperations::add(b, offset, n);
+            for(auto i=0;i < n;i++) b[i]=constrain(b[i],minOut_,maxOut_);
         }
         else  {
             FloatVectorOperations::fill(b, minOut_, n);
