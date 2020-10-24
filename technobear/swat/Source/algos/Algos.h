@@ -7,12 +7,15 @@ enum AlgoDef {
     A_MIN_MAX,      // AgMinMax     - Simple
     A_SWITCH,       // AgSwitch     - Simple
     A_EQUAL,        // AgEqual      - Simple
-    A_CONSTANT_N,   // AgConstantN  - Musical 
+    A_TRANSPOSE,    // AgTranspose  - Musical 
     A_EQUAL_N,      // AgEqualN     - Musical 
     A_DELAY,        // AgDelay      - Delay
     A_LOGIC_AND,    // AgLogicAnd   - Logic
     A_LOGIC_OR,     // AgLogicOr    - Logic
-    A_LOGIC_XOR,    // AgLogicXor    - Logic
+    A_LOGIC_XOR,    // AgLogicXor   - Logic
+    A_MAP_VV,       // AgMapVV      - Simple
+    A_MAP_NV,       // AgMapNV      - Musical
+    A_MAP_NN,       // AgMapNN      - Musical
     A_MAX
 };
 

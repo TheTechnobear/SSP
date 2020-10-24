@@ -72,7 +72,7 @@ public:
     void writeToXml(juce::XmlElement& xml);
     void readFromXml(juce::XmlElement& xml);
 
-    float cv2Pitch(float r) {
+    static float cv2Pitch(float r) {
 #ifndef __APPLE__        
         // SSP SDK
         static constexpr float p1 = 0.02325f; // first A note

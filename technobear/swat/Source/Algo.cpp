@@ -77,9 +77,11 @@ void Algo::drawHelp(Graphics& g) {
     x = x + 300;
     y = yText;
 
-    unsigned enc=1;
+    unsigned enc = 1;
     for (auto p : params_) {
-        g.drawSingleLineText("Enc " + String(enc) + " : " +p->name() + " - " + p->desc(), x, y); y += space;
+        String desc;
+        if (p->desc().length() > 0 ) desc = " - " + p->desc();
+        g.drawSingleLineText("Enc " + String(enc) + " : " + p->name() + desc, x, y); y += space;
         enc++;
     }
 }

@@ -8,8 +8,6 @@ static const char *xmlTag = JucePlugin_Name;
 
 #include "algos/Algos.h"
 
-
-
 std::shared_ptr<Algo>  PluginProcessor::createAlgo(unsigned a) {
     switch (a) {
     case A_DISPLAY      : return std::make_shared<AgDisplay>();
@@ -18,12 +16,15 @@ std::shared_ptr<Algo>  PluginProcessor::createAlgo(unsigned a) {
     case A_MIN_MAX      : return std::make_shared<AgMinMax>();
     case A_SWITCH       : return std::make_shared<AgSwitch>();
     case A_EQUAL        : return std::make_shared<AgEqual>();
-    case A_CONSTANT_N   : return std::make_shared<AgConstantN>();
+    case A_TRANSPOSE    : return std::make_shared<AgTranspose>();
     case A_EQUAL_N      : return std::make_shared<AgEqualN>();
     case A_DELAY        : return std::make_shared<AgDelay>();
     case A_LOGIC_AND    : return std::make_shared<AgLogicAnd>();
     case A_LOGIC_OR     : return std::make_shared<AgLogicOr>();
-    case A_LOGIC_XOR     : return std::make_shared<AgLogicXor>();
+    case A_LOGIC_XOR    : return std::make_shared<AgLogicXor>();
+    case A_MAP_VV       : return std::make_shared<AgMapVV>();
+    case A_MAP_NV       : return std::make_shared<AgMapNV>();
+    case A_MAP_NN       : return std::make_shared<AgMapNN>();
     default: 
         assert(false);
     }
@@ -34,17 +35,20 @@ std::shared_ptr<Algo>  PluginProcessor::createAlgo(unsigned a) {
 PluginProcessor::PluginProcessor()
 {
     algoDisplayOrder_.push_back(A_DISPLAY);
-    algoDisplayOrder_.push_back(A_CONSTANT);
-    algoDisplayOrder_.push_back(A_P_ADDER);
-    algoDisplayOrder_.push_back(A_MIN_MAX);
-    algoDisplayOrder_.push_back(A_SWITCH);
+    algoDisplayOrder_.push_back(A_TRANSPOSE);
     algoDisplayOrder_.push_back(A_EQUAL);
-    algoDisplayOrder_.push_back(A_CONSTANT_N);
     algoDisplayOrder_.push_back(A_EQUAL_N);
-    algoDisplayOrder_.push_back(A_DELAY);
+    algoDisplayOrder_.push_back(A_MAP_VV);
+    algoDisplayOrder_.push_back(A_MAP_NV);
+    algoDisplayOrder_.push_back(A_MAP_NN);
+    algoDisplayOrder_.push_back(A_MIN_MAX);
     algoDisplayOrder_.push_back(A_LOGIC_AND);
     algoDisplayOrder_.push_back(A_LOGIC_OR);
     algoDisplayOrder_.push_back(A_LOGIC_XOR);
+    algoDisplayOrder_.push_back(A_SWITCH);
+    algoDisplayOrder_.push_back(A_DELAY);
+    algoDisplayOrder_.push_back(A_P_ADDER);
+    algoDisplayOrder_.push_back(A_CONSTANT);
 
     assert(algoDisplayOrder_.size() == A_MAX);
 

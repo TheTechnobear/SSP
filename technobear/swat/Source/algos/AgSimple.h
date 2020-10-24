@@ -167,3 +167,39 @@ private:
 };
 
 
+class AgMapVV : public Algo {
+public:
+    AgMapVV() {
+        lastA_ = lastB_ = 0.0f;
+        params_.push_back(std::make_shared<AgFloatParam>("MinIn",   "", -1.0f, -1.0f, 1.0f, 0.01f));
+        params_.push_back(std::make_shared<AgFloatParam>("MaxIn",   "", 1.0f, -1.0f, 1.0f, 0.01f));
+        params_.push_back(std::make_shared<AgFloatParam>("MinOut",  "", 0.0f, -1.0f, 1.0f, 0.01f));
+        params_.push_back(std::make_shared<AgFloatParam>("MaxOut",  "", 1.0f, -1.0f, 1.0f, 0.01f));
+        minIn_  = params_[0]->floatVal();
+        maxIn_  = params_[1]->floatVal();
+        minOut_ = params_[2]->floatVal();
+        maxOut_ = params_[3]->floatVal();
+    }
+
+    unsigned type() override { return A_MAP_VV;}
+    std::string name() override { return "Map range v to v"; }
+    std::string description() {
+        return
+            "A = X : in range to out range\n"
+            "B = Y : in range to out range\n"
+            ;
+    }
+
+    virtual void process( const float* x, const float* y, const float* z,
+                          float* a, float* b, unsigned n) override;
+    void paint (Graphics& g) override;
+
+private:
+    std::atomic<float> lastA_;
+    std::atomic<float> lastB_;
+    std::atomic<float> minIn_;
+    std::atomic<float> maxIn_;
+    std::atomic<float> minOut_;
+    std::atomic<float> maxOut_;
+};
+

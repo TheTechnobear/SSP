@@ -21,7 +21,7 @@ void AgConstant::process(
         if (x) FloatVectorOperations::copy(a, x, n);
         else FloatVectorOperations::fill(a, 0.0f, n);
         FloatVectorOperations::add(a, A_, n);
-        lastA_=a[0];
+        lastA_ = a[0];
     }
 
 
@@ -29,7 +29,7 @@ void AgConstant::process(
         if (y) FloatVectorOperations::copy(b, y, n);
         else FloatVectorOperations::fill(b, 0.0f, n);
         FloatVectorOperations::add(b, B_, n);
-        lastB_=b[0];
+        lastB_ = b[0];
     }
 }
 
@@ -89,24 +89,44 @@ void AgMinMax::process(
     unsigned n) {
 
     bool gate = true;
-    float x0 = 0.0f, y0 = 0.0f;
-    if (z != nullptr) gate = z[0];
+    for (auto i = 0; i < n; i++) {
+        if (z != nullptr) gate = z[i];
+        if (gate) {
+            float xi = ( x == nullptr ?  0.0f : x[i]);
+            float yi = ( y == nullptr ?  0.0f : y[i]);
 
-    if (x != nullptr) x0 = x[0];
-    if (y != nullptr) y0 = y[0];
+            if (a != nullptr) a[i] = std::min(xi, yi);
+            if (b != nullptr) b[i] = std::max(xi, yi);
 
-    if (gate) {
-        lastA_ = std::min(x0, y0);
-        lastB_ = std::max(x0, y0);
+        } else {
+            if (a != nullptr) a[i] = lastA_;
+            if (b != nullptr) b[i] = lastB_;
+        }
     }
 
-    if (a != nullptr) {
-        FloatVectorOperations::fill(a, lastA_ , n);
-    }
+    if (a != nullptr) lastA_ = a[0];
+    if (b != nullptr) lastB_ = b[0];
 
-    if (b != nullptr) {
-        FloatVectorOperations::fill(b, lastB_ , n);
-    }
+    // control rate variation
+    // bool gate = true;
+    // float x0 = 0.0f, y0 = 0.0f;
+    // if (z != nullptr) gate = z[0];
+
+    // if (x != nullptr) x0 = x[0];
+    // if (y != nullptr) y0 = y[0];
+
+    // if (gate) {
+    //     lastA_ = std::min(x0, y0);
+    //     lastB_ = std::max(x0, y0);
+    // }
+
+    // if (a != nullptr) {
+    //     FloatVectorOperations::fill(a, lastA_ , n);
+    // }
+
+    // if (b != nullptr) {
+    //     FloatVectorOperations::fill(b, lastB_ , n);
+    // }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -179,3 +199,70 @@ void AgEqual::process(
         FloatVectorOperations::fill(b, lastB_ , n);
     }
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+// "A = X : in range -> out range\n"
+// "B = Y : in range -> out range\n"
+void AgMapVV::process(
+    const float* x, const float* y, const float* z,
+    float* a, float* b,
+    unsigned n) {
+
+    minIn_  = params_[0]->floatVal();
+    maxIn_  = params_[1]->floatVal();
+    minOut_ = params_[2]->floatVal();
+    maxOut_ = params_[3]->floatVal();
+
+    float scale  =  (maxOut_ - minOut_) / (maxIn_ - minIn_);
+    float offset = minOut_ - (minIn_ * scale) ;
+
+    if (a != nullptr) {
+        if (x)  {
+            FloatVectorOperations::copy(a, x, n);
+            FloatVectorOperations::multiply(a, scale, n);
+            FloatVectorOperations::add(a, offset, n);
+        }
+        else  {
+            FloatVectorOperations::fill(a, minOut_, n);
+        }
+        lastA_ = a[0];
+    }
+
+    if (b != nullptr) {
+        if (y)  {
+            FloatVectorOperations::copy(b, y, n);
+            FloatVectorOperations::multiply(b, scale, n);
+            FloatVectorOperations::add(b, offset, n);
+        }
+        else  {
+            FloatVectorOperations::fill(b, minOut_, n);
+        }
+        lastB_ = b[0];
+    }
+}
+
+void AgMapVV::paint (Graphics& g) {
+    Algo::paint(g);
+    unsigned space = 32;
+    unsigned fh = 32;
+    unsigned x = space;
+    unsigned y = 100;
+    g.setColour(Colours::white);
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+
+    g.drawSingleLineText("Min In : " + String(minIn_), x, y);
+    y += space;
+    g.drawSingleLineText("Max In : " + String(maxIn_), x, y);
+    y += space * 2;
+    g.drawSingleLineText("Min Out : " + String(minOut_), x, y);
+    y += space;
+    g.drawSingleLineText("Max Out : " + String(maxOut_), x, y);
+
+    y += space * 4;
+    g.drawSingleLineText("A : " + String(lastA_), x, y);
+    y += space;
+    g.drawSingleLineText("B : " + String(lastB_), x, y);
+    // g.drawSingleLineText("A : " + String::formatted("%4.2f", A), x, y);
+}
+
