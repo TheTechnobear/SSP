@@ -40,7 +40,7 @@ void AgDelay::process(
     if (x != nullptr) {
         if (writePos_ + n < delayLineSz_ ) {
             // straight copy into buffer
-            assert(delayLineSz_ > n); // assume dly line > buffer
+            //assert(delayLineSz_ > n); // assume dly line > buffer
             FloatVectorOperations::copy(delayLine_ + writePos_, x, n);
             writePos_ += n;
         } else {

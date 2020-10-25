@@ -105,7 +105,7 @@ public:
     }
 
     unsigned type() override { return A_MAP_NV;}
-    std::string name() override { return "Map range note to v"; }
+    std::string name() override { return "Map note to value"; }
     std::string description() override {
         return
             "A = X : in range to out range\n"
@@ -146,7 +146,7 @@ public:
     }
 
     unsigned type() override { return A_MAP_NN;}
-    std::string name() override { return "Map range note to v"; }
+    std::string name() override { return "Map note to note"; }
     std::string description() override {
         return
             "A = X : in range to out range\n"

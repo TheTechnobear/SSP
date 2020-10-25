@@ -221,7 +221,7 @@ public:
     }
 
     unsigned type() override { return A_MAP_VV;}
-    std::string name() override { return "Map range v to v"; }
+    std::string name() override { return "Map value to value"; }
     std::string description() override {
         return
             "A = X : in range to out range\n"
