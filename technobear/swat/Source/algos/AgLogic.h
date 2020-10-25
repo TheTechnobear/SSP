@@ -13,7 +13,7 @@ public:
     // general
     unsigned type() override { return A_LOGIC_AND;}
     std::string name() override { return "Logic - AND"; }
-    std::string description() {
+    std::string description() override {
         return
             "A = X AND Y\n"
             "B = ! (X AND Y)\n"
@@ -47,7 +47,7 @@ public:
     // general
     unsigned type() override { return A_LOGIC_OR;}
     std::string name() override { return "Logic - OR"; }
-    std::string description() {
+    std::string description() override {
         return
             "A = X OR Y\n"
             "B = ! (X OR Y)\n"
@@ -80,7 +80,7 @@ public:
     // general
     unsigned type() override { return A_LOGIC_XOR;}
     std::string name() override { return "Logic - XOR"; }
-    std::string description() {
+    std::string description() override {
         return
             "A = X XOR Y\n"
             "B = ! (X XOR Y)\n"

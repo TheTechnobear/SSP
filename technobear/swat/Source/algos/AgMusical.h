@@ -44,25 +44,31 @@ private:
 };
 
 
-class AgEqualN : public Algo {
+class AgComparatorN : public Algo {
 public:
-    AgEqualN() {
+    AgComparatorN() {
+        lastTS_ = false;
         lastA_ = lastB_ = 0.0f;
         int minPitch  = -60;
         int maxPitch  = 60;
         int zeroPitch = 0 ;
         int oneSemi   = 1;
-        params_.push_back(std::make_shared<AgIntParam>("Note",  "Reference Note", zeroPitch, minPitch, maxPitch, oneSemi));
-        N_ = params_[0]->floatVal();
+        float qtrSemiCv = pitch2Cv(0.25f);
+        params_.push_back(std::make_shared<AgIntParam>("LNote",  "Low Note", zeroPitch, minPitch, maxPitch, oneSemi));
+        params_.push_back(std::make_shared<AgIntParam>("HNote",  "High Note", zeroPitch, minPitch, maxPitch, oneSemi));
+        params_.push_back(std::make_shared<AgFloatParam>("H",  "Hysterisis", qtrSemiCv, -1.0f, 1.0f, 0.001f));
+        NH_ = params_[0]->floatVal();
+        NL_ = params_[1]->floatVal();
+        H_  = params_[2]->floatVal();
     }
 
-    unsigned type() override { return A_EQUAL_N;}
-    std::string name() override { return "Equal Note"; }
+    unsigned type() override { return A_COMPARATOR_N;}
+    std::string name() override { return "Note comparator"; }
     std::string description() override {
         return
-            "A = X == Note + Y , 1  else 0\n"
-            "B = X != Note + Y , 1  else 0\n"
-            "Z hold"
+            "A = gate (X > L  & X < H ) && Y\n"
+            "B = ! A\n"
+            "Z Hysterisis"
             ;
     }
 
@@ -71,7 +77,11 @@ public:
     void paint (Graphics& g) override;
 
 private:
-    std::atomic<int> N_;
+    std::atomic<int> NL_;
+    std::atomic<int> NH_;
+    std::atomic<int> H_;
+
+    std::atomic<bool>  lastTS_;
     std::atomic<float> lastA_;
     std::atomic<float> lastB_;
 };

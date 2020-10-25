@@ -14,7 +14,7 @@ public:
 
     unsigned type() override { return A_DISPLAY;}
     std::string name() override { return "Display"; }
-    std::string description() {
+    std::string description() override {
         return
             "Display X, Y, Z\n"
             "No Outputs\n"

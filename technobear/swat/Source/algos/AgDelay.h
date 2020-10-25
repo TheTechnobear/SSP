@@ -25,7 +25,7 @@ public:
 
     unsigned type() override { return A_DELAY;}
     std::string name() override { return "Delay"; }
-    std::string description() {
+    std::string description() override {
         return
             "X = Signal\n"
             "Y = Delay (% buffer)\n"

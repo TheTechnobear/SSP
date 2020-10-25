@@ -171,34 +171,113 @@ void AgSwitch::process(
 
 ///////////////////////////////////////////////////////////////////////////////
 
-// "A = X == Y , 1  else 0\n"
-// "B = X != Y , 1  else 0\n"
-// "Z hold"
-void AgEqual::process(
+template<typename T> bool comparator(bool TS, T S1, T Th, T Hy ) {
+    return TS ? S1 >= (Th - Hy) : S1 >= Th;
+}
+
+// "A = gate X > Y\n"
+// "B = ! A\n"
+// "Z Hysterisis"
+void AgComparator::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
     unsigned n) {
 
-    bool gate = true;
-    float x0 = 0.0f, y0 = 0.0f;
-    if (z != nullptr) gate = z[0];
+    if (a != nullptr) {
+        for (auto i = 0; i < n; i++) {
+            float TS = lastTS_;
+            float S1 = x != nullptr ? x[i] : 0.0f;
+            float T = y != nullptr ? y[i] : 0.0f;
+            float H = z != nullptr ? z[i] : 0.0f;
 
-    if (x != nullptr) x0 = x[0];
-    if (y != nullptr) y0 = y[0];
+            // if(i==0) Logger::writeToLog("comparator " + String(S1) + ">" +String(T) + " " + String(comparator(S0,S1,T,H)));
+            // if(i==0) Logger::writeToLog("comparator " + String(S1) + ">" +String(T) + " " + String(S1>T));
 
-    if (gate) {
-        lastA_ = x0 == y0;
-        lastB_ = x0 != y0;
+            a[i] = comparator<float>(TS, S1, T, H);
+            lastTS_ = a[i] > 0.5f;
+            // lastX_ = S1;
+            if (b != nullptr) {
+                b[i] = ! a[i];
+            }
+        }
+    } else if (b != nullptr) {
+        FloatVectorOperations::fill(b, 0.0f , n);
     }
+
+    lastA_ = a != nullptr ? a[0] : 0.0f;
+    lastB_ = b != nullptr ? b[0] : 0.0f;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+// "A = gate X > (L-Y) & X < (H+Y)\n"
+// "B = ! A\n"
+// "Z Hysterisis"
+
+
+void AgComparatorW::process(
+    const float* x, const float* y, const float* z,
+    float* a, float* b,
+    unsigned n) {
+
+    LOW_  = params_[0]->floatVal();
+    HIGH_  = params_[1]->floatVal();
+    H_  = params_[2]->floatVal();
 
     if (a != nullptr) {
-        FloatVectorOperations::fill(a, lastA_ , n);
+        for (auto i = 0; i < n; i++) {
+            float S1 = x != nullptr ? x[i] : 0.0f;
+            float HY = z != nullptr ? z[i] + H_ : (float) H_;
+            float TS = lastTS_;
+
+            // high
+            float HT = y != nullptr ? LOW_ + y[i] : (float) LOW_;
+            bool Ha = comparator<float>(TS, S1, HT, HY);
+
+            // low
+            float LT = y != nullptr ? HIGH_ - y[i] : (float) HIGH_;
+            bool La = comparator<float>(TS, LT, S1, HY);
+
+            a[i] = Ha && La;
+
+            lastTS_ = a[i] > 0.5f;
+            if (b != nullptr) {
+                b[i] = ! a[i];
+            }
+
+        }
+    } else if (b != nullptr) {
+        FloatVectorOperations::fill(b, 0.0f , n);
     }
 
-    if (b != nullptr) {
-        FloatVectorOperations::fill(b, lastB_ , n);
-    }
+    lastA_ = a != nullptr ? a[0] : 0.0f;
+    lastB_ = b != nullptr ? b[0] : 0.0f;
 }
+
+void AgComparatorW::paint (Graphics& g) {
+    Algo::paint(g);
+    unsigned space = 32;
+    unsigned fh = 32;
+    unsigned x = space;
+    unsigned y = 100;
+    g.setColour(Colours::white);
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+
+    g.drawSingleLineText("Low: " + String(LOW_), x, y);
+    y += space;
+    g.drawSingleLineText("High : " + String(HIGH_), x, y);
+    y += space;
+    g.drawSingleLineText("Hysterisis : " + String(H_), x, y);
+
+    y += space * 4;
+    g.drawSingleLineText("A : " + String(lastA_), x, y);
+    y += space;
+    g.drawSingleLineText("B : " + String(lastB_), x, y);
+    // g.drawSingleLineText("A : " + String::formatted("%4.2f", A), x, y);
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -222,7 +301,7 @@ void AgMapVV::process(
             FloatVectorOperations::copy(a, x, n);
             FloatVectorOperations::multiply(a, scale, n);
             FloatVectorOperations::add(a, offset, n);
-            for(auto i=0;i < n;i++) a[i]=constrain(a[i],minOut_,maxOut_);
+            for (auto i = 0; i < n; i++) a[i] = constrain(a[i], minOut_, maxOut_);
         }
         else  {
             FloatVectorOperations::fill(a, minOut_, n);
@@ -235,7 +314,7 @@ void AgMapVV::process(
             FloatVectorOperations::copy(b, y, n);
             FloatVectorOperations::multiply(b, scale, n);
             FloatVectorOperations::add(b, offset, n);
-            for(auto i=0;i < n;i++) b[i]=constrain(b[i],minOut_,maxOut_);
+            for (auto i = 0; i < n; i++) b[i] = constrain(b[i], minOut_, maxOut_);
         }
         else  {
             FloatVectorOperations::fill(b, minOut_, n);

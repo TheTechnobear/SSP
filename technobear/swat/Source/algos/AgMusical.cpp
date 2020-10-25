@@ -83,39 +83,58 @@ void AgTranspose::paint (Graphics& g) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-// "A = X == Note + Y , 1  else 0\n"
-// "B = X != Note + Y , 1  else 0\n"
-// "Z hold"
-void AgEqualN::process(
+template<typename T> bool comparator(bool TS, T S1, T Th, T Hy ) {
+    return TS ? S1 >= (Th - Hy) : S1 >= Th;
+}
+
+// "A = gate (X > L  & X < H ) && Y\n"
+// "B = ! A\n"
+// "Z Hysterisis"
+void AgComparatorN::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
     unsigned n) {
 
-    N_ = params_[0]->floatVal();
+    NL_ = params_[0]->floatVal();
+    NH_ = params_[1]->floatVal();
+    H_  = params_[2]->floatVal();
 
-    bool gate = true;
-    float x0 = 0.0f, y0 = N_;
-    if (z != nullptr) gate = z[0];
-
-    if (x != nullptr) x0 = x[0];
-    if (y != nullptr) y0 = pitch2Cv(N_) + y[0] ;
-
-    if (gate) {
-        lastA_ = x0 == y0;
-        lastB_ = x0 != y0;
-    }
+    float LOW_  = pitch2Cv(NL_);
+    float HIGH_  = pitch2Cv(NH_);
 
     if (a != nullptr) {
-        FloatVectorOperations::fill(a, lastA_ , n);
+        for (auto i = 0; i < n; i++) {
+            bool yGate = y != nullptr ? y[i] > 0.5f : true;
+            float TS = lastTS_;
+            float S1 = x != nullptr ? x[i] : 0.0f;
+            float HY = z != nullptr ? z[i] + H_ : (float) H_;
+
+            // high
+            float HT = LOW_;
+            bool Ha = comparator<float>(TS, S1, HT, HY);
+
+            // low 
+            float LT = HIGH_;
+            bool La = comparator<float>(TS, LT, S1, HY);
+
+            a[i] = (Ha && La) && yGate;
+
+            lastTS_ = a[i] > 0.5f;
+            if (b != nullptr) {
+                b[i] = ! a[i];
+            }
+        }
+    } else if (b != nullptr) {
+        FloatVectorOperations::fill(b, 0.0f , n);
     }
 
-    if (b != nullptr) {
-        FloatVectorOperations::fill(b, lastB_ , n);
-    }
+    lastA_ = a != nullptr ? a[0] : 0.0f;
+    lastB_ = b != nullptr ? b[0] : 0.0f;
+
 }
 
 
-void AgEqualN::paint (Graphics& g) {
+void AgComparatorN::paint (Graphics& g) {
     Algo::paint(g);
     unsigned space = 32;
     unsigned fh = 32;
@@ -124,7 +143,11 @@ void AgEqualN::paint (Graphics& g) {
     g.setColour(Colours::white);
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
 
-    g.drawSingleLineText("Note : " + noteString(N_), x, y);
+    g.drawSingleLineText("Low Note : " + noteString(NL_), x, y);
+    y += space;
+    g.drawSingleLineText("High Note : " + noteString(NH_), x, y);
+    y += space;
+    g.drawSingleLineText("Hysterisis : " + String(H_), x, y);
 
     y += space * 4;
     g.drawSingleLineText("A : " + String(lastA_), x, y);
@@ -150,8 +173,8 @@ void AgMapNV::process(
     maxOut_ = params_[3]->floatVal();
 
 
-    float minInCV= pitch2Cv(minIn_);
-    float maxInCV= pitch2Cv(maxIn_);
+    float minInCV = pitch2Cv(minIn_);
+    float maxInCV = pitch2Cv(maxIn_);
 
     float scale  =  (maxOut_ - minOut_) / (maxInCV - minInCV);
     float offset = minOut_ - (minInCV * scale) ;
@@ -161,7 +184,7 @@ void AgMapNV::process(
             FloatVectorOperations::copy(a, x, n);
             FloatVectorOperations::multiply(a, scale, n);
             FloatVectorOperations::add(a, offset, n);
-            for(auto i=0;i < n;i++) a[i]=constrain(a[i],minOut_,maxOut_);
+            for (auto i = 0; i < n; i++) a[i] = constrain(a[i], minOut_, maxOut_);
         }
         else  {
             FloatVectorOperations::fill(a, minOut_, n);
@@ -174,7 +197,7 @@ void AgMapNV::process(
             FloatVectorOperations::copy(b, y, n);
             FloatVectorOperations::multiply(b, scale, n);
             FloatVectorOperations::add(b, offset, n);
-            for(auto i=0;i < n;i++) b[i]=constrain(b[i],minOut_,maxOut_);
+            for (auto i = 0; i < n; i++) b[i] = constrain(b[i], minOut_, maxOut_);
         }
         else  {
             FloatVectorOperations::fill(b, minOut_, n);
@@ -223,10 +246,10 @@ void AgMapNN::process(
     minOut_ = params_[2]->floatVal();
     maxOut_ = params_[3]->floatVal();
 
-    float minInCV= pitch2Cv(minIn_);
-    float maxInCV= pitch2Cv(maxIn_);
-    float minOutCV= pitch2Cv(minOut_);
-    float maxOutCV= pitch2Cv(maxOut_);
+    float minInCV = pitch2Cv(minIn_);
+    float maxInCV = pitch2Cv(maxIn_);
+    float minOutCV = pitch2Cv(minOut_);
+    float maxOutCV = pitch2Cv(maxOut_);
 
     float scale  =  (maxOutCV - minOutCV) / (maxInCV - minInCV);
     float offset = minOutCV - (minInCV * scale) ;
@@ -236,7 +259,7 @@ void AgMapNN::process(
             FloatVectorOperations::copy(a, x, n);
             FloatVectorOperations::multiply(a, scale, n);
             FloatVectorOperations::add(a, offset, n);
-            for(auto i=0;i < n;i++) a[i]=constrain(a[i],minOutCV,maxOutCV);
+            for (auto i = 0; i < n; i++) a[i] = constrain(a[i], minOutCV, maxOutCV);
         }
         else  {
             FloatVectorOperations::fill(a, minOut_, n);
@@ -249,7 +272,7 @@ void AgMapNN::process(
             FloatVectorOperations::copy(b, y, n);
             FloatVectorOperations::multiply(b, scale, n);
             FloatVectorOperations::add(b, offset, n);
-            for(auto i=0;i < n;i++) b[i]=constrain(b[i],minOutCV,maxOutCV);
+            for (auto i = 0; i < n; i++) b[i] = constrain(b[i], minOutCV, maxOutCV);
         }
         else  {
             FloatVectorOperations::fill(b, minOut_, n);

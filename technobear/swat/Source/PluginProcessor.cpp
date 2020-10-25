@@ -15,9 +15,9 @@ std::shared_ptr<Algo>  PluginProcessor::createAlgo(unsigned a) {
     case A_P_ADDER      : return std::make_shared<AgPrecAdder>();
     case A_MIN_MAX      : return std::make_shared<AgMinMax>();
     case A_SWITCH       : return std::make_shared<AgSwitch>();
-    case A_EQUAL        : return std::make_shared<AgEqual>();
+    case A_COMPARATOR_W : return std::make_shared<AgComparatorW>();
     case A_TRANSPOSE    : return std::make_shared<AgTranspose>();
-    case A_EQUAL_N      : return std::make_shared<AgEqualN>();
+    case A_COMPARATOR_N : return std::make_shared<AgComparatorN>();
     case A_DELAY        : return std::make_shared<AgDelay>();
     case A_LOGIC_AND    : return std::make_shared<AgLogicAnd>();
     case A_LOGIC_OR     : return std::make_shared<AgLogicOr>();
@@ -25,6 +25,7 @@ std::shared_ptr<Algo>  PluginProcessor::createAlgo(unsigned a) {
     case A_MAP_VV       : return std::make_shared<AgMapVV>();
     case A_MAP_NV       : return std::make_shared<AgMapNV>();
     case A_MAP_NN       : return std::make_shared<AgMapNN>();
+    case A_COMPARATOR   : return std::make_shared<AgComparator>();
     default: 
         assert(false);
     }
@@ -36,8 +37,9 @@ PluginProcessor::PluginProcessor()
 {
     algoDisplayOrder_.push_back(A_DISPLAY);
     algoDisplayOrder_.push_back(A_TRANSPOSE);
-    algoDisplayOrder_.push_back(A_EQUAL);
-    algoDisplayOrder_.push_back(A_EQUAL_N);
+    algoDisplayOrder_.push_back(A_COMPARATOR);
+    algoDisplayOrder_.push_back(A_COMPARATOR_W);
+    algoDisplayOrder_.push_back(A_COMPARATOR_N);
     algoDisplayOrder_.push_back(A_MAP_VV);
     algoDisplayOrder_.push_back(A_MAP_NV);
     algoDisplayOrder_.push_back(A_MAP_NN);
