@@ -19,6 +19,7 @@ void AgDelay::process(
     size_ = params_[0]->floatVal();
 
     unsigned dlSz = getSampleRate() * (size_ / 1000.0f);
+
     if (delayLineSz_ != dlSz) {
 
         if(dlSz < n) {
@@ -35,6 +36,21 @@ void AgDelay::process(
         memset(delayLine_, 0, sizeof(float) * delayLineSz_);
         writePos_ = 0;
     }
+
+
+    delayTime_ = params_[1]->floatVal();
+    if (delayTime_ > size_) {
+        delayTime_ = (float) size_;
+        params_[1]->floatVal(delayTime_);
+    }
+    float y0 = 0.0f;
+    if (y != nullptr) y0 = constrain(y[0], -1.0f, 1.0f);
+    int  dls = (getSampleRate() * (delayTime_ / 1000.0f))  +   (y0 * delayLineSz_);
+    dls = dls < 0 ? 0 : dls;
+    smpDelay_ = dls % delayLineSz_;
+
+    unsigned readPos = (writePos_ + delayLineSz_ - smpDelay_ ) % delayLineSz_;
+
 
     // write delay buffer
     if (x != nullptr) {
@@ -57,25 +73,8 @@ void AgDelay::process(
     }
 
 
-    delayTime_ = params_[1]->floatVal();
-    if (delayTime_ > size_) {
-        delayTime_ = (float) size_;
-        params_[1]->floatVal(delayTime_);
-    }
-
-
-    // output delay signal
-    float y0 = 0.0f;
-    if (y != nullptr) y0 = constrain(y[0], -1.0f, 1.0f);
-    int  dls = (getSampleRate() * (delayTime_ / 1000.0f))  +   (y0 * delayLineSz_);
-    dls = dls < 0 ? 0 : dls;
-    smpDelay_ = dls % delayLineSz_;
-
-    unsigned readPos = (writePos_ - smpDelay_ + delayLineSz_) % delayLineSz_;
-
-
     if (a != nullptr) {
-        if (delayLineSz_ - readPos > n) {
+        if (readPos + n < delayLineSz_ ) {
             // straight copy into buffer
             FloatVectorOperations::copy(a, delayLine_ + readPos, n);
         } else {
@@ -85,14 +84,14 @@ void AgDelay::process(
             }
             unsigned n1 = n - n0;
             if (n1 > 0) {
-                FloatVectorOperations::copy(a, delayLine_ , n1);
+                FloatVectorOperations::copy(a + n0, delayLine_ , n1);
             }
         }
     }
 
 
     if (b != nullptr) {
-        if (delayLineSz_ - readPos > n) {
+        if (readPos + n < delayLineSz_ ) {
             // straight copy into buffer
             FloatVectorOperations::copy(b, delayLine_ + readPos, n);
         } else {
