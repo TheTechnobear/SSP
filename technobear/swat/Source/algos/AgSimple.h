@@ -119,7 +119,7 @@ public:
     std::string description() override {
         return
             "A = Z > 1 , X else Y\n"
-            "B = Z > 1 , Y else Z\n"
+            "B = Z > 1 , Y else X\n"
             "Z switch"
             ;
     }
@@ -261,7 +261,7 @@ public:
     std::string description() override {
         return
             "A = A + -0.5>X<0.5\n"
-            "B = B + -0.5>X<0.5\n"
+            "B = B + -0.5>Y<0.5\n"
             "Z = reset\n"
             ;
     }
