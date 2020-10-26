@@ -46,7 +46,7 @@ String AgDisplay::getNoteValue(float f) {
     int oct = voct / 12;
     unsigned note = unsigned(voct) % MAX_TONICS;
     unsigned cents = (voct - floorf(voct)) * 100;
-    return String(tonics[note] + String(oct)) + " " + String(cents) + " cts";
+    return String(tonics[note] + String(oct - (note < 3))) + " " + String(cents) + " cts";
 }
 
 void AgDisplay::paint (Graphics& g) {

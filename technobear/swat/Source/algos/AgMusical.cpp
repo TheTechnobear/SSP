@@ -28,7 +28,7 @@ String noteString(int f) {
     int voct = f + 60;
     int oct = voct / 12;
     unsigned note = unsigned(voct) % MAX_TONICS;
-    return String(tonics[note]) + String(oct);
+    return String(tonics[note]) + String(oct - (note < 3));
 }
 
 
