@@ -347,3 +347,81 @@ void AgMapVV::paint (Graphics& g) {
     // g.drawSingleLineText("A : " + String::formatted("%4.2f", A), x, y);
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+
+// "A = A + (X > 0.5:step) - (X < -0.5:step)\n"
+// "B = B + (Y > 0.5:step) - (Y < -0.5:step)\n"
+void AgCounter::process(
+    const float* x, const float* y, const float* z,
+    float* a, float* b,
+    unsigned n) {
+
+    min_  = params_[0]->floatVal();
+    max_  = params_[1]->floatVal();
+    step_  = params_[2]->floatVal();
+
+    float min = min_, max = max_, step = step_;
+    float qtrstep = step / 4.0f;
+
+    if (a != nullptr) {
+        if (x != nullptr)  {
+            for (auto i = 0; i < n; i++) {
+                int S = x[i] >= 0.5f ? 1  : ( x[i] <= -0.5f ? -1 : 0 );
+                if (lastXS_ != S ) {
+                    float NS = lastA_ + (S * step);
+                    NS = NS > (max + qtrstep) ? min : NS;
+                    NS = NS < (min - qtrstep) ? max : NS;
+                    lastA_ = NS;
+                }
+                lastXS_ = S;
+                if (z != nullptr && z[i] >= 0.5f) lastA_ = min;
+                a[i] = lastA_;
+            }
+        } else  {
+            FloatVectorOperations::fill(a, min_, n);
+        }
+    }
+
+    if (b != nullptr) {
+        if (y != nullptr)  {
+            for (auto i = 0; i < n; i++) {
+                int S = y[i] >= 0.5f ? 1  : ( y[i] <= -0.5f ? -1 : 0 );
+                if (lastYS_ != S) {
+                    float NS = lastB_ + (S * step);
+                    NS = NS > (max + qtrstep) ? min : NS;
+                    NS = NS < (min - qtrstep) ? max : NS;
+                    lastB_ = NS;
+                }
+                lastYS_ = S;
+                if (z != nullptr && z[i] >= 0.5f) lastB_ = min;
+                b[i] = lastB_;
+            }
+        } else  {
+            FloatVectorOperations::fill(b, min_, n);
+        }
+    }
+}
+
+void AgCounter::paint (Graphics& g) {
+    Algo::paint(g);
+    unsigned space = 32;
+    unsigned fh = 32;
+    unsigned x = space;
+    unsigned y = 100;
+    g.setColour(Colours::white);
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+
+    g.drawSingleLineText("Min : " + String(min_), x, y);
+    y += space;
+    g.drawSingleLineText("Max : " + String(max_), x, y);
+    y += space;
+    g.drawSingleLineText("Step : " + String(step_), x, y);
+
+    y += space * 4;
+    g.drawSingleLineText("A : " + String::formatted("%4.3f", float(lastA_)), x, y);
+    y += space;
+    g.drawSingleLineText("B : " + String::formatted("%4.3f", float(lastB_)), x, y);
+}
+
+

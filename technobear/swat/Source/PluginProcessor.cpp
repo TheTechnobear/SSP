@@ -26,6 +26,7 @@ std::shared_ptr<Algo>  PluginProcessor::createAlgo(unsigned a) {
     case A_MAP_NV       : return std::make_shared<AgMapNV>();
     case A_MAP_NN       : return std::make_shared<AgMapNN>();
     case A_COMPARATOR   : return std::make_shared<AgComparator>();
+    case A_COUNTER      : return std::make_shared<AgCounter>();
     default: 
         assert(false);
     }
@@ -50,6 +51,7 @@ PluginProcessor::PluginProcessor()
     algoDisplayOrder_.push_back(A_SWITCH);
     algoDisplayOrder_.push_back(A_DELAY);
     algoDisplayOrder_.push_back(A_P_ADDER);
+    algoDisplayOrder_.push_back(A_COUNTER);
     algoDisplayOrder_.push_back(A_CONSTANT);
 
     assert(algoDisplayOrder_.size() == A_MAX);

@@ -13,7 +13,7 @@
             isInstrument="0" fileTime="0" numInputs="0" numOutputs="0" isShell="0"/>
     <STATE>0.</STATE>
   </FILTER>
-  <FILTER uid="3" x="0.5" y="0.9" uiLastX="0" uiLastY="0">
+  <FILTER uid="3" x="0.5" y="0.9" uiLastX="0" uiLastY="23">
     <PLUGIN name="Audio Output" descriptiveName="" format="Internal" category="I/O devices"
             manufacturer="Raw Material Software" version="1.0" file="" uid="724248cb"
             isInstrument="0" fileTime="0" numInputs="2" numOutputs="0" isShell="0"/>
@@ -22,67 +22,73 @@
   <FILTER uid="5" x="0.40875" y="0.301852" uiLastX="489" uiLastY="127">
     <PLUGIN name="swat" format="VST" category="Effect" manufacturer="technobear"
             version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/swat.vst"
-            uid="53574154" isInstrument="0" fileTime="17555e5a9e0" numInputs="12"
+            uid="53574154" isInstrument="0" fileTime="17561dc8b88" numInputs="12"
             numOutputs="8" isShell="0"/>
     <STATE>304.CMlaKA....fQBMDZ....AL0UAQE....Y....A...............................................................................................................................................................................PZ0PxDxg....7L2cgQmO7DFam8VLfDFam8VOhDiHfDTOh.iK4PSMv.CLvTiLzTiLvfyMz.iLyPiHfHTOhzBLtHCM4jSN4LyMzDSMwHiL4fSM3PiHu3COgw1YuICHgw1Yu0iHvHxK9vSXrc1ay.RXrc1a8HBLh7hO7DFam8FMfDFam8VOh.iHu3COuL2cgQmO..</STATE>
   </FILTER>
   <FILTER uid="6" x="0.59375" y="0.3" uiLastX="1055" uiLastY="922">
     <PLUGIN name="swat" format="VST" category="Effect" manufacturer="technobear"
             version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/swat.vst"
-            uid="53574154" isInstrument="0" fileTime="17555e5a9e0" numInputs="12"
+            uid="53574154" isInstrument="0" fileTime="17561dc8b88" numInputs="12"
             numOutputs="8" isShell="0"/>
     <STATE>264.CMlaKA....fQBMDZ....AL0UAQE....Y....A...............................................................................................................................................................................nY0PxDxW....7L2cgQmO7DFam8VLfDFam8VOhDiHfDTOhDiHfHTOh.iK0HxK9vSXrc1ax.RXrc1a8HBLh7hO7DFam81LfDFam8VOh.iHu3COgw1YuQCHgw1Yu0iHvHxK9vyKycWXz4C.</STATE>
   </FILTER>
   <FILTER uid="7" x="0.4525" y="0.464815" uiLastX="88" uiLastY="626">
     <PLUGIN name="swat" format="VST" category="Effect" manufacturer="technobear"
             version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/swat.vst"
-            uid="53574154" isInstrument="0" fileTime="17555e5a9e0" numInputs="12"
+            uid="53574154" isInstrument="0" fileTime="17561dc8b88" numInputs="12"
             numOutputs="8" isShell="0"/>
     <STATE>250.CMlaKA....fQBMDZ....AL0UAQE....Y....A...............................................................................................................................................................................ZY0PxDRT....7L2cgQmO7DFam8VLfDFam8VOhHiHu3COgw1YuICHgw1Yu0iHvHxK9vSXrc1ay.RXrc1a8HBLh7hO7DFam8FMfDFam8VOh.iHu3COuL2cgQmO..</STATE>
   </FILTER>
   <FILTER uid="8" x="0.45125" y="0.609259" uiLastX="698" uiLastY="779">
     <PLUGIN name="swat" format="VST" category="Effect" manufacturer="technobear"
             version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/swat.vst"
-            uid="53574154" isInstrument="0" fileTime="17555e5a9e0" numInputs="12"
+            uid="53574154" isInstrument="0" fileTime="17561dc8b88" numInputs="12"
             numOutputs="8" isShell="0"/>
     <STATE>250.CMlaKA....fQBMDZ....AL0UAQE....Y....A...............................................................................................................................................................................ZY0PxDRT....7L2cgQmO7DFam8VLfDFam8VOh.iHu3COgw1YuICHgw1Yu0iHvHxK9vSXrc1ay.RXrc1a8HBLh7hO7DFam8FMfDFam8VOh.iHu3COuL2cgQmO..</STATE>
   </FILTER>
-  <FILTER uid="9" x="0.776735" y="0.32716" uiLastX="749" uiLastY="792">
+  <FILTER uid="9" x="0.772983" y="0.598765" uiLastX="1584" uiLastY="643">
     <PLUGIN name="swat" format="VST" category="Effect" manufacturer="technobear"
             version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/swat.vst"
-            uid="53574154" isInstrument="0" fileTime="17555e5a9e0" numInputs="12"
+            uid="53574154" isInstrument="0" fileTime="17561dc8b88" numInputs="12"
             numOutputs="8" isShell="0"/>
-    <STATE>272.CMlaKA....fQBMDZ....AL0UAQE....Y....A...............................................................................................................................................................................vY0PxDxY....7L2cgQmO7DFam8VLfDFam8VOhfiHfLUZ5UVOhDCLxTiHfPTYrEVd8HBLh7hO7DFam8lLfDFam8VOh.iHu3COgw1YuMCHgw1Yu0iHvHxK9vSXrc1az.RXrc1a8HBLh7hO77xb2EFc9..</STATE>
+    <STATE>292.CMlaKA....fQBMDZ....AL0UAQE....Y....A...............................................................................................................................................................................DZ0PxDxd....7L2cgQmO7DFam8VLfDFam8VOhfiHfLUZ5UVOhDSLyTiHfPTYrEVd8HhMtDSN4jSN1PyMwPCL0.iL4HSN1jiHu3COgw1YuICHgw1Yu0iHvHxK9vSXrc1ay.RXrc1a8HBLh7hO7DFam8FMfDFam8VOh.iHu3COuL2cgQmO..</STATE>
   </FILTER>
-  <FILTER uid="10" x="0.761101" y="0.12963" uiLastX="1712" uiLastY="764">
+  <FILTER uid="10" x="0.77611" y="0.144033" uiLastX="55" uiLastY="726">
     <PLUGIN name="swat" format="VST" category="Effect" manufacturer="technobear"
             version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/swat.vst"
-            uid="53574154" isInstrument="0" fileTime="17555e5a9e0" numInputs="12"
+            uid="53574154" isInstrument="0" fileTime="17561dc8b88" numInputs="12"
             numOutputs="8" isShell="0"/>
-    <STATE>285.CMlaKA....fQBMDZ....AL0UAQE....Y....A...............................................................................................................................................................................8Y0PxDBc....7L2cgQmO7DFam8VLfDFam8VOhDiHfDTOh.iK4jCLv.CLv.SN0LiM2PyLwXCMvXiHfHTOh.iK0HxK9vSXrc1ax.RXrc1a8HBLh7hO7DFam81LfDFam8VOh.iHu3COgw1YuQCHgw1Yu0iHvHxK9vyKycWXz4C.</STATE>
+    <STATE>264.CMlaKA....fQBMDZ....AL0UAQE....Y....A...............................................................................................................................................................................nY0PxDxW....7L2cgQmO7DFam8VLfDFam8VOhDiHfDTOhDiHfHTOh.iK0HxK9vSXrc1ax.RXrc1a8HBLh7hO7DFam81LfDFam8VOh.iHu3COgw1YuQCHgw1Yu0iHvHxK9vyKycWXz4C.</STATE>
   </FILTER>
   <FILTER uid="11" x="0.208881" y="0.705761" uiLastX="1458" uiLastY="680">
     <PLUGIN name="swat" format="VST" category="Effect" manufacturer="technobear"
             version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/swat.vst"
-            uid="53574154" isInstrument="0" fileTime="17555e5a9e0" numInputs="12"
+            uid="53574154" isInstrument="0" fileTime="17561dc8b88" numInputs="12"
             numOutputs="8" isShell="0"/>
     <STATE>251.CMlaKA....fQBMDZ....AL0UAQE....Y....A...............................................................................................................................................................................aY0PxDhT....7L2cgQmO7DFam8VLfDFam8VOhDCLh7hO7DFam8lLfDFam8VOh.iHu3COgw1YuMCHgw1Yu0iHvHxK9vSXrc1az.RXrc1a8HBLh7hO77xb2EFc9..</STATE>
   </FILTER>
   <FILTER uid="12" x="0.144465" y="0.901235" uiLastX="579" uiLastY="993">
     <PLUGIN name="swat" format="VST" category="Effect" manufacturer="technobear"
             version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/swat.vst"
-            uid="53574154" isInstrument="0" fileTime="17555e5a9e0" numInputs="12"
+            uid="53574154" isInstrument="0" fileTime="17561dc8b88" numInputs="12"
             numOutputs="8" isShell="0"/>
     <STATE>250.CMlaKA....fQBMDZ....AL0UAQE....Y....A...............................................................................................................................................................................ZY0PxDRT....7L2cgQmO7DFam8VLfDFam8VOh.iHu3COgw1YuICHgw1Yu0iHvHxK9vSXrc1ay.RXrc1a8HBLh7hO7DFam8FMfDFam8VOh.iHu3COuL2cgQmO..</STATE>
   </FILTER>
   <FILTER uid="13" x="0.118199" y="0.257202" uiLastX="675" uiLastY="707">
     <PLUGIN name="swat" format="VST" category="Effect" manufacturer="technobear"
             version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/swat.vst"
-            uid="53574154" isInstrument="0" fileTime="17555e5a9e0" numInputs="12"
+            uid="53574154" isInstrument="0" fileTime="17561dc8b88" numInputs="12"
             numOutputs="8" isShell="0"/>
     <STATE>264.CMlaKA....fQBMDZ....AL0UAQE....Y....A...............................................................................................................................................................................nY0PxDxW....7L2cgQmO7DFam8VLfDFam8VOhDiHfDTOhDiHfHTOh.iK0HxK9vSXrc1ax.RXrc1a8HBLh7hO7DFam81LfDFam8VOh.iHu3COgw1YuQCHgw1Yu0iHvHxK9vyKycWXz4C.</STATE>
   </FILTER>
-  <CONNECTION srcFilter="1" srcChannel="0" dstFilter="9" dstChannel="0"/>
+  <FILTER uid="14" x="0.804878" y="0.378601" uiLastX="1985" uiLastY="595">
+    <PLUGIN name="plts" format="VST" category="Effect" manufacturer="technobear"
+            version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/plts.vst"
+            uid="504c5453" isInstrument="0" fileTime="17444ab2d18" numInputs="8"
+            numOutputs="2" isShell="0"/>
+    <STATE>342.CMlaKA....fQBMDZ....A.ESTME....Y....A...............................................................................................................................................................................1Z0PxDRq....7.GazMGHvkFcigVOh.iKwPSN4jSN4LSLzTCM1TCN0.CNyHBHnElbs8laoM1b8HBLh.Bco0lXxUVOh.iKwTCLv.CL1XSL1DSL0TyMv.iM3PiHfz1axAGZ8HBLh.hYxUVbe01aj0iHvHBHzkVahIWYe01aj0iHvHBHs8lbvg1Ws8FY8HBLh.RauQVYr0iHwHBHrA2Yi8FauUmb8HBLtTiHfPVYiEVd8HBLtTiHu3C.</STATE>
+  </FILTER>
   <CONNECTION srcFilter="5" srcChannel="0" dstFilter="7" dstChannel="0"/>
   <CONNECTION srcFilter="5" srcChannel="0" dstFilter="11" dstChannel="0"/>
   <CONNECTION srcFilter="5" srcChannel="1" dstFilter="11" dstChannel="1"/>
@@ -91,8 +97,8 @@
   <CONNECTION srcFilter="7" srcChannel="0" dstFilter="8" dstChannel="0"/>
   <CONNECTION srcFilter="7" srcChannel="1" dstFilter="8" dstChannel="1"/>
   <CONNECTION srcFilter="9" srcChannel="0" dstFilter="3" dstChannel="0"/>
-  <CONNECTION srcFilter="10" srcChannel="0" dstFilter="9" dstChannel="1"/>
   <CONNECTION srcFilter="11" srcChannel="0" dstFilter="12" dstChannel="0"/>
   <CONNECTION srcFilter="11" srcChannel="1" dstFilter="12" dstChannel="1"/>
   <CONNECTION srcFilter="13" srcChannel="0" dstFilter="11" dstChannel="2"/>
+  <CONNECTION srcFilter="14" srcChannel="0" dstFilter="9" dstChannel="0"/>
 </FILTERGRAPH>

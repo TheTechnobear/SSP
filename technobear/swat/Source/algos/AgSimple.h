@@ -242,3 +242,41 @@ private:
     std::atomic<float> maxOut_;
 };
 
+
+class AgCounter : public Algo {
+public:
+    AgCounter() {
+        lastXS_ = lastYS_ = 0;
+        params_.push_back(std::make_shared<AgFloatParam>("Min", "", -1.0f, -1.0f, 1.0f, 0.01f));
+        params_.push_back(std::make_shared<AgFloatParam>("Max", "", 1.0f, -1.0f, 1.0f, 0.01f));
+        params_.push_back(std::make_shared<AgFloatParam>("Step","", 0.1f, -1.0f, 1.0f, 0.01f));
+        min_  = params_[0]->floatVal();
+        max_  = params_[1]->floatVal();
+        step_  = params_[2]->floatVal();
+        lastA_ = lastB_ = float(min_);
+    }
+
+    unsigned type() override { return A_COUNTER;}
+    std::string name() override { return "Counter"; }
+    std::string description() override {
+        return
+            "A = A + -0.5>X<0.5\n"
+            "B = B + -0.5>X<0.5\n"
+            "Z = reset\n"
+            ;
+    }
+
+    virtual void process( const float* x, const float* y, const float* z,
+                          float* a, float* b, unsigned n) override;
+    void paint (Graphics& g) override;
+
+private:
+    int lastXS_,lastYS_;
+    std::atomic<float> lastA_;
+    std::atomic<float> lastB_;
+    std::atomic<float> min_;
+    std::atomic<float> max_;
+    std::atomic<float> step_;
+};
+
+

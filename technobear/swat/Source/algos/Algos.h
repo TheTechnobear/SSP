@@ -17,6 +17,7 @@ enum AlgoDef {
     A_MAP_NV,       // AgMapNV      - Musical
     A_MAP_NN,       // AgMapNN      - Musical
     A_COMPARATOR,   // AgComparator - Simple
+    A_COUNTER,      // AgCounter    - Simple
     A_MAX
 };
 
