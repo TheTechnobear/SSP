@@ -304,7 +304,7 @@ AudioProcessorEditor* Clds::createEditor()
 
 
 void Clds::writeToXml(XmlElement& xml) {
-    xml.setAttribute("f_freeze",          double(data_.f_freeze));
+    xml.setAttribute("f_freeze",          bool(data_.f_freeze));
     xml.setAttribute("f_position",        double(data_.f_position));
     xml.setAttribute("f_size",            double(data_.f_size));
     xml.setAttribute("f_pitch",           double(data_.f_pitch));
@@ -326,6 +326,7 @@ void Clds::readFromXml(XmlElement& xml) {
     data_.f_size        = xml.getDoubleAttribute("f_size"      , 0.5f);
     data_.f_pitch       = xml.getDoubleAttribute("f_pitch"     , 0.0f);
     data_.f_density     = xml.getDoubleAttribute("f_density"   , -0.2f);
+    data_.f_texture     = xml.getDoubleAttribute("f_texture"   , 0.5f);
     data_.f_mix         = xml.getDoubleAttribute("f_mix"       , 0.5f);
     data_.f_spread      = xml.getDoubleAttribute("f_spread"    , 0.5f);
     data_.f_feedback    = xml.getDoubleAttribute("f_feedback"  , 0.1f);
