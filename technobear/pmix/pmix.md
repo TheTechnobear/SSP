@@ -11,12 +11,6 @@ I develop these plugins for free, please consider supporting my efforts with a d
 https://ko-fi.com/thetechnobear
 
 
-## Installation
-copy the `plugins/*.so` to sdcard `/plugins`
-
-## Optional Installation
-you may want to copy and rename the demo presets contained in `/presets`
-
 ## General Usage 
 
 8 input channels with individual pan/mute/solo and levels for main,cue , aux 1 and 2

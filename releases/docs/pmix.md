@@ -3,18 +3,13 @@
 a performance mixer for the Percussa SSP
 
 ## Change Log
+1.0.1 Show channels if channels are enabled/disabled
 1.0.0 Initial Release 
 
 ## Developer: TheTechnobear
 I develop these plugins for free, please consider supporting my efforts with a donation.
 https://ko-fi.com/thetechnobear
 
-
-## Installation
-copy the `plugins/*.so` to sdcard `/plugins`
-
-## Optional Installation
-you may want to copy and rename the demo presets contained in `/presets`
 
 ## General Usage 
 

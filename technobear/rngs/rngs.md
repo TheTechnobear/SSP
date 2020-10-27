@@ -21,14 +21,6 @@ note: you will loose presets, as these are now stored in the SSP preset
 I develop these plugins for free, please consider supporting my efforts with a donation.
 https://ko-fi.com/thetechnobear
 
-
-## Installation
-copy the `plugins/*.so` to sdcard `/plugins`
-
-## Optional Installation
-you may want to copy and rename the demo presets contained in `/presets`
-you may now remove `/plugins.preset` folder on SSP sdcard as its no longer used 
-
 ## General Usage 
 
 The best source of information about this module is the Mutable Instruments Rings manual
