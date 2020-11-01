@@ -195,10 +195,29 @@ void Clds::releaseResources()
 
 void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
+    auto& data = data_;
+
+    if(data.processor==nullptr) {
+        data.processor = new clouds::GranularProcessor;
+        auto& processor = *data_.processor;
+
+        data.ibuf = new clouds::ShortFrame[data.iobufsz];
+        data.obuf = new clouds::ShortFrame[data.iobufsz];
+        data.block_mem = new uint8_t[data.block_mem_sz*2];
+        data.block_ccm = new uint8_t[data.block_ccm_sz*2];
+        memset(data.block_mem, 0, sizeof(uint8_t)*data.block_mem_sz*2);
+        memset(data.block_ccm, 0, sizeof(uint8_t)*data.block_ccm_sz*2);
+        memset(processor.mutable_parameters(), 0, sizeof(clouds::Parameters));
+        processor.Init(
+            data.block_mem, data.block_mem_sz,
+            data.block_ccm, data.block_ccm_sz);
+
+    }
+
+
     auto& ibuf = data_.ibuf;
     auto& obuf = data_.obuf;
-    auto& processor = data_.processor;
-    auto& data = data_;
+    auto& processor = *data_.processor;
 
     auto n = CloudsBlock;
 
@@ -254,8 +273,6 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         float spread    = data.f_spread + buffer.getSample(I_SPREAD, bidx);
         float feedback  = data.f_feedback + buffer.getSample(I_FEEDBACK, bidx);
         float reverb    = data.f_reverb + buffer.getSample(I_REVERB, bidx);
-
-
 
         //restrict density to .2 to .8 for granular mode, outside this breaks up
         // density = constrain(density, 0.0f, 1.0f);

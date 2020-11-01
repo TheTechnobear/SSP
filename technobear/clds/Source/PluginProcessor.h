@@ -19,13 +19,10 @@ static constexpr unsigned CloudsBlock = 32;
 
 struct CldsData {
     CldsData() {
-        iobufsz = CloudsBlock;
-        ibuf = new clouds::ShortFrame[iobufsz];
-        obuf = new clouds::ShortFrame[iobufsz];
-        block_mem = new uint8_t[block_mem_sz];
-        block_ccm = new uint8_t[block_ccm_sz];
-        memset(block_mem, 0, sizeof(uint8_t)*block_mem_sz);
-        memset(block_ccm, 0, sizeof(uint8_t)*block_ccm_sz);
+
+        processor = nullptr;
+        ibuf = obuf = nullptr;
+        block_mem = block_ccm = nullptr;
 
         f_freeze    = 0.0f;
         f_position  = 0.0f;
@@ -44,18 +41,17 @@ struct CldsData {
         // and we are already at wrong SR
         f_mono      = 0.0f;
         f_lofi      = 0.0f;
+        iobufsz = CloudsBlock;
 
-       processor.Init(
-            block_mem, block_mem_sz,
-            block_ccm, block_ccm_sz);
 
     }
 
     ~CldsData() {
-        delete [] ibuf;
-        delete [] obuf;
-        delete [] block_ccm;
-        delete [] block_mem;
+        if(ibuf) delete [] ibuf;
+        if(obuf) delete [] obuf;
+        if(block_ccm) delete [] block_ccm;
+        if(block_mem) delete [] block_mem;
+        if(processor) delete processor;
     }
 
 
@@ -78,7 +74,7 @@ struct CldsData {
     float f_lofi;
 
 
-    clouds::GranularProcessor processor;
+    clouds::GranularProcessor* processor;
     clouds::ShortFrame* ibuf;
     clouds::ShortFrame* obuf;
     int iobufsz;
