@@ -4,6 +4,7 @@ clds - an implementation of Mutable Instrument Clouds for the Percussa SSP.
 
 ## Change Log
 
+1.2.2 fix: startup no sound issue 
 
 1.2.1 fix: texture not saved in preset
 

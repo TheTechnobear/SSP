@@ -1993,8 +1993,8 @@
 					"_DEBUG=1",
 					"DEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=1.2.1",
-					"JUCE_APP_VERSION_HEX=0x10201", );
+					"JUCE_APP_VERSION=1.2.2",
+					"JUCE_APP_VERSION_HEX=0x10202", );
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GENERATE_PKGINFO_FILE = YES;
 				HEADER_SEARCH_PATHS = ("\"/Users/kodiak/SDKs/Steinberg/VST3/VST3 SDK\"", "../../JuceLibraryCode", "../../JuceLibraryCode/modules", "$(inherited)");
@@ -2019,8 +2019,8 @@
 					"_NDEBUG=1",
 					"NDEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=1.2.1",
-					"JUCE_APP_VERSION_HEX=0x10201", );
+					"JUCE_APP_VERSION=1.2.2",
+					"JUCE_APP_VERSION_HEX=0x10202", );
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GENERATE_PKGINFO_FILE = YES;
