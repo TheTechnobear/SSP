@@ -14,9 +14,6 @@ copy `*.so` to SSP's sdcard `/plugins`
 ## Documentation 
 this packages contains a docs directory with a file for each plugin which contains details about how to use each plugin
 
-note: .md files, are markdown documents that are plain text, so can be read with any text editor.
-however, the extra 'markup' (as in this document) allow for 
-
 
 ## License
 These plugins are released as open source, under a GPL agreement, please see the LICENSE file.
