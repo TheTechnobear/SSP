@@ -4,6 +4,9 @@ clds - an implementation of Mutable Instrument Clouds for the Percussa SSP.
 
 ## Change Log
 
+1.2.3 Adjust for pitch cv changes
+1.2.2 fix: startup no sound issue 
+1.2.1 fix: texture not saved in preset
 1.2.0 requires new ssp firmware for vst sdk 2 !
 new cv input parameters mix,spread,freeze, feedback,reverb
 separate trig and freeze to different cv inputs

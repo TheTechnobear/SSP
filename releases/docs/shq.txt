@@ -4,6 +4,7 @@ sample and hold module with optional quantizer and tranposition
 
 ## Change Log
 
+1.0.1 Adjust for pitch cv changes
 1.0.0 Initial Release 
 
 ## Developer: TheTechnobear

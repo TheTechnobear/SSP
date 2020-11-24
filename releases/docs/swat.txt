@@ -4,6 +4,7 @@ swat is designed to be like the famous swiss army knife, a useful utility to bri
 
 ## Change Log
 
+1.0.1 Adjust for pitch cv changes
 1.0.0 Initial Release 
 
 ## Developer: TheTechnobear

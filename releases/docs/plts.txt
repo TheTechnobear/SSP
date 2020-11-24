@@ -3,6 +3,7 @@
 plts - an implementation of Mutable Instrument Plaits for the Percussa SSP.
 
 ## Change Log
+1.0.1 Adjust for pitch cv changes
 1.0.0 Initial Release 
 
 ## Developer: TheTechnobear
