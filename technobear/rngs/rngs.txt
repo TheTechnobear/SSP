@@ -3,6 +3,7 @@
 rngs - an implementation of Mutable Instrument Rings for the Percussa SSP.
 
 ## Change Log
+1.2.1 Adjust for pitch cv changes
 1.2.0 requires new ssp firmware for vst sdk 2 !
 auto detection of audio/strum/voct 
 mono capatibility

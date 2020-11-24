@@ -263,7 +263,6 @@ void Clds::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         auto p = processor.mutable_parameters();
 
         float pitch     = data.f_pitch + cv2Pitch(buffer.getSample(I_VOCT, bidx));
-        pitch = pitch + 1.50f; // SSP adapt?!
         float position  = data.f_position + buffer.getSample(I_POS, bidx);
         float size      = data.f_size + buffer.getSample(I_SIZE, bidx);
         float density   = ((data.f_density + buffer.getSample(I_DENSITY, bidx)) + 1.0f ) / 2.0f;

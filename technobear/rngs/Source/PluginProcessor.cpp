@@ -246,6 +246,8 @@ void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
         }
 
         // control rate
+        // static constexpr float RngsPitchOffset = 34.0f;
+        static constexpr float RngsPitchOffset = 36.0f;
         float transpose = data_.f_pitch + RngsPitchOffset;
         float note = cv2Pitch(buffer.getSample(I_VOCT, bidx));
         float fm = cv2Pitch(buffer.getSample(I_FM, bidx));

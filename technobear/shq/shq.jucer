@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="LFrQVa" name="shq" projectType="audioplug" version="1.0.0"
+<JUCERPROJECT id="LFrQVa" name="shq" projectType="audioplug" version="1.0.1"
               bundleIdentifier="com.technobear.shq" includeBinaryInAppConfig="1"
               buildVST="1" buildVST3="0" buildAU="0" buildRTAS="0" buildAAX="0"
               pluginName="shq" pluginDesc="shq" pluginManufacturer="technobear"

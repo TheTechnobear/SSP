@@ -27,9 +27,6 @@ void AgDisplay::process(
 static constexpr unsigned MAX_TONICS = 12;
 
 static const char tonics[MAX_TONICS][3] = {
-    "A",
-    "A#",
-    "B",
     "C",
     "C#",
     "D",
@@ -38,7 +35,10 @@ static const char tonics[MAX_TONICS][3] = {
     "F",
     "F#",
     "G",
-    "G#"
+    "G#",
+    "A",
+    "A#",
+    "B",
 };
 
 String AgDisplay::getNoteValue(float f) {

@@ -36,8 +36,8 @@
 namespace ProjectInfo
 {
     const char* const  projectName    = "rngs";
-    const char* const  versionString  = "1.2.0";
-    const int          versionNumber  = 0x10200;
+    const char* const  versionString  = "1.2.1";
+    const int          versionNumber  = 0x10201;
 }
 #endif
 

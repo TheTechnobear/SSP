@@ -6,9 +6,6 @@
 #include "Scales.h"
 
 static const char tonics[MAX_TONICS][3] = {
-    "A ",
-    "A#",
-    "B",
     "C ",
     "C#",
     "D",
@@ -17,17 +14,16 @@ static const char tonics[MAX_TONICS][3] = {
     "F ",
     "F#",
     "G",
-    "G#"
-};
+    "G#",
+    "A ",
+    "A#",
+    "B",
+ };
 
 
 const char* Quantizer::getScaleName(unsigned i) { if(i< MAX_SCALES) return scales[i].name; else return "unknown";}
 const char* Quantizer::getTonicName(unsigned i) { if(i< MAX_TONICS) return tonics[i]; else return "unknown";}
 
-// SSP = 0v 440hz
-
-// assumptions
-// semi A= 0  
 void Quantizer::quantize(unsigned root, unsigned scale, int& oct, unsigned& semi) {
     assert(semi <= MAX_TONICS);
     assert(root <= MAX_TONICS);

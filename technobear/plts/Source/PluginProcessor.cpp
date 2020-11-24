@@ -221,7 +221,8 @@ void Plts::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 
         //todo constrain
 
-        static constexpr float PltsPitchOffset = 60.0f - 3.044f;
+        // static constexpr float PltsPitchOffset = 60.0f - 3.044f;
+        static constexpr float PltsPitchOffset = 60.0f;
         float pitch = data_.pitch_ + PltsPitchOffset;
 
         patch.engine = constrain(data_.model_,0.0f,15.0f); //check
