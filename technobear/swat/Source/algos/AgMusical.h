@@ -6,6 +6,7 @@
 
 #include "../Algo.h"
 
+#include <SSP.h>
 
 // algos
 class AgTranspose : public Algo {

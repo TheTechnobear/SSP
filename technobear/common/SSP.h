@@ -15,7 +15,7 @@ inline float constrainFloat(float v, float vMin, float vMax) {
     return std::max<float>(vMin, std::min<float>(vMax, v));
 }
 
-static float cv2Pitch(float r) {
+inline float cv2Pitch(float r) {
     static constexpr float p1 = 0.0f; // first C note
     static constexpr float p2 = 0.2f; // second C note
     static constexpr float scale = 12.0f / (p2 - p1);
@@ -26,7 +26,7 @@ static float cv2Pitch(float r) {
 }
 
 
-float pitch2Cv(float r) {
+inline float pitch2Cv(float r) {
     static constexpr float p1 = 0.0f; // first C note
     static constexpr float p2 = 0.2f; // second C note
     static constexpr float iscale = (p2 - p1) / 12.0f;
