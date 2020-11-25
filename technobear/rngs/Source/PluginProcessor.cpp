@@ -356,7 +356,7 @@ void Rngs::writeToXml(XmlElement& xml) {
 
 void Rngs::readFromXml(XmlElement& xml) {
     data_.f_pitch = xml.getDoubleAttribute("f_pitch", 0.0f);
-    data_.f_structure = xml.getDoubleAttribute("f_structure", 0.35);
+    data_.f_structure = xml.getDoubleAttribute("f_structure", 0.40);
     data_.f_brightness = xml.getDoubleAttribute("f_brightness", 0.5f);
     data_.f_damping = xml.getDoubleAttribute("f_damping", 0.5f);
     data_.f_position = xml.getDoubleAttribute("f_position", 0.5f);

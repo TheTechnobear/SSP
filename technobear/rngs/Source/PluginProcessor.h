@@ -19,7 +19,7 @@ static constexpr unsigned RingsBlock = 16;
 struct RngsData {
     RngsData() {
         f_pitch = 0.0f;
-        f_structure = 0.35f;
+        f_structure = 0.40f;
         f_brightness = 0.5f;
         f_damping = 0.5f;
         f_position = 0.5f;
