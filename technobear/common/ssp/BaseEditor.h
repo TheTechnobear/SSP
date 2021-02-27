@@ -19,7 +19,7 @@ class BaseEditor :
     public Timer {
 
 public:
-    BaseEditor(BaseProcessor *p, String title, String version);
+    explicit BaseEditor(BaseProcessor *p, String title, String version);
     virtual ~BaseEditor();
 
     void timerCallback() override;

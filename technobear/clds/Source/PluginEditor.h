@@ -10,8 +10,8 @@
 
 class PluginEditor : public ssp::BarParamEditor {
 public:
-    PluginEditor(PluginProcessor &);
-    ~PluginEditor();
+    explicit PluginEditor(PluginProcessor &);
+    ~PluginEditor() override = default;
 
     void paint(Graphics &) override;
     void resized() override;

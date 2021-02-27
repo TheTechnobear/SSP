@@ -44,7 +44,7 @@ class PluginProcessor : public ssp::BaseProcessor {
 public:
     explicit PluginProcessor();
     explicit PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts, AudioProcessorValueTreeState::ParameterLayout layout);
-    ~PluginProcessor();
+    ~PluginProcessor() override = default;
 
     const String getName() const override { return JucePlugin_Name; }
 
@@ -121,9 +121,9 @@ private:
 
     static constexpr unsigned PltsBlock = 16;
     static constexpr float PltsMaxEngine = 15.0f;
-    plaits::Voice voice;
-    plaits::Patch patch;
-    char shared_buffer[16384];
+    plaits::Voice voice_;
+    plaits::Patch patch_{};
+    char shared_buffer_[16384]{};
 
     ssp::RmsTrack outRms_[2];
 

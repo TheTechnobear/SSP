@@ -99,8 +99,6 @@ set(MI_SRC
 set(COMMON_SRC
         ../common/SSP.cpp
         ../common/SSPButton.cpp
-        ../common/SSPParam.cpp
-        ../common/SSPListParam.cpp
         ../common/ssp/BaseEditor.cpp
         ../common/ssp/LineParamEditor.cpp
         ../common/ssp/TableParamEditor.cpp
@@ -109,7 +107,7 @@ set(COMMON_SRC
         ../common/ssp/BaseParamControl.cpp
         ../common/ssp/ButtonControl.cpp
         ../common/ssp/VuMeter.cpp
-)
+        )
 
 target_sources(RNGS PRIVATE
         Source/PluginEditor.cpp

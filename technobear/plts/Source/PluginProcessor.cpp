@@ -13,6 +13,7 @@ PluginProcessor::PluginProcessor(
     AudioProcessorValueTreeState::ParameterLayout layout)
     : BaseProcessor(ioLayouts, std::move(layout)), params_(vts()) {
 
+    memset(shared_buffer_,0,sizeof(shared_buffer_));
 #if __APPLE__
     // so that we get some sound, without patching
     inputEnabled[I_TRIG] = false;
@@ -20,11 +21,6 @@ PluginProcessor::PluginProcessor(
 #endif
 
 }
-
-
-PluginProcessor::~PluginProcessor() {
-}
-
 
 PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) :
     pitch(*apvt.getParameter(ID::pitch)),
@@ -107,8 +103,8 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 }
 
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
-    stmlib::BufferAllocator allocator(shared_buffer, sizeof(shared_buffer));
-    voice.Init(&allocator);
+    stmlib::BufferAllocator allocator(shared_buffer_, sizeof(shared_buffer_));
+    voice_.Init(&allocator);
 }
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
@@ -138,23 +134,23 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         static constexpr float PltsPitchOffset = 60.0f;
         float pitch = params_.pitch.convertFrom0to1(params_.pitch.getValue()) + PltsPitchOffset;
 
-        patch.engine = constrain(params_.model.convertFrom0to1(params_.model.getValue()),
+        patch_.engine = (int) constrain(params_.model.convertFrom0to1(params_.model.getValue()),
                                  0.0f, PltsMaxEngine);
 
-        patch.note = pitch;
-        //patch.note = 60.f + pitch * 12.f;
-        patch.harmonics = params_.harmonics.getValue();
-        patch.timbre = params_.timbre.getValue();
-        patch.morph = params_.morph.getValue();
-        patch.lpg_colour = params_.lpg.getValue();
-        patch.decay = params_.vca.getValue();
+        patch_.note = pitch;
+        //patch_.note = 60.f + pitch * 12.f;
+        patch_.harmonics = params_.harmonics.getValue();
+        patch_.timbre = params_.timbre.getValue();
+        patch_.morph = params_.morph.getValue();
+        patch_.lpg_colour = params_.lpg.getValue();
+        patch_.decay = params_.vca.getValue();
 
-        patch.frequency_modulation_amount = (params_.freq_mod.getValue() * 2.0f) - 1.0f;
-        patch.timbre_modulation_amount = (params_.timbre_mod.getValue() * 2.0f) - 1.0f;
-        patch.morph_modulation_amount = (params_.morph_mod.getValue() * 2.0f) - 1.0f;
+        patch_.frequency_modulation_amount = (params_.freq_mod.getValue() * 2.0f) - 1.0f;
+        patch_.timbre_modulation_amount = (params_.timbre_mod.getValue() * 2.0f) - 1.0f;
+        patch_.morph_modulation_amount = (params_.morph_mod.getValue() * 2.0f) - 1.0f;
 
         // Construct modulations
-        plaits::Modulations modulations;
+        plaits::Modulations modulations {};
         modulations.engine = buffer.getSample(I_MODEL, bidx);
         modulations.note = cv2Pitch(buffer.getSample(I_VOCT, bidx));
         modulations.frequency = cv2Pitch(buffer.getSample(I_FM, bidx));
@@ -174,7 +170,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
         // Render frames
         plaits::Voice::Frame output[PltsBlock];
-        voice.Render(patch, modulations, output, PltsBlock);
+        voice_.Render(patch_, modulations, output, PltsBlock);
 
         if (auxOut) {
             for (int i = 0; i < PltsBlock; i++) {

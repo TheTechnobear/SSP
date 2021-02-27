@@ -82,8 +82,6 @@ juce_generate_juce_header(SHQ)
 set(COMMON_SRC
         ../common/SSP.cpp
         ../common/SSPButton.cpp
-        ../common/SSPParam.cpp
-        ../common/SSPListParam.cpp
         ../common/ssp/BaseEditor.cpp
         ../common/ssp/LineParamEditor.cpp
         ../common/ssp/TableParamEditor.cpp

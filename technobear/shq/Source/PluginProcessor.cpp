@@ -19,9 +19,6 @@ PluginProcessor::PluginProcessor(
 }
 
 
-PluginProcessor::~PluginProcessor() {
-}
-
 
 PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) :
     root(*apvt.getParameter(ID::root)),

@@ -28,7 +28,7 @@ class PluginProcessor : public ssp::BaseProcessor {
 public:
     explicit PluginProcessor();
     explicit PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts, AudioProcessorValueTreeState::ParameterLayout layout);
-    ~PluginProcessor();
+    ~PluginProcessor() override = default;
 
     const String getName() const override { return JucePlugin_Name; }
 

@@ -41,16 +41,5 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     setSize(1600, 480);
 }
 
-PluginEditor::~PluginEditor() {
-}
-
-
-void PluginEditor::paint(Graphics &g) {
-    base_type::paint(g);
-}
-
-
-void PluginEditor::resized() {
-}
 
 
