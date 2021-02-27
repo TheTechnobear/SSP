@@ -54,6 +54,7 @@ juce_add_plugin(PLTS
     COMPANY_NAME "Technobear"                   # Specify the name of the plugin's author
     COMPANY_WEBSITE "www.technobear.com"
     COMPANY_EMAIL "mharris@technobear.com"
+    DESCRIPTION "macro oscillator"
     # IS_SYNTH TRUE/FALSE                       # Is this a synth or an effect?
     # NEEDS_MIDI_INPUT TRUE/FALSE               # Does the plugin need midi input?
     # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
@@ -121,10 +122,18 @@ set(MI_SRC
 )
 
 set(COMMON_SRC
-    ../common/SSP.cpp
-    ../common/SSPButton.cpp
-    ../common/SSPParam.cpp
-    ../common/SSPListParam.cpp
+        ../common/SSP.cpp
+        ../common/SSPButton.cpp
+        ../common/SSPParam.cpp
+        ../common/SSPListParam.cpp
+        ../common/ssp/BaseEditor.cpp
+        ../common/ssp/LineParamEditor.cpp
+        ../common/ssp/TableParamEditor.cpp
+        ../common/ssp/BarParamEditor.cpp
+        ../common/ssp/BaseProcessor.cpp
+        ../common/ssp/BaseParamControl.cpp
+        ../common/ssp/ButtonControl.cpp
+        ../common/ssp/VuMeter.cpp
 )
 
 target_sources(PLTS PRIVATE

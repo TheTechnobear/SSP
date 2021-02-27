@@ -1,9 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-static constexpr unsigned paramTopY = 380 - 1;
-static constexpr unsigned paramSpaceY = 50;
-
 #include "ssp/BaseParamControl.h"
 #include "ssp/ButtonControl.h"
 

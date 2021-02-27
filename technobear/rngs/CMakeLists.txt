@@ -54,6 +54,7 @@ juce_add_plugin(RNGS
         COMPANY_NAME "Technobear"                   # Specify the name of the plugin's author
         COMPANY_WEBSITE "www.technobear.com"
         COMPANY_EMAIL "mharris@technobear.com"
+        DESCRIPTION "resonator"
         # IS_SYNTH TRUE/FALSE                       # Is this a synth or an effect?
         # NEEDS_MIDI_INPUT TRUE/FALSE               # Does the plugin need midi input?
         # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?

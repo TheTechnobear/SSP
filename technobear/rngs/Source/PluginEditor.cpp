@@ -2,9 +2,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-static constexpr unsigned paramTopY = 380 - 1;
-static constexpr unsigned paramSpaceY = 50;
-
 #include "ssp/BaseParamControl.h"
 #include "ssp/ButtonControl.h"
 
@@ -35,7 +32,7 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     inVu_.init("In");
     outVu_.init("Out");
 
-    float in, inR, outL, outR;
+    float in, outL, outR;
     processor_.getRMS(in, outL, outR);
     inVu_.level(in);
     outVu_.level(outL, outR);
@@ -51,7 +48,7 @@ PluginEditor::~PluginEditor() {
 
 
 void PluginEditor::paint(Graphics &g) {
-    float in, inR, outL, outR;
+    float in, outL, outR;
     processor_.getRMS(in, outL, outR);
     inVu_.level(in);
     outVu_.level(outL, outR);
