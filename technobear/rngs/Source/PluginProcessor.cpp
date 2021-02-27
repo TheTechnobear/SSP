@@ -137,7 +137,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     size_t size = n;
 
     inRms_.process(buffer, I_IN);
-    bool stereoOut = outputEnabled[O_EVEN] > 0.5f;
+    bool stereoOut = outputEnabled[O_EVEN];
 
     float p_in_gain = params_.in_gain.getValue();
 

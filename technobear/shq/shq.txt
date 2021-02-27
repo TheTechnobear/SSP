@@ -3,6 +3,7 @@
 sample and hold module with optional quantizer and tranposition
 
 ## Change Log
+1.3.0 re-write with new UI
 
 1.0.1 Adjust for pitch cv changes
 1.0.0 Initial Release 

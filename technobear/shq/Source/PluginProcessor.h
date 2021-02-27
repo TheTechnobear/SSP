@@ -1,73 +1,60 @@
 #pragma once
 
-
+#include "Quantizer.h"
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "Percussa.h"
+
+#include "ssp/BaseProcessor.h"
 
 #include <atomic>
+#include <algorithm>
 
-#include "Quantizer.h"
+
+//root
+//scale
+//quant
 
 
-inline float constrain(float v, float vMin, float vMax) {
-    return std::max<float>(vMin, std::min<float>(vMax, v));
+namespace ID {
+#define PARAMETER_ID(str) constexpr const char* str { #str };
+
+PARAMETER_ID (root)
+PARAMETER_ID (scale)
+PARAMETER_ID (quant)
+#undef PARAMETER_ID
 }
 
-class PluginProcessor  : public AudioProcessor
-{
+
+class PluginProcessor : public ssp::BaseProcessor {
 public:
-    PluginProcessor();
+    explicit PluginProcessor();
+    explicit PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts, AudioProcessorValueTreeState::ParameterLayout layout);
     ~PluginProcessor();
 
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
-    void releaseResources() override;
+    const String getName() const override { return JucePlugin_Name; }
 
-    void processBlock (AudioSampleBuffer&, MidiBuffer&) override;
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override {};
 
-    AudioProcessorEditor* createEditor() override;
-    bool hasEditor() const override;
+    void releaseResources() override {};
 
-    const String getName() const override;
+    void processBlock(AudioSampleBuffer &, MidiBuffer &) override;
 
-    int getNumParameters() override;
-    float getParameter (int index) override;
-    void setParameter (int index, float newValue) override;
+    AudioProcessorEditor *createEditor() override;
 
-    const String getParameterName (int index) override;
-    const String getParameterText (int index) override;
+    bool hasEditor() const override { return true; }
 
-    bool acceptsMidi() const override;
-    bool producesMidi() const override;
-    bool silenceInProducesSilenceOut() const override;
-    double getTailLengthSeconds() const override;
+    struct PluginParams {
+        using Parameter = juce::RangedAudioParameter;
+        explicit PluginParams(juce::AudioProcessorValueTreeState &);
 
-    int getNumPrograms() override;
-    int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const String getProgramName (int index) override;
-    void changeProgramName (int index, const String& newName) override;
+        Parameter &root;
+        Parameter &scale;
+        Parameter &quant;
+    } params_;
 
-    void getStateInformation (MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
-
-    unsigned scale() { return scale_;}
-    void scale(unsigned v) { scale_ = v;}
-
-    unsigned root() { return root_;}
-    void root(unsigned v) {root_ = v;}
-
-    bool quant() { return quant_;}
-    void quant(bool v) {quant_ = v;}
-
-    float lastSig(unsigned i) { return lastSig_[i];}
-
-    Quantizer& quantizer() { return quantizer_;}
-
+protected:
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 private:
-
-    float processCV(float value, float scale, float root);
-    void writeToXml(juce::XmlElement& xml);
-    void readFromXml(juce::XmlElement& xml);
+    float processCV(float value, unsigned scale, unsigned root);
 
     enum {
         I_SIG_1,
@@ -97,13 +84,6 @@ private:
         O_MAX
     };
 
-    float params_[Percussa::sspLast];
-
-
-    std::atomic<unsigned>   scale_;
-    std::atomic<unsigned>   root_;
-    std::atomic<bool>       quant_;
-
     static constexpr unsigned MAX_SIG = 4;
     std::atomic<float> lastSig_[MAX_SIG];
     std::atomic<float> lastTrig_[MAX_SIG];
@@ -111,11 +91,15 @@ private:
     Random randomGen_;
     Quantizer quantizer_;
 
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override { return true;}
-    static const String getInputBusName (int channelIndex);
-    static const String getOutputBusName (int channelIndex);
-    static BusesProperties getBusesProperties()
-    {
+
+    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
+        return true;
+    }
+
+    static const String getInputBusName(int channelIndex);
+    static const String getOutputBusName(int channelIndex);
+
+    static BusesProperties getBusesProperties() {
         BusesProperties props;
         for (auto i = 0; i < I_MAX; i++) {
             props.addBus(true, getInputBusName(i), AudioChannelSet::mono());
@@ -128,5 +112,4 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
-
 

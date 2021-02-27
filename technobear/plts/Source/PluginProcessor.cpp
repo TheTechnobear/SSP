@@ -15,8 +15,8 @@ PluginProcessor::PluginProcessor(
 
 #if __APPLE__
     // so that we get some sound, without patching
-    inputEnabled[I_TRIG]=false;
-    inputEnabled[I_LEVEL]=false;
+    inputEnabled[I_TRIG] = false;
+    inputEnabled[I_LEVEL] = false;
 #endif
 
 }
@@ -114,14 +114,14 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     auto n = PltsBlock;
 
-    bool auxOut = outputEnabled[O_AUX] > 0.5f;
+    bool auxOut = outputEnabled[O_AUX];
 
     // bool voctEn  = inputEnabled[ I_VOCT ] > 0.5f;
-    bool fmEn = inputEnabled[I_FM] > 0.5f;
-    bool timbreEn = inputEnabled[I_TIMBRE] > 0.5f;
-    bool morphEn = inputEnabled[I_MORPH] > 0.5f;
-    bool trigEn = inputEnabled[I_TRIG] > 0.5f;
-    bool levelEn = inputEnabled[I_LEVEL] > 0.5f;
+    bool fmEn = inputEnabled[I_FM];
+    bool timbreEn = inputEnabled[I_TIMBRE];
+    bool morphEn = inputEnabled[I_MORPH];
+    bool trigEn = inputEnabled[I_TRIG];
+    bool levelEn = inputEnabled[I_LEVEL];
 
     for (int bidx = 0; bidx < buffer.getNumSamples(); bidx += n) {
 
@@ -139,7 +139,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         float pitch = params_.pitch.convertFrom0to1(params_.pitch.getValue()) + PltsPitchOffset;
 
         patch.engine = constrain(params_.model.convertFrom0to1(params_.model.getValue()),
-                                 0.0f, PltsMaxEngine); //check
+                                 0.0f, PltsMaxEngine);
 
         patch.note = pitch;
         //patch.note = 60.f + pitch * 12.f;

@@ -28,12 +28,11 @@ project(SHQ VERSION 1.3.0)
 # If you are building a VST2 or AAX plugin, CMake needs to be told where to find these SDKs on your
 # system. This setup should be done before calling `juce_add_plugin`.
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin") 
+if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     juce_set_vst2_sdk_path("$ENV{HOME}/SDKs/Steinberg/VST3/VST3 SDK")
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     juce_set_vst2_sdk_path("$ENV{HOME}/SDKs/vst3-sdk")
-endif()
-
+endif ()
 
 
 # juce_set_aax_sdk_path(...)
@@ -44,26 +43,27 @@ endif()
 # the formats specified by the FORMATS arguments. This function accepts many optional arguments.
 # Check the readme at `docs/CMake API.md` in the JUCE repo for the full list.
 
-include_directories ("${PROJECT_SOURCE_DIR}/../common")
+include_directories("${PROJECT_SOURCE_DIR}/../common")
 
 
 juce_add_plugin(SHQ
-    # VERSION ...                               # Set this if the plugin version is different to the project version
-    # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
-    # ICON_SMALL ...
-    COMPANY_NAME "Technobear"                   # Specify the name of the plugin's author
-    COMPANY_WEBSITE "www.technobear.com"
-    COMPANY_EMAIL "mharris@technobear.com"
-    # IS_SYNTH TRUE/FALSE                       # Is this a synth or an effect?
-    # NEEDS_MIDI_INPUT TRUE/FALSE               # Does the plugin need midi input?
-    # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
-    # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
-    # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
-    COPY_PLUGIN_AFTER_BUILD TRUE                # Should the plugin be installed to a default location after building?
-    PLUGIN_MANUFACTURER_CODE TB                 # A four-character manufacturer id with at least one upper-case character
-    PLUGIN_CODE SHQ                            # A unique four-character plugin id with at least one upper-case character
-    FORMATS VST VST3                            # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
-    PRODUCT_NAME "shq")                        # The name of the final executable, which can differ from the target name
+        # VERSION ...                               # Set this if the plugin version is different to the project version
+        # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
+        # ICON_SMALL ...
+        COMPANY_NAME "Technobear"                   # Specify the name of the plugin's author
+        COMPANY_WEBSITE "www.technobear.com"
+        COMPANY_EMAIL "mharris@technobear.com"
+        DESCRIPTION "quantised sample and hold"
+        # IS_SYNTH TRUE/FALSE                       # Is this a synth or an effect?
+        # NEEDS_MIDI_INPUT TRUE/FALSE               # Does the plugin need midi input?
+        # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
+        # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
+        # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
+        COPY_PLUGIN_AFTER_BUILD TRUE                # Should the plugin be installed to a default location after building?
+        PLUGIN_MANUFACTURER_CODE TB                 # A four-character manufacturer id with at least one upper-case character
+        PLUGIN_CODE SHQ                            # A unique four-character plugin id with at least one upper-case character
+        FORMATS VST VST3                            # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+        PRODUCT_NAME "shq")                        # The name of the final executable, which can differ from the target name
 
 # `juce_generate_juce_header` will create a JuceHeader.h for a given target, which will be generated
 # into your build tree. This should be included with `#include <JuceHeader.h>`. The include path for
@@ -79,20 +79,27 @@ juce_generate_juce_header(SHQ)
 # that will be built into the target. This is a standard CMake command.
 
 
-
 set(COMMON_SRC
-    ../common/SSP.cpp
-    ../common/SSPButton.cpp
-    ../common/SSPParam.cpp
-    ../common/SSPListParam.cpp
-)
+        ../common/SSP.cpp
+        ../common/SSPButton.cpp
+        ../common/SSPParam.cpp
+        ../common/SSPListParam.cpp
+        ../common/ssp/BaseEditor.cpp
+        ../common/ssp/LineParamEditor.cpp
+        ../common/ssp/TableParamEditor.cpp
+        ../common/ssp/BarParamEditor.cpp
+        ../common/ssp/BaseProcessor.cpp
+        ../common/ssp/BaseParamControl.cpp
+        ../common/ssp/ButtonControl.cpp
+        ../common/ssp/VuMeter.cpp
+        )
 
 target_sources(SHQ PRIVATE
-    Source/PluginEditor.cpp
-    Source/PluginProcessor.cpp
-    Source/Quantizer.cpp
-    ${COMMON_SRC}
-)
+        Source/PluginEditor.cpp
+        Source/PluginProcessor.cpp
+        Source/Quantizer.cpp
+        ${COMMON_SRC}
+        )
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer
 # project, these might be passed in the 'Preprocessor Definitions' field. JUCE modules also make use
@@ -102,12 +109,12 @@ target_sources(SHQ PRIVATE
 # definitions, pick unique names that are unlikely to collide! This is a standard CMake command.
 
 target_compile_definitions(SHQ
-    PUBLIC
-    JUCE_DISPLAY_SPLASH_SCREEN=0
-    # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
-    JUCE_WEB_BROWSER=0  # If you remove this, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
-    JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
-    JUCE_VST3_CAN_REPLACE_VST2=0)
+        PUBLIC
+        JUCE_DISPLAY_SPLASH_SCREEN=0
+        # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
+        JUCE_WEB_BROWSER=0  # If you remove this, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
+        JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
+        JUCE_VST3_CAN_REPLACE_VST2=0)
 
 # If your target needs extra binary assets, you can add them here. The first argument is the name of
 # a new static library target that will include all the binary resources. There is an optional
@@ -125,10 +132,10 @@ target_compile_definitions(SHQ
 # here too. This is a standard CMake command.
 
 target_link_libraries(SHQ PRIVATE
-    # AudioPluginData           # If we'd created a binary data target, we'd link to it here
-    juce::juce_audio_utils)
+        # AudioPluginData           # If we'd created a binary data target, we'd link to it here
+        juce::juce_audio_utils)
 
 
-set_target_properties(${PROJECT_NAME}_VST  PROPERTIES PREFIX "")
+set_target_properties(${PROJECT_NAME}_VST PROPERTIES PREFIX "")
 set_target_properties(${PROJECT_NAME}_VST3 PROPERTIES PREFIX "")
 
