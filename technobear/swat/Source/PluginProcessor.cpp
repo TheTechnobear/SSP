@@ -34,7 +34,7 @@ std::shared_ptr<Algo>  PluginProcessor::createAlgo(unsigned a) {
 }
 
 
-PluginProcessor::PluginProcessor()
+PluginProcessor::PluginProcessor()  : AudioProcessor(getBusesProperties())
 {
     algoDisplayOrder_.push_back(A_DISPLAY);
     algoDisplayOrder_.push_back(A_TRANSPOSE);
@@ -136,7 +136,7 @@ const String PluginProcessor::getParameterText (int index)
     return String();
 }
 
-const String PluginProcessor::getInputChannelName (int channelIndex) const
+const String PluginProcessor::getInputBusName (int channelIndex) 
 {
     switch (channelIndex) {
     case I_X_1: { return String("X 1");}
@@ -155,7 +155,7 @@ const String PluginProcessor::getInputChannelName (int channelIndex) const
     return String("unused:") + String (channelIndex + 1);
 }
 
-const String PluginProcessor::getOutputChannelName (int channelIndex) const
+const String PluginProcessor::getOutputBusName (int channelIndex) 
 {
     switch (channelIndex) {
     case O_A_1: { return String("A 1");}
@@ -170,15 +170,6 @@ const String PluginProcessor::getOutputChannelName (int channelIndex) const
     return String("unused:") + String (channelIndex + 1);
 }
 
-bool PluginProcessor::isInputChannelStereoPair (int index) const
-{
-    return false;
-}
-
-bool PluginProcessor::isOutputChannelStereoPair (int index) const
-{
-    return false;
-}
 
 bool PluginProcessor::acceptsMidi() const
 {
@@ -326,12 +317,11 @@ void PluginProcessor::getStateInformation (MemoryBlock& destData)
 
 void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    XmlElement *pXML = getXmlFromBinary(data, sizeInBytes);
+    auto pXML = getXmlFromBinary(data, sizeInBytes);
     if (pXML) {
         // auto root=pXML->getChildByName(xmlTag);
         // if(root) readFromXml(*root);
         readFromXml(*pXML);
-        delete pXML;
     }
 }
 

@@ -1,159 +1,87 @@
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-#include "Percussa.h"
-
-#include <atomic>
 
 #include "rings/dsp/part.h"
 #include "rings/dsp/patch.h"
 #include "rings/dsp/strummer.h"
 #include "rings/dsp/string_synth_part.h"
 
-inline float constrain(float v, float vMin, float vMax) {
-    return std::max<float>(vMin, std::min<float>(vMax, v));
+#include "../JuceLibraryCode/JuceHeader.h"
+
+#include "ssp/BaseProcessor.h"
+#include "ssp/RmsTrack.h"
+
+#include <atomic>
+#include <algorithm>
+
+namespace ID {
+#define PARAMETER_ID(str) constexpr const char* str { #str };
+
+PARAMETER_ID (pitch)
+PARAMETER_ID (structure)
+PARAMETER_ID (brightness)
+PARAMETER_ID (damping)
+PARAMETER_ID (position)
+PARAMETER_ID (polyphony)
+PARAMETER_ID (model)
+//PARAMETER_ID (bypass)
+//PARAMETER_ID (easter_egg)
+PARAMETER_ID (in_gain)
+#undef PARAMETER_ID
 }
 
-static constexpr unsigned RingsBlock = 16;
 
-struct RngsData {
-    RngsData() {
-        f_pitch = 0.0f;
-        f_structure = 0.40f;
-        f_brightness = 0.5f;
-        f_damping = 0.5f;
-        f_position = 0.5f;
-
-        f_polyphony = 0.0f;
-        f_model = 0.0f;
-
-        f_bypass = 0.0f;
-        f_easter_egg = 0.0f;
-
-        f_trig = 0;
-
-        f_in_gain = 0.0f;
-
-        in_level = 0.0f;
-        kNoiseGateThreshold = 0.00003f;
-
-        iobufsz = RingsBlock;
-        in = new float[iobufsz];
-        out = new float[iobufsz];
-        aux = new float[iobufsz];
-    }
-    ~RngsData() {
-        delete [] in;
-        delete [] out;
-        delete [] aux;
-        in = nullptr;
-        out = nullptr;
-        aux = nullptr;
-    }
-
-    // poly - 1-4 button
-    // mode - 1-4 button
-
-    // frequency = para+cvin
-    // structure = para+cvin
-    // brightness = para+cvin
-    // damping = para+cvin
-    // position = para+cvin
-
-    // strum = cvin
-    // v/oct = cvin  (note: v/oct diff from frequency)
-    // in = cvin
-
-    // odd = audio out
-    // even = audio out
-
-    std::atomic<float>  f_pitch;
-    std::atomic<float>  f_structure;
-    std::atomic<float>  f_brightness;
-    std::atomic<float>  f_damping;
-    std::atomic<float>  f_position;
-    std::atomic<float>  f_polyphony;
-    std::atomic<float>  f_model;
-
-    std::atomic<float>  f_bypass;
-    std::atomic<float>  f_easter_egg;
-
-    std::atomic<float>  f_in_gain;
-
-    std::atomic<bool>   f_trig;
-
-    rings::Part part;
-    rings::PerformanceState performance_state;
-    rings::StringSynthPart string_synth;
-    rings::Strummer strummer;
-    rings::Patch patch;
-
-
-    float kNoiseGateThreshold;
-    float in_level;
-
-    float *in, *out, *aux;
-    int iobufsz;
-
-    static const int REVERB_SZ = 32768;
-    uint16_t buffer[REVERB_SZ];
-};
-
-
-class Rngs  : public AudioProcessor
-{
+class PluginProcessor : public ssp::BaseProcessor {
 public:
-    Rngs();
-    ~Rngs();
+    explicit PluginProcessor();
+    explicit PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts, AudioProcessorValueTreeState::ParameterLayout layout);
+    ~PluginProcessor();
 
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
-    void releaseResources() override;
+    const String getName() const override { return JucePlugin_Name; }
 
-    void processBlock (AudioSampleBuffer&, MidiBuffer&) override;
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override;
 
-    AudioProcessorEditor* createEditor() override;
-    bool hasEditor() const override;
+    void releaseResources() override {}
 
-    const String getName() const override;
+    void processBlock(AudioSampleBuffer &, MidiBuffer &) override;
 
-    int getNumParameters() override;
-    float getParameter (int index) override;
-    void setParameter (int index, float newValue) override;
+    AudioProcessorEditor *createEditor() override;
 
-    const String getParameterName (int index) override;
-    const String getParameterText (int index) override;
+    bool hasEditor() const override { return true; }
 
-    const String getInputChannelName (int channelIndex) const override;
-    const String getOutputChannelName (int channelIndex) const override;
-    bool isInputChannelStereoPair (int index) const override;
-    bool isOutputChannelStereoPair (int index) const override;
+    struct PluginParams {
+        using Parameter = juce::RangedAudioParameter;
+        explicit PluginParams(juce::AudioProcessorValueTreeState &);
 
-    bool acceptsMidi() const override;
-    bool producesMidi() const override;
-    bool silenceInProducesSilenceOut() const override;
-    double getTailLengthSeconds() const override;
+        Parameter &pitch;
+        Parameter &structure;
+        Parameter &brightness;
+        Parameter &damping;
+        Parameter &position;
+        Parameter &polyphony;
+        Parameter &model;
+        //Parameter&  bypass;
+        //Parameter&  easter_egg;
+        Parameter &in_gain;
+    } params_;
 
-    int getNumPrograms() override;
-    int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const String getProgramName (int index) override;
-    void changeProgramName (int index, const String& newName) override;
+    void getRMS(float &in, float &lOut, float &rOut) {
+        in = inRms_.lvl();
+        lOut = outRms_[0].lvl();
+        rOut = outRms_[1].lvl();
+    }
 
-    void getStateInformation (MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
-    RngsData& data() { return data_;}
+    void setStateInformation(const void *data, int sizeInBytes) override;
 
-
+protected:
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 private:
-
-    void writeToXml(juce::XmlElement& xml);
-    void readFromXml(juce::XmlElement& xml);
     enum {
         I_IN,
         I_STRUM,
         I_VOCT,
         I_FM,
-        I_STUCTURE,
+        I_STRUCTURE,
         I_BRIGHTNESS,
         I_DAMPING,
         I_POSITION,
@@ -165,10 +93,47 @@ private:
         O_MAX
     };
 
-    RngsData data_;
-    float params_[Percussa::sspLast];
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Rngs)
+    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
+        return true;
+    }
+
+    static const String getInputBusName(int channelIndex);
+    static const String getOutputBusName(int channelIndex);
+
+    static BusesProperties getBusesProperties() {
+        BusesProperties props;
+        for (auto i = 0; i < I_MAX; i++) {
+            props.addBus(true, getInputBusName(i), AudioChannelSet::mono());
+        }
+        for (auto i = 0; i < O_MAX; i++) {
+            props.addBus(false, getOutputBusName(i), AudioChannelSet::mono());
+        }
+        return props;
+    }
+
+    void initPart(bool force);
+
+    static constexpr unsigned RingsBlock = 16;
+
+    rings::Part part_;
+    rings::PerformanceState performance_state_;
+    rings::StringSynthPart string_synth_;
+    rings::Strummer strummer_;
+    rings::Patch patch_;
+
+    static constexpr float kNoiseGateThreshold = 0.00003f;
+    float inLevel_;
+
+    float *in_buf_, *out_buf_, *aux_buf_;
+    int io_buf_sz_;
+
+    static const int REVERB_SZ = 32768;
+    uint16_t buffer[REVERB_SZ];
+
+    ssp::RmsTrack inRms_;
+    ssp::RmsTrack outRms_[2];
+    bool trig_;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
-
-

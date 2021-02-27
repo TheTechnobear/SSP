@@ -3,6 +3,7 @@
 
 *.dsp_cache
 
+./sysroot
 
 **/.DS_Store
 *.swp
@@ -10,6 +11,7 @@
 profile
 **/build/*
 build
+build.*
 err.txt
 
 **/*.sublime-workspace

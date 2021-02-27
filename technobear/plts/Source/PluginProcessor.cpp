@@ -7,7 +7,7 @@
 static const char *xmlTag = JucePlugin_Name;
 
 
-Plts::Plts()
+Plts::Plts() : AudioProcessor(getBusesProperties())
 {
     memset(params_, 0, sizeof(params_));
 }
@@ -81,7 +81,7 @@ const String Plts::getParameterText (int index)
 }
 
 
-const String Plts::getInputChannelName (int channelIndex) const
+const String Plts::getInputBusName (int channelIndex)
 {
     switch (channelIndex) {
     case I_VOCT:        { return String("VOct");}
@@ -96,7 +96,7 @@ const String Plts::getInputChannelName (int channelIndex) const
     return String("unused:") + String (channelIndex + 1);
 }
 
-const String Plts::getOutputChannelName (int channelIndex) const
+const String Plts::getOutputBusName (int channelIndex)
 {
 
     switch (channelIndex) {
@@ -110,15 +110,6 @@ const String Plts::getOutputChannelName (int channelIndex) const
     return String("unused:") + String (channelIndex + 1);
 }
 
-bool Plts::isInputChannelStereoPair (int index) const
-{
-    return false;
-}
-
-bool Plts::isOutputChannelStereoPair (int index) const
-{
-    return false;
-}
 
 bool Plts::acceptsMidi() const
 {
@@ -331,12 +322,11 @@ void Plts::getStateInformation (MemoryBlock& destData)
 
 void Plts::setStateInformation (const void* data, int sizeInBytes)
 {
-    XmlElement *pXML = getXmlFromBinary(data, sizeInBytes);
+    auto pXML = getXmlFromBinary(data, sizeInBytes);
     if (pXML) {
         // auto root=pXML->getChildByName(xmlTag);
         // if(root) readFromXml(*root);
         readFromXml(*pXML);
-        delete pXML;
     }
 }
 

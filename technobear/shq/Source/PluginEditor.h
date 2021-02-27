@@ -19,7 +19,7 @@ public:
 
 	void parameterChanged(int parameterIndex, float newValue);
 
-	void timerCallback();
+	void timerCallback() override;
 
 	// audio thread!!
 	void 	audioProcessorParameterChanged (AudioProcessor *processor_, int parameterIndex, float newValue) override;

@@ -64,11 +64,6 @@ public:
     const String getParameterName (int index) override;
     const String getParameterText (int index) override;
 
-    const String getInputChannelName (int channelIndex) const override;
-    const String getOutputChannelName (int channelIndex) const override;
-    bool isInputChannelStereoPair (int index) const override;
-    bool isOutputChannelStereoPair (int index) const override;
-
     bool acceptsMidi() const override;
     bool producesMidi() const override;
     bool silenceInProducesSilenceOut() const override;
@@ -130,6 +125,20 @@ private:
     Msw8Data data_;
     float params_[Percussa::sspLast];
 
+    bool isBusesLayoutSupported (const BusesLayout& layouts) const override { return true;}
+    static const String getInputBusName (int channelIndex);
+    static const String getOutputBusName (int channelIndex);
+    static BusesProperties getBusesProperties()
+    {
+        BusesProperties props;
+        for (auto i = 0; i < I_MAX; i++) {
+            props.addBus(true, getInputBusName(i), AudioChannelSet::mono());
+        }
+        for (auto i = 0; i < O_MAX; i++) {
+            props.addBus(false, getOutputBusName(i), AudioChannelSet::mono());
+        }
+        return props;
+    }
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Msw8)
 };
 

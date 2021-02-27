@@ -10,7 +10,7 @@ static const char *xmlTag = JucePlugin_Name;
 
 
 
-Pmix::Pmix()
+Pmix::Pmix() : AudioProcessor(getBusesProperties())
 {
     memset(params_, 0, sizeof(params_));
     initTracks();
@@ -83,12 +83,12 @@ const String Pmix::getParameterText (int index)
 }
 
 
-const String Pmix::getInputChannelName (int channelIndex) const
+const String Pmix::getInputBusName (int channelIndex)
 {
     return String("IN ") + String(channelIndex + 1);
 }
 
-const String Pmix::getOutputChannelName (int channelIndex) const
+const String Pmix::getOutputBusName (int channelIndex)
 {
 
     switch (channelIndex) {
@@ -102,16 +102,6 @@ const String Pmix::getOutputChannelName (int channelIndex) const
     case O_AUX_2_R:       { return String("Aux 2 R");}
     }
     return String("Uknown:") + String (channelIndex + 1);
-}
-
-bool Pmix::isInputChannelStereoPair (int index) const
-{
-    return index <= I_IN_8;
-}
-
-bool Pmix::isOutputChannelStereoPair (int index) const
-{
-    return index <= O_AUX_2_R;
 }
 
 bool Pmix::acceptsMidi() const
@@ -466,12 +456,11 @@ void Pmix::getStateInformation (MemoryBlock& destData)
 
 void Pmix::setStateInformation (const void* data, int sizeInBytes)
 {
-    XmlElement *pXML = getXmlFromBinary(data, sizeInBytes);
+    auto pXML = getXmlFromBinary(data, sizeInBytes);
     if (pXML) {
         // auto root=pXML->getChildByName(xmlTag);
         // if(root) readFromXml(*root);
         readFromXml(*pXML);
-        delete pXML;
     }
 }
 

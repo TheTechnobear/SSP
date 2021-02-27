@@ -7,7 +7,7 @@
 static const char *xmlTag = JucePlugin_Name;
 
 
-Msw8::Msw8()
+Msw8::Msw8() : AudioProcessor(getBusesProperties())
 {
     memset(params_, 0, sizeof(params_));
 }
@@ -102,7 +102,7 @@ const String Msw8::getParameterText (int index)
 }
 
 
-const String Msw8::getInputChannelName (int channelIndex) const
+const String Msw8::getInputBusName (int channelIndex)
 {
     switch (channelIndex) {
     case I_IN_SEL:     { return String("InSel");}
@@ -119,7 +119,7 @@ const String Msw8::getInputChannelName (int channelIndex) const
     return String("unused:") + String (channelIndex + 1);
 }
 
-const String Msw8::getOutputChannelName (int channelIndex) const
+const String Msw8::getOutputBusName (int channelIndex)
 {
 
     switch (channelIndex) {
@@ -133,16 +133,6 @@ const String Msw8::getOutputChannelName (int channelIndex) const
     case O_SIG_H:       { return String("Out H");}
     }
     return String("unused:") + String (channelIndex + 1);
-}
-
-bool Msw8::isInputChannelStereoPair (int index) const
-{
-    return false;
-}
-
-bool Msw8::isOutputChannelStereoPair (int index) const
-{
-    return false;
 }
 
 bool Msw8::acceptsMidi() const
@@ -336,12 +326,11 @@ void Msw8::getStateInformation (MemoryBlock& destData)
 
 void Msw8::setStateInformation (const void* data, int sizeInBytes)
 {
-    XmlElement *pXML = getXmlFromBinary(data, sizeInBytes);
+    auto pXML = getXmlFromBinary(data, sizeInBytes);
     if (pXML) {
         // auto root=pXML->getChildByName(xmlTag);
         // if(root) readFromXml(*root);
         readFromXml(*pXML);
-        delete pXML;
     }
 }
 

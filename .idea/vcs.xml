@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/juce" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/madronalib" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/mi" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/mi/avr_audio_bootloader" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/mi/avrlib" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/mi/avrlibx" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/mi/stm_audio_bootloader" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/mi/stmlib" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ssp-sdk" vcs="Git" />
+  </component>
+</project>

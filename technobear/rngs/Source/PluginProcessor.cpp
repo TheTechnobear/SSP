@@ -1,408 +1,248 @@
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "SSP.h"
+
+inline float constrain(float v, float vMin, float vMax) {
+    return std::max<float>(vMin, std::min<float>(vMax, v));
+}
+
+PluginProcessor::PluginProcessor()
+    : PluginProcessor(getBusesProperties(), createParameterLayout()) {}
+
+PluginProcessor::PluginProcessor(
+    const AudioProcessor::BusesProperties &ioLayouts,
+    AudioProcessorValueTreeState::ParameterLayout layout)
+    : BaseProcessor(ioLayouts, std::move(layout)), params_(vts()) {
+    inLevel_ = 0.0f;
+
+    io_buf_sz_ = RingsBlock;
+    in_buf_ = new float[io_buf_sz_];
+    out_buf_ = new float[io_buf_sz_];
+    aux_buf_ = new float[io_buf_sz_];
+
+    strummer_.Init(0.01f, 48000 / RingsBlock);
+    string_synth_.Init(buffer);
+    part_.Init(buffer);
+    initPart(true);
+}
+
+PluginProcessor::~PluginProcessor() {
+    delete[] in_buf_;
+    delete[] out_buf_;
+    delete[] aux_buf_;
+    in_buf_ = nullptr;
+    out_buf_ = nullptr;
+    aux_buf_ = nullptr;
+}
 
 
-static const char *xmlTag = JucePlugin_Name;
+PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) :
+    pitch(*apvt.getParameter(ID::pitch)),
+    structure(*apvt.getParameter(ID::structure)),
+    brightness(*apvt.getParameter(ID::brightness)),
+    damping(*apvt.getParameter(ID::damping)),
+    position(*apvt.getParameter(ID::position)),
+    polyphony(*apvt.getParameter(ID::polyphony)),
+    model(*apvt.getParameter(ID::model)),
+    //bypass(*apvt.getParameter(ID::bypass)),
+    //easter_egg(*apvt.getParameter(ID::easter_egg)),
+    in_gain(*apvt.getParameter(ID::in_gain)) {
+}
 
 
-Rngs::Rngs()
-{
-    memset(params_, 0, sizeof(params_));
+AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLayout() {
+    AudioProcessorValueTreeState::ParameterLayout params;
+    BaseProcessor::addBaseParameters(params);
 
-    // setProgram gets called before prepare to play
-    // without this part is in an 'unknown' state
-    data_.strummer.Init(0.01f, 48000 / RingsBlock);
-    data_.string_synth.Init(data_.buffer);
-    data_.part.Init(data_.buffer);
-    auto& part = data_.part;
-    int polyphony = constrain(1 << int(data_.f_polyphony) , 1, rings::kMaxPolyphony);
-    part.set_polyphony(polyphony);
-    data_.string_synth.set_polyphony(polyphony);
-    int imodel = constrain(data_.f_model, 0, rings::ResonatorModel::RESONATOR_MODEL_LAST - 1);
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::pitch, "Pitch", -48.0f, +48.0f, 0.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::structure, "Structure", 0.0f, 100.0f, 40.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::brightness, "Brightness", 0.0f, 100.0f, 50.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::damping, "Damping", 0.0f, 100.0f, 50.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::position, "Position", 0.0f, 100.0f, 50.0f));
+
+    StringArray poly;
+    poly.add("1");
+    poly.add("2");
+    poly.add("4");
+    params.add(std::make_unique<ssp::BaseChoiceParameter>(ID::polyphony, "Polyphony", poly, 0));
+
+    StringArray models;
+    models.add("Modal");
+    models.add("Sym Str");
+    models.add("Inh Str");
+    models.add("FM");
+    models.add("Syn Q Str");
+    models.add("Rvb Str");
+    params.add(std::make_unique<ssp::BaseChoiceParameter>(ID::model, "Model", models, 0));
+//    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::bypass, "bypass", false));
+//    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::easter_egg, "easter_egg", false));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::in_gain, "In Gain", 0.0f, 100.0f, 0.0f));
+    return params;
+}
+
+
+const String PluginProcessor::getInputBusName(int channelIndex) {
+    static String inBusName[I_MAX] = {
+        "In",
+        "Strum",
+        "VOct",
+        "FM",
+        "Struct",
+        "Bright",
+        "Damp",
+        "Pos"
+    };
+    if (channelIndex < I_MAX) { return inBusName[channelIndex]; }
+    return "ZZIn-" + String(channelIndex);
+}
+
+
+const String PluginProcessor::getOutputBusName(int channelIndex) {
+    static String outBusName[O_MAX] = {
+        "Odd",
+        "Even"
+    };
+    if (channelIndex < O_MAX) { return outBusName[channelIndex]; }
+    return "ZZOut-" + String(channelIndex);
+}
+
+void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
+    strummer_.Init(0.01f, sampleRate / RingsBlock);
+    string_synth_.Init(buffer);
+    part_.Init(buffer);
+
+    initPart(true);
+}
+
+void PluginProcessor::initPart(bool force) {
+    int polyphony = constrain(
+        1 << int(params_.polyphony.convertFrom0to1(params_.polyphony.getValue())),
+        1, rings::kMaxPolyphony);
+
+    if (force || polyphony != part_.polyphony()) {
+        part_.set_polyphony(polyphony);
+        string_synth_.set_polyphony(polyphony);
+    }
+
+    int imodel = constrain(params_.model.convertFrom0to1(params_.model.getValue()),
+                           0, rings::ResonatorModel::RESONATOR_MODEL_LAST - 1);
     rings::ResonatorModel model = static_cast<rings::ResonatorModel>(imodel);
-    part.set_model(model);
-    data_.string_synth.set_fx(static_cast<rings::FxType>(model));
-}
-
-Rngs::~Rngs()
-{
-    ;
-}
-
-const String Rngs::getName() const
-{
-    return JucePlugin_Name;
-}
-
-int Rngs::getNumParameters()
-{
-    return Percussa::sspLast;
-}
-
-float Rngs::getParameter (int index)
-{
-    // SSP appears to only send parameters if they appear to have changed
-    // so we need to track the parameters values(!)
-    if (index < Percussa::sspLast) return params_[index];
-    return 0.0f;
-}
-
-void Rngs::setParameter (int index, float newValue)
-{
-    // this will have to change... as the +/-1 is larger than before
-    // current idea is to move away from sendParamChangeMessageToListeners
-    // to a differ 'changebroadcaster' to free up parameter change for 'proper use'
-    //Logger::writeToLog(getParameterName(index) + ":" + String(newValue));
-    switch (index) {
-    case Percussa::sspEnc1:
-    case Percussa::sspEnc2:
-    case Percussa::sspEnc3:
-    case Percussa::sspEnc4:
-    {
-        if (newValue > 0.5f) {
-            params_[index - Percussa::sspFirst]++;
-            AudioProcessor::sendParamChangeMessageToListeners(index, 1.0f);
-        } else if (newValue < 0.5f) {
-            params_[index - Percussa::sspFirst]--;
-            AudioProcessor::sendParamChangeMessageToListeners(index, -1.0f);
-        } else {
-            params_[index] = 0.0f;
-            AudioProcessor::sendParamChangeMessageToListeners(index, 0.0f);
-        }
-        break;
-    }
-    default: {
-        if (index < Percussa::sspLast) params_[index] = newValue;
-        AudioProcessor::sendParamChangeMessageToListeners(index, newValue);
-        break;
-    }
+    if (force || model != part_.model()) {
+        part_.set_model(model);
+        string_synth_.set_fx(static_cast<rings::FxType>(model));
     }
 }
 
-
-const String Rngs::getParameterName (int index)
-{
-    if (index < Percussa::sspLast) return percussaParamsName[index];
-    return String();
-}
-
-const String Rngs::getParameterText (int index)
-{
-    if (index < Percussa::sspLast) return percussaParamsText[index];
-    return String();
-}
-
-
-const String Rngs::getInputChannelName (int channelIndex) const
-{
-    switch (channelIndex) {
-    case I_IN:          { return String("In");}
-    case I_STRUM:       { return String("Strum");}
-    case I_VOCT:        { return String("VOct");}
-    case I_FM:          { return String("FM");}
-    case I_STUCTURE:    { return String("Struct");}
-    case I_BRIGHTNESS:  { return String("Bright");}
-    case I_DAMPING:      { return String("Damp");}
-    case I_POSITION:      { return String("Pos");}
-    }
-    return String("unused:") + String (channelIndex + 1);
-}
-
-const String Rngs::getOutputChannelName (int channelIndex) const
-{
-
-    switch (channelIndex) {
-    case O_ODD : {
-        return String("Odd");
-    }
-    case O_EVEN : {
-        return String("Even");
-    }
-    }
-    return String("unused:") + String (channelIndex + 1);
-}
-
-bool Rngs::isInputChannelStereoPair (int index) const
-{
-    return false;
-}
-
-bool Rngs::isOutputChannelStereoPair (int index) const
-{
-    return false;
-}
-
-bool Rngs::acceptsMidi() const
-{
-#if JucePlugin_WantsMidiInput
-    return true;
-#else
-    return false;
-#endif
-}
-
-bool Rngs::producesMidi() const
-{
-#if JucePlugin_ProducesMidiOutput
-    return true;
-#else
-    return false;
-#endif
-}
-
-bool Rngs::silenceInProducesSilenceOut() const
-{
-    return false;
-}
-
-double Rngs::getTailLengthSeconds() const
-{
-    return 0.0;
-}
-
-int Rngs::getNumPrograms()
-{
-    return 1;
-}
-
-int Rngs::getCurrentProgram()
-{
-    // SSP queries what program is currently loaded
-    return 0;
-}
-
-void Rngs::setCurrentProgram (int index)
-{
-}
-
-const String Rngs::getProgramName (int index)
-{
-    return String("");
-}
-
-void Rngs::changeProgramName (int index, const String& newName)
-{
-    // SSP - not using
-}
-
-void Rngs::prepareToPlay (double sampleRate, int samplesPerBlock)
-{
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
-    // this is called by the SSP's software right after loading
-    // the plugin and before it starts calling processBlock below
-
-
-    data_.strummer.Init(0.01f, sampleRate / RingsBlock);
-    data_.string_synth.Init(data_.buffer);
-    data_.part.Init(data_.buffer);
-
-    auto& part = data_.part;
-    int polyphony = constrain(1 << int(data_.f_polyphony) , 1, rings::kMaxPolyphony);
-    part.set_polyphony(polyphony);
-    data_.string_synth.set_polyphony(polyphony);
-    int imodel = constrain(data_.f_model, 0, rings::ResonatorModel::RESONATOR_MODEL_LAST - 1);
-    rings::ResonatorModel model = static_cast<rings::ResonatorModel>(imodel);
-    part.set_model(model);
-    data_.string_synth.set_fx(static_cast<rings::FxType>(model));
-}
-
-void Rngs::releaseResources()
-{
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
-}
-
-
-
-void Rngs::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
-{
-    auto& in = data_.in;
-    auto& out = data_.out;
-    auto& aux = data_.aux;
+void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     auto n = RingsBlock;
     size_t size = n;
 
-    bool stereoOut = params_[Percussa::sspOutEn1 + O_EVEN ] > 0.5f;
+    inRms_.process(buffer, I_IN);
+    bool stereoOut = outputEnabled[O_EVEN] > 0.5f;
+
+    float p_in_gain = params_.in_gain.getValue();
 
     // Rings usually has a blocks size of 16,
     // SSP = 128 (@48k), so split up, so we read the control rate date every 16
     for (int bidx = 0; bidx < buffer.getNumSamples(); bidx += n) {
 
 
-        float gain = (data_.f_in_gain * 4.0f);
+        float gain = (p_in_gain * 4.0f);
         float in_gain = constrain(1.0f + (gain * gain), 1.0f, 17.0f);
 
         bool strum = false;
         for (int i = 0; i < n; i++) {
-            in[i] = out[i] = buffer.getSample(I_IN, bidx + i) * in_gain;
+            in_buf_[i] = out_buf_[i] = buffer.getSample(I_IN, bidx + i) * in_gain;
             bool trig = buffer.getSample(I_STRUM, bidx + i) > 0.5;
-            if (trig != data_.f_trig && trig) {
+            if (trig != trig_ && trig) {
                 strum = true;
             }
-            data_.f_trig = trig;
+            trig_ = trig;
         }
 
         // control rate
         static constexpr float RngsPitchOffset = 24.0f;
-        float transpose = data_.f_pitch + RngsPitchOffset;
+        float transpose = params_.pitch.convertFrom0to1(params_.pitch.getValue()) + RngsPitchOffset;
         float note = cv2Pitch(buffer.getSample(I_VOCT, bidx));
         float fm = cv2Pitch(buffer.getSample(I_FM, bidx));
-        float damping = data_.f_damping + buffer.getSample(I_DAMPING, bidx);
-        float structure = data_.f_structure + buffer.getSample(I_STUCTURE, bidx);
-        float brightness = data_.f_brightness + buffer.getSample(I_BRIGHTNESS, bidx);
-        float position = data_.f_position + buffer.getSample(I_POSITION, bidx);
-        float chord = data_.patch.structure * rings::kNumChords - 1;
+        float damping = params_.damping.getValue() + buffer.getSample(I_DAMPING, bidx);
+        float structure = params_.structure.getValue() + buffer.getSample(I_STRUCTURE, bidx);
+        float brightness = params_.brightness.getValue() + buffer.getSample(I_BRIGHTNESS, bidx);
+        float position = params_.position.getValue() + buffer.getSample(I_POSITION, bidx);
+        float chord = patch_.structure * rings::kNumChords - 1;
 
-        auto& patch = data_.patch;
-        auto& part = data_.part;
-        auto& performance_state = data_.performance_state;
+        patch_.brightness = constrain(brightness, 0.0f, 1.0f);
+        patch_.damping = constrain(damping, 0.0f, 1.0f);
+        patch_.position = constrain(position, 0.0f, 1.0f);
+        patch_.structure = constrain(structure, 0.0f, 0.9995f);
 
-        patch.brightness = constrain(brightness, 0.0f, 1.0f);
-        patch.damping = constrain(damping, 0.0f, 1.0f);
-        patch.position = constrain(position, 0.0f, 1.0f);
-        patch.structure = constrain(structure, 0.0f, 0.9995f);
+        performance_state_.fm = constrain(fm, -48.0f, 48.0f);
+        performance_state_.note = note;
+        performance_state_.tonic = 12.0f + transpose;
 
-        performance_state.fm = constrain(fm, -48.0f, 48.0f);
-        performance_state.note = note;
-        performance_state.tonic = 12.0f + transpose;
+        performance_state_.internal_exciter = inputEnabled[I_IN] < 0.5f;
+        performance_state_.internal_strum = inputEnabled[I_STRUM] < 0.5f;
+        performance_state_.internal_note = inputEnabled[I_VOCT] < 0.5f;
+        performance_state_.chord = constrain(chord, 0, rings::kNumChords - 1);;
 
-        performance_state.internal_exciter =  params_[Percussa::sspInEn1 + I_IN ] < 0.5f;
-        performance_state.internal_strum =  params_[Percussa::sspInEn1 + I_STRUM ] < 0.5f;
-        performance_state.internal_note =  params_[Percussa::sspInEn1 + I_VOCT ] < 0.5f;
-        performance_state.chord = constrain(chord , 0, rings::kNumChords - 1);;
-
-        if (!performance_state.internal_note) {
+        if (!performance_state_.internal_note) {
             // performance_state.note = 0.0;
             // quantize if using v/oct input
-            performance_state.tonic = 12.0f + roundf(transpose);
+            performance_state_.tonic = 12.0f + roundf(transpose);
         }
 
-        performance_state.strum = strum;
+        performance_state_.strum = strum;
 
-        int polyphony = constrain(1 << int(data_.f_polyphony) , 1, rings::kMaxPolyphony);
+        initPart(false);
 
-        if (polyphony != part.polyphony()) {
-            part.set_polyphony(polyphony);
-            data_.string_synth.set_polyphony(polyphony);
-        }
+        bool bypass = false; //params_.bypass.getValue() > 0.5;
+        part_.set_bypass(bypass);
+        bool easter_egg = false; //params_.easter_egg.getValue() > 0.5;
 
-        int imodel = constrain(data_.f_model, 0, rings::ResonatorModel::RESONATOR_MODEL_LAST - 1);
-        rings::ResonatorModel model = static_cast<rings::ResonatorModel>(imodel);
-        if (model != part.model()) {
-            part.set_model(model);
-            data_.string_synth.set_fx(static_cast<rings::FxType>(model));
-        }
-
-
-        part.set_bypass(data_.f_bypass > 0.5);
-
-        if (data_.f_easter_egg > 0.5) {
-            data_.strummer.Process(NULL, size, &(data_.performance_state));
-            data_.string_synth.Process(data_.performance_state, data_.patch, in, out, aux, size);
+        if (easter_egg) {
+            strummer_.Process(NULL, size, &(performance_state_));
+            string_synth_.Process(performance_state_, patch_, in_buf_, out_buf_, aux_buf_, size);
         } else {
             // Apply noise gate.
             for (size_t i = 0; i < size; ++i) {
-                float in_sample = in[i];
+                float in_sample = in_buf_[i];
                 float error, gain;
-                error = in_sample * in_sample - data_.in_level;
-                data_.in_level += error * (error > 0.0f ? 0.1f : 0.0001f);
-                gain = data_.in_level <= data_.kNoiseGateThreshold
-                       ? (1.0f / data_.kNoiseGateThreshold) * data_.in_level : 1.0f;
-                in[i] = gain * in_sample;
+                error = in_sample * in_sample - inLevel_;
+                inLevel_ += error * (error > 0.0f ? 0.1f : 0.0001f);
+                gain = inLevel_ <= kNoiseGateThreshold
+                       ? (1.0f / kNoiseGateThreshold) * inLevel_ : 1.0f;
+                in_buf_[i] = gain * in_sample;
             }
-            data_.strummer.Process(in, size, &(data_.performance_state));
-            part.Process(performance_state, patch, in, out, aux, size);
+            strummer_.Process(in_buf_, size, &(performance_state_));
+            part_.Process(performance_state_, patch_, in_buf_, out_buf_, aux_buf_, size);
         }
 
         if (stereoOut) {
             for (int i = 0; i < RingsBlock; i++) {
-                buffer.setSample(O_ODD, bidx + i, out[i]);
-                buffer.setSample(O_EVEN, bidx + i, aux[i]);
+                buffer.setSample(O_ODD, bidx + i, out_buf_[i]);
+                buffer.setSample(O_EVEN, bidx + i, aux_buf_[i]);
             }
         } else {
             for (int i = 0; i < RingsBlock; i++) {
-                buffer.setSample(O_ODD, bidx + i, (out[i] + aux[i] ) / 2.0f);
+                buffer.setSample(O_ODD, bidx + i, (out_buf_[i] + aux_buf_[i]) / 2.0f);
             }
         }
     }
+
+    outRms_[0].process(buffer, O_ODD);
+    if (stereoOut) outRms_[1].process(buffer, O_EVEN);
 }
 
-bool Rngs::hasEditor() const
-{
-    return true;
-}
-
-AudioProcessorEditor* Rngs::createEditor()
-{
-    return new RngsEditor (*this);
-}
-
-
-void Rngs::writeToXml(XmlElement& xml) {
-    xml.setAttribute("f_pitch",               double(data_.f_pitch));
-    xml.setAttribute("f_structure",           double(data_.f_structure));
-    xml.setAttribute("f_brightness",          double(data_.f_brightness));
-    xml.setAttribute("f_damping",             double(data_.f_damping));
-    xml.setAttribute("f_position",            double(data_.f_position));
-    xml.setAttribute("f_polyphony",           double(data_.f_polyphony));
-    xml.setAttribute("f_model",               double(data_.f_model));
-    xml.setAttribute("f_bypass",              bool(data_.f_bypass));
-    xml.setAttribute("f_easter_egg",          bool(data_.f_easter_egg));
-    xml.setAttribute("f_in_gain",             double(data_.f_in_gain));
-}
-
-void Rngs::readFromXml(XmlElement& xml) {
-    data_.f_pitch = xml.getDoubleAttribute("f_pitch", 0.0f);
-    data_.f_structure = xml.getDoubleAttribute("f_structure", 0.40);
-    data_.f_brightness = xml.getDoubleAttribute("f_brightness", 0.5f);
-    data_.f_damping = xml.getDoubleAttribute("f_damping", 0.5f);
-    data_.f_position = xml.getDoubleAttribute("f_position", 0.5f);
-    data_.f_polyphony = xml.getDoubleAttribute("f_polyphony", 0.0f);
-    data_.f_model = xml.getDoubleAttribute("f_model", 0.0f);
-    data_.f_bypass = xml.getBoolAttribute("f_bypass", 0.0f);
-    data_.f_easter_egg = xml.getBoolAttribute("f_easter_egg", 0.0f);
-    data_.f_in_gain = xml.getDoubleAttribute("f_in_gain", 0.0f);
-    data_.f_trig = 0.0f;
+void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
+    ssp::BaseProcessor::setStateInformation(data, sizeInBytes);
+    initPart(true);
 }
 
 
-void Rngs::getStateInformation (MemoryBlock& destData)
-{
-    XmlElement xml(xmlTag);
-    writeToXml(xml);
-    copyXmlToBinary(xml, destData);
+AudioProcessorEditor *PluginProcessor::createEditor() {
+    return new PluginEditor(*this);
 }
 
-void Rngs::setStateInformation (const void* data, int sizeInBytes)
-{
-    XmlElement *pXML = getXmlFromBinary(data, sizeInBytes);
-    if (pXML) {
-        // auto root=pXML->getChildByName(xmlTag);
-        // if(root) readFromXml(*root);
-        readFromXml(*pXML);
-        delete pXML;
-    }
-
-
-    // initialise again
-    auto& part = data_.part;
-    int polyphony = constrain(1 << int(data_.f_polyphony) , 1, rings::kMaxPolyphony);
-    part.set_polyphony(polyphony);
-    data_.string_synth.set_polyphony(polyphony);
-    int imodel = constrain(data_.f_model, 0, rings::ResonatorModel::RESONATOR_MODEL_LAST - 1);
-    rings::ResonatorModel model = static_cast<rings::ResonatorModel>(imodel);
-    part.set_model(model);
-    data_.string_synth.set_fx(static_cast<rings::FxType>(model));
+AudioProcessor *JUCE_CALLTYPE createPluginFilter() {
+    return new PluginProcessor();
 }
-
-// This creates new instances of the plugin..
-AudioProcessor* JUCE_CALLTYPE createPluginFilter()
-{
-    return new Rngs();
-}
-
-
 
