@@ -106,6 +106,7 @@ set(COMMON_SRC
         ../common/ssp/BaseProcessor.cpp
         ../common/ssp/BaseParamControl.cpp
         ../common/ssp/ButtonControl.cpp
+        ../common/ssp/RmsTrack.cpp
         ../common/ssp/VuMeter.cpp
         )
 

@@ -35,14 +35,13 @@ private:
     float v_;
 };
 
-void BaseProcessor::addBaseParameters(AudioProcessorValueTreeState::ParameterLayout &params) {
-
 #ifdef __APPLE__
-    static constexpr bool defIOState = true;
+static constexpr bool defIOState = true;
 #else
-    static constexpr bool defIOState = false;
+static constexpr bool defIOState = false;
 #endif
 
+void BaseProcessor::addBaseParameters(AudioProcessorValueTreeState::ParameterLayout &params) {
     for (unsigned i = 0; i < sspParams::numEnc; i++) {
         params.add(std::make_unique<EncoderParameter>(
             percussaParamsName[Percussa::sspEnc1 + i],
@@ -79,7 +78,6 @@ void BaseProcessor::addBaseParameters(AudioProcessorValueTreeState::ParameterLay
             defIOState,
             [this, i](const String &id, bool b) { onOutputChanged(i, b); })
         );
-        onOutputChanged(i, defIOState);
     }
     for (unsigned i = 0; i < sspParams::numIn; i++) {
         params.add(std::make_unique<BaseBoolParameter>(
@@ -88,9 +86,18 @@ void BaseProcessor::addBaseParameters(AudioProcessorValueTreeState::ParameterLay
             defIOState,
             [this, i](const String &id, bool b) { onInputChanged(i, b); })
         );
+    }
+}
+
+void BaseProcessor::init() {
+    for (unsigned i = 0; i < sspParams::numOut; i++) {
+        onOutputChanged(i, defIOState);
+    }
+    for (unsigned i = 0; i < sspParams::numIn; i++) {
         onInputChanged(i, defIOState);
     }
 }
+
 
 
 void BaseProcessor::getStateInformation(MemoryBlock &destData) {

@@ -13,6 +13,7 @@ PluginProcessor::PluginProcessor(
     const AudioProcessor::BusesProperties &ioLayouts,
     AudioProcessorValueTreeState::ParameterLayout layout)
     : BaseProcessor(ioLayouts, std::move(layout)), params_(vts()) {
+    init();
     granularProcessor_ = nullptr;
     ibuf_ = obuf_ = nullptr;
     block_mem_ = block_ccm_ = nullptr;

@@ -12,6 +12,7 @@ PluginProcessor::PluginProcessor(
     const AudioProcessor::BusesProperties &ioLayouts,
     AudioProcessorValueTreeState::ParameterLayout layout)
     : BaseProcessor(ioLayouts, std::move(layout)), params_(vts()) {
+    init();
 
     memset(lastTrig_, 0, sizeof(lastTrig_));
     memset(lastSig_, 0, sizeof(lastSig_));

@@ -14,6 +14,14 @@ class BaseProcessor : public AudioProcessor,
                       private ValueTree::Listener {
 public:
 
+    explicit BaseProcessor(
+        const AudioProcessor::BusesProperties &ioLayouts,
+        juce::AudioProcessorValueTreeState::ParameterLayout pl)
+        : AudioProcessor(ioLayouts), apvts(*this, nullptr, "state", std::move(pl)) {
+    }
+
+    virtual void init();
+
     bool acceptsMidi() const override { return false; }
 
     bool producesMidi() const override { return false; }
@@ -41,23 +49,23 @@ public:
         static constexpr unsigned numOut = Percussa::sspOutEn24 - Percussa::sspOutEn1 + 1;
         static constexpr unsigned numSw = Percussa::sspSw8 - Percussa::sspSw1 + 1;
         static constexpr unsigned numCtrlSw = Percussa::sspSwShiftR - Percussa::sspSwLeft + 1;
-        static const char* getId(unsigned id) {
-            if(id < Percussa::sspLast) return percussaParamsName[id];
+
+        static const char *getId(unsigned id) {
+            if (id < Percussa::sspLast) return percussaParamsName[id];
             return "unknown";
         };
     };
 
-    RangedAudioParameter* getParameter(StringRef n) { return apvts.getParameter(n);}
+    RangedAudioParameter *getParameter(StringRef n) { return apvts.getParameter(n); }
+
     AudioProcessorValueTreeState &vts() { return apvts; }
 
-    explicit BaseProcessor(
-        const AudioProcessor::BusesProperties &ioLayouts,
-        juce::AudioProcessorValueTreeState::ParameterLayout pl)
-        : AudioProcessor(ioLayouts), apvts(*this, nullptr, "state", std::move(pl)) {
-    }
+    virtual void onInputChanged(unsigned i, bool b);
+    virtual void onOutputChanged(unsigned i, bool b);
 
-    void onInputChanged(unsigned i,  bool b);
-    void onOutputChanged(unsigned i, bool b);
+    bool isOutputEnabled(unsigned i) { return i < sspParams::numOut && outputEnabled[i]; }
+
+    bool isInputEnabled(unsigned i) { return i < sspParams::numIn && inputEnabled[i]; }
 
 protected:
     friend class BaseEditor;

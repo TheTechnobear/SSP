@@ -12,6 +12,7 @@ PluginProcessor::PluginProcessor(
     const AudioProcessor::BusesProperties &ioLayouts,
     AudioProcessorValueTreeState::ParameterLayout layout)
     : BaseProcessor(ioLayouts, std::move(layout)), params_(vts()) {
+    init();
 
     memset(shared_buffer_,0,sizeof(shared_buffer_));
 #if __APPLE__

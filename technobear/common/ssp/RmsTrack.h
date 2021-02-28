@@ -1,4 +1,5 @@
 #pragma once
+#include "../JuceLibraryCode/JuceHeader.h"
 
 namespace ssp {
 
@@ -21,7 +22,7 @@ public:
         }
     }
 
-    void process(AudioSampleBuffer &buffer, unsigned ch) {
+    void process(juce::AudioSampleBuffer &buffer, unsigned ch) {
         unsigned n = buffer.getNumSamples();
         float tlvl = useRMS_
                      ? buffer.getRMSLevel(ch, 0, n)

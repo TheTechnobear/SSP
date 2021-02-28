@@ -12,6 +12,8 @@ PluginProcessor::PluginProcessor(
     const AudioProcessor::BusesProperties &ioLayouts,
     AudioProcessorValueTreeState::ParameterLayout layout)
     : BaseProcessor(ioLayouts, std::move(layout)), params_(vts()) {
+    init();
+
     inLevel_ = 0.0f;
 
     io_buf_sz_ = RingsBlock;

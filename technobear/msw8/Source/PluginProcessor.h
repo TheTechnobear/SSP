@@ -1,93 +1,67 @@
 #pragma once
 
+#pragma once
+
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "Percussa.h"
+
+#include "ssp/BaseProcessor.h"
 
 #include <atomic>
+#include <algorithm>
 
-inline float constrain(float v, float vMin, float vMax) {
-    return std::max<float>(vMin, std::min<float>(vMax, v));
+//inSel
+//outSel
+//active
+//soft
+
+namespace ID {
+#define PARAMETER_ID(str) constexpr const char* str { #str };
+
+
+PARAMETER_ID (inSel)
+PARAMETER_ID (outSel)
+PARAMETER_ID (active)
+PARAMETER_ID (soft)
+#undef PARAMETER_ID
 }
 
-struct Msw8Data {
-    Msw8Data() {
-        inSel_      = 0.0f;
-        outSel_     = 0.0f;
-        useActive_  = false;
-        inCount_    = 0;
-        outCount_   = 0;
-        lastInIdx_  = 0;
-        lastOutIdx_  = 0;
-        soft_ = false;
-    }
-    ~Msw8Data() {
-    }
 
-    // params - user
-    std::atomic<float> inSel_;
-    std::atomic<float> outSel_;
-    std::atomic<bool>  useActive_; // only use active in/out for selection
-    std::atomic<bool>  soft_; // fade switch
-
-
-    // working data
-
-    // processor updates
-    std::atomic<unsigned> lastInIdx_;
-    std::atomic<unsigned> lastOutIdx_;
-
-    unsigned inCount_;
-    unsigned outCount_;
-};
-
-
-class Msw8  : public AudioProcessor
-{
+class PluginProcessor : public ssp::BaseProcessor {
 public:
-    Msw8();
-    ~Msw8();
+    explicit PluginProcessor();
+    explicit PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts, AudioProcessorValueTreeState::ParameterLayout layout);
+    ~PluginProcessor();
 
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
-    void releaseResources() override;
+    const String getName() const override { return JucePlugin_Name; }
 
-    void processBlock (AudioSampleBuffer&, MidiBuffer&) override;
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override;
 
-    AudioProcessorEditor* createEditor() override;
-    bool hasEditor() const override;
+    void releaseResources() override {}
 
-    const String getName() const override;
+    void processBlock(AudioSampleBuffer &, MidiBuffer &) override;
 
-    int getNumParameters() override;
-    float getParameter (int index) override;
-    void setParameter (int index, float newValue) override;
+    AudioProcessorEditor *createEditor() override;
 
-    const String getParameterName (int index) override;
-    const String getParameterText (int index) override;
+    bool hasEditor() const override { return true; }
 
-    bool acceptsMidi() const override;
-    bool producesMidi() const override;
-    bool silenceInProducesSilenceOut() const override;
-    double getTailLengthSeconds() const override;
+    struct PluginParams {
+        using Parameter = juce::RangedAudioParameter;
+        explicit PluginParams(juce::AudioProcessorValueTreeState &);
 
-    int getNumPrograms() override;
-    int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const String getProgramName (int index) override;
-    void changeProgramName (int index, const String& newName) override;
+        Parameter &inSel;
+        Parameter &outSel;
+        Parameter &active;
+        Parameter &soft;
+    } params_;
 
-    void getStateInformation (MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
-
-    Msw8Data& data() { return data_;}
-
-    bool isInputEnabled(unsigned idx) { return params_[Percussa::sspInEn1 + I_SIG_1 + idx] > 0.5f;}
-    bool isOutputEnabled(unsigned idx) { return params_[Percussa::sspOutEn1 + O_SIG_A + idx] > 0.5f;}
-    void getLastSel(unsigned& in, unsigned& out) { in = data_.lastInIdx_, out = data_.lastOutIdx_;}
 
 protected:
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+    void onInputChanged(unsigned i, bool b) override;
+    void onOutputChanged(unsigned i, bool b) override;
 
 private:
-        enum {
+    enum {
         I_IN_SEL,
         I_OUT_SEL,
         I_SIG_1,
@@ -112,24 +86,15 @@ private:
         O_MAX
     };
 
-public:
-    static constexpr unsigned MAX_SIG_IN = (I_SIG_8 - I_SIG_1) + 1;
-    static constexpr unsigned MAX_SIG_OUT = (O_SIG_H - O_SIG_A) + 1;
 
-private:
-    void writeToXml(juce::XmlElement& xml);
-    void readFromXml(juce::XmlElement& xml);
+    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
+        return true;
+    }
 
-    AudioSampleBuffer lastBuffer_;
-    AudioSampleBuffer inputBuffer_;
-    Msw8Data data_;
-    float params_[Percussa::sspLast];
+    static const String getInputBusName(int channelIndex);
+    static const String getOutputBusName(int channelIndex);
 
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override { return true;}
-    static const String getInputBusName (int channelIndex);
-    static const String getOutputBusName (int channelIndex);
-    static BusesProperties getBusesProperties()
-    {
+    static BusesProperties getBusesProperties() {
         BusesProperties props;
         for (auto i = 0; i < I_MAX; i++) {
             props.addBus(true, getInputBusName(i), AudioChannelSet::mono());
@@ -139,7 +104,25 @@ private:
         }
         return props;
     }
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Msw8)
+
+    // processor updates
+    std::atomic<unsigned> lastInIdx_;
+    std::atomic<unsigned> lastOutIdx_;
+
+    unsigned inCount_;
+    unsigned outCount_;
+
+    AudioSampleBuffer lastBuffer_;
+    AudioSampleBuffer inputBuffer_;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
+
+public:
+    void getLastSel(unsigned &in, unsigned &out) { in = lastInIdx_, out = lastOutIdx_; }
+
+    static constexpr unsigned MAX_SIG_IN = (I_SIG_8 - I_SIG_1) + 1;
+    static constexpr unsigned MAX_SIG_OUT = (O_SIG_H - O_SIG_A) + 1;
+
 };
 
 
