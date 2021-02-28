@@ -53,7 +53,6 @@ protected:
 
     // temp
     void setMenuBounds(SSPButton &btn, unsigned r);
-//    void setParamBounds(SSPParam &par, unsigned enc, unsigned var);
     void setButtonBounds(SSPButton &btn, unsigned r, unsigned c);
 
     BaseProcessor *baseProcessor_;

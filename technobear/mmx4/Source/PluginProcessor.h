@@ -1,65 +1,60 @@
 #pragma once
 
-
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "Percussa.h"
+
+#include "ssp/BaseProcessor.h"
 
 #include <atomic>
+#include <algorithm>
 
+namespace ID {
+#define PARAMETER_ID(str) constexpr const char* str { #str };
 
+PARAMETER_ID (vca_1a)
+PARAMETER_ID (vca_1b)
+PARAMETER_ID (vca_1c)
+PARAMETER_ID (vca_1d)
 
-inline float constrain(float v, float vMin, float vMax) {
-    return std::max<float>(vMin, std::min<float>(vMax, v));
+PARAMETER_ID (vca_2a)
+PARAMETER_ID (vca_2b)
+PARAMETER_ID (vca_2c)
+PARAMETER_ID (vca_2d)
+
+PARAMETER_ID (vca_3a)
+PARAMETER_ID (vca_3b)
+PARAMETER_ID (vca_3c)
+PARAMETER_ID (vca_3d)
+
+PARAMETER_ID (vca_4a)
+PARAMETER_ID (vca_4b)
+PARAMETER_ID (vca_4c)
+PARAMETER_ID (vca_4d)
+
+#undef PARAMETER_ID
 }
 
-class PluginProcessor  : public AudioProcessor
-{
+
+class PluginProcessor : public ssp::BaseProcessor {
 public:
-    PluginProcessor();
-    ~PluginProcessor();
+    explicit PluginProcessor();
+    explicit PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts, AudioProcessorValueTreeState::ParameterLayout layout);
+    ~PluginProcessor() override = default;
 
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
-    void releaseResources() override;
+    const String getName() const override { return JucePlugin_Name; }
 
-    void processBlock (AudioSampleBuffer&, MidiBuffer&) override;
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override;
 
-    AudioProcessorEditor* createEditor() override;
-    bool hasEditor() const override;
+    void releaseResources() override {}
 
-    const String getName() const override;
+    void processBlock(AudioSampleBuffer &, MidiBuffer &) override;
 
-    int getNumParameters() override;
-    float getParameter (int index) override;
-    void setParameter (int index, float newValue) override;
+    AudioProcessorEditor *createEditor() override;
 
-    const String getParameterName (int index) override;
-    const String getParameterText (int index) override;
-
-    bool acceptsMidi() const override;
-    bool producesMidi() const override;
-    bool silenceInProducesSilenceOut() const override;
-    double getTailLengthSeconds() const override;
-
-    int getNumPrograms() override;
-    int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const String getProgramName (int index) override;
-    void changeProgramName (int index, const String& newName) override;
-
-    void getStateInformation (MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
-
-    void  setVCA(unsigned i, unsigned o, float v) { vca_[i][o] = v;}
-    float getVCA(unsigned i, unsigned o) { return vca_[i][o];}
-    float getVCACV(unsigned i, unsigned o) { return lastVcaCV_[i][o];}
-
-    bool isInputEnabled(unsigned idx) { return params_[Percussa::sspInEn1 + I_SIG_1L + idx] > 0.5f;}
-    bool isOutputEnabled(unsigned idx) { return params_[Percussa::sspOutEn1 + O_SIG_AL + idx] > 0.5f;}
+    bool hasEditor() const override { return true; }
 
 
-private:
-    void writeToXml(juce::XmlElement& xml);
-    void readFromXml(juce::XmlElement& xml);
+protected:
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     enum {
         I_SIG_1L,
@@ -102,24 +97,37 @@ private:
     };
 
 public:
-    static constexpr unsigned MAX_SIG_IN = (I_SIG_4L - I_SIG_1L) / 2 + 1 ;
-    static constexpr unsigned MAX_SIG_OUT = ( O_SIG_DL - O_SIG_AL) / 2 + 1;
+    static constexpr unsigned MAX_SIG_IN = (I_SIG_4L - I_SIG_1L) / 2 + 1;
+    static constexpr unsigned MAX_SIG_OUT = (O_SIG_DL - O_SIG_AL) / 2 + 1;
+
+    struct PluginParams {
+        using Parameter = juce::RangedAudioParameter;
+        explicit PluginParams(juce::AudioProcessorValueTreeState &);
+
+        std::reference_wrapper<Parameter> vca[MAX_SIG_IN][MAX_SIG_OUT];
+    } params_;
+
+    float getVCA(unsigned i, unsigned o) {
+        PluginParams::Parameter &p = params_.vca[i][o];
+        return p.convertFrom0to1(p.getValue());
+    }
+
+    float getVCACV(unsigned i, unsigned o) { return lastVcaCV_[i][o]; }
 
 private:
-    std::atomic<float> vca_[MAX_SIG_IN][MAX_SIG_OUT];
     std::atomic<float> lastVcaCV_[MAX_SIG_IN][MAX_SIG_OUT];
-    float params_[Percussa::sspLast];
-
-    std::atomic<bool> ac_;
 
     AudioSampleBuffer outBufs_;
     AudioSampleBuffer workBuf_;
 
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override { return true;}
-    static const String getInputBusName (int channelIndex);
-    static const String getOutputBusName (int channelIndex);
-    static BusesProperties getBusesProperties()
-    {
+    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
+        return true;
+    }
+
+    static const String getInputBusName(int channelIndex);
+    static const String getOutputBusName(int channelIndex);
+
+    static BusesProperties getBusesProperties() {
         BusesProperties props;
         for (auto i = 0; i < I_MAX; i++) {
             props.addBus(true, getInputBusName(i), AudioChannelSet::mono());
@@ -129,9 +137,9 @@ private:
         }
         return props;
     }
-
-
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
+
+
 
 
