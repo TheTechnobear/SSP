@@ -2,14 +2,20 @@
 
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "Percussa.h"
+
+#include "ssp/BaseProcessor.h"
+#include "ssp/RmsTrack.h"
 
 #include <atomic>
 #include <algorithm>
 
 
-inline float constrain(float v, float vMin, float vMax) {
-    return std::max<float>(vMin, std::min<float>(vMax, v));
+namespace ID {
+#define PARAMETER_ID(str) constexpr const char* str { #str };
+
+PARAMETER_ID (pitch)
+PARAMETER_ID (vca)
+#undef PARAMETER_ID
 }
 
 struct TrackData {
@@ -40,80 +46,59 @@ struct TrackData {
     static constexpr unsigned MASTER = 0;
     static constexpr unsigned CUE = 1;
 
-    std::atomic<float>  level_[OUT_TRACKS];  // 0==master, 1==cue , 2/3 == aux1/2
-    std::atomic<float>  pan_;    // -1 to 1
-    std::atomic<float>  gain_;
-    std::atomic<bool>   mute_;
-    std::atomic<bool>   solo_;
-    std::atomic<bool>   cue_;
-    std::atomic<bool>   ac_;
+    std::atomic<float> level_[OUT_TRACKS];  // 0==master, 1==cue , 2/3 == aux1/2
+    std::atomic<float> pan_;    // -1 to 1
+    std::atomic<float> gain_;
+    std::atomic<bool> mute_;
+    std::atomic<bool> solo_;
+    std::atomic<bool> cue_;
+    std::atomic<bool> ac_;
 
     // currently cannot be changed in ui
-    bool                dummy_;
-    unsigned            follows_; // dummy
-
-    std::atomic<float>  lvl_; // calculated rms/peak level
-    // only used by processor
-    // RMS
-    bool                useRMS_ = false;
-    static constexpr    unsigned MAX_RMS = 100 ; // 1000 / (48000/129)  = 1 block = 2.8 mS, we want ~ 300mS
-    unsigned            lvlHead_ = 0;
-    float               lvlSum_ = 0.0f;
-    float               lvlHistory_[MAX_RMS];
-
+    bool dummy_;
+    unsigned follows_; // dummy
     // hpf/dc block
-    float               dcX1_ = 0.0f, dcY1_ = 0.0f;
+    float dcX1_ = 0.0f, dcY1_ = 0.0f;
+    ssp::RmsTrack rms_;
 };
 
 
-class Pmix  : public AudioProcessor
-{
+class PluginProcessor : public ssp::BaseProcessor {
 public:
-    Pmix();
-    ~Pmix();
+    explicit PluginProcessor();
+    explicit PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts, AudioProcessorValueTreeState::ParameterLayout layout);
+    ~PluginProcessor() override = default;
 
+    const String getName() const override { return JucePlugin_Name; }
 
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
-    void releaseResources() override;
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override;
 
-    void processBlock (AudioSampleBuffer&, MidiBuffer&) override;
+    void releaseResources() override {}
 
-    AudioProcessorEditor* createEditor() override;
-    bool hasEditor() const override;
+    void processBlock(AudioSampleBuffer &, MidiBuffer &) override;
 
-    const String getName() const override;
+    AudioProcessorEditor *createEditor() override;
 
-    int getNumParameters() override;
-    float getParameter (int index) override;
-    void setParameter (int index, float newValue) override;
+    bool hasEditor() const override { return true; }
 
-    const String getParameterName (int index) override;
-    const String getParameterText (int index) override;
+    struct PluginParams {
+        using Parameter = juce::RangedAudioParameter;
+        explicit PluginParams(juce::AudioProcessorValueTreeState &);
 
-    bool acceptsMidi() const override;
-    bool producesMidi() const override;
-    bool silenceInProducesSilenceOut() const override;
-    double getTailLengthSeconds() const override;
+        Parameter &pitch;
+        Parameter &vca;
+    } params_;
 
-    int getNumPrograms() override;
-    int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const String getProgramName (int index) override;
-    void changeProgramName (int index, const String& newName) override;
+    void getStateInformation(MemoryBlock &destData) override;
+    void setStateInformation(const void *data, int sizeInBytes) override;
 
-    void getStateInformation (MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
+    TrackData &inputTrack(unsigned t) { return t < IN_T_MAX ? inTracks_[t] : inTracks_[IN_T_MAX - 1]; }
 
-    unsigned numInTracks() { return  IN_T_MAX;}
-    unsigned numOutTracks() { return  OUT_T_MAX;}
+    TrackData &outputTrack(unsigned t) { return t < OUT_T_MAX ? outTracks_[t] : outTracks_[OUT_T_MAX - 1]; }
 
-    TrackData& inputTrack(unsigned t)   {  return t < IN_T_MAX ? inTracks_[t] : inTracks_[IN_T_MAX - 1];}
-    TrackData& outputTrack(unsigned t)  {  return t < OUT_T_MAX ? outTracks_[t] : outTracks_[OUT_T_MAX - 1];}
-
-    bool isInputEnabled(unsigned idx) { return idx < IN_T_MAX ?  params_[Percussa::sspInEn1 + I_IN_1 + idx] > 0.5f : false ;}
-    bool isOutputEnabled(unsigned idx) { return idx < OUT_T_MAX ? params_[Percussa::sspOutEn1 + O_MAIN_L + idx] > 0.5f : false ;}
-
-
+protected:
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+private:
     enum {
         I_IN_1,
         I_IN_2,
@@ -138,43 +123,24 @@ public:
         O_MAX
     };
 
+public:
+    static constexpr unsigned IN_T_MAX = I_MAX;
+    static constexpr unsigned OUT_T_MAX = O_MAX;
 private:
 
-    void writeToXml(juce::XmlElement& xml);
-    void readFromXml(juce::XmlElement& xml);
+    unsigned numInTracks() { return IN_T_MAX; }
 
-    void writeTrackXml(TrackData& t, juce::XmlElement& xml);
-    void readTrackXml(TrackData& t, juce::XmlElement& xml);
+    unsigned numOutTracks() { return OUT_T_MAX; }
 
 
-    inline void dcBlock(float x, float& x1 , float&y, float& y1) {
-        // y[n] = x[n] - x[n-1] + a * y[n-1]
-        // example usage
-        // dcBlock(curSample, lastIn, curOut, lastOut)
-        static constexpr float a = 0.995f;
-        y = x - x1 + a * y1;
-        y1 = y;
-        x1 = x;
+    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
+        return true;
     }
 
-    static constexpr unsigned IN_T_MAX = 8;
-    static constexpr unsigned OUT_T_MAX = 8;
+    static const String getInputBusName(int channelIndex);
+    static const String getOutputBusName(int channelIndex);
 
-    TrackData inTracks_[IN_T_MAX];
-    TrackData outTracks_[OUT_T_MAX];
-    void initTracks();
-
-
-    float params_[Percussa::sspLast];
-
-    AudioSampleBuffer inputBuffers_;
-    AudioSampleBuffer outputBuffers_;
-
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override { return true;}
-    static const String getInputBusName (int channelIndex);
-    static const String getOutputBusName (int channelIndex);
-    static BusesProperties getBusesProperties()
-    {
+    static BusesProperties getBusesProperties() {
         BusesProperties props;
         for (auto i = 0; i < I_MAX; i++) {
             props.addBus(true, getInputBusName(i), AudioChannelSet::mono());
@@ -185,7 +151,32 @@ private:
         return props;
     }
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Pmix)
+    void writeToXml(juce::XmlElement &xml);
+    void readFromXml(juce::XmlElement &xml);
+
+    void writeTrackXml(TrackData &t, juce::XmlElement &xml);
+    void readTrackXml(TrackData &t, juce::XmlElement &xml);
+
+
+    inline void dcBlock(float x, float &x1, float &y, float &y1) {
+        // y[n] = x[n] - x[n-1] + a * y[n-1]
+        // example usage
+        // dcBlock(curSample, lastIn, curOut, lastOut)
+        static constexpr float a = 0.995f;
+        y = x - x1 + a * y1;
+        y1 = y;
+        x1 = x;
+    }
+
+
+    TrackData inTracks_[IN_T_MAX];
+    TrackData outTracks_[OUT_T_MAX];
+    void initTracks();
+    AudioSampleBuffer inputBuffers_;
+    AudioSampleBuffer outputBuffers_;
+
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
 
 

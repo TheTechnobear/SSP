@@ -4,45 +4,68 @@
 #include <assert.h>
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
-#include "SSPChannel.h"
+#include "Channel.h"
+#include "ssp/VuMeter.h"
 
-class SSPStereoChannel: public Component
-{
+
+class StereoChannel : public Component {
 public:
-    SSPStereoChannel();
-    void init(SSPParam* param, const String& label, TrackData* lData, TrackData* rData)  {
-        label_ = label;
+    StereoChannel();
+
+    void init(SSPParam *param, const String &label, TrackData *lData, TrackData *rData) {
+        vuMeter_.init(label, true);
         lData_ = lData;
         rData_ = rData;
         lChannel_.init(param, label, lData);
         rChannel_.init(param, "", rData_);
     }
 
-    // note left is considered 'lead' channel, for mono purposes
-    void active(bool b ) { lChannel_.active(b); rChannel_.active(b);}
-    bool active() { return lChannel_.active();}
 
-    void enabled(bool b ) { lChannel_.enabled(b); rChannel_.enabled(b);}
-    bool enabled() { return lChannel_.enabled();}
+    void active(bool b) { vuMeter_.active(b); }
 
-    void button(unsigned i, bool b) { lChannel_.button(i, b); rChannel_.button(i, b);}
-    void encbutton(bool b) { lChannel_.encbutton(b); rChannel_.encbutton(b);}
-    void encoder(float e) { lChannel_.encoder(e); rChannel_.encoder(e);}
+    bool active() { return vuMeter_.active(); }
 
-    bool button(unsigned i) { return lChannel_.button(i);}
+    void enabled(bool b) { vuMeter_.enabled(b); }
 
-    void buttonMode(SSPChannel::ButMode m) { lChannel_.buttonMode(m); rChannel_.buttonMode(m);}
-    void encoderMode(SSPChannel::EncMode m) { lChannel_.encoderMode(m); rChannel_.encoderMode(m);}
+    bool enabled() { return vuMeter_.enabled(); }
+
+    void button(unsigned i, bool b) {
+        lChannel_.button(i, b);
+        rChannel_.button(i, b);
+    }
+
+    void encbutton(bool b) {
+        lChannel_.encbutton(b);
+        rChannel_.encbutton(b);
+    }
+
+    void encoder(float e) {
+        lChannel_.encoder(e);
+        rChannel_.encoder(e);
+    }
+
+    bool button(unsigned i) { return lChannel_.button(i); }
+
+    void buttonMode(Channel::ButMode m) {
+        lChannel_.buttonMode(m);
+        rChannel_.buttonMode(m);
+    }
+
+    void encoderMode(Channel::EncMode m) {
+        lChannel_.encoderMode(m);
+        rChannel_.encoderMode(m);
+    }
 
 
-    void paint (Graphics&) override;
+    void paint(Graphics &) override;
     void resized() override;
 private:
-    String     label_;
-    SSPChannel lChannel_;
-    SSPChannel rChannel_;
-    TrackData* lData_;
-    TrackData* rData_;
+    ssp::StereoVuMeter vuMeter_;
+
+    Channel lChannel_;
+    Channel rChannel_;
+    TrackData *lData_;
+    TrackData *rData_;
 
     juce_UseDebuggingNewOperator
 };

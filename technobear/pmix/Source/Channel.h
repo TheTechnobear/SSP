@@ -1,26 +1,26 @@
-
 #pragma once
 
 #include <assert.h>
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
-#include "SSPParam.h"
 
-class SSPChannel: public Component
-{
+class SSPParam : public Component {
 public:
-    SSPChannel() : data_(nullptr), active_(false), param_(nullptr) {;}
-    void init(SSPParam* param, const String& label, TrackData* data)  {
+    SSPParam() { ; }
+
+    void label(const char *) { ; }
+
+    void value(float) { ; }
+};
+
+class Channel {
+public:
+    Channel() : data_(nullptr),  param_(nullptr) { ; }
+
+    void init(SSPParam *param, const String &label, TrackData *data) {
         param_ = param;
-        label_ = label;
         data_ = data;
     }
-
-    void active(bool);
-    bool active() { return active_;}
-
-    void enabled(bool);
-    bool enabled() { return enabled_;}
 
     void button(unsigned i, bool b);
     void encbutton(bool b);
@@ -52,14 +52,10 @@ public:
 private:
     void updateParam(bool newMode = false);
 
-
     EncMode encMode_ = EM_LEVEL;
     ButMode butMode_ = BM_SOLOMUTE;
-    String label_;
-    TrackData* data_ = nullptr;
-    bool active_ = false;
-    SSPParam* param_ = nullptr;
-    bool enabled_ = false;
+    TrackData *data_ = nullptr;
+    SSPParam *param_ = nullptr;
 
     juce_UseDebuggingNewOperator
 };

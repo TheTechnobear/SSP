@@ -1,81 +1,19 @@
 
-#include "SSPChannel.h"
+#include "Channel.h"
 
 #include <iostream>
-
 
 constexpr inline float rescale(float in, float inMin, float inMax, float outMin, float outMax) {
     return outMin + (in - inMin) / (inMax - inMin) * (outMax - outMin);
 }
 
-void SSPChannel::paint(Graphics &g) {
-    if (data_ != nullptr) {
-        // if (active_ && data_ != nullptr) {
-        static constexpr float dbMin        = -70.0f, dbMax = 6.0f; // db range for meter
-        static constexpr float dbRed        = 0.0f, dbYellow = -6.0f;
-        static constexpr float lvlRed       = rescale(dbRed, dbMin, dbMax, 0.0f, 1.0f);
-        static constexpr float lvlYellow    = rescale(dbYellow, dbMin, dbMax, 0.0f, 1.0f);
 
-        static constexpr int fh = 16;
-        int h = getHeight();
-        int w = getWidth();
-        int tbh = h - (fh * 10);
-        int barbase = tbh + (2 * fh);
-        int bw = w - 10;
-        int bx = 5;
-
-
-        bool  mute = data_->mute_;
-        float lvl = data_->lvl_;
-
-
-        float dbS = lvl > 0.0f ? std::log10(lvl) * 20.0f : -200.f;
-        float db = constrain(dbS, dbMin, dbMax);
-        float f = rescale(db, dbMin, dbMax, 0.0f, 1.0f);
-
-        g.setColour(Colours::darkgrey);
-        int bl = tbh + 2;
-        g.fillRect(bx - 1, barbase - bl, bw + 2, bl);
-
-
-        int bh = int (f * float(tbh));
-        int ypos = int (lvlYellow * float(tbh));
-        int rpos = int (lvlRed * float(tbh));
-
-        g.setColour(mute ? Colours::lightgrey : Colours::green);
-        int gb = barbase;
-        int gh = constrain(bh, 0, ypos - 1);
-        bl = gh;
-        g.fillRect(bx, gb - bl, bw, bl);
-
-        if (bh > ypos) {
-            g.setColour(mute ? Colours::lightgrey : Colours::yellow);
-            int yh = constrain(bh, 0, rpos - 1);
-            bl = yh - ypos;
-            g.fillRect(bx, barbase - (ypos + bl), bw, bl);
-            if (bh > rpos) {
-                g.setColour(mute ? Colours::lightgrey : Colours::red);
-                int rh = constrain(bh, 0, tbh);
-                bl = rh - rpos;
-                g.fillRect(bx, barbase - (rpos + bl), bw, bl );
-            }
-        }
-
-
-        // 0db line
-        g.setColour(Colours::darkgrey);
-        g.fillRect(bx - 5, barbase - rpos, bw + 10, 2 );
-
-        // lvl
-        float lvlSlider = data_->level_[0];
-        dbS = lvlSlider > 0.0f ? std::log10(lvlSlider) * 20.0f : -200.f;
-        db = constrain(dbS, dbMin, dbMax);
-        f = rescale(db, dbMin, dbMax, 0.0f, 1.0f);
-        g.setColour(Colours::white);
-        g.fillRoundedRectangle (bx - 5, barbase - (f * tbh), bw + 10, 5, 5);
-    }
+inline float constrain(float v, float vMin, float vMax) {
+    return std::max<float>(vMin, std::min<float>(vMax, v));
 }
-bool SSPChannel::button(unsigned i) {
+
+
+bool Channel::button(unsigned i) {
     switch (butMode_) {
     case BM_SOLOMUTE:
         if (i) return data_->mute_;
@@ -90,7 +28,7 @@ bool SSPChannel::button(unsigned i) {
     return false;
 }
 
-void SSPChannel::button(unsigned i, bool b) {
+void Channel::button(unsigned i, bool b) {
     // Logger::writeToLog("buttonA: " + String(b));
     switch (butMode_) {
     case BM_SOLOMUTE:
@@ -112,7 +50,7 @@ void SSPChannel::button(unsigned i, bool b) {
     }
 }
 
-void SSPChannel::encoder(float v) {
+void Channel::encoder(float v) {
     float e = v;
 
     switch (encMode_) {
@@ -147,7 +85,7 @@ void SSPChannel::encoder(float v) {
 }
 
 
-void SSPChannel::encbutton(bool b) {
+void Channel::encbutton(bool b) {
     switch (encMode_) {
     case EM_LEVEL:
         data_->level_[0] = data_->level_[0] == 1.0 ? 0.0f : 1.0f;
@@ -176,22 +114,22 @@ void SSPChannel::encbutton(bool b) {
 
 
 
-void SSPChannel::buttonMode(ButMode m) {
+void Channel::buttonMode(ButMode m) {
     if (m != butMode_) {
         butMode_ = m;
         // probably no repaint necessary?!
     }
 }
 
-void SSPChannel::encoderMode(EncMode m) {
+void Channel::encoderMode(EncMode m) {
     if (m != encMode_) {
         encMode_ = m;
         updateParam(true);
     }
 }
 
-void SSPChannel::updateParam(bool newMode) {
-    if (data_ && param_ && active_) {
+void Channel::updateParam(bool newMode) {
+    if (data_ && param_ ) {
         switch (encMode_) {
         case EM_LEVEL:
             if (newMode) param_->label("Level");
@@ -221,24 +159,5 @@ void SSPChannel::updateParam(bool newMode) {
             ;
         }
         param_->repaint();
-    }
-}
-
-void SSPChannel::active(bool a) {
-    if (active_ != a) {
-        active_ = a;
-        if (active_) {
-            updateParam(true);
-        }
-        repaint();
-    }
-}
-
-
-
-void SSPChannel::enabled(bool e) {
-    if (enabled_ != e) {
-        enabled_ = e;
-        if (active_) repaint();
     }
 }

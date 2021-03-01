@@ -4,40 +4,46 @@
 #include <assert.h>
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
-#include "SSPChannel.h"
+#include "Channel.h"
+#include "ssp/VuMeter.h"
 
-class SSPMonoChannel: public Component
-{
+class MonoChannel : public Component {
 public:
-    SSPMonoChannel();
-    void init(SSPParam* param, const String& label, TrackData* data)  {
-        label_ = label;
+    MonoChannel();
+
+    void init(SSPParam *param, const String &label, TrackData *data) {
+        vuMeter_.init(label, true);
         data_ = data;
         channel_.init(param, label, data);
     }
 
-    void active(bool b ) { channel_.active(b);}
-    bool active() { return channel_.active();}
+    void active(bool b) { vuMeter_.active(b); }
 
-    void enabled(bool b ) { channel_.enabled(b);}
-    bool enabled() { return channel_.enabled();}
+    bool active() { return vuMeter_.active(); }
 
-    void button(unsigned i, bool b) { channel_.button(i, b);}
-    void encbutton(bool b) { channel_.encbutton(b);}
-    void encoder(float e) { channel_.encoder(e);}
+    void enabled(bool b) { vuMeter_.enabled(b); }
 
-    bool button(unsigned i) { return channel_.button(i);}
+    bool enabled() { return vuMeter_.enabled(); }
 
-    void buttonMode(SSPChannel::ButMode m) { channel_.buttonMode(m);}
-    void encoderMode(SSPChannel::EncMode m) { channel_.encoderMode(m);}
+    void button(unsigned i, bool b) { channel_.button(i, b); }
+
+    void encbutton(bool b) { channel_.encbutton(b); }
+
+    void encoder(float e) { channel_.encoder(e); }
+
+    bool button(unsigned i) { return channel_.button(i); }
+
+    void buttonMode(Channel::ButMode m) { channel_.buttonMode(m); }
+
+    void encoderMode(Channel::EncMode m) { channel_.encoderMode(m); }
 
 
-    void paint (Graphics&) override;
+    void paint(Graphics &) override;
     void resized() override;
 private:
-    String     label_;
-    SSPChannel channel_;
-    TrackData* data_;
+    ssp::MonoVuMeter vuMeter_;
+    Channel channel_;
+    TrackData *data_;
 
     juce_UseDebuggingNewOperator
 };
