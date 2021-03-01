@@ -11,8 +11,9 @@ class VuMeter : public Component {
 public:
     VuMeter() : active_(false) { ; }
 
-    void init(const String &label) {
+    void init(const String &label, bool drawGainLevel=false) {
         label_ = label;
+        drawGainLevel_=drawGainLevel;
     }
 
     void active(bool);
@@ -28,14 +29,16 @@ public:
     void level(float lvl);
     float level()  {return level_;}
 
+    void gainLevel(float lvl);
+    float gainLevel()  {return gainLevel_;}
+
 private:
-    void updateParam(bool newMode = false);
-
-
     String label_;
     bool active_ = false;
     bool enabled_ = false;
     float level_ = 0.0f;
+    float gainLevel_=0.0f;
+    bool drawGainLevel_=false;
 
     juce_UseDebuggingNewOperator
 };
@@ -45,9 +48,9 @@ class MonoVuMeter : public Component {
 public:
     MonoVuMeter();
 
-    void init(const String &label) {
+    void init(const String &label,bool drawGainLevel=false) {
         label_ = label;
-        channel_.init(label);
+        channel_.init(label,drawGainLevel);
     }
 
     void active(bool b) { channel_.active(b); }
@@ -59,7 +62,7 @@ public:
     bool enabled() { return channel_.enabled(); }
 
     void level(float lvl) { channel_.level(lvl); }
-
+    void gainLevel(float lvl) {channel_.gainLevel(lvl);}
 
     void paint(Graphics &) override;
     void resized() override;
@@ -74,10 +77,10 @@ class StereoVuMeter : public Component {
 public:
     StereoVuMeter();
 
-    void init(const String &label) {
+    void init(const String &label,bool drawGainLevel=false) {
         label_ = label;
-        lChannel_.init(label);
-        rChannel_.init("");
+        lChannel_.init(label,drawGainLevel);
+        rChannel_.init("",drawGainLevel);
     }
 
     // note left is considered 'lead' channel, for mono purposes
@@ -98,6 +101,11 @@ public:
     void level(float l_lvl, float r_lvl) {
         lChannel_.level(l_lvl);
         rChannel_.level(r_lvl);
+    }
+
+    void gainLevel(float l_lvl, float r_lvl) {
+        lChannel_.gainLevel(l_lvl);
+        rChannel_.gainLevel(r_lvl);
     }
 
     void paint(Graphics &) override;

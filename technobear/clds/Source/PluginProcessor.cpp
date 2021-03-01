@@ -2,6 +2,10 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+inline float constrainFloat(float v, float vMin, float vMax) {
+    return std::max<float>(vMin, std::min<float>(vMax, v));
+}
+
 inline float TO_SHORTFRAME(float v) { return constrainFloat(v * 32767.0f, -32768.0f, 32767.0f); }
 
 inline float FROM_SHORTFRAME(short v) { return (float(v) / 32768.0f); }

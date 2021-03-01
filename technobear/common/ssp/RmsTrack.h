@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../JuceLibraryCode/JuceHeader.h"
 
 namespace ssp {
@@ -22,17 +23,20 @@ public:
         }
     }
 
+    void process(float t_level) {
+        lvlSum_ -= lvlHistory_[lvlHead_];
+        lvlHistory_[lvlHead_] = t_level;
+        lvlSum_ += lvlHistory_[lvlHead_];
+        lvlHead_ = (lvlHead_ + 1) % MAX_HISTORY;
+        lvl_ = lvlSum_ / MAX_HISTORY;
+    }
+
     void process(juce::AudioSampleBuffer &buffer, unsigned ch) {
         unsigned n = buffer.getNumSamples();
         float tlvl = useRMS_
                      ? buffer.getRMSLevel(ch, 0, n)
                      : buffer.getMagnitude(ch, 0, n);
-
-        lvlSum_ -= lvlHistory_[lvlHead_];
-        lvlHistory_[lvlHead_] = tlvl;
-        lvlSum_ += lvlHistory_[lvlHead_];
-        lvlHead_ = (lvlHead_ + 1) % MAX_HISTORY;
-        lvl_ = lvlSum_ / MAX_HISTORY;
+        process(tlvl);
     }
 
 private:

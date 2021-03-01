@@ -95,7 +95,7 @@ void PluginEditor::paint(Graphics &g) {
 
 
 void PluginEditor::resized() {
-    const unsigned h = 150;
+    const unsigned h = 130;
     const unsigned sp = 10;
     const unsigned vuStart = 1500;
     const unsigned vuW = 45;

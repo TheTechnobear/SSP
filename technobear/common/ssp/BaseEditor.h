@@ -5,7 +5,6 @@
 using namespace juce;
 
 #include "SSPButton.h"
-#include "SSPParam.h"
 
 namespace ssp {
 

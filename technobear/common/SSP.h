@@ -11,9 +11,6 @@ extern const char* percussaParamsName[Percussa::sspLast];
 
 extern const char* percussaParamsText[Percussa::sspLast];
 
-inline float constrainFloat(float v, float vMin, float vMax) {
-    return std::max<float>(vMin, std::min<float>(vMax, v));
-}
 
 inline float cv2Pitch(float r) {
     static constexpr float p1 = 0.0f; // first C note
