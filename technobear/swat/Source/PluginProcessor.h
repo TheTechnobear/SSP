@@ -1,56 +1,38 @@
 #pragma once
 
-
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "Percussa.h"
-#include "Algo.h"
+#include "ssp/BaseProcessor.h"
 
+
+#include "Algo.h"
 #include <atomic>
 #include <unordered_map>
 #include <memory>
 #include <vector>
 #include <algorithm>
 
-class PluginProcessor  : public AudioProcessor
-{
+class PluginProcessor : public ssp::BaseProcessor {
 public:
-    PluginProcessor();
+    explicit PluginProcessor();
+    explicit PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts, AudioProcessorValueTreeState::ParameterLayout layout);
     ~PluginProcessor();
 
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
-    void releaseResources() override;
+    const String getName() const override { return JucePlugin_Name; }
 
-    void processBlock (AudioSampleBuffer&, MidiBuffer&) override;
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override;
 
-    AudioProcessorEditor* createEditor() override;
-    bool hasEditor() const override;
+    void releaseResources() override {}
 
-    const String getName() const override;
+    void processBlock(AudioSampleBuffer &, MidiBuffer &) override;
 
-    int getNumParameters() override;
-    float getParameter (int index) override;
-    void setParameter (int index, float newValue) override;
+    AudioProcessorEditor *createEditor() override;
 
-    const String getParameterName (int index) override;
-    const String getParameterText (int index) override;
-
-    bool acceptsMidi() const override;
-    bool producesMidi() const override;
-    bool silenceInProducesSilenceOut() const override;
-    double getTailLengthSeconds() const override;
-
-    int getNumPrograms() override;
-    int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const String getProgramName (int index) override;
-    void changeProgramName (int index, const String& newName) override;
-
-    void getStateInformation (MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
+    bool hasEditor() const override { return true; }
 
     static constexpr unsigned MAX_ENG = 4;
 
-    std::shared_ptr<Algo> algo(unsigned e) { if (e < MAX_ENG) return algo_[e]; else return nullptr;}
+    std::shared_ptr<Algo> algo(unsigned e) { if (e < MAX_ENG) return algo_[e]; else return nullptr; }
+
     void nextAlgo(unsigned e) {
         if (e < MAX_ENG) {
             unsigned t = algo_[e]->type();
@@ -68,21 +50,21 @@ public:
             unsigned t = algo_[e]->type();
             std::vector<unsigned>::iterator it = std::find(algoDisplayOrder_.begin(), algoDisplayOrder_.end(), t);
             if (it == algoDisplayOrder_.end() || it == algoDisplayOrder_.begin()) it = algoDisplayOrder_.end() - 1;
-            else  it--;
+            else it--;
             t = *it;
             // Logger::writeToLog("algo# " + String(t));
             algo_[e] = createAlgo(t);
         }
     }
 
+    void getStateInformation(MemoryBlock &destData) override;
+    void setStateInformation(const void *data, int sizeInBytes) override;
+
+
+protected:
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
 private:
-
-    std::shared_ptr<Algo> createAlgo(unsigned);
-
-    void writeToXml(juce::XmlElement& xml);
-    void readFromXml(juce::XmlElement& xml);
-
     enum {
         I_X_1,
         I_Y_1,
@@ -111,19 +93,23 @@ private:
         O_MAX
     };
 
-    float params_[Percussa::sspLast];
 
+    std::shared_ptr<Algo> createAlgo(unsigned);
     std::shared_ptr<Algo> algo_[MAX_ENG];
-
     AudioSampleBuffer outBufs_;
-
     std::vector<unsigned> algoDisplayOrder_;
+    void writeToXml(juce::XmlElement &xml);
+    void readFromXml(juce::XmlElement &xml);
 
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override { return true;}
-    static const String getInputBusName (int channelIndex);
-    static const String getOutputBusName (int channelIndex);
-    static BusesProperties getBusesProperties()
-    {
+
+    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
+        return true;
+    }
+
+    static const String getInputBusName(int channelIndex);
+    static const String getOutputBusName(int channelIndex);
+
+    static BusesProperties getBusesProperties() {
         BusesProperties props;
         for (auto i = 0; i < I_MAX; i++) {
             props.addBus(true, getInputBusName(i), AudioChannelSet::mono());

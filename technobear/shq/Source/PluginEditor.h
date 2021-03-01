@@ -1,8 +1,5 @@
 #pragma once
 
-#pragma once
-
-
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"

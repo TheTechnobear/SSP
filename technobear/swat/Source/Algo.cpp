@@ -2,8 +2,9 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
+
 // Helper /////////////////////////////////////////////////////////////////////
-void drawAB(Graphics& g, float A, float B) {
+void drawAB(Graphics &g, float A, float B) {
     unsigned space = 32;
     unsigned fh = 32;
     unsigned x = space;
@@ -22,7 +23,7 @@ void drawAB(Graphics& g, float A, float B) {
 double Algo::sampleRate_ = 48000.0f;
 
 
-void Algo::paint (Graphics& g) {
+void Algo::paint(Graphics &g) {
     drawHelp(g);
 }
 
@@ -42,14 +43,14 @@ void Algo::button(unsigned btn, bool state) {
 
 void Algo::encswitch(unsigned enc, bool state) {
     if (enc < params_.size()) {
-        if (state < 0.5f) {
+        if (!state) {
             params_[enc]->reset();
         }
     }
 }
 
 
-void Algo::drawHelp(Graphics& g) {
+void Algo::drawHelp(Graphics &g) {
     unsigned x = 900;
     unsigned y = 40;
     unsigned space = 30;
@@ -65,8 +66,7 @@ void Algo::drawHelp(Graphics& g) {
     std::string::size_type pos = 0;
     std::string::size_type prev = 0;
     std::string str = description();
-    while ((pos = str.find("\n", prev)) != std::string::npos)
-    {
+    while ((pos = str.find("\n", prev)) != std::string::npos) {
         g.drawSingleLineText(str.substr(prev, pos - prev), x, y);
         y += space;
         prev = pos + 1;
@@ -80,20 +80,21 @@ void Algo::drawHelp(Graphics& g) {
     unsigned enc = 1;
     for (auto p : params_) {
         String desc;
-        if (p->desc().length() > 0 ) desc = " - " + p->desc();
-        g.drawSingleLineText("Enc " + String(enc) + " : " + p->name() + desc, x, y); y += space;
+        if (p->desc().length() > 0) desc = " - " + p->desc();
+        g.drawSingleLineText("Enc " + String(enc) + " : " + p->name() + desc, x, y);
+        y += space;
         enc++;
     }
 }
 
 
-void Algo::writeToXml(juce::XmlElement& xml) {
+void Algo::writeToXml(juce::XmlElement &xml) {
     for (auto p : params_) {
         xml.setAttribute(p->name().c_str(), double(p->floatVal()));
     }
 }
 
-void Algo::readFromXml(juce::XmlElement& xml) {
+void Algo::readFromXml(juce::XmlElement &xml) {
     for (auto p : params_) {
         if (xml.hasAttribute(p->name().c_str())) {
             p->floatVal(xml.getDoubleAttribute(p->name().c_str(), 0.0f));

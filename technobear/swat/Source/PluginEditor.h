@@ -1,77 +1,37 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+
 #include "PluginProcessor.h"
+#include "ssp/BaseEditor.h"
 
-#include "SSPButton.h"
-#include "SSPParam.h"
-
-class PluginEditor  : public AudioProcessorEditor,
-	public AudioProcessorListener,
-	public Timer
-{
+class PluginEditor : public ssp::BaseEditor {
 public:
-	PluginEditor (PluginProcessor&);
-	~PluginEditor();
+    explicit PluginEditor(PluginProcessor &);
+    ~PluginEditor() override = default;
 
-	void paint (Graphics&) override;
-	void resized() override;
+    void paint(Graphics &) override;
 
-	void parameterChanged(int parameterIndex, float newValue);
+    void onEncoder(unsigned enc, float v) override;
+    void onEncoderSwitch(unsigned enc, bool v) override;
 
-	void timerCallback() override;
+    // user buttons
+    void onButton(unsigned btn, bool v) override;
 
-	// audio thread!!
-	void 	audioProcessorParameterChanged (AudioProcessor *processor_, int parameterIndex, float newValue) override;
-	void 	audioProcessorChanged (AudioProcessor *processor_) override;
+    // nav buttons
+    void onLeftButton(bool v) override;
+    void onRightButton(bool v) override;
+    void onUpButton(bool v) override;
+    void onDownButton(bool v) override;
+//    void onLeftShiftButton(bool v) override;
+//    void onRightShiftButton(bool v) override;
 
 protected:
-
-	void drawMenuBox(Graphics& g);
-	void drawParamBox(Graphics& g);
-	void drawHelp(Graphics& g);
-	void drawEncoderValue(Graphics& g);
-
-	void setMenuBounds(SSPButton& btn, unsigned r);
-	void setParamBounds(SSPParam& par, unsigned enc, unsigned var);
-	void setButtonBounds(SSPButton& btn, unsigned r, unsigned c);
-
+    using base_type = ssp::BaseEditor;
 private:
-	PluginProcessor& processor_;
-
-	enum Params {
-		// P_X,
-		// P_Y,
-		// P_Z,
-		P_MAX
-	};
-
-	enum Buttons {
-		// B_FREEZE,
-
-		B_UP,
-		B_DOWN,
-		B_LEFT,
-		B_RIGHT,
-
-		B_MAX
-	};
-
-	SSPButton buttons_[B_MAX];
-	SSPParam  params_[P_MAX];
-
-	// display only
-	SSPButton globalBtn_, networkBtn_, plugInBtn_, recBtn_;
-
-	SSPParam* 	activeParam_ = nullptr;
-	unsigned 	activeEncIdx_ = 0;
-	unsigned  	paramActive_ = 0;
-	unsigned    activeEngine_ = 0;
-	bool paramState_[Percussa::sspLast];
-
-	static constexpr unsigned PARAM_COUNTER = 20;
-	unsigned activeParamCount_ = 0;
-
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)
+    unsigned activeEngine_ = 0;
+    PluginProcessor &processor_;
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)
 };
+
 

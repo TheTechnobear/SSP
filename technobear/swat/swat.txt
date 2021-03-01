@@ -3,6 +3,7 @@
 swat is designed to be like the famous swiss army knife, a useful utility to bring out to solve your problems.
 
 ## Change Log
+1.3.0 rewrite
 
 1.0.1 Adjust for pitch cv changes
 1.0.0 Initial Release 

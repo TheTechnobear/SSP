@@ -8,11 +8,9 @@
 #include <atomic>
 #include <algorithm>
 
-
 //root
 //scale
 //quant
-
 
 namespace ID {
 #define PARAMETER_ID(str) constexpr const char* str { #str };
