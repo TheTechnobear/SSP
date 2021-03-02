@@ -57,7 +57,7 @@ public:
         float qtrSemiCv = pitch2Cv(0.25f);
         params_.push_back(std::make_shared<AgIntParam>("LNote",  "Low Note", zeroPitch, minPitch, maxPitch, oneSemi));
         params_.push_back(std::make_shared<AgIntParam>("HNote",  "High Note", zeroPitch, minPitch, maxPitch, oneSemi));
-        params_.push_back(std::make_shared<AgFloatParam>("H",  "Hysterisis", qtrSemiCv, -1.0f, 1.0f, 0.001f));
+        params_.push_back(std::make_shared<AgFloatParam>("H",  "Hysteresis", qtrSemiCv, -1.0f, 1.0f, 0.001f));
         NH_ = params_[0]->floatVal();
         NL_ = params_[1]->floatVal();
         H_  = params_[2]->floatVal();
@@ -69,7 +69,7 @@ public:
         return
             "A = gate (X > L  & X < H ) && Y\n"
             "B = ! A\n"
-            "Z Hysterisis"
+            "Z Hysteresis"
             ;
     }
 

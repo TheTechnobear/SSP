@@ -8,9 +8,6 @@
 static constexpr unsigned MAX_TONICS = 12;
 
 static const char tonics[MAX_TONICS][3] = {
-    "A",
-    "A#",
-    "B",
     "C",
     "C#",
     "D",
@@ -19,7 +16,10 @@ static const char tonics[MAX_TONICS][3] = {
     "F",
     "F#",
     "G",
-    "G#"
+    "G#",
+    "A",
+    "A#",
+    "B",
 };
 
 
@@ -89,7 +89,7 @@ template<typename T> bool comparator(bool TS, T S1, T Th, T Hy ) {
 
 // "A = gate (X > L  & X < H ) && Y\n"
 // "B = ! A\n"
-// "Z Hysterisis"
+// "Z Hysteresis"
 void AgComparatorN::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
@@ -147,7 +147,7 @@ void AgComparatorN::paint (Graphics& g) {
     y += space;
     g.drawSingleLineText("High Note : " + noteString(NH_), x, y);
     y += space;
-    g.drawSingleLineText("Hysterisis : " + String(H_), x, y);
+    g.drawSingleLineText("Hysteresis : " + String(H_), x, y);
 
     y += space * 4;
     g.drawSingleLineText("A : " + String(lastA_), x, y);

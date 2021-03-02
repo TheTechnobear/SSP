@@ -150,7 +150,7 @@ public:
         return
             "A = gate X > Y\n"
             "B = ! A\n"
-            "Z Hysterisis"
+            "Z Hysteresis"
             ;
     }
 
@@ -175,7 +175,7 @@ public:
         lastA_ = lastB_ = 0.0f;
         params_.push_back(std::make_shared<AgFloatParam>("Low", "Threshold", -0.7f, -1.0f, 1.0f, 0.01f));
         params_.push_back(std::make_shared<AgFloatParam>("High", "Threshold", 0.7f, -1.0f, 1.0f, 0.01f));
-        params_.push_back(std::make_shared<AgFloatParam>("H",  "Hysterisis", 0.001f, -1.0f, 1.0f, 0.001f));
+        params_.push_back(std::make_shared<AgFloatParam>("H",  "Hysteresis", 0.001f, -1.0f, 1.0f, 0.001f));
         LOW_  = params_[0]->floatVal();
         HIGH_  = params_[1]->floatVal();
         H_  = params_[2]->floatVal();
@@ -187,7 +187,7 @@ public:
         return
             "A = gate X > (L-Y) & X < (H+Y)\n"
             "B = ! A\n"
-            "Z Hysterisis"
+            "Z Hysteresis"
             ;
     }
 
