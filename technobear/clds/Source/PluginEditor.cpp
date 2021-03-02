@@ -48,10 +48,6 @@ PluginEditor::PluginEditor(PluginProcessor &p)
         nullptr
     );
 
-//    //TODO - need for resize to be called
-//    // but perhaps resize functionality should be moved
-//    // as part of init?
-
     inVu_.init("In");
     outVu_.init("Out");
 

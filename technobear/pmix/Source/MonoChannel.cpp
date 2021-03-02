@@ -5,20 +5,25 @@ MonoChannel::MonoChannel() {
     addAndMakeVisible(vuMeter_);
 }
 
+inline float normValue(RangedAudioParameter &p) {
+    return p.convertFrom0to1(p.getValue());
+}
+
+
 void MonoChannel::paint(Graphics &g) {
     static constexpr int fh = 16;
     int w = getWidth();
 
     float lvl = data_->rms_.lvl();
     vuMeter_.level(lvl);
-    vuMeter_.gainLevel(data_->level_[0]);
+    vuMeter_.gainLevel(normValue(data_->level[0]));
 
     int bw = w / 2;
     int bx = w / 4;
 
-    bool mute = data_->mute_;
-    bool solo = data_->solo_;
-    float pan = data_->pan_;
+    bool mute = data_->mute.getValue();
+    bool solo = data_->solo.getValue();
+    float pan = normValue(data_->pan);
 
     int y = vuMeter_.getHeight();
     y += 5;

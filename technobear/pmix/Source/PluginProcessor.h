@@ -9,19 +9,39 @@
 #include <atomic>
 #include <algorithm>
 
-
 namespace ID {
-#define PARAMETER_ID(str) constexpr const char* str { #str };
+constexpr const char *separator{":"};
 
-PARAMETER_ID (pitch)
-PARAMETER_ID (vca)
+#define PARAMETER_ID(str) constexpr const char* str { #str };
+PARAMETER_ID (in)
+PARAMETER_ID (out)
+
+PARAMETER_ID (level)
+PARAMETER_ID (pan)
+PARAMETER_ID (gain)
+PARAMETER_ID (mute)
+PARAMETER_ID (solo)
+PARAMETER_ID (cue)
+PARAMETER_ID (ac)
 #undef PARAMETER_ID
 }
 
+
+//level
+//pan
+//gain
+//mute
+//solo
+//cue
+//ac
+
+
 struct TrackData {
-    TrackData() {
-        init();
-    }
+    using Parameter = juce::RangedAudioParameter;
+    explicit TrackData(juce::AudioProcessorValueTreeState &, StringRef io, unsigned tn);
+//    TrackData() {
+//        init();
+//    }
 
     void makeFollow(unsigned f) {
         dummy_ = true;
@@ -29,30 +49,23 @@ struct TrackData {
     }
 
     void init() {
-        level_[MASTER] = 1.0f;
-        level_[CUE] = 1.0f;
-        for (unsigned i = CUE + 1; i < OUT_TRACKS; i++) level_[i] = 0.0f;
-        pan_ = 0.0f;
-        gain_ = 1.0f;
-        mute_ = false;
-        solo_ = false;
-        cue_ = false;
-        ac_ = false;
         dummy_ = false;
         follows_ = 0;
+        rms_.clear();
     }
 
     static constexpr unsigned OUT_TRACKS = 4;
     static constexpr unsigned MASTER = 0;
     static constexpr unsigned CUE = 1;
 
-    std::atomic<float> level_[OUT_TRACKS];  // 0==master, 1==cue , 2/3 == aux1/2
-    std::atomic<float> pan_;    // -1 to 1
-    std::atomic<float> gain_;
-    std::atomic<bool> mute_;
-    std::atomic<bool> solo_;
-    std::atomic<bool> cue_;
-    std::atomic<bool> ac_;
+
+    std::reference_wrapper<Parameter> level[OUT_TRACKS];
+    Parameter &pan;
+    Parameter &gain;
+    Parameter &mute;
+    Parameter &solo;
+    Parameter &cue;
+    Parameter &ac;
 
     // currently cannot be changed in ui
     bool dummy_;
@@ -81,20 +94,9 @@ public:
 
     bool hasEditor() const override { return true; }
 
-    struct PluginParams {
-        using Parameter = juce::RangedAudioParameter;
-        explicit PluginParams(juce::AudioProcessorValueTreeState &);
+    TrackData &inputTrack(unsigned t) { return t < IN_T_MAX ? *inTracks_[t] : *inTracks_[IN_T_MAX - 1]; }
 
-        Parameter &pitch;
-        Parameter &vca;
-    } params_;
-
-    void getStateInformation(MemoryBlock &destData) override;
-    void setStateInformation(const void *data, int sizeInBytes) override;
-
-    TrackData &inputTrack(unsigned t) { return t < IN_T_MAX ? inTracks_[t] : inTracks_[IN_T_MAX - 1]; }
-
-    TrackData &outputTrack(unsigned t) { return t < OUT_T_MAX ? outTracks_[t] : outTracks_[OUT_T_MAX - 1]; }
+    TrackData &outputTrack(unsigned t) { return t < OUT_T_MAX ? *outTracks_[t] : *outTracks_[OUT_T_MAX - 1]; }
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -126,12 +128,12 @@ private:
 public:
     static constexpr unsigned IN_T_MAX = I_MAX;
     static constexpr unsigned OUT_T_MAX = O_MAX;
-private:
 
     unsigned numInTracks() { return IN_T_MAX; }
 
     unsigned numOutTracks() { return OUT_T_MAX; }
 
+private:
 
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
         return true;
@@ -151,13 +153,6 @@ private:
         return props;
     }
 
-    void writeToXml(juce::XmlElement &xml);
-    void readFromXml(juce::XmlElement &xml);
-
-    void writeTrackXml(TrackData &t, juce::XmlElement &xml);
-    void readTrackXml(TrackData &t, juce::XmlElement &xml);
-
-
     inline void dcBlock(float x, float &x1, float &y, float &y1) {
         // y[n] = x[n] - x[n-1] + a * y[n-1]
         // example usage
@@ -169,8 +164,8 @@ private:
     }
 
 
-    TrackData inTracks_[IN_T_MAX];
-    TrackData outTracks_[OUT_T_MAX];
+    std::vector<std::unique_ptr<TrackData>> inTracks_;
+    std::vector<std::unique_ptr<TrackData>> outTracks_;
     void initTracks();
     AudioSampleBuffer inputBuffers_;
     AudioSampleBuffer outputBuffers_;

@@ -5,22 +5,26 @@ StereoChannel::StereoChannel() {
     addAndMakeVisible(vuMeter_);
 }
 
+inline float normValue(RangedAudioParameter &p) {
+    return p.convertFrom0to1(p.getValue());
+}
+
 void StereoChannel::paint(Graphics &g) {
     static constexpr int fh = 16;
     int h = getHeight();
     int w = getWidth();
 
     vuMeter_.level(lData_->rms_.lvl(), rData_->rms_.lvl());
-    vuMeter_.gainLevel(lData_->level_[0], rData_->level_[0]);
+    vuMeter_.gainLevel(normValue(lData_->level[0]), normValue(rData_->level[0]));
 
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
 
     int bw = w / 2;
     int bx = w / 4;
 
-    bool mute = lData_->mute_;
-    bool solo = lData_->solo_;
-    float pan = lData_->pan_;
+    bool mute = lData_->mute.getValue();
+    bool solo = lData_->solo.getValue();
+    float pan = normValue(lData_->pan);
     float lvl = lData_->rms_.lvl();
 
     int y = vuMeter_.getHeight();

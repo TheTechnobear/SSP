@@ -39,14 +39,29 @@ PluginProcessor::PluginProcessor()
 PluginProcessor::PluginProcessor(
     const AudioProcessor::BusesProperties &ioLayouts,
     AudioProcessorValueTreeState::ParameterLayout layout)
-    : BaseProcessor(ioLayouts, std::move(layout)), params_(vts()) {
+    : BaseProcessor(ioLayouts, std::move(layout)) {
     init();
     initTracks();
 }
 
-PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) :
-    pitch(*apvt.getParameter(ID::pitch)),
-    vca(*apvt.getParameter(ID::vca)) {
+String getPID(StringRef io, unsigned tn, StringRef id) {
+    return io + String(ID::separator) + String(tn) + String(ID::separator) + id;
+}
+
+
+TrackData::TrackData(AudioProcessorValueTreeState &apvt, StringRef io, unsigned tn) :
+    level{
+        (*apvt.getParameter(getPID(io, tn, ID::level) + ":0")),
+        (*apvt.getParameter(getPID(io, tn, ID::level) + ":1")),
+        (*apvt.getParameter(getPID(io, tn, ID::level) + ":2")),
+        (*apvt.getParameter(getPID(io, tn, ID::level) + ":3"))
+    },
+    pan(*apvt.getParameter(getPID(io, tn, ID::pan))),
+    gain(*apvt.getParameter(getPID(io, tn, ID::gain))),
+    mute(*apvt.getParameter(getPID(io, tn, ID::mute))),
+    solo(*apvt.getParameter(getPID(io, tn, ID::solo))),
+    cue(*apvt.getParameter(getPID(io, tn, ID::cue))),
+    ac(*apvt.getParameter(getPID(io, tn, ID::ac))) {
 }
 
 
@@ -54,8 +69,51 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     AudioProcessorValueTreeState::ParameterLayout params;
     BaseProcessor::addBaseParameters(params);
 
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::pitch, "Pitch", -30.0f, +30.0f, 0.0f));
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::vca, "VCA", 0.0f, 100.0f, 50.0f));
+    {
+        auto ts = std::make_unique<AudioProcessorParameterGroup>(ID::in, "Input", ID::separator);
+        for (unsigned tn = 0; tn < IN_T_MAX; tn++) {
+            auto t = std::make_unique<AudioProcessorParameterGroup>(String(tn), String(tn), ID::separator);
+            auto g = std::make_unique<AudioProcessorParameterGroup>(ID::level, "Levels", ID::separator);
+            String prefix = ts->getID() + ts->getSeparator() + String(tn) + ts->getSeparator();
+            for (unsigned i = 0; i < TrackData::OUT_TRACKS; i++) {
+                String lprefix = prefix + g->getID() + g->getSeparator();
+                float lvl = i == 0 ? 1.0f : 0.0f;
+                g->addChild(std::make_unique<ssp::BaseFloatParameter>(lprefix + String(i), String(i), 0.0, 4.0f, lvl));
+            }
+            t->addChild(std::move(g));
+            t->addChild(std::make_unique<ssp::BaseFloatParameter>(prefix + ID::pan, "Pan", -1.0, 1.0f, 0.0f));
+            t->addChild(std::make_unique<ssp::BaseFloatParameter>(prefix + ID::gain, "Gain", 0.0, 3.0f, 1.0f));
+            t->addChild(std::make_unique<ssp::BaseBoolParameter>(prefix + ID::mute, "Mute", false));
+            t->addChild(std::make_unique<ssp::BaseBoolParameter>(prefix + ID::solo, "Solo", false));
+            t->addChild(std::make_unique<ssp::BaseBoolParameter>(prefix + ID::cue, "Cue", false));
+            t->addChild(std::make_unique<ssp::BaseBoolParameter>(prefix + ID::ac, "AC", true));
+            ts->addChild(std::move(t));
+        }
+        params.add(std::move(ts));
+    }
+
+    {
+        auto ts = std::make_unique<AudioProcessorParameterGroup>(ID::out, "Output", ":");
+        for (unsigned tn = 0; tn < OUT_T_MAX; tn++) {
+            auto t = std::make_unique<AudioProcessorParameterGroup>(String(tn), String(tn), ":");
+            auto g = std::make_unique<AudioProcessorParameterGroup>(ID::level, "Levels", ":");
+            String prefix = ts->getID() + ts->getSeparator() + String(tn) + ts->getSeparator();
+            for (unsigned i = 0; i < TrackData::OUT_TRACKS; i++) {
+                String lprefix = prefix + g->getID() + g->getSeparator();
+                float lvl = i == 0 ? 1.0f : 0.0f;
+                g->addChild(std::make_unique<ssp::BaseFloatParameter>(lprefix + String(i), String(i), 0.0, 4.0f, lvl));
+            }
+            t->addChild(std::move(g));
+            t->addChild(std::make_unique<ssp::BaseFloatParameter>(prefix + ID::pan, "Pan", -1.0, 1.0f, 0.0f));
+            t->addChild(std::make_unique<ssp::BaseFloatParameter>(prefix + ID::gain, "Gain", 0.0, 3.0f, 1.0f));
+            t->addChild(std::make_unique<ssp::BaseBoolParameter>(prefix + ID::mute, "Mute", false));
+            t->addChild(std::make_unique<ssp::BaseBoolParameter>(prefix + ID::solo, "Solo", false));
+            t->addChild(std::make_unique<ssp::BaseBoolParameter>(prefix + ID::cue, "Cue", false));
+            t->addChild(std::make_unique<ssp::BaseBoolParameter>(prefix + ID::ac, "AC", true));
+            ts->addChild(std::move(t));
+        }
+        params.add(std::move(ts));
+    }
     return params;
 }
 
@@ -87,14 +145,18 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
 
     // reset the RMS
     for (unsigned ich = 0; ich < I_MAX; ich++) {
-        auto &d = inTracks_[ich];
+        auto &d = *inTracks_[ich];
         d.rms_.clear();
     }
 
     for (unsigned och = 0; och < O_MAX; och++) {
-        auto &d = outTracks_[och];
+        auto &d = *outTracks_[och];
         d.rms_.clear();
     }
+}
+
+inline float normValue(RangedAudioParameter &p) {
+    return p.convertFrom0to1(p.getValue());
 }
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
@@ -103,35 +165,35 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     bool outsoloed = false;
 
     for (unsigned ich = 0; ich < I_MAX; ich++) {
-        insoloed |= inTracks_[ich].solo_;
+        insoloed |= bool(inTracks_[ich]->solo.getValue());
     }
 
     for (int och = 0; och < O_MAX; och++) {
-        outsoloed |= outTracks_[och].solo_;
+        outsoloed |= bool(outTracks_[och]->solo.getValue());
         outputBuffers_.applyGain(och, 0, n, 0.0f);
     }
 
     for (unsigned ich = 0; ich < I_MAX; ich++) {
         bool inEnabled = inputEnabled[ich];
         if (!inEnabled) {
-            auto &inTrack = inTracks_[ich];
+            auto &inTrack = *inTracks_[ich];
             // zero rms
             inTrack.rms_.process(0.0f);
             continue;
         }
 
         //process input channels
-        auto &inTrack = inTracks_[ich];
+        auto &inTrack = *inTracks_[ich];
         unsigned inLeadCh = inTrack.dummy_ ? inTrack.follows_ : ich;
-        auto &inLead = inTracks_[inLeadCh];
+        auto &inLead = *inTracks_[inLeadCh];
 
 
-        bool inMuted = inLead.mute_ || (insoloed && !inLead.solo_);
-        float inMGain = inLead.gain_;
+        bool inMuted = inLead.mute.getValue() || (insoloed && !inLead.solo.getValue());
+        float inMGain = normValue(inLead.gain);
         auto originbuf = buffer.getReadPointer(ich);
         inputBuffers_.copyFrom(ich, 0, originbuf, n, inMGain);
 
-        if (inLead.ac_) {
+        if (inLead.ac.getValue()) {
             for (unsigned i = 0; i < buffer.getNumSamples(); i++) {
                 float out = 0.0f;
                 float in = inputBuffers_.getSample(ich, i);
@@ -152,18 +214,18 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
             bool masterCue =
                 o > TrackData::CUE
-                || (o == TrackData::CUE && inLead.cue_)
-                || (o == TrackData::MASTER && !inLead.cue_);
+                || (o == TrackData::CUE && inLead.cue.getValue())
+                || (o == TrackData::MASTER && !inLead.cue.getValue());
 
             if (!inMuted && masterCue) {
-                auto &outTL = outTracks_[o * 2];
-                float outGain = outTL.gain_ * outTL.level_[0];
-                float lOutGain = panGain(true, outTL.pan_);
-                float rOutGain = panGain(false, outTL.pan_);
+                auto &outTL = *outTracks_[o * 2];
+                float outGain = normValue(outTL.gain) * normValue(outTL.level[0]);
+                float lOutGain = panGain(true, normValue(outTL.pan));
+                float rOutGain = panGain(false, normValue(outTL.pan));
 
-                float inGain = inLead.level_[o];
-                float lInGain = panGain(true, inLead.pan_);
-                float rInGain = panGain(false, inLead.pan_);
+                float inGain = normValue(inLead.level[o]);
+                float lInGain = panGain(true, normValue(inLead.pan));
+                float rInGain = panGain(false, normValue(inLead.pan));
 
                 float lGain = (inGain * outGain * lOutGain * lInGain);
                 float rGain = (inGain * outGain * rOutGain * rInGain);
@@ -188,17 +250,17 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         bool outEnabled = outputEnabled[och];
         if (!outEnabled) {
             // zero rms
-            auto &trk = outTracks_[och];
+            auto &trk = *outTracks_[och];
             trk.rms_.process(0.0f);
             // zero output
             buffer.applyGain(och, 0, n, 0.0f);
             continue;
         }
 
-        auto &trk = outTracks_[och];
+        auto &trk = *outTracks_[och];
         unsigned outLead = trk.dummy_ ? trk.follows_ : och;
-        auto &ltrk = outTracks_[outLead];
-        bool outMuted = ltrk.mute_ || (outsoloed && !ltrk.solo_);
+        auto &ltrk = *outTracks_[outLead];
+        bool outMuted = ltrk.mute.getValue() || (outsoloed && !ltrk.solo.getValue());
 
         trk.rms_.process(outputBuffers_, och);
 
@@ -221,108 +283,32 @@ AudioProcessor *JUCE_CALLTYPE createPluginFilter() {
 
 
 void PluginProcessor::initTracks() {
-    for (unsigned ich = 0; ich < I_MAX; ich++) {
-        auto &inTrack = inTracks_[ich];
-        //default input tracks to have dc blocking
-        inTrack.ac_ = true;
+
+
+    for (unsigned i = 0; i < IN_T_MAX; i++) {
+        inTracks_.push_back(std::make_unique<TrackData>(vts(), ID::in, i));
     }
+    for (unsigned i = 0; i < OUT_T_MAX; i++) {
+        outTracks_.push_back(std::make_unique<TrackData>(vts(), ID::out, i));
+    }
+
+    //TODO , do I need to initialise here?
+//    for (unsigned ich = 0; ich < I_MAX; ich++) {
+//        auto &inTrack = *inTracks_[ich];
+//        //default input tracks to have dc blocking
+//        inTrack.ac.setValue(true);
+//    }
 
     // outTracks_[0]// main
-    outTracks_[1].makeFollow(0);
+    outTracks_[1]->makeFollow(0);
 
     // outTracks_[2]// cue
-    outTracks_[3].makeFollow(2);
+    outTracks_[3]->makeFollow(2);
 
     // outTracks_[4]// aux 1
-    outTracks_[5].makeFollow(4);
+    outTracks_[5]->makeFollow(4);
 
     // outTracks_[6]// aux 2
-    outTracks_[7].makeFollow(6);
+    outTracks_[7]->makeFollow(6);
 }
-
-
-void PluginProcessor::writeTrackXml(TrackData &t, juce::XmlElement &xml) {
-    for (int lt = 0; lt < TrackData::OUT_TRACKS; lt++) {
-        xml.setAttribute("level" + String(lt), (double) t.level_[lt]);
-    }
-    xml.setAttribute("pan", (double) t.pan_);
-    xml.setAttribute("gain", (double) t.gain_);
-    xml.setAttribute("mute", (bool) t.mute_);
-    xml.setAttribute("solo", (bool) t.solo_);
-    xml.setAttribute("cue", (bool) t.cue_);
-    xml.setAttribute("ac", (bool) t.ac_);
-    //dummy_
-    //follows_
-}
-
-void PluginProcessor::writeToXml(XmlElement &xml) {
-    auto inxml = xml.createNewChildElement("Input");
-    for (unsigned ich = 0; ich < I_MAX; ich++) {
-        //process input channels
-        auto &inTrack = inTracks_[ich];
-        auto txml = inxml->createNewChildElement("T" + String(ich));
-        if (txml) writeTrackXml(inTrack, *txml);
-    }
-
-    auto outxml = xml.createNewChildElement("Output");
-    for (unsigned och = 0; och < O_MAX; och++) {
-        //process input channels
-        auto &outTrack = outTracks_[och];
-        auto txml = outxml->createNewChildElement("T" + String(och));
-        if (txml) writeTrackXml(outTrack, *txml);
-    }
-}
-
-void PluginProcessor::readTrackXml(TrackData &t, juce::XmlElement &xml) {
-    for (int lt = 0; lt < TrackData::OUT_TRACKS; lt++) {
-        t.level_[lt] = xml.getDoubleAttribute("level" + String(lt), t.level_[lt]);
-    }
-
-    t.pan_ = xml.getDoubleAttribute("pan", t.pan_);
-    t.gain_ = xml.getDoubleAttribute("gain", t.gain_);
-    t.mute_ = xml.getBoolAttribute("mute", t.mute_);
-    t.solo_ = xml.getBoolAttribute("solo", t.solo_);
-    t.cue_ = xml.getBoolAttribute("cue", t.cue_);
-    t.ac_ = xml.getBoolAttribute("ac", t.ac_);
-    //dummy_
-    //follows_
-}
-
-void PluginProcessor::readFromXml(XmlElement &xml) {
-    auto inxml = xml.getChildByName("Input");
-    for (unsigned ich = 0; ich < I_MAX; ich++) {
-        //process input channels
-        auto &inTrack = inTracks_[ich];
-        auto txml = inxml->getChildByName("T" + String(ich));
-        if (txml) readTrackXml(inTrack, *txml);
-        else Logger::writeToLog("failed to read T" + String(ich));
-    }
-
-    auto outxml = xml.getChildByName("Output");
-    for (unsigned och = 0; och < O_MAX; och++) {
-        //process input channels
-        auto &outTrack = outTracks_[och];
-        auto txml = outxml->getChildByName("T" + String(och));
-        if (txml) readTrackXml(outTrack, *txml);
-    }
-}
-
-
-void PluginProcessor::getStateInformation(MemoryBlock &destData) {
-    static const char *xmlTag = JucePlugin_Name;
-    XmlElement xml(xmlTag);
-    writeToXml(xml);
-    copyXmlToBinary(xml, destData);
-}
-
-void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
-    auto pXML = getXmlFromBinary(data, sizeInBytes);
-    if (pXML) {
-        // auto root=pXML->getChildByName(xmlTag);
-        // if(root) readFromXml(*root);
-        readFromXml(*pXML);
-    }
-}
-
-
 

@@ -16,11 +16,11 @@ inline float constrain(float v, float vMin, float vMax) {
 bool Channel::button(unsigned i) {
     switch (butMode_) {
     case BM_SOLOMUTE:
-        if (i) return data_->mute_;
-        else  return data_->solo_;
+        if (i) return data_->mute.getValue();
+        else  return data_->solo.getValue();
     case BM_CUEAC:
-        if (i) return data_->ac_;
-        else  return data_->cue_;
+        if (i) return data_->ac.getValue();
+        else  return data_->cue.getValue();
         break;
     default:
         ;
@@ -30,19 +30,20 @@ bool Channel::button(unsigned i) {
 
 void Channel::button(unsigned i, bool b) {
     // Logger::writeToLog("buttonA: " + String(b));
+    //TODO CHECK this
     switch (butMode_) {
     case BM_SOLOMUTE:
         if (i) {
-            data_->mute_ =  !data_->mute_;
+            data_->mute.setValue(!data_->mute.getValue());
         } else {
-            data_->solo_ = !data_->solo_ ;
+            data_->solo.setValue(!data_->solo.getValue());
         }
         break;
     case BM_CUEAC:
         if (i) {
-            data_->ac_ = !data_->ac_ ;
+            data_->ac.setValue(!data_->ac.getValue());
         } else {
-            data_->cue_ =  !data_->cue_;
+            data_->cue.setValue(!data_->cue.getValue());
         }
         break;
     default:
@@ -53,30 +54,31 @@ void Channel::button(unsigned i, bool b) {
 void Channel::encoder(float v) {
     float e = v;
 
+    // TODO CHECK - need convert0to1?
     switch (encMode_) {
     case EM_LEVEL:
         e = v / 100.0f ;
-        data_->level_[0] = constrain(data_->level_[0] + e, 0.0f, 4.0f);
+        data_->level[0].get().setValue(data_->level[0].get().getValue() +e );
         break;
     case EM_PAN:
         e = v / 100.0f ;
-        data_->pan_ = constrain(data_->pan_ + e, -1.0f, 1.0f);
+        data_->pan.setValue(data_->pan.getValue() + e);
         break;
     case EM_AUX1:
         e = v / 100.0f ;
-        data_->level_[1] = constrain(data_->level_[1] + e, 0.0f, 4.0f);
+            data_->level[1].get().setValue(data_->level[1].get().getValue()+e);
         break;
     case EM_AUX2:
         e = v / 100.0f ;
-        data_->level_[2] = constrain(data_->level_[2] + e, 0.0f, 4.0f);
+            data_->level[2].get().setValue(data_->level[2].get().getValue()+e);
         break;
     case EM_AUX3:
         e = v / 100.0f ;
-        data_->level_[3] = constrain(data_->level_[3] + e, 0.0f, 4.0f);
+        data_->level[3].get().setValue(data_->level[3].get().getValue() +e );
         break;
     case EM_GAIN:
         e = v / 100.0f ;
-        data_->gain_ = constrain(data_->gain_ + e, 0.0f, 3.0f);
+        data_->gain.setValue(data_->gain.getValue() + e);
         break;
     default:
         ;
@@ -86,24 +88,25 @@ void Channel::encoder(float v) {
 
 
 void Channel::encbutton(bool b) {
+    //TODO CHECK, might need convertTo0to1
     switch (encMode_) {
     case EM_LEVEL:
-        data_->level_[0] = data_->level_[0] == 1.0 ? 0.0f : 1.0f;
+        data_->level[0].get().setValue(data_->level[0].get().getValue() == 1.0 ? 0.0f : 1.0f);
         break;
     case EM_PAN:
-        data_->pan_ = 0.0f;
+        data_->pan.setValue(data_->pan.convertTo0to1(0.0f));
         break;
     case EM_AUX1:
-        data_->level_[1] = data_->level_[1] == 1.0 ? 0.0f : 1.0f;
+        data_->level[1].get().setValue(data_->level[1].get().getValue() == 1.0 ? 0.0f : 1.0f);
         break;
     case EM_AUX2:
-        data_->level_[2] = data_->level_[2] == 1.0 ? 0.0f : 1.0f;
+        data_->level[2].get().setValue(data_->level[2].get().getValue() == 1.0 ? 0.0f : 1.0f);
         break;
     case EM_AUX3:
-        data_->level_[3] = data_->level_[3] == 1.0 ? 0.0f : 1.0f;
+        data_->level[3].get().setValue(data_->level[3].get().getValue() == 1.0 ? 0.0f : 1.0f);
         break;
     case EM_GAIN:
-        data_->gain_ = 1.0f;
+        data_->gain.setValue(data_->gain.convertTo0to1(0.0f));
         break;
     default:
         ;
@@ -131,30 +134,42 @@ void Channel::encoderMode(EncMode m) {
 void Channel::updateParam(bool newMode) {
     if (data_ && param_ ) {
         switch (encMode_) {
-        case EM_LEVEL:
+        case EM_LEVEL: {
             if (newMode) param_->label("Level");
-            param_->value(data_->level_[0]);
+            auto &p = data_->level[0].get();
+            param_->value(p.convertFrom0to1(p.getValue()));
             break;
-        case EM_PAN:
+        }
+        case EM_PAN: {
             if (newMode) param_->label("Pan");
-            param_->value(data_->pan_);
+            auto &p = data_->pan;
+            param_->value(p.convertFrom0to1(p.getValue()));
             break;
-        case EM_AUX1:
+        }
+        case EM_AUX1: {
             if (newMode) param_->label("Cue");
-            param_->value(data_->level_[1]);
+            auto &p = data_->level[1].get();
+            param_->value(p.convertFrom0to1(p.getValue()));
             break;
-        case EM_AUX2:
+        }
+        case EM_AUX2: {
             if (newMode) param_->label("Aux1");
-            param_->value(data_->level_[2]);
+            auto &p = data_->level[2].get();
+            param_->value(p.convertFrom0to1(p.getValue()));
             break;
-        case EM_AUX3:
+        }
+        case EM_AUX3: {
             if (newMode) param_->label("Aux2");
-            param_->value(data_->level_[3]);
+            auto &p = data_->level[3].get();
+            param_->value(p.convertFrom0to1(p.getValue()));
             break;
-        case EM_GAIN:
+        }
+        case EM_GAIN: {
             if (newMode) param_->label("Gain");
-            param_->value(data_->gain_);
+            auto &p = data_->gain;
+            param_->value(p.convertFrom0to1(p.getValue()));
             break;
+        }
         default:
             ;
         }
