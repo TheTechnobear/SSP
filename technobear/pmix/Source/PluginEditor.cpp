@@ -4,61 +4,143 @@
 #include "ssp/BaseParamControl.h"
 #include "ssp/ButtonControl.h"
 
-using pcontrol_type = ssp::BarParamControl;
+using pcontrol_type = ssp::LineParamControl;
 using bcontrol_type = ssp::ButtonControl;
 
 PluginEditor::PluginEditor(PluginProcessor &p)
     : base_type(&p,
                 String(JucePlugin_Name) + " : " + String(JucePlugin_Desc),
-                JucePlugin_VersionString),
+                JucePlugin_VersionString, 3),
       processor_(p) {
-/*
-    addParamPage(
-        std::make_shared<pcontrol_type>(processor_.params_.pitch),
-        std::make_shared<pcontrol_type>(processor_.params_.harmonics),
-        std::make_shared<pcontrol_type>(processor_.params_.timbre),
-        std::make_shared<pcontrol_type>(processor_.params_.morph)
-    );
 
-    addParamPage(
-        std::make_shared<pcontrol_type>(processor_.params_.model, 1.0f, 1.0f),
-        std::make_shared<pcontrol_type>(processor_.params_.freq_mod),
-        std::make_shared<pcontrol_type>(processor_.params_.timbre_mod),
-        std::make_shared<pcontrol_type>(processor_.params_.morph_mod)
-    );
-    addParamPage(
-        std::make_shared<pcontrol_type>(processor_.params_.lpg),
-        std::make_shared<pcontrol_type>(processor_.params_.vca),
-        nullptr,
-        nullptr);
-*/
-    setSize(1600, 480);
+
+    leftShiftBtn_.init("IN14", Colours::grey, Colours::black);
+    setButtonBounds(leftShiftBtn_, 0, 4);
+    addAndMakeVisible(leftShiftBtn_);
+    rightShiftBtn_.init("IN58", Colours::grey, Colours::black);
+    setButtonBounds(rightShiftBtn_, 0, 6);
+    addAndMakeVisible(rightShiftBtn_);
+
+    leftBtn_.label("EN-");
+    rightBtn_.label("EN+");
+    upBtn_.label("OUT14");
+    downBtn_.label("MODE");
+
+
+    for (unsigned v = 0; v < 3; v++) {
+
+        std::reference_wrapper<TrackData> t0 = processor_.inputTrack(v + 0);
+        std::reference_wrapper<TrackData> t1 = processor_.inputTrack(v + 1);
+        std::reference_wrapper<TrackData> t2 = processor_.inputTrack(v + 2);
+        std::reference_wrapper<TrackData> t3 = processor_.inputTrack(v + 3);
+        if (v == 1) {
+            t0 = processor_.inputTrack(v + 4);
+            t1 = processor_.inputTrack(v + 5);
+            t2 = processor_.inputTrack(v + 6);
+            t3 = processor_.inputTrack(v + 7);
+        } else if (v == 2) {
+            // TODO check this!
+            t0 = processor_.outputTrack(v + 0);
+            t1 = processor_.outputTrack(v + 2);
+            t2 = processor_.outputTrack(v + 4);
+            t3 = processor_.outputTrack(v + 6);
+        }
+        TrackData &td0 = t0;
+        TrackData &td1 = t1;
+        TrackData &td2 = t2;
+        TrackData &td3 = t3;
+        addParamPage(
+            std::make_shared<pcontrol_type>(td0.level[0]),
+            std::make_shared<pcontrol_type>(td1.level[0]),
+            std::make_shared<pcontrol_type>(td2.level[0]),
+            std::make_shared<pcontrol_type>(td3.level[0]),
+            v
+        );
+        addParamPage(
+            std::make_shared<pcontrol_type>(td0.pan),
+            std::make_shared<pcontrol_type>(td1.pan),
+            std::make_shared<pcontrol_type>(td2.pan),
+            std::make_shared<pcontrol_type>(td3.pan),
+            v
+        );
+        addParamPage(
+            std::make_shared<pcontrol_type>(td0.level[1]),
+            std::make_shared<pcontrol_type>(td1.level[1]),
+            std::make_shared<pcontrol_type>(td2.level[1]),
+            std::make_shared<pcontrol_type>(td3.level[1]),
+            v
+        );
+        addParamPage(
+            std::make_shared<pcontrol_type>(td0.level[2]),
+            std::make_shared<pcontrol_type>(td1.level[2]),
+            std::make_shared<pcontrol_type>(td2.level[2]),
+            std::make_shared<pcontrol_type>(td3.level[2]),
+            v
+        );
+        addParamPage(
+            std::make_shared<pcontrol_type>(td0.level[3]),
+            std::make_shared<pcontrol_type>(td1.level[3]),
+            std::make_shared<pcontrol_type>(td2.level[3]),
+            std::make_shared<pcontrol_type>(td3.level[3]),
+            v
+        );
+        addParamPage(
+            std::make_shared<pcontrol_type>(td0.gain),
+            std::make_shared<pcontrol_type>(td1.gain),
+            std::make_shared<pcontrol_type>(td2.gain),
+            std::make_shared<pcontrol_type>(td3.gain),
+            v
+        );
+        unsigned fh = 24;
+        auto mc = Colours::lightskyblue;
+        addButtonPage(
+            std::make_shared<bcontrol_type>(td0.mute, fh, mc),
+            std::make_shared<bcontrol_type>(td1.mute, fh, mc),
+            std::make_shared<bcontrol_type>(td2.mute, fh, mc),
+            std::make_shared<bcontrol_type>(td3.mute, fh, mc),
+            std::make_shared<bcontrol_type>(td0.solo, fh, mc),
+            std::make_shared<bcontrol_type>(td1.solo, fh, mc),
+            std::make_shared<bcontrol_type>(td2.solo, fh, mc),
+            std::make_shared<bcontrol_type>(td3.solo, fh, mc),
+            v
+        );
+        addButtonPage(
+            std::make_shared<bcontrol_type>(td0.cue, fh, mc),
+            std::make_shared<bcontrol_type>(td1.cue, fh, mc),
+            std::make_shared<bcontrol_type>(td2.cue, fh, mc),
+            std::make_shared<bcontrol_type>(td3.cue, fh, mc),
+            std::make_shared<bcontrol_type>(td0.ac, fh, mc),
+            std::make_shared<bcontrol_type>(td1.ac, fh, mc),
+            std::make_shared<bcontrol_type>(td2.ac, fh, mc),
+            std::make_shared<bcontrol_type>(td3.ac, fh, mc),
+            v
+        );
+    }
+
 
     for (unsigned i = 0; i < TS_MAX; i++) {
         buttonHeldCount_[i] = 0;
     }
-    encMode_ = 0;
-    butMode_ = 0;
     activeTracks_ = OUT_14;
     curTracks_ = OUT_14;
 
-    inTracks_[0].init(&params_[0], "In 1", &processor_.inputTrack(0));
-    inTracks_[1].init(&params_[1], "In 2", &processor_.inputTrack(1));
-    inTracks_[2].init(&params_[2], "In 3", &processor_.inputTrack(2));
-    inTracks_[3].init(&params_[3], "In 4", &processor_.inputTrack(3));
-    inTracks_[4].init(&params_[0], "In 5", &processor_.inputTrack(4));
-    inTracks_[5].init(&params_[1], "In 6", &processor_.inputTrack(5));
-    inTracks_[6].init(&params_[2], "In 7", &processor_.inputTrack(6));
-    inTracks_[7].init(&params_[3], "In 8", &processor_.inputTrack(7));
+    inTracks_[0].init("In 1", &processor_.inputTrack(0));
+    inTracks_[1].init("In 2", &processor_.inputTrack(1));
+    inTracks_[2].init("In 3", &processor_.inputTrack(2));
+    inTracks_[3].init("In 4", &processor_.inputTrack(3));
+    inTracks_[4].init("In 5", &processor_.inputTrack(4));
+    inTracks_[5].init("In 6", &processor_.inputTrack(5));
+    inTracks_[6].init("In 7", &processor_.inputTrack(6));
+    inTracks_[7].init("In 8", &processor_.inputTrack(7));
     for (unsigned i = 0; i < PluginProcessor::IN_T_MAX; i++) {
         inTracks_[i].active(false);
         addAndMakeVisible(inTracks_[i]);
     }
 
-    outTracks_[0].init(&params_[0], "Main", &processor_.outputTrack(0), &processor_.outputTrack(1));
-    outTracks_[1].init(&params_[1], "Cue", &processor_.outputTrack(2), &processor_.outputTrack(3));
-    outTracks_[2].init(&params_[2], "Aux 1", &processor_.outputTrack(4), &processor_.outputTrack(5));
-    outTracks_[3].init(&params_[3], "Aux 2", &processor_.outputTrack(6), &processor_.outputTrack(7));
+    outTracks_[0].init("Main", &processor_.outputTrack(0), &processor_.outputTrack(1));
+    outTracks_[1].init("Cue", &processor_.outputTrack(2), &processor_.outputTrack(3));
+    outTracks_[2].init("Aux 1", &processor_.outputTrack(4), &processor_.outputTrack(5));
+    outTracks_[3].init("Aux 2", &processor_.outputTrack(6), &processor_.outputTrack(7));
 
 
     for (unsigned i = 0; i < (PluginProcessor::OUT_T_MAX / 2); i++) {
@@ -66,12 +148,7 @@ PluginEditor::PluginEditor(PluginProcessor &p)
         addAndMakeVisible(outTracks_[i]);
     }
 
-
-    butMode_ = Channel::BM_SOLOMUTE;
-    labelButtons();
-
-
-    trackSelect(activeTracks_, true);
+    setSize(1600, 480);
 }
 
 
@@ -91,58 +168,6 @@ void PluginEditor::paint(Graphics &g) {
     for (unsigned i = 0; i < (PluginProcessor::OUT_T_MAX / 2); i++) {
         outTracks_[i].enabled(processor_.isOutputEnabled(i * 2) || processor_.isOutputEnabled(i * 2 + 1));
     }
-
-#if 0
-    switch (butMode_) {
-        case SSPChannel::BM_SOLOMUTE: {
-            switch (curTracks_) {
-                case IN_14: {
-                    for (unsigned i = 0; i < 4; i++) buttons_[B_A_1 + i].active(processor_.inputTrack(i).solo_);
-                    for (unsigned i = 0; i < 4; i++) buttons_[B_B_1 + i].active(processor_.inputTrack(i).mute_);
-                    break;
-                }
-                case IN_58: {
-                    for (unsigned i = 0; i < 4; i++) buttons_[B_A_1 + i].active(processor_.inputTrack(4 + i).solo_);
-                    for (unsigned i = 0; i < 4; i++) buttons_[B_B_1 + i].active(processor_.inputTrack(4 + i).mute_);
-                    break;
-                }
-                case OUT_14: {
-                    for (unsigned i = 0; i < 4; i++) buttons_[B_A_1 + i].active(processor_.outputTrack(i * 2).solo_);
-                    for (unsigned i = 0; i < 4; i++) buttons_[B_B_1 + i].active(processor_.outputTrack(i * 2).mute_);
-                    break;
-                }
-                default:
-                    ;
-            }
-        }
-            break;
-        case SSPChannel::BM_CUEAC: {
-            switch (curTracks_) {
-                case IN_14: {
-                    for (unsigned i = 0; i < 4; i++) buttons_[B_A_1 + i].active(processor_.inputTrack(i).cue_);
-                    for (unsigned i = 0; i < 4; i++) buttons_[B_B_1 + i].active(processor_.inputTrack(i).ac_);
-                    break;
-                }
-                case IN_58: {
-                    for (unsigned i = 0; i < 4; i++) buttons_[B_A_1 + i].active(processor_.inputTrack(4 + i).cue_);
-                    for (unsigned i = 0; i < 4; i++) buttons_[B_B_1 + i].active(processor_.inputTrack(4 + i).ac_);
-                    break;
-                }
-                case OUT_14: {
-                    for (unsigned i = 0; i < 4; i++) buttons_[B_A_1 + i].active(processor_.outputTrack(i * 2).cue_);
-                    for (unsigned i = 0; i < 4; i++) buttons_[B_B_1 + i].active(processor_.outputTrack(i * 2).ac_);
-                    break;
-                }
-                default:
-                    ;
-            }
-        }
-            break;
-
-        default:
-            break;
-    }
-#endif
 }
 
 
@@ -169,216 +194,71 @@ void PluginEditor::resized() {
 
 
 void PluginEditor::onEncoder(unsigned enc, float v) {
-    channelEncoder(0, v > 0.0f ? 1 : -1);
+    base_type::onEncoder(enc, v);
+//    channelEncoder(0, v > 0.0f ? 1 : -1);
 }
 
 void PluginEditor::onEncoderSwitch(unsigned enc, bool v) {
-    if (!v) channelEncoderButton(0, v);
+    base_type::onEncoderSwitch(enc, v);
+//    if (!v) channelEncoderButton(0, v);
 }
 
 void PluginEditor::onButton(unsigned btn, bool v) {
-    if (!v) channelButton(0, btn, v);
+    base_type::onButton(btn, v);
 }
 
 void PluginEditor::onLeftButton(bool v) {
-    base_type::onLeftButton(v);
+    leftBtn_.active(v);
     if (!v) {
-        encMode_ = encMode_ > 0 ? encMode_ - 1 : (Channel::EM_MAX - 1);
-        auto m = static_cast<Channel::EncMode>(encMode_);
-        for (unsigned i = 0; i < PluginProcessor::IN_T_MAX; i++) {
-            inTracks_[i].encoderMode(m);
-        }
-        for (unsigned i = 0; i < (PluginProcessor::OUT_T_MAX / 2); i++) {
-            outTracks_[i].encoderMode(m);
-        }
+        chgParamPage(-1, true);
     }
 }
 
 void PluginEditor::onRightButton(bool v) {
-    base_type::onRightButton(v);
+    rightBtn_.active(v);
     if (!v) {
-        encMode_ = encMode_ < (Channel::EM_MAX - 1) ? encMode_ + 1 : 0;
-        auto m = static_cast<Channel::EncMode>(encMode_);
-        for (unsigned i = 0; i < PluginProcessor::IN_T_MAX; i++) {
-            inTracks_[i].encoderMode(m);
-        }
-        for (unsigned i = 0; i < (PluginProcessor::OUT_T_MAX / 2); i++) {
-            outTracks_[i].encoderMode(m);
-        }
+        chgParamPage(1, true);
     }
 }
 
 void PluginEditor::onUpButton(bool v) {
-    base_type::onUpButton(v);
-    trackSelect(OUT_14, v);
+    upBtn_.active(v);
+    //TODO - momentary hold
+    if (!v) {
+        setView(2);
+    }
 }
 
 void PluginEditor::onDownButton(bool v) {
-    base_type::onDownButton(v);
+    downBtn_.active(v);
     if (!v) {
-        butMode_ = butMode_ < (Channel::BM_MAX - 1) ? butMode_ + 1 : 0;
-        auto m = static_cast<Channel::ButMode>(butMode_);
-        for (unsigned i = 0; i < PluginProcessor::IN_T_MAX; i++) {
-            inTracks_[i].buttonMode(m);
-        }
-        for (unsigned i = 0; i < (PluginProcessor::OUT_T_MAX / 2); i++) {
-            outTracks_[i].buttonMode(m);
-        }
-        labelButtons();
-
-
+        auto &view = views_[view_];
+        unsigned bmode = buttonPage_ + 1 >= view.buttonPages_.size() ? 0 : buttonPage_ + 1;
+        setButtonPage(bmode);
     }
 }
 
 void PluginEditor::onLeftShiftButton(bool v) {
-    trackSelect(IN_14, v);
+    leftShiftBtn_.active(v);
+    //TODO - momentary hold
+    if (!v) {
+        setView(0);
+    }
 }
 
 void PluginEditor::onRightShiftButton(bool v) {
-    trackSelect(IN_58, v);
-}
-
-
-void PluginEditor::channelEncoder(unsigned c, float v) {
-    switch (curTracks_) {
-        case IN_14: {
-            inTracks_[c].encoder(v);
-            break;
-        }
-        case IN_58: {
-            inTracks_[c + 4].encoder(v);
-            break;
-        }
-        case OUT_14: {
-            outTracks_[c].encoder(v);
-            break;
-        }
-        default:
-            break;
+    rightShiftBtn_.active(v);
+    //TODO - momentary hold
+    if (!v) {
+        setView(1);
     }
 }
 
 
-void PluginEditor::channelEncoderButton(unsigned c, bool v) {
-    switch (curTracks_) {
-        case IN_14: {
-            inTracks_[c].encbutton(v);
-            break;
-        }
-        case IN_58: {
-            inTracks_[c + 4].encbutton(v);
-            break;
-        }
-        case OUT_14: {
-            outTracks_[c].encbutton(v);
-            break;
-        }
-        default:
-            break;
-    }
-}
 
 
-void PluginEditor::channelButton(unsigned c, unsigned i, bool v) {
-    switch (curTracks_) {
-        case IN_14: {
-            inTracks_[c].button(i, v);
-            break;
-        }
-        case IN_58: {
-            inTracks_[c + 4].button(i, v);
-            break;
-        }
-        case OUT_14: {
-            outTracks_[c].button(i, v);
-            break;
-        }
-        default:
-            break;
-    }
-}
-
-bool PluginEditor::buttonState(unsigned c, unsigned i) {
-    switch (curTracks_) {
-        case IN_14: {
-            return inTracks_[c].button(i);
-        }
-        case IN_58: {
-            return inTracks_[c + 4].button(i);
-        }
-        case OUT_14: {
-            return outTracks_[c].button(i);
-        }
-        default:
-            break;
-    }
-
-    return false;
-}
 
 
-void PluginEditor::trackSelect(TrackSelect ts, bool active) {
-    if (active) {
-        buttonHeldCount_[ts] = BUT_COUNTER;
-        curTracks_ = ts;
-    } else {
-        if (buttonHeldCount_[ts] > 0) {
-            activeTracks_ = ts;
-        }
-        curTracks_ = activeTracks_;
-        buttonHeldCount_[ts] = 0;
-    }
-
-//	buttons_[B_SHIFTL].active(curTracks_ == IN_14);
-//	buttons_[B_UP].active(curTracks_ == OUT_14);
-//	buttons_[B_SHIFTR].active(curTracks_ == IN_58);
-
-    for (unsigned i = 0; i < PluginProcessor::IN_T_MAX; i++) {
-        inTracks_[i].active((curTracks_ == IN_14 && i < 4) || (curTracks_ == IN_58 && i >= 4));
-    }
-
-    for (unsigned i = 0; i < (PluginProcessor::OUT_T_MAX / 2); i++) {
-        outTracks_[i].active(curTracks_ == OUT_14);
-    }
-}
 
 
-void PluginEditor::labelButtons() {
-    /*
-    switch (butMode_) {
-        case SSPChannel::BM_SOLOMUTE: {
-            buttons_[B_A_1].label("Solo");
-            buttons_[B_A_2].label("Solo");
-            buttons_[B_A_3].label("Solo");
-            buttons_[B_A_4].label("Solo");
-            buttons_[B_B_1].label("Mute");
-            buttons_[B_B_2].label("Mute");
-            buttons_[B_B_3].label("Mute");
-            buttons_[B_B_4].label("Mute");
-        }
-            break;
-        case SSPChannel::BM_CUEAC: {
-            buttons_[B_A_1].label("Cue");
-            buttons_[B_A_2].label("Cue");
-            buttons_[B_A_3].label("Cue");
-            buttons_[B_A_4].label("Cue");
-            buttons_[B_B_1].label("AC");
-            buttons_[B_B_2].label("AC");
-            buttons_[B_B_3].label("AC");
-            buttons_[B_B_4].label("AC");
-        }
-            break;
-        default: {
-            buttons_[B_A_1].label("");
-            buttons_[B_A_2].label("");
-            buttons_[B_A_3].label("");
-            buttons_[B_A_4].label("");
-            buttons_[B_B_1].label("");
-            buttons_[B_B_2].label("");
-            buttons_[B_B_3].label("");
-            buttons_[B_B_4].label("");
-        }
-    }
-     */
-}
 

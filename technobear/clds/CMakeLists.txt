@@ -97,19 +97,7 @@ set(MI_SRC
         ../../mi/stmlib/dsp/units.cc
         )
 
-set(COMMON_SRC
-        ../common/SSP.cpp
-        ../common/SSPButton.cpp
-        ../common/ssp/BaseEditor.cpp
-        ../common/ssp/LineParamEditor.cpp
-        ../common/ssp/TableParamEditor.cpp
-        ../common/ssp/BarParamEditor.cpp
-        ../common/ssp/BaseProcessor.cpp
-        ../common/ssp/BaseParamControl.cpp
-        ../common/ssp/ButtonControl.cpp
-        ../common/ssp/RmsTrack.cpp
-        ../common/ssp/VuMeter.cpp
-        )
+include(${CMAKE_CURRENT_SOURCE_DIR}/../common/CMakeLists.txt)
 
 target_sources(CLDS PRIVATE
         Source/PluginEditor.cpp

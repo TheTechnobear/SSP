@@ -126,6 +126,9 @@ private:
     };
 
 public:
+
+    //TODO  -clear up  OUT_T_MAX/2 = number of stereo channels
+    // vs O_MAX audio channels
     static constexpr unsigned IN_T_MAX = I_MAX;
     static constexpr unsigned OUT_T_MAX = O_MAX;
 

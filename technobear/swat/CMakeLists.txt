@@ -79,19 +79,8 @@ juce_generate_juce_header(SWAT)
 # that will be built into the target. This is a standard CMake command.
 
 
-set(COMMON_SRC
-        ../common/SSP.cpp
-        ../common/SSPButton.cpp
-        ../common/ssp/BaseEditor.cpp
-        ../common/ssp/LineParamEditor.cpp
-        ../common/ssp/TableParamEditor.cpp
-        ../common/ssp/BarParamEditor.cpp
-        ../common/ssp/BaseProcessor.cpp
-        ../common/ssp/BaseParamControl.cpp
-        ../common/ssp/ButtonControl.cpp
-        ../common/ssp/RmsTrack.cpp
-        ../common/ssp/VuMeter.cpp
-        )
+include(${CMAKE_CURRENT_SOURCE_DIR}/../common/CMakeLists.txt)
+
 
 set(ALGO_SRC
         Source/algos/AgDelay.cpp

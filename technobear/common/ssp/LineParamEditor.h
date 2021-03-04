@@ -1,15 +1,15 @@
 #pragma once
 
-#include "BaseEditor.h"
+#include "SingleViewEditor.h"
 
 namespace ssp {
 
-class LineParamEditor : public BaseEditor {
+class LineParamEditor : public SingleViewEditor {
 public:
     LineParamEditor(BaseProcessor *p, String title, String version);
 
 protected:
-    using base_type=ssp::BaseEditor;
+    using base_type=ssp::SingleViewEditor;
 
     void paint(Graphics &) override;
 
@@ -22,6 +22,9 @@ protected:
         std::shared_ptr<BaseParamControl> c3,
         std::shared_ptr<BaseParamControl> c4
     ) override;
+
+private:
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LineParamEditor)
 
 };
 

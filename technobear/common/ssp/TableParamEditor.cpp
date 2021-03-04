@@ -102,43 +102,14 @@ void TableParamEditor::onUpButton(bool v) {
 
     if (v) return; // change on button up
 
-    if (paramPage_ > 0) {
-        auto page = controlPages_[paramPage_];
-        for (auto i = 0; i < 4; i++) {
-            auto &c = page.control_[i];
-            if (c != nullptr) c->active(false);
-        }
-
-        paramPage_--;
-
-        page = controlPages_[paramPage_];
-        for (auto i = 0; i < 4; i++) {
-            auto &c = page.control_[i];
-            if (c != nullptr) c->active(true);
-        }
-    }
+    chgParamPage(-11,false);
 }
 
 void TableParamEditor::onDownButton(bool v) {
     base_type::onDownButton(v);
 
     if (v) return; // change on button up
-
-    if ((paramPage_ + 1) < controlPages_.size()) {
-        auto page = controlPages_[paramPage_];
-        for (auto i = 0; i < 4; i++) {
-            auto &c = page.control_[i];
-            if (c != nullptr) c->active(false);
-        }
-
-        paramPage_++;
-
-        page = controlPages_[paramPage_];
-        for (auto i = 0; i < 4; i++) {
-            auto &c = page.control_[i];
-            if (c != nullptr) c->active(true);
-        }
-    }
+    chgParamPage(1,false);
 }
 
 } // namespace

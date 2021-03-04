@@ -27,7 +27,7 @@ void BarParamEditor::paint(Graphics &g) {
     static juce::Colour clrs[4] = {Colours::red, Colours::blue, Colours::yellow, Colours::green};
     g.setColour(clrs[paramPage_ % 4]);
 
-    h = paramSpaceY /4 ;
+    h = paramSpaceY / 4;
     y = 480 - h;
     g.fillRect(x, y, w * 4, h);
 
@@ -54,8 +54,8 @@ void BarParamEditor::setParamBounds(unsigned page, unsigned idx, std::shared_ptr
 //    unsigned w = unsigned(900.0f / 4.0f);
 //    unsigned x = idx * w;
     unsigned sp = 10.0f;
-     unsigned w = unsigned(900.0f / 4.0f);
-    unsigned x = (idx * w) + (sp/2);
+    unsigned w = unsigned(900.0f / 4.0f);
+    unsigned x = (idx * w) + (sp / 2);
     unsigned h = 2 * paramSpaceY;
     unsigned y = (page * h) + (h);
     c->setBounds(x, y, w - sp, h);
@@ -106,43 +106,14 @@ void BarParamEditor::onUpButton(bool v) {
 
     if (v) return; // change on button up
 
-    if (paramPage_ > 0) {
-        auto page = controlPages_[paramPage_];
-        for (auto i = 0; i < 4; i++) {
-            auto &c = page.control_[i];
-            if (c != nullptr) c->active(false);
-        }
-
-        paramPage_--;
-
-        page = controlPages_[paramPage_];
-        for (auto i = 0; i < 4; i++) {
-            auto &c = page.control_[i];
-            if (c != nullptr) c->active(true);
-        }
-    }
+    chgParamPage(-1, false);
 }
 
 void BarParamEditor::onDownButton(bool v) {
     base_type::onDownButton(v);
 
     if (v) return; // change on button up
-
-    if ((paramPage_ + 1) < controlPages_.size()) {
-        auto page = controlPages_[paramPage_];
-        for (auto i = 0; i < 4; i++) {
-            auto &c = page.control_[i];
-            if (c != nullptr) c->active(false);
-        }
-
-        paramPage_++;
-
-        page = controlPages_[paramPage_];
-        for (auto i = 0; i < 4; i++) {
-            auto &c = page.control_[i];
-            if (c != nullptr) c->active(true);
-        }
-    }
+    chgParamPage(1, false);
 }
 
 } // namespace

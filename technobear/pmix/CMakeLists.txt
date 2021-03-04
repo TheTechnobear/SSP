@@ -78,28 +78,16 @@ juce_generate_juce_header(PMIX)
 # although it doesn't really affect executable targets). Finally, we supply a list of source files
 # that will be built into the target. This is a standard CMake command.
 
-set(COMMON_SRC
-        ../common/SSP.cpp
-        ../common/SSPButton.cpp
-        ../common/ssp/BaseEditor.cpp
-        ../common/ssp/LineParamEditor.cpp
-        ../common/ssp/TableParamEditor.cpp
-        ../common/ssp/BarParamEditor.cpp
-        ../common/ssp/BaseProcessor.cpp
-        ../common/ssp/BaseParamControl.cpp
-        ../common/ssp/ButtonControl.cpp
-        ../common/ssp/RmsTrack.cpp
-        ../common/ssp/VuMeter.cpp
-        )
+include(${CMAKE_CURRENT_SOURCE_DIR}/../common/CMakeLists.txt)
 
 target_sources(PMIX PRIVATE
         Source/PluginEditor.cpp
         Source/PluginProcessor.cpp
-        Source/Channel.cpp
         Source/MonoChannel.cpp
         Source/StereoChannel.cpp
         ${COMMON_SRC}
         )
+
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer
 # project, these might be passed in the 'Preprocessor Definitions' field. JUCE modules also make use

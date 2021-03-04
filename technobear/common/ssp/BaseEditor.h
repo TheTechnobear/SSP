@@ -29,10 +29,7 @@ public:
     virtual void onEncoder(unsigned enc, float v);
     virtual void onEncoderSwitch(unsigned enc, bool v);
 
-    // user buttons
     virtual void onButton(unsigned btn, bool v);
-
-    // nav buttons
     virtual void onLeftButton(bool v);
     virtual void onRightButton(bool v);
     virtual void onUpButton(bool v);
@@ -61,13 +58,9 @@ protected:
 
     ParameterAttachment leftAtt_, rightAtt_, upAtt_, downAtt_, LSAtt_, RSAtt_;
 
-
     struct ControlPage {
         std::shared_ptr<BaseParamControl> control_[4] = {nullptr, nullptr, nullptr, nullptr};
     };
-
-    std::vector<ControlPage> controlPages_;
-
 
     struct ButtonPage {
         std::shared_ptr<ButtonControl> control_[8] = {
@@ -75,6 +68,12 @@ protected:
             nullptr, nullptr, nullptr, nullptr
         };
     };
+
+#if 0
+
+    std::vector<ControlPage> controlPages_;
+
+
 
     virtual ControlPage  addParamPage(
         std::shared_ptr<BaseParamControl> c1,
@@ -95,19 +94,22 @@ protected:
     );
 
     std::vector<ButtonPage> buttonPages_;
+    unsigned paramPage_ = 0;
+    unsigned buttonPage_ = 0;
 
+    bool encoderFine[4]={false, false, false, false};
+
+#endif
+
+    bool encoderState_[4]={false,false,false,false};
     SSPButton leftBtn_, rightBtn_, upBtn_, downBtn_;
     SSPButton leftShiftBtn_, rightShiftBtn_;
-    bool encoderFine[4]={false, false, false, false};
-    bool encoderState_[4]={false,false,false,false};
 
 
-    unsigned paramPage_ = 0;
 
 private:
     SSPButton globalBtn_, networkBtn_, plugInBtn_, recBtn_;
     String title_, version_;
-    unsigned buttonPage_ = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BaseEditor)
 };

@@ -172,6 +172,7 @@ void BaseEditor::setButtonBounds(unsigned idx, std::shared_ptr<ButtonControl> c)
     c->setBounds(x, y, w, h);
 }
 
+#if 0
 BaseEditor::ControlPage BaseEditor::addParamPage(
     std::shared_ptr<BaseParamControl> c1,
     std::shared_ptr<BaseParamControl> c2,
@@ -230,7 +231,6 @@ void BaseEditor::addButtonPage(
     }
 }
 
-
 void BaseEditor::onEncoder(unsigned enc, float v) {
     if (v > -0.01f && v < 0.01f) return;
     auto &p = *baseProcessor_->getParameter(BaseProcessor::sspParams::getId(Percussa::sspEnc1 + enc));
@@ -280,6 +280,19 @@ void BaseEditor::onButton(unsigned btn, bool v) {
         }
     }
 }
+#endif
+
+void BaseEditor::onEncoder(unsigned enc, float v) {
+}
+
+void BaseEditor::onEncoderSwitch(unsigned enc, bool v) {
+    encoderState_[enc] = v;
+    if (v) return; // change on button up
+}
+
+void BaseEditor::onButton(unsigned btn, bool v) {
+}
+
 
 void BaseEditor::onLeftButton(bool v) {
     leftBtn_.active(v);

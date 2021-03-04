@@ -69,6 +69,12 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     AudioProcessorValueTreeState::ParameterLayout params;
     BaseProcessor::addBaseParameters(params);
 
+    static const char *lvllabel[TrackData::OUT_TRACKS] = {
+        "Level",
+        "Cue",
+        "Aux 1",
+        "Aux 2"
+    };
     {
         auto ts = std::make_unique<AudioProcessorParameterGroup>(ID::in, "Input", ID::separator);
         for (unsigned tn = 0; tn < IN_T_MAX; tn++) {
@@ -78,7 +84,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
             for (unsigned i = 0; i < TrackData::OUT_TRACKS; i++) {
                 String lprefix = prefix + g->getID() + g->getSeparator();
                 float lvl = i == 0 ? 1.0f : 0.0f;
-                g->addChild(std::make_unique<ssp::BaseFloatParameter>(lprefix + String(i), String(i), 0.0, 4.0f, lvl));
+                g->addChild(std::make_unique<ssp::BaseFloatParameter>(lprefix + String(i), lvllabel[i], 0.0, 4.0f, lvl));
             }
             t->addChild(std::move(g));
             t->addChild(std::make_unique<ssp::BaseFloatParameter>(prefix + ID::pan, "Pan", -1.0, 1.0f, 0.0f));
@@ -101,7 +107,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
             for (unsigned i = 0; i < TrackData::OUT_TRACKS; i++) {
                 String lprefix = prefix + g->getID() + g->getSeparator();
                 float lvl = i == 0 ? 1.0f : 0.0f;
-                g->addChild(std::make_unique<ssp::BaseFloatParameter>(lprefix + String(i), String(i), 0.0, 4.0f, lvl));
+                g->addChild(std::make_unique<ssp::BaseFloatParameter>(lprefix + String(i), lvllabel[i], 0.0, 4.0f, lvl));
             }
             t->addChild(std::move(g));
             t->addChild(std::make_unique<ssp::BaseFloatParameter>(prefix + ID::pan, "Pan", -1.0, 1.0f, 0.0f));

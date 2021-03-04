@@ -65,50 +65,14 @@ void LineParamEditor::onUpButton(bool v) {
     base_type::onUpButton(v);
 
     if (v) return; // change on button up
-
-    if (paramPage_ > 0) {
-        auto page = controlPages_[paramPage_];
-        for (auto i = 0; i < 4; i++) {
-            auto &c = page.control_[i];
-            if (c != nullptr) c->setVisible(false);
-        }
-
-        paramPage_--;
-
-        page = controlPages_[paramPage_];
-        for (auto i = 0; i < 4; i++) {
-            auto &c = page.control_[i];
-            if (c != nullptr) c->setVisible(true);
-        }
-    }
+    chgParamPage(-1,true);
 }
 
 void LineParamEditor::onDownButton(bool v) {
     base_type::onDownButton(v);
 
     if (v) return; // change on button up
-
-    if ((paramPage_ + 1) < controlPages_.size()) {
-        auto page = controlPages_[paramPage_];
-        for (auto i = 0; i < 4; i++) {
-            auto &c = page.control_[i];
-            if (c != nullptr) {
-                c->setVisible(false);
-                c->active(false);
-            }
-        }
-
-        paramPage_++;
-
-        page = controlPages_[paramPage_];
-        for (auto i = 0; i < 4; i++) {
-            auto &c = page.control_[i];
-            if (c != nullptr) {
-                c->setVisible(true);
-                c->active(true);
-            }
-        }
-    }
+    chgParamPage(1,true);
 }
 
 } // namespace
