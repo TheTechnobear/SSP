@@ -30,17 +30,11 @@ protected:
     using base_type = ssp::MultiViewEditor;
 
 private:
-    enum TrackSelect {
-        IN_14,
-        IN_58,
-        OUT_14,
-        TS_MAX
-    } activeTracks_, curTracks_;
 
     static constexpr unsigned POLL_TIME = 50; // mSec
     static constexpr unsigned BUT_COUNTER = POLL_TIME * 10; // 0.5 sec
-    unsigned buttonHeldCount_[TS_MAX];
-
+    unsigned viewHeldCount_=0;
+    unsigned unheldView_=0;
 
     MonoChannel inTracks_[PluginProcessor::IN_T_MAX];
     StereoChannel outTracks_[(PluginProcessor::OUT_T_MAX / 2)];

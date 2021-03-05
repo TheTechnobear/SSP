@@ -32,7 +32,7 @@ public:
         }
     }
 private:
-    float v_;
+    float v_=0.0f;
 };
 
 #ifdef __APPLE__

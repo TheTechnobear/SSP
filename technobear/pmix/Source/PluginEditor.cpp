@@ -13,7 +13,6 @@ PluginEditor::PluginEditor(PluginProcessor &p)
                 JucePlugin_VersionString, 3),
       processor_(p) {
 
-
     leftShiftBtn_.init("IN14", Colours::grey, Colours::black);
     setButtonBounds(leftShiftBtn_, 0, 4);
     addAndMakeVisible(leftShiftBtn_);
@@ -29,66 +28,67 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 
     for (unsigned v = 0; v < 3; v++) {
 
-        std::reference_wrapper<TrackData> t0 = processor_.inputTrack(v + 0);
-        std::reference_wrapper<TrackData> t1 = processor_.inputTrack(v + 1);
-        std::reference_wrapper<TrackData> t2 = processor_.inputTrack(v + 2);
-        std::reference_wrapper<TrackData> t3 = processor_.inputTrack(v + 3);
+        std::reference_wrapper<TrackData> t0 = processor_.inputTrack(0);
+        std::reference_wrapper<TrackData> t1 = processor_.inputTrack(1);
+        std::reference_wrapper<TrackData> t2 = processor_.inputTrack(2);
+        std::reference_wrapper<TrackData> t3 = processor_.inputTrack(3);
         if (v == 1) {
-            t0 = processor_.inputTrack(v + 4);
-            t1 = processor_.inputTrack(v + 5);
-            t2 = processor_.inputTrack(v + 6);
-            t3 = processor_.inputTrack(v + 7);
+            t0 = processor_.inputTrack(4);
+            t1 = processor_.inputTrack(5);
+            t2 = processor_.inputTrack(6);
+            t3 = processor_.inputTrack(7);
         } else if (v == 2) {
             // TODO check this!
-            t0 = processor_.outputTrack(v + 0);
-            t1 = processor_.outputTrack(v + 2);
-            t2 = processor_.outputTrack(v + 4);
-            t3 = processor_.outputTrack(v + 6);
+            t0 = processor_.outputTrack(0);
+            t1 = processor_.outputTrack(2);
+            t2 = processor_.outputTrack(4);
+            t3 = processor_.outputTrack(6);
         }
         TrackData &td0 = t0;
         TrackData &td1 = t1;
         TrackData &td2 = t2;
         TrackData &td3 = t3;
+        float cc = 0.1f, fc = 0.01;
         addParamPage(
-            std::make_shared<pcontrol_type>(td0.level[0]),
-            std::make_shared<pcontrol_type>(td1.level[0]),
-            std::make_shared<pcontrol_type>(td2.level[0]),
-            std::make_shared<pcontrol_type>(td3.level[0]),
+            std::make_shared<pcontrol_type>(td0.level[0], cc, fc),
+            std::make_shared<pcontrol_type>(td1.level[0], cc, fc),
+            std::make_shared<pcontrol_type>(td2.level[0], cc, fc),
+            std::make_shared<pcontrol_type>(td3.level[0], cc, fc),
             v
         );
         addParamPage(
-            std::make_shared<pcontrol_type>(td0.pan),
-            std::make_shared<pcontrol_type>(td1.pan),
-            std::make_shared<pcontrol_type>(td2.pan),
-            std::make_shared<pcontrol_type>(td3.pan),
+            std::make_shared<pcontrol_type>(td0.pan, cc, fc),
+            std::make_shared<pcontrol_type>(td1.pan, cc, fc),
+            std::make_shared<pcontrol_type>(td2.pan, cc, fc),
+            std::make_shared<pcontrol_type>(td3.pan, cc, fc),
             v
         );
         addParamPage(
-            std::make_shared<pcontrol_type>(td0.level[1]),
-            std::make_shared<pcontrol_type>(td1.level[1]),
-            std::make_shared<pcontrol_type>(td2.level[1]),
-            std::make_shared<pcontrol_type>(td3.level[1]),
+            std::make_shared<pcontrol_type>(td0.level[1], cc, fc),
+            std::make_shared<pcontrol_type>(td1.level[1], cc, fc),
+            std::make_shared<pcontrol_type>(td2.level[1], cc, fc),
+            std::make_shared<pcontrol_type>(td3.level[1], cc, fc),
             v
         );
         addParamPage(
-            std::make_shared<pcontrol_type>(td0.level[2]),
-            std::make_shared<pcontrol_type>(td1.level[2]),
-            std::make_shared<pcontrol_type>(td2.level[2]),
-            std::make_shared<pcontrol_type>(td3.level[2]),
+            std::make_shared<pcontrol_type>(td0.level[2], cc, fc),
+            std::make_shared<pcontrol_type>(td1.level[2], cc, fc),
+            std::make_shared<pcontrol_type>(td2.level[2], cc, fc),
+            std::make_shared<pcontrol_type>(td3.level[2], cc, fc),
             v
         );
         addParamPage(
-            std::make_shared<pcontrol_type>(td0.level[3]),
-            std::make_shared<pcontrol_type>(td1.level[3]),
-            std::make_shared<pcontrol_type>(td2.level[3]),
-            std::make_shared<pcontrol_type>(td3.level[3]),
+            std::make_shared<pcontrol_type>(td0.level[3], cc, fc),
+            std::make_shared<pcontrol_type>(td1.level[3], cc, fc),
+            std::make_shared<pcontrol_type>(td2.level[3], cc, fc),
+            std::make_shared<pcontrol_type>(td3.level[3], cc, fc),
             v
         );
         addParamPage(
-            std::make_shared<pcontrol_type>(td0.gain),
-            std::make_shared<pcontrol_type>(td1.gain),
-            std::make_shared<pcontrol_type>(td2.gain),
-            std::make_shared<pcontrol_type>(td3.gain),
+            std::make_shared<pcontrol_type>(td0.gain, cc, fc),
+            std::make_shared<pcontrol_type>(td1.gain, cc, fc),
+            std::make_shared<pcontrol_type>(td2.gain, cc, fc),
+            std::make_shared<pcontrol_type>(td3.gain, cc, fc),
             v
         );
         unsigned fh = 24;
@@ -117,12 +117,7 @@ PluginEditor::PluginEditor(PluginProcessor &p)
         );
     }
 
-
-    for (unsigned i = 0; i < TS_MAX; i++) {
-        buttonHeldCount_[i] = 0;
-    }
-    activeTracks_ = OUT_14;
-    curTracks_ = OUT_14;
+    viewHeldCount_ = 0;
 
     inTracks_[0].init("In 1", &processor_.inputTrack(0));
     inTracks_[1].init("In 2", &processor_.inputTrack(1));
@@ -148,18 +143,23 @@ PluginEditor::PluginEditor(PluginProcessor &p)
         addAndMakeVisible(outTracks_[i]);
     }
 
+    unheldView_ = view_;
+
+
     setSize(1600, 480);
 }
 
 
 void PluginEditor::timerCallback() {
     base_type::timerCallback();
-    for (unsigned i = 0; i < TS_MAX; i++) {
-        if (buttonHeldCount_[i] > 0) buttonHeldCount_[i] -= POLL_TIME;
-    }
+    if (viewHeldCount_ > 0) viewHeldCount_ -= POLL_TIME;
 }
 
 void PluginEditor::paint(Graphics &g) {
+    leftShiftBtn_.active(view_ == 0);
+    rightShiftBtn_.active(view_ == 1);
+    upBtn_.active(view_ == 2);
+
     base_type::paint(g);
     for (unsigned i = 0; i < PluginProcessor::IN_T_MAX; i++) {
         inTracks_[i].enabled(processor_.isInputEnabled(i));
@@ -195,12 +195,10 @@ void PluginEditor::resized() {
 
 void PluginEditor::onEncoder(unsigned enc, float v) {
     base_type::onEncoder(enc, v);
-//    channelEncoder(0, v > 0.0f ? 1 : -1);
 }
 
 void PluginEditor::onEncoderSwitch(unsigned enc, bool v) {
     base_type::onEncoderSwitch(enc, v);
-//    if (!v) channelEncoderButton(0, v);
 }
 
 void PluginEditor::onButton(unsigned btn, bool v) {
@@ -221,13 +219,6 @@ void PluginEditor::onRightButton(bool v) {
     }
 }
 
-void PluginEditor::onUpButton(bool v) {
-    upBtn_.active(v);
-    //TODO - momentary hold
-    if (!v) {
-        setView(2);
-    }
-}
 
 void PluginEditor::onDownButton(bool v) {
     downBtn_.active(v);
@@ -239,18 +230,47 @@ void PluginEditor::onDownButton(bool v) {
 }
 
 void PluginEditor::onLeftShiftButton(bool v) {
-    leftShiftBtn_.active(v);
-    //TODO - momentary hold
-    if (!v) {
-        setView(0);
+    unsigned b = 0;
+    if (v) {
+        unheldView_ = view_;
+        setView(b);
+        viewHeldCount_ = BUT_COUNTER;
+    } else {
+        if (viewHeldCount_ == 0) {
+            setView(unheldView_);
+        }
+        viewHeldCount_ = 0;
+        unheldView_ = view_;
+    }
+}
+
+void PluginEditor::onUpButton(bool v) {
+    unsigned b = 2;
+    if (v) {
+        unheldView_ = view_;
+        setView(b);
+        viewHeldCount_ = BUT_COUNTER;
+    } else {
+        if (viewHeldCount_ == 0) {
+            setView(unheldView_);
+        }
+        viewHeldCount_ = 0;
+        unheldView_ = view_;
     }
 }
 
 void PluginEditor::onRightShiftButton(bool v) {
-    rightShiftBtn_.active(v);
-    //TODO - momentary hold
-    if (!v) {
-        setView(1);
+    unsigned b = 1;
+    if (v) {
+        unheldView_ = view_;
+        setView(b);
+        viewHeldCount_ = BUT_COUNTER;
+    } else {
+        if (viewHeldCount_ == 0) {
+            setView(unheldView_);
+        }
+        viewHeldCount_ = 0;
+        unheldView_ = view_;
     }
 }
 

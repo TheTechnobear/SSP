@@ -68,8 +68,8 @@ struct TrackData {
     Parameter &ac;
 
     // currently cannot be changed in ui
-    bool dummy_;
-    unsigned follows_; // dummy
+    bool dummy_=false;
+    unsigned follows_=0; // dummy
     // hpf/dc block
     float dcX1_ = 0.0f, dcY1_ = 0.0f;
     ssp::RmsTrack rms_;

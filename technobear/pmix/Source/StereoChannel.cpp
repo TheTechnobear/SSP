@@ -15,7 +15,11 @@ void StereoChannel::paint(Graphics &g) {
     int w = getWidth();
 
     vuMeter_.level(lData_->rms_.lvl(), rData_->rms_.lvl());
-    vuMeter_.gainLevel(normValue(lData_->level[0]), normValue(rData_->level[0]));
+
+    float gl=normValue(lData_->level[0]);
+    float gr=normValue(rData_->level[0]);
+    if(rData_->dummy_) gr=gl;
+    vuMeter_.gainLevel(gl,gr);
 
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
 

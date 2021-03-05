@@ -66,15 +66,15 @@ void VuMeter::paint(Graphics &g) {
 
     // 0db line
     g.setColour(Colours::darkgrey);
-    g.fillRect(bx - 5, barbase - rpos, bw + 10, 2);
+    g.fillRect(bx - 5, barbase - rpos - 2 , bw + 10, 2);
 
-    if(drawGainLevel_) {
+    if (drawGainLevel_) {
         float lvlSlider = gainLevel_;
         dbS = lvlSlider > 0.0f ? std::log10(lvlSlider) * 20.0f : -200.f;
         db = constrain(dbS, dbMin, dbMax);
         f = rescale(db, dbMin, dbMax, 0.0f, 1.0f);
         g.setColour(Colours::white);
-        g.fillRoundedRectangle(bx - 5, barbase - (f * tbh), bw + 10, 5, 5);
+        g.fillRoundedRectangle(bx - 5, barbase - (f * tbh) - 3, bw + 10, 5, 5);
     }
 }
 
@@ -100,12 +100,11 @@ void VuMeter::level(float lvl) {
 };
 
 void VuMeter::gainLevel(float lvl) {
-    if(gainLevel_ !=lvl) {
+    if (gainLevel_ != lvl) {
         gainLevel_ = lvl;
         if (active()) repaint();
     }
 }
-
 
 
 MonoVuMeter::MonoVuMeter() {

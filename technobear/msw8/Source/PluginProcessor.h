@@ -58,7 +58,7 @@ protected:
     void onInputChanged(unsigned i, bool b) override;
     void onOutputChanged(unsigned i, bool b) override;
 
-private:
+public:
     enum {
         I_IN_SEL,
         I_OUT_SEL,
@@ -84,7 +84,7 @@ private:
         O_MAX
     };
 
-
+private:
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
         return true;
     }

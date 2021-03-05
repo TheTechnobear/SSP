@@ -172,122 +172,12 @@ void BaseEditor::setButtonBounds(unsigned idx, std::shared_ptr<ButtonControl> c)
     c->setBounds(x, y, w, h);
 }
 
-#if 0
-BaseEditor::ControlPage BaseEditor::addParamPage(
-    std::shared_ptr<BaseParamControl> c1,
-    std::shared_ptr<BaseParamControl> c2,
-    std::shared_ptr<BaseParamControl> c3,
-    std::shared_ptr<BaseParamControl> c4
-) {
-    ControlPage page;
-    page.control_[0] = c1;
-    page.control_[1] = c2;
-    page.control_[2] = c3;
-    page.control_[3] = c4;
-    controlPages_.push_back(page);
-    return page;
-}
-
-void BaseEditor::addButtonPage(
-    std::shared_ptr<ButtonControl> c1,
-    std::shared_ptr<ButtonControl> c2,
-    std::shared_ptr<ButtonControl> c3,
-    std::shared_ptr<ButtonControl> c4,
-    std::shared_ptr<ButtonControl> c5,
-    std::shared_ptr<ButtonControl> c6,
-    std::shared_ptr<ButtonControl> c7,
-    std::shared_ptr<ButtonControl> c8
-) {
-    ButtonPage page;
-    page.control_[0] = c1;
-    page.control_[1] = c2;
-    page.control_[2] = c3;
-    page.control_[3] = c4;
-    page.control_[0] = c1;
-    page.control_[1] = c2;
-    page.control_[2] = c3;
-    page.control_[3] = c4;
-    buttonPages_.push_back(page);
-
-    setButtonBounds(0, c1);
-    setButtonBounds(1, c2);
-    setButtonBounds(2, c3);
-    setButtonBounds(3, c4);
-    setButtonBounds(4, c5);
-    setButtonBounds(5, c6);
-    setButtonBounds(6, c7);
-    setButtonBounds(7, c8);
-
-    if (paramPage_ == buttonPages_.size() - 1) {
-        for (auto i = 0; i < 4; i++) {
-            auto c = page.control_[i];
-            if (c) addAndMakeVisible(c.get());
-        }
-    } else {
-        for (auto i = 0; i < 4; i++) {
-            auto c = page.control_[i];
-            if (c) addChildComponent(c.get());
-        }
-    }
-}
-
-void BaseEditor::onEncoder(unsigned enc, float v) {
-    if (v > -0.01f && v < 0.01f) return;
-    auto &p = *baseProcessor_->getParameter(BaseProcessor::sspParams::getId(Percussa::sspEnc1 + enc));
-
-    if (paramPage_ < controlPages_.size()) {
-        auto page = controlPages_[paramPage_];
-        auto c = page.control_[enc];
-        if (c != nullptr) {
-            if (encoderState_[enc]) {
-                encoderFine[enc] = true;
-            }
-            if (v > 0.0f) {
-                c->inc(encoderFine[enc]);
-            } else if (v < 0.0f) {
-                c->dec(encoderFine[enc]);
-            }
-        }
-    }
-}
-
-void BaseEditor::onEncoderSwitch(unsigned enc, bool v) {
-    encoderState_[enc] = v;
-
-    if (v) return; // change on button up
-
-    if (!encoderFine[enc]) {
-        if (paramPage_ < controlPages_.size()) {
-            auto page = controlPages_[paramPage_];
-            auto c = page.control_[enc];
-            if (c != nullptr) {
-                if (v == 0) {
-                    c->reset();
-                }
-            }
-        }
-    }
-    encoderFine[enc] = false;
-}
-
-void BaseEditor::onButton(unsigned btn, bool v) {
-    if (buttonPage_ < buttonPages_.size()) {
-        auto page = buttonPages_[buttonPage_];
-        auto c = page.control_[btn];
-        if (c != nullptr) {
-            if (v) c->onDown();
-            else c->onUp();
-        }
-    }
-}
-#endif
 
 void BaseEditor::onEncoder(unsigned enc, float v) {
 }
 
 void BaseEditor::onEncoderSwitch(unsigned enc, bool v) {
     encoderState_[enc] = v;
-    if (v) return; // change on button up
 }
 
 void BaseEditor::onButton(unsigned btn, bool v) {

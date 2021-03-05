@@ -62,6 +62,8 @@ TrackData::TrackData(AudioProcessorValueTreeState &apvt, StringRef io, unsigned 
     solo(*apvt.getParameter(getPID(io, tn, ID::solo))),
     cue(*apvt.getParameter(getPID(io, tn, ID::cue))),
     ac(*apvt.getParameter(getPID(io, tn, ID::ac))) {
+    dummy_=false;
+    follows_=0;
 }
 
 
@@ -83,7 +85,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
             String prefix = ts->getID() + ts->getSeparator() + String(tn) + ts->getSeparator();
             for (unsigned i = 0; i < TrackData::OUT_TRACKS; i++) {
                 String lprefix = prefix + g->getID() + g->getSeparator();
-                float lvl = i == 0 ? 1.0f : 0.0f;
+                float lvl = i <2 ? 1.0f : 0.0f;
                 g->addChild(std::make_unique<ssp::BaseFloatParameter>(lprefix + String(i), lvllabel[i], 0.0, 4.0f, lvl));
             }
             t->addChild(std::move(g));
@@ -106,7 +108,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
             String prefix = ts->getID() + ts->getSeparator() + String(tn) + ts->getSeparator();
             for (unsigned i = 0; i < TrackData::OUT_TRACKS; i++) {
                 String lprefix = prefix + g->getID() + g->getSeparator();
-                float lvl = i == 0 ? 1.0f : 0.0f;
+                float lvl = i < 1  ? 1.0f : 0.0f;
                 g->addChild(std::make_unique<ssp::BaseFloatParameter>(lprefix + String(i), lvllabel[i], 0.0, 4.0f, lvl));
             }
             t->addChild(std::move(g));
@@ -289,8 +291,6 @@ AudioProcessor *JUCE_CALLTYPE createPluginFilter() {
 
 
 void PluginProcessor::initTracks() {
-
-
     for (unsigned i = 0; i < IN_T_MAX; i++) {
         inTracks_.push_back(std::make_unique<TrackData>(vts(), ID::in, i));
     }
@@ -298,11 +298,8 @@ void PluginProcessor::initTracks() {
         outTracks_.push_back(std::make_unique<TrackData>(vts(), ID::out, i));
     }
 
-    //TODO , do I need to initialise here?
 //    for (unsigned ich = 0; ich < I_MAX; ich++) {
 //        auto &inTrack = *inTracks_[ich];
-//        //default input tracks to have dc blocking
-//        inTrack.ac.setValue(true);
 //    }
 
     // outTracks_[0]// main

@@ -15,8 +15,8 @@ PluginEditor::PluginEditor(PluginProcessor &p)
       processor_(p) {
 
     addParamPage(
-        std::make_shared<pcontrol_type>(processor_.params_.inSel),
-        std::make_shared<pcontrol_type>(processor_.params_.outSel),
+        std::make_shared<pcontrol_type>(processor_.params_.inSel, 0.25),
+        std::make_shared<pcontrol_type>(processor_.params_.outSel, 0.25),
         nullptr,
         nullptr
     );
@@ -52,7 +52,7 @@ void PluginEditor::drawGrid(Graphics &g) {
     y += sp;
     g.drawText("Inputs", x, y, lx, fh, Justification::left);
     for (unsigned xi = 0; xi < PluginProcessor::MAX_SIG_OUT; xi++) {
-        if (processor_.isOutputEnabled(xi)) {
+        if (processor_.isOutputEnabled(xi + PluginProcessor::O_SIG_A)) {
             g.setColour(Colours::red);
         } else {
             g.setColour(Colours::grey);
@@ -64,7 +64,7 @@ void PluginEditor::drawGrid(Graphics &g) {
     y += sp;
 
     for (unsigned yi = 0; yi < PluginProcessor::MAX_SIG_IN; yi++) {
-        if (processor_.isInputEnabled(yi)) {
+        if (processor_.isInputEnabled(yi + PluginProcessor::I_SIG_1)) {
             g.setColour(Colours::red);
         } else {
             g.setColour(Colours::grey);
