@@ -98,7 +98,7 @@ BaseEditor::ControlPage TableParamEditor::addParamPage(
 
 
 void TableParamEditor::onUpButton(bool v) {
-    base_type::onUpButton(v);
+    upBtn_.active(v);
 
     if (v) return; // change on button up
 
@@ -106,7 +106,7 @@ void TableParamEditor::onUpButton(bool v) {
 }
 
 void TableParamEditor::onDownButton(bool v) {
-    base_type::onDownButton(v);
+    downBtn_.active(v);
 
     if (v) return; // change on button up
     chgParamPage(1,false);

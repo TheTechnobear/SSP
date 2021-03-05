@@ -17,6 +17,16 @@ endif()
 
 
 add_subdirectory(juce)
+
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    juce_set_vst2_sdk_path("$ENV{HOME}/SDKs/Steinberg/VST3/VST3 SDK")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    juce_set_vst2_sdk_path("$ENV{HOME}/SDKs/vst3-sdk")
+endif ()
+
+
+
 add_subdirectory(technobear)
 
 # set(CMAKE_FOLDER .)

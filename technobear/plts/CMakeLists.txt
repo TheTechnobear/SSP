@@ -28,11 +28,6 @@ project(PLTS VERSION 1.3.0)
 # If you are building a VST2 or AAX plugin, CMake needs to be told where to find these SDKs on your
 # system. This setup should be done before calling `juce_add_plugin`.
 
-if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    juce_set_vst2_sdk_path("$ENV{HOME}/SDKs/Steinberg/VST3/VST3 SDK")
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    juce_set_vst2_sdk_path("$ENV{HOME}/SDKs/vst3-sdk")
-endif ()
 
 
 # juce_set_aax_sdk_path(...)
