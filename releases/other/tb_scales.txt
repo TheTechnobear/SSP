@@ -1,0 +1,14 @@
+#Technobear scales
+
+These are scales for the SSP MTQ module
+
+note: these are NOT used for any of my vst plugins
+
+
+### install
+
+a) unzip tb_scales.zip 
+b) place into scales directory on SSP sdcard 
+
+keep them as a subdirectory as there are alot of them ;) 
+
