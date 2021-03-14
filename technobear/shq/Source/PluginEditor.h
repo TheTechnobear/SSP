@@ -3,16 +3,17 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"
-#include "ssp/BarParamEditor.h"
+#include "ssp/LineParamEditor.h"
 #include "ssp/VuMeter.h"
 
-class PluginEditor : public ssp::BarParamEditor {
+class PluginEditor : public ssp::LineParamEditor {
 public:
     explicit PluginEditor(PluginProcessor &);
     ~PluginEditor() override = default;
+    void paint(Graphics &) override;
 
 protected:
-    using base_type = ssp::BarParamEditor;
+    using base_type = ssp::LineParamEditor;
 private:
 
     PluginProcessor &processor_;

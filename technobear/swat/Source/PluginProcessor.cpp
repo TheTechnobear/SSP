@@ -39,6 +39,8 @@ std::shared_ptr<Algo> PluginProcessor::createAlgo(unsigned a) {
             return std::make_shared<AgComparator>();
         case A_COUNTER      :
             return std::make_shared<AgCounter>();
+        case A_S_DELAY      :
+            return std::make_shared<AgSDelay>();
         default:
             assert(false);
     }
@@ -69,6 +71,7 @@ PluginProcessor::PluginProcessor(
     algoDisplayOrder_.push_back(A_LOGIC_XOR);
     algoDisplayOrder_.push_back(A_SWITCH);
     algoDisplayOrder_.push_back(A_DELAY);
+    algoDisplayOrder_.push_back(A_S_DELAY);
     algoDisplayOrder_.push_back(A_P_ADDER);
     algoDisplayOrder_.push_back(A_COUNTER);
     algoDisplayOrder_.push_back(A_CONSTANT);

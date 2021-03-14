@@ -18,6 +18,7 @@ enum AlgoDef {
     A_MAP_NN,       // AgMapNN      - Musical
     A_COMPARATOR,   // AgComparator - Simple
     A_COUNTER,      // AgCounter    - Simple
+    A_S_DELAY,       // AgSDelay     - Delay
     A_MAX
 };
 

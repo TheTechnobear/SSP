@@ -4,7 +4,8 @@
 #include "ssp/BaseParamControl.h"
 #include "ssp/ButtonControl.h"
 
-using pcontrol_type = ssp::LineParamControl;
+using pcontrol_type = ssp::BarParamControl;
+//using pcontrol_type = ssp::LineParamControl;
 using bcontrol_type = ssp::ButtonControl;
 
 PluginEditor::PluginEditor(PluginProcessor &p)
@@ -25,9 +26,8 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     upBtn_.label("OUT14");
     downBtn_.label("MODE");
 
-
+    view_ = 2;
     for (unsigned v = 0; v < 3; v++) {
-
         std::reference_wrapper<TrackData> t0 = processor_.inputTrack(0);
         std::reference_wrapper<TrackData> t1 = processor_.inputTrack(1);
         std::reference_wrapper<TrackData> t2 = processor_.inputTrack(2);
@@ -38,7 +38,6 @@ PluginEditor::PluginEditor(PluginProcessor &p)
             t2 = processor_.inputTrack(6);
             t3 = processor_.inputTrack(7);
         } else if (v == 2) {
-            // TODO check this!
             t0 = processor_.outputTrack(0);
             t1 = processor_.outputTrack(2);
             t2 = processor_.outputTrack(4);
@@ -49,70 +48,71 @@ PluginEditor::PluginEditor(PluginProcessor &p)
         TrackData &td2 = t2;
         TrackData &td3 = t3;
         float cc = 0.1f, fc = 0.01;
+        auto pc = v == 0 ? Colours::red : (v == 1 ? Colours::green : Colours::blue);
         addParamPage(
             std::make_shared<pcontrol_type>(td0.level[0], cc, fc),
             std::make_shared<pcontrol_type>(td1.level[0], cc, fc),
             std::make_shared<pcontrol_type>(td2.level[0], cc, fc),
             std::make_shared<pcontrol_type>(td3.level[0], cc, fc),
-            v
+            v, pc
         );
         addParamPage(
             std::make_shared<pcontrol_type>(td0.pan, cc, fc),
             std::make_shared<pcontrol_type>(td1.pan, cc, fc),
             std::make_shared<pcontrol_type>(td2.pan, cc, fc),
             std::make_shared<pcontrol_type>(td3.pan, cc, fc),
-            v
+            v, pc
         );
         addParamPage(
             std::make_shared<pcontrol_type>(td0.level[1], cc, fc),
             std::make_shared<pcontrol_type>(td1.level[1], cc, fc),
             std::make_shared<pcontrol_type>(td2.level[1], cc, fc),
             std::make_shared<pcontrol_type>(td3.level[1], cc, fc),
-            v
+            v, pc
         );
         addParamPage(
             std::make_shared<pcontrol_type>(td0.level[2], cc, fc),
             std::make_shared<pcontrol_type>(td1.level[2], cc, fc),
             std::make_shared<pcontrol_type>(td2.level[2], cc, fc),
             std::make_shared<pcontrol_type>(td3.level[2], cc, fc),
-            v
+            v, pc
         );
         addParamPage(
             std::make_shared<pcontrol_type>(td0.level[3], cc, fc),
             std::make_shared<pcontrol_type>(td1.level[3], cc, fc),
             std::make_shared<pcontrol_type>(td2.level[3], cc, fc),
             std::make_shared<pcontrol_type>(td3.level[3], cc, fc),
-            v
+            v, pc
         );
         addParamPage(
             std::make_shared<pcontrol_type>(td0.gain, cc, fc),
             std::make_shared<pcontrol_type>(td1.gain, cc, fc),
             std::make_shared<pcontrol_type>(td2.gain, cc, fc),
             std::make_shared<pcontrol_type>(td3.gain, cc, fc),
-            v
+            v, pc
         );
+
         unsigned fh = 24;
-        auto mc = Colours::lightskyblue;
         addButtonPage(
-            std::make_shared<bcontrol_type>(td0.mute, fh, mc),
-            std::make_shared<bcontrol_type>(td1.mute, fh, mc),
-            std::make_shared<bcontrol_type>(td2.mute, fh, mc),
-            std::make_shared<bcontrol_type>(td3.mute, fh, mc),
-            std::make_shared<bcontrol_type>(td0.solo, fh, mc),
-            std::make_shared<bcontrol_type>(td1.solo, fh, mc),
-            std::make_shared<bcontrol_type>(td2.solo, fh, mc),
-            std::make_shared<bcontrol_type>(td3.solo, fh, mc),
+            std::make_shared<bcontrol_type>(td0.mute, fh, Colours::red),
+            std::make_shared<bcontrol_type>(td1.mute, fh, Colours::red),
+            std::make_shared<bcontrol_type>(td2.mute, fh, Colours::red),
+            std::make_shared<bcontrol_type>(td3.mute, fh, Colours::red),
+            std::make_shared<bcontrol_type>(td0.solo, fh, Colours::yellow),
+            std::make_shared<bcontrol_type>(td1.solo, fh, Colours::yellow),
+            std::make_shared<bcontrol_type>(td2.solo, fh, Colours::yellow),
+            std::make_shared<bcontrol_type>(td3.solo, fh, Colours::yellow),
             v
         );
         addButtonPage(
-            std::make_shared<bcontrol_type>(td0.cue, fh, mc),
-            std::make_shared<bcontrol_type>(td1.cue, fh, mc),
-            std::make_shared<bcontrol_type>(td2.cue, fh, mc),
-            std::make_shared<bcontrol_type>(td3.cue, fh, mc),
-            std::make_shared<bcontrol_type>(td0.ac, fh, mc),
-            std::make_shared<bcontrol_type>(td1.ac, fh, mc),
-            std::make_shared<bcontrol_type>(td2.ac, fh, mc),
-            std::make_shared<bcontrol_type>(td3.ac, fh, mc),
+            std::make_shared<bcontrol_type>(td0.cue, fh, Colours::lightskyblue),
+            std::make_shared<bcontrol_type>(td1.cue, fh, Colours::lightskyblue),
+            std::make_shared<bcontrol_type>(td2.cue, fh, Colours::lightskyblue),
+            std::make_shared<bcontrol_type>(td3.cue, fh, Colours::lightskyblue),
+            std::make_shared<bcontrol_type>(td0.ac, fh, Colours::orange),
+            std::make_shared<bcontrol_type>(td1.ac, fh, Colours::orange),
+            std::make_shared<bcontrol_type>(td2.ac, fh, Colours::orange),
+            std::make_shared<bcontrol_type>(td3.ac, fh, Colours::orange),
             v
         );
     }
@@ -145,7 +145,6 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 
     unheldView_ = view_;
 
-
     setSize(1600, 480);
 }
 
@@ -168,6 +167,29 @@ void PluginEditor::paint(Graphics &g) {
     for (unsigned i = 0; i < (PluginProcessor::OUT_T_MAX / 2); i++) {
         outTracks_[i].enabled(processor_.isOutputEnabled(i * 2) || processor_.isOutputEnabled(i * 2 + 1));
     }
+
+    Colour clr = Colours::red;
+    int x = 30, y = 70;
+    int w = 325, h = 1;
+    switch (view_) {
+        case 0: { // input 14
+            clr = Colours::red;
+            break;
+        };
+        case 1: { // input 58
+            x += w + 55;
+            clr = Colours::green;
+            break;
+        };
+        case 2: { //output
+            x = 938;
+            w = 520;
+            clr = Colours::blue;
+            break;
+        };
+    }
+    g.setColour(clr);
+    g.fillRect(x, y, w, h);
 }
 
 

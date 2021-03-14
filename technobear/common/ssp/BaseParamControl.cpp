@@ -142,8 +142,7 @@ void BarParamControl::paint(Graphics &g) {
         g.setColour(active() ? Colours::white : Colours::lightgrey);
         String val = p.getCurrentValueAsText();
         if (p.getLabel().length()) { val = val + " " + p.getLabel(); }
-        int vfh = fh - 10;
-        g.drawText(val, 2, h - vfh - 10, w - 4, vfh, Justification::centred);
+        g.drawText(val, 1, (h / 2) + 1, w - 2, fh - 2,Justification::centred);
     }
 }
 

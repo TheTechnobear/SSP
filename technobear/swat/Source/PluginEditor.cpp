@@ -8,11 +8,13 @@ PluginEditor::PluginEditor(PluginProcessor &p)
                 JucePlugin_VersionString),
       processor_(p) {
     activeEngine_ = 0;
-    leftBtn_.init("PG-", Colours::red);
+    upBtn_.label("AG-");
+    downBtn_.label("AG+");
+    leftBtn_.init("IN-", Colours::red);
     setButtonBounds(leftBtn_, 1, 4);
     addAndMakeVisible(leftBtn_);
 
-    rightBtn_.init("PG+", Colours::red);
+    rightBtn_.init("IN+", Colours::red);
     setButtonBounds(rightBtn_, 1, 6);
     addAndMakeVisible(rightBtn_);
     setSize(1600, 480);

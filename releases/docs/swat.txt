@@ -3,6 +3,9 @@
 swat is designed to be like the famous swiss army knife, a useful utility to bring out to solve your problems.
 
 ## Change Log
+1.3.0 re-write with new user interface, pre-release
+add delay (sample)
+fix note display issue
 
 1.0.1 Adjust for pitch cv changes
 1.0.0 Initial Release 
@@ -207,7 +210,7 @@ Tips:
 This is audio rate, so this can for a kind of stepped phasor.
 Useful with MSW8 to act as a sequential switch
 
-### Delay
+### Delay Time
 X = Signal
 Y = Delay (% buffer)
 A = Delayed X ( Delay + Y)
@@ -226,6 +229,9 @@ and there is no interpolation across sample reads, and changes of Y are immediat
 
 I've no intention of changing this ;) ... I'd like to make a more elaborate audio delay FX with speed modulation and multi head but this will be a separate VST.
 
+
+### Delay Sample
+same as Delay Time, but using sample as unit for delay
 
 
 ### Precision Adder

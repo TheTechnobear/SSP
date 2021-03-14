@@ -42,4 +42,15 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 }
 
 
+void PluginEditor::paint(Graphics &g) {
+    base_type::paint(g);
+    if (processor_.params_.quant.getValue() > 0) {
+        unsigned fh = 48;
+        g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+        g.setColour(Colours::red);
+        String root = processor_.params_.root.getCurrentValueAsText();
+        String scale = processor_.params_.scale.getCurrentValueAsText();
+        g.drawText(root + " " + scale, 20, 64, 900, 34, Justification::left);
+    }
+}
 

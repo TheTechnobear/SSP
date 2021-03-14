@@ -24,7 +24,8 @@ void LineParamEditor::setParamBounds(unsigned idx, std::shared_ptr<BaseParamCont
     unsigned w = unsigned(900.0f / 4.0f);
     unsigned x = idx * w;
     unsigned y = paramTopY + 5;
-    c->setBounds(x, y, w, h);
+    unsigned sp = 2;
+    c->setBounds(x + sp, y, w - sp * 2, h);
 }
 
 BaseEditor::ControlPage LineParamEditor::addParamPage(

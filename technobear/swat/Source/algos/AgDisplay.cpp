@@ -4,8 +4,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 void AgDisplay::process(
-    const float* x, const float* y, const float* z,
-    float* a, float* b,
+    const float *x, const float *y, const float *z,
+    float *a, float *b,
     unsigned n) {
 
     if (x != nullptr) lastX_ = x[0];
@@ -49,7 +49,7 @@ String AgDisplay::getNoteValue(float f) {
     return String(tonics[note] + String(oct - (note < 3))) + " " + String(cents) + " cts";
 }
 
-void AgDisplay::paint (Graphics& g) {
+void AgDisplay::paint(Graphics &g) {
     Algo::paint(g);
 
     unsigned space = 32;

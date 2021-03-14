@@ -4,6 +4,7 @@ a matrix mixer with 4 stereo inputs and 4 stereo outputs, controllable via cv
 
 
 ## Change Log
+1.3.0 re-write with new user interface, pre-release
 
 1.0.0 Initial Release 
 

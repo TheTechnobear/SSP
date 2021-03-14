@@ -36,8 +36,10 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 }
 
 void PluginEditor::drawGrid(Graphics &g) {
-    int x = 1000;
-    int y = 30;
+//    int x = 40;
+//    int y = 40;
+    int x = 275;
+    int y = 50;
     int lx = 100;
     int fh = 18;
     int sz = fh;
@@ -45,15 +47,18 @@ void PluginEditor::drawGrid(Graphics &g) {
 
     unsigned insel, outsel;
     processor_.getLastSel(insel, outsel);
+    Colour inclr = Colours::blue;
+    Colour outclr = Colours::green;
 
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
-    g.setColour(Colours::red);
+    g.setColour(outclr);
     g.drawText("Outputs", x + lx, y, (8 * sz) + (7 * sp), fh, Justification::centred);
     y += sp;
+    g.setColour(inclr);
     g.drawText("Inputs", x, y, lx, fh, Justification::left);
     for (unsigned xi = 0; xi < PluginProcessor::MAX_SIG_OUT; xi++) {
         if (processor_.isOutputEnabled(xi + PluginProcessor::O_SIG_A)) {
-            g.setColour(Colours::red);
+            g.setColour(outclr);
         } else {
             g.setColour(Colours::grey);
         }
@@ -65,7 +70,7 @@ void PluginEditor::drawGrid(Graphics &g) {
 
     for (unsigned yi = 0; yi < PluginProcessor::MAX_SIG_IN; yi++) {
         if (processor_.isInputEnabled(yi + PluginProcessor::I_SIG_1)) {
-            g.setColour(Colours::red);
+            g.setColour(inclr);
         } else {
             g.setColour(Colours::grey);
         }

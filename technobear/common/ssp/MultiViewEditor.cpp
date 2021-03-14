@@ -45,8 +45,8 @@ MultiViewEditor::ControlPage MultiViewEditor::addParamPage(
     std::shared_ptr<BaseParamControl> c2,
     std::shared_ptr<BaseParamControl> c3,
     std::shared_ptr<BaseParamControl> c4,
-    unsigned v
-) {
+    unsigned v,
+    juce::Colour clr) {
     ControlPage page;
     page.control_[0] = c1;
     page.control_[1] = c2;
@@ -57,6 +57,11 @@ MultiViewEditor::ControlPage MultiViewEditor::addParamPage(
     setParamBounds(1, c2);
     setParamBounds(2, c3);
     setParamBounds(3, c4);
+
+    if (c1) c1->fg(clr);
+    if (c2) c2->fg(clr);
+    if (c3) c3->fg(clr);
+    if (c4) c4->fg(clr);
 
     if (v < views_.size()) {
         auto &view = views_[v];
@@ -197,7 +202,7 @@ void MultiViewEditor::chgParamPage(int delta, bool changeVis) {
     } else if (delta > 0) {
         nextP = paramPage_ + 1 < view.controlPages_.size() ? paramPage_ + 1 : paramPage_;
     }
-    if (nextP != paramPage_) setParamPage(nextP,changeVis);
+    if (nextP != paramPage_) setParamPage(nextP, changeVis);
 }
 
 void MultiViewEditor::setParamPage(unsigned p, bool changeVis) {
@@ -359,7 +364,9 @@ void MultiViewEditor::setParamBounds(unsigned idx, std::shared_ptr<BaseParamCont
     unsigned w = unsigned(900.0f / 4.0f);
     unsigned x = idx * w;
     unsigned y = paramTopY + 5;
-    c->setBounds(x, y, w, h);
+
+    unsigned sp = 2;
+    c->setBounds(x + sp, y, w - sp * 2, h);
 }
 
 }//ssp

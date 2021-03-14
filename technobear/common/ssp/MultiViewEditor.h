@@ -48,7 +48,8 @@ protected:
         std::shared_ptr<BaseParamControl> c2,
         std::shared_ptr<BaseParamControl> c3,
         std::shared_ptr<BaseParamControl> c4,
-        unsigned view
+        unsigned view,
+        juce::Colour clr=Colours::red
     );
 
     void addButtonPage(

@@ -8,7 +8,7 @@ https://ko-fi.com/thetechnobear
 
 
 ## Installation
-copy `*.so` to SSP's sdcard `/plugins`
+copy plugins/*.so to SSP's sdcard `/plugins`
 
 
 ## Documentation 

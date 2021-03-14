@@ -3,7 +3,7 @@
 clds - an implementation of Mutable Instrument Clouds for the Percussa SSP.
 
 ## Change Log
-1.3.0 re-write with new UI
+1.3.0 re-write with new user interface, pre-release
 
 
 1.2.3 Adjust for pitch cv changes

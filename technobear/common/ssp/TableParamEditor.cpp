@@ -26,23 +26,6 @@ void TableParamEditor::paint(Graphics &g) {
     static juce::Colour clrs[4] = {Colours::red, Colours::blue, Colours::yellow, Colours::green};
     g.setColour(clrs[paramPage_ % 4]);
     g.fillRect(x, y, w * 4, h);
-
-/*
-    // draw bands
-    h = paramSpaceY /4 ;
-    y = 480 - h;
-    g.setColour(Colours::red);
-    g.fillRect(x, y, w, h);
-    x += w;
-    g.setColour(Colours::blue);
-    g.fillRect(x, y, w, h);
-    x += w;
-    g.setColour(Colours::green);
-    g.fillRect(x, y, w, h);
-    x += w;
-    g.setColour(Colours::yellow);
-    g.fillRect(x, y, w, h);
-*/
 }
 
 
@@ -53,7 +36,9 @@ void TableParamEditor::setParamBounds(unsigned page, unsigned idx, std::shared_p
     unsigned w = unsigned(900.0f / 4.0f);
     unsigned x = idx * w;
     unsigned y = (page * h) + (h);
-    c->setBounds(x, y, w, h);
+
+    unsigned sp = 2;
+    c->setBounds(x + sp, y, w - sp * 2, h);
 }
 
 
