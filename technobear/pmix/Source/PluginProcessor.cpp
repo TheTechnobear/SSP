@@ -80,15 +80,18 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     {
         auto ts = std::make_unique<AudioProcessorParameterGroup>(ID::in, "Input", ID::separator);
         for (unsigned tn = 0; tn < IN_T_MAX; tn++) {
-            auto t = std::make_unique<AudioProcessorParameterGroup>(String(tn), String(tn), ID::separator);
-            auto g = std::make_unique<AudioProcessorParameterGroup>(ID::level, "Levels", ID::separator);
-            String prefix = ts->getID() + ts->getSeparator() + String(tn) + ts->getSeparator();
+            String tid =  ts->getID() + ts->getSeparator() + String(tn);
+            auto t = std::make_unique<AudioProcessorParameterGroup>(tid, String(tn), ID::separator);
+            String prefix = t->getID() + ts->getSeparator();
+
+            String lid = prefix + ID::level;
+            auto lg = std::make_unique<AudioProcessorParameterGroup>(lid, "Levels", ":");
             for (unsigned i = 0; i < TrackData::OUT_TRACKS; i++) {
-                String lprefix = prefix + g->getID() + g->getSeparator();
                 float lvl = i <2 ? 1.0f : 0.0f;
-                g->addChild(std::make_unique<ssp::BaseFloatParameter>(lprefix + String(i), lvllabel[i], 0.0, 4.0f, lvl));
+                String id = lg->getID() + lg->getSeparator() + String(i);
+                lg->addChild(std::make_unique<ssp::BaseFloatParameter>(id, lvllabel[i], 0.0, 4.0f, lvl));
             }
-            t->addChild(std::move(g));
+            t->addChild(std::move(lg));
             t->addChild(std::make_unique<ssp::BaseFloatParameter>(prefix + ID::pan, "Pan", -1.0, 1.0f, 0.0f));
             t->addChild(std::make_unique<ssp::BaseFloatParameter>(prefix + ID::gain, "Gain", 0.0, 3.0f, 1.0f));
             t->addChild(std::make_unique<ssp::BaseBoolParameter>(prefix + ID::mute, "Mute", false));
@@ -103,15 +106,18 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     {
         auto ts = std::make_unique<AudioProcessorParameterGroup>(ID::out, "Output", ":");
         for (unsigned tn = 0; tn < OUT_T_MAX; tn++) {
-            auto t = std::make_unique<AudioProcessorParameterGroup>(String(tn), String(tn), ":");
-            auto g = std::make_unique<AudioProcessorParameterGroup>(ID::level, "Levels", ":");
-            String prefix = ts->getID() + ts->getSeparator() + String(tn) + ts->getSeparator();
+            String tid =  ts->getID() + ts->getSeparator() + String(tn);
+            auto t = std::make_unique<AudioProcessorParameterGroup>(tid, String(tn), ID::separator);
+            String prefix = t->getID() + ts->getSeparator();
+
+            String lid = prefix + ID::level;
+            auto lg = std::make_unique<AudioProcessorParameterGroup>(lid, "Levels", ":");
             for (unsigned i = 0; i < TrackData::OUT_TRACKS; i++) {
-                String lprefix = prefix + g->getID() + g->getSeparator();
                 float lvl = i < 1  ? 1.0f : 0.0f;
-                g->addChild(std::make_unique<ssp::BaseFloatParameter>(lprefix + String(i), lvllabel[i], 0.0, 4.0f, lvl));
+                String id = lg->getID() + lg->getSeparator() + String(i);
+                lg->addChild(std::make_unique<ssp::BaseFloatParameter>(id, lvllabel[i], 0.0, 4.0f, lvl));
             }
-            t->addChild(std::move(g));
+            t->addChild(std::move(lg));
             t->addChild(std::make_unique<ssp::BaseFloatParameter>(prefix + ID::pan, "Pan", -1.0, 1.0f, 0.0f));
             t->addChild(std::make_unique<ssp::BaseFloatParameter>(prefix + ID::gain, "Gain", 0.0, 3.0f, 1.0f));
             t->addChild(std::make_unique<ssp::BaseBoolParameter>(prefix + ID::mute, "Mute", false));
