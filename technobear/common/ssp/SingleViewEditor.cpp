@@ -52,10 +52,10 @@ void SingleViewEditor::addButtonPage(
     page.control_[1] = c2;
     page.control_[2] = c3;
     page.control_[3] = c4;
-    page.control_[4] = c1;
-    page.control_[5] = c2;
-    page.control_[6] = c3;
-    page.control_[7] = c4;
+    page.control_[4] = c5;
+    page.control_[5] = c6;
+    page.control_[6] = c7;
+    page.control_[7] = c8;
     buttonPages_.push_back(page);
 
     setButtonBounds(0, c1);

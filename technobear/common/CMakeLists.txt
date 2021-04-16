@@ -12,4 +12,5 @@ set(COMMON_SRC
         ../common/ssp/ButtonControl.cpp
         ../common/ssp/RmsTrack.cpp
         ../common/ssp/VuMeter.cpp
+        ../common/ssp/LineScope.cpp
         )

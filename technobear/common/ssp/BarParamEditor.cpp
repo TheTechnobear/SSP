@@ -6,8 +6,8 @@ namespace ssp {
 
 static constexpr unsigned paramSpaceY = 34;
 
-BarParamEditor::BarParamEditor(BaseProcessor *p, String title, String version)
-    : base_type(p, title, version) {
+BarParamEditor::BarParamEditor(BaseProcessor *p, String title, String version,bool autoColour)
+    : base_type(p, title, version), autoColour_(autoColour) {
     ;
 }
 
@@ -54,11 +54,13 @@ BaseEditor::ControlPage BarParamEditor::addParamPage(
     setParamBounds(pageN, 2, c3);
     setParamBounds(pageN, 3, c4);
 
-    static juce::Colour clrs[4] = {Colours::red, Colours::blue, Colours::yellow, Colours::green};
-    for (auto i = 0; i < 4; i++) {
-        auto c = page.control_[i];
-        if (c) {
-            c->fg(clrs[pageN % 4]);
+    if(autoColour_) {
+        static juce::Colour clrs[4] = {Colours::red, Colours::blue, Colours::yellow, Colours::green};
+        for (auto i = 0; i < 4; i++) {
+            auto c = page.control_[i];
+            if (c) {
+                c->fg(clrs[pageN % 4]);
+            }
         }
     }
 

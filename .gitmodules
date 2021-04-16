@@ -10,3 +10,6 @@
 [submodule "madronalib"]
 	path = madronalib
 	url = https://github.com/madronalabs/madronalib.git
+[submodule "external/readerwriterqueue"]
+	path = external/readerwriterqueue
+	url = https://github.com/cameron314/readerwriterqueue
