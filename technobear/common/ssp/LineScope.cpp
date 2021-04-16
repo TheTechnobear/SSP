@@ -20,7 +20,6 @@ void LineScope::paint(Graphics &g) {
         if (!title_.empty()) g.drawText(title_, 0, 16, w, 24, Justification::centred);
     }
 
-
     // draw scope
     g.setColour(colour_);
     float val = 0.00f, y = 0.0f, x = 0.0f;
@@ -31,11 +30,11 @@ void LineScope::paint(Graphics &g) {
 
         y = (1.0f - (val + 1.0f) * 0.5f) * h;
         x = t * stepW;
-
-        g.drawLine(lastX, lastY, x, y, 2.0f);
+        if(t>0) {
+            g.drawLine(lastX, lastY, x, y, 2.0f);
+        }
         lastX = x;
         lastY = y;
-
     }
 }
 

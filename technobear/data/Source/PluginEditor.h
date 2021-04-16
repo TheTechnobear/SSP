@@ -27,11 +27,15 @@ protected:
     );
 
 private:
-    PluginProcessor &processor_;
 
+    void drawGrid(Graphics &);
+    void drawValueDisplay(Graphics &);
+
+    PluginProcessor &processor_;
 
     static constexpr unsigned MAX_SIG=PluginProcessor::MAX_SIG_IN;
     ssp::LineScope scopes_[MAX_SIG];
+    juce::Colour clrs_[MAX_SIG];
     static constexpr unsigned MAX_DATA=256;
     float dataBuf_[MAX_SIG] [MAX_DATA];
     unsigned wrPos_=0;
