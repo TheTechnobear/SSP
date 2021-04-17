@@ -5,6 +5,7 @@
 #include "PluginProcessor.h"
 #include "ssp/LineParamEditor.h"
 #include "ssp/LineScope.h"
+#include "ssp/XYScope.h"
 
 class PluginEditor : public ssp::LineParamEditor {
 public:
@@ -28,13 +29,15 @@ protected:
 
 private:
 
-    void drawGrid(Graphics &);
     void drawValueDisplay(Graphics &);
 
     PluginProcessor &processor_;
 
     static constexpr unsigned MAX_SIG=PluginProcessor::MAX_SIG_IN;
-    ssp::LineScope scopes_[MAX_SIG];
+    ssp::LineScope<MAX_SIG> mainScope_;
+    ssp::LineScope<2> miniScope_[2];
+    ssp::XYScope xyScope_[2];
+
     juce::Colour clrs_[MAX_SIG];
     static constexpr unsigned MAX_DATA=256;
     float dataBuf_[MAX_SIG] [MAX_DATA];

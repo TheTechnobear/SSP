@@ -10,20 +10,13 @@
 #include <readerwriterqueue.h>
 
 // t_scale
-// a_y_scale
-// a_y_offset
-// b_y_scale
-// b_y_offset
-// c_y_scale
-// c_y_offset
-// d_y_scale
-// d_y_offset
-// a_show
-// b_show
-// d_show
-// d_show
+// freeze
 // ab_xy
 // cd_xy
+
+// y_scale
+// y_offset
+// show
 
 
 
@@ -33,11 +26,13 @@ constexpr const char *separator{":"};
 
 
 PARAMETER_ID (t_scale)
+PARAMETER_ID (freeze)
 PARAMETER_ID (ab_xy)
 PARAMETER_ID (cd_xy)
-PARAMETER_ID(sig)
 
-// sig tree
+
+// sig tree sig.y_scale etc
+PARAMETER_ID(sig)
 PARAMETER_ID (y_scale)
 PARAMETER_ID (y_offset)
 PARAMETER_ID (show)
@@ -96,6 +91,7 @@ public:
         explicit PluginParams(juce::AudioProcessorValueTreeState &);
 
         Parameter &t_scale;
+        Parameter &freeze;
 
         Parameter &ab_xy;
         Parameter &cd_xy;
@@ -109,17 +105,14 @@ public:
     static constexpr float  OVERHEAD = 2.f ; // factor
     static constexpr unsigned MAX_MSGS = unsigned((MAX_FREQ / 1000.f * UI_FREQ) * OVERHEAD) ;
     struct DataMsg {
-        unsigned count_=0;
         float sample_[4];
     };
+
 
     moodycamel::ReaderWriterQueue<DataMsg>& messageQueue() { return messageQueue_;}
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
-    void onInputChanged(unsigned i, bool b) override;
-    void onOutputChanged(unsigned i, bool b) override;
-
 
 private:
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
@@ -140,15 +133,8 @@ private:
         return props;
     }
 
-    // processor updates
-    // std::atomic<unsigned> lastInIdx_;
-    // std::atomic<unsigned> lastOutIdx_;
+    unsigned long sampleCounter_= 0UL ;
 
-    // unsigned inCount_;
-    // unsigned outCount_;
-
-    // AudioSampleBuffer lastBuffer_;
-    // AudioSampleBuffer inputBuffer_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 

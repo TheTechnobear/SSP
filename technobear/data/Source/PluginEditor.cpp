@@ -13,6 +13,7 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     : base_type(&p,
                 String(JucePlugin_Name) + " : " + String(JucePlugin_Desc),
                 JucePlugin_VersionString),
+
       processor_(p), clrs_{Colours::green, Colours::blue, Colours::red, Colours::yellow} {
 
     addParamPage(
@@ -35,10 +36,10 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     }
 
     addButtonPage(
-        std::make_shared<bcontrol_type>(processor_.params_.ab_xy, 24, Colours::lightskyblue),
-        std::make_shared<bcontrol_type>(processor_.params_.cd_xy, 24, Colours::lightskyblue),
+        std::make_shared<bcontrol_type>(processor_.params_.freeze, 24, Colours::lightskyblue),
         nullptr,
-        nullptr,
+        std::make_shared<bcontrol_type>(processor_.params_.ab_xy, 24, clrs_[0]),
+        std::make_shared<bcontrol_type>(processor_.params_.cd_xy, 24, clrs_[2]),
         std::make_shared<bcontrol_type>(processor_.params_.sigparams_[0]->show, 24, clrs_[0]),
         std::make_shared<bcontrol_type>(processor_.params_.sigparams_[1]->show, 24, clrs_[1]),
         std::make_shared<bcontrol_type>(processor_.params_.sigparams_[2]->show, 24, clrs_[2]),
@@ -54,10 +55,31 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     }
 
     for (int i = 0; i < MAX_SIG; i++) {
-        std::string title;
-        scopes_[i].init(title, dataBuf_[i], MAX_DATA, clrs_[i], false);
-        addAndMakeVisible(scopes_[i]);
+        std::string title = std::string("In ") + std::to_string(i);
+        mainScope_.initSignal(i, title, dataBuf_[i], MAX_DATA, clrs_[i]);
+
+        miniScope_[i / 2].initSignal(i % 2, title, dataBuf_[i], MAX_DATA, clrs_[i]);
+
     }
+
+    xyScope_[0].init("In A", dataBuf_[0], "In B", dataBuf_[1], MAX_DATA, clrs_[0]);
+    xyScope_[1].init("In C", dataBuf_[2], "In D", dataBuf_[3], MAX_DATA, clrs_[2]);
+
+    addChildComponent(mainScope_);
+    addChildComponent(miniScope_[0]);
+    addChildComponent(miniScope_[1]);
+    addChildComponent(xyScope_[0]);
+    addChildComponent(xyScope_[1]);
+
+    bool abxy = processor_.params_.ab_xy.getValue() > 0.5f;
+    bool cdxy = processor_.params_.cd_xy.getValue() > 0.5f;
+    bool main = !abxy && !cdxy;
+
+    miniScope_[0].setVisible(!main && !abxy);
+    miniScope_[1].setVisible(!main && !cdxy);
+    xyScope_[0].setVisible(!main && abxy);
+    xyScope_[1].setVisible(!main && cdxy);
+    mainScope_.setVisible(main);
 }
 
 ssp::BaseEditor::ControlPage PluginEditor::addParamPage(
@@ -84,54 +106,56 @@ void PluginEditor::timerCallback() {
         wrPos_ = (wrPos_ + 1) % MAX_DATA;
     }
 
+
     for (int i = 0; i < MAX_SIG; i++) {
-        auto &scope = scopes_[i];
         auto &sParam = *processor_.params_.sigparams_[i];
 
         bool vis = processor_.isInputEnabled(PluginProcessor::I_SIG_A + i) && sParam.show.getValue() > 0.5f;
-        scope.setVisible(vis);
+        mainScope_.signalVisible(i, vis);
 
         float scale = sParam.y_scale.convertFrom0to1(sParam.y_scale.getValue());
         float offset = sParam.y_offset.convertFrom0to1(sParam.y_offset.getValue());
-        scope.scaleOffset(scale, offset);
+        mainScope_.scaleOffset(i, scale, offset);
+
+//        miniScope_[i / 2].scaleOffset(i % 2, scale, offset);
+//        xyScope_[i / 2].scaleOffset(i % 2, scale, offset);
     }
+
+    bool abxy = processor_.params_.ab_xy.getValue() > 0.5f;
+    bool cdxy = processor_.params_.cd_xy.getValue() > 0.5f;
+    bool main = !abxy && !cdxy;
+
+    miniScope_[0].setVisible(!main && !abxy);
+    miniScope_[1].setVisible(!main && !cdxy);
+    xyScope_[0].setVisible(!main && abxy);
+    xyScope_[1].setVisible(!main && cdxy);
+    mainScope_.setVisible(main);
+
     base_type::timerCallback();
 }
 
 
 void PluginEditor::paint(Graphics &g) {
     base_type::paint(g);
-    drawGrid(g);
     drawValueDisplay(g);
 }
 
 void PluginEditor::resized() {
     static constexpr int x = 10, y = 50, w = 900 - 2 * x, h = 400 - 2 * y;
+    mainScope_.setBounds(x, y, w, h);
 
-    scopes_[0].setBounds(x, y, w, h);
-    scopes_[1].setBounds(x, y, w, h);
-    scopes_[2].setBounds(x, y, w, h);
-    scopes_[3].setBounds(x, y, w, h);
+    //replace main scope
+    // with miniscope or xyscope is displayed
+    unsigned sp = 20;
+    unsigned xy_w = h;
+    unsigned ms_w = w - xy_w - sp;
+
+    miniScope_[0].setBounds(x, y, ms_w, h);
+    miniScope_[1].setBounds(x + xy_w + sp, y, ms_w, h);
+
+    xyScope_[0].setBounds(x, y, xy_w, h);
+    xyScope_[1].setBounds(x + ms_w + sp, y, xy_w, h);
 }
-
-
-void PluginEditor::drawGrid(Graphics &g) {
-    auto &scope = scopes_[0];
-    int x = scope.getX() - 5;
-    int y = scope.getY() - 5;
-    int w = scope.getWidth() + 10;
-    int h = scope.getHeight() + 10;
-
-    g.setColour(Colours::darkgrey);
-    unsigned div = 10;
-    int sw = w / div;
-    int sh = h / div;
-    for (unsigned i = 0; i < 11; i++) {
-        g.fillRect(x + (i * sw), y, 1, h); //vert
-        g.fillRect(x, y + (i * sh), w, i != 5 ? 1 : 3); //horz
-    }
-}
-
 
 static constexpr unsigned MAX_TONICS = 12;
 
@@ -165,7 +189,7 @@ String getNoteValue(float f) {
 void PluginEditor::drawValueDisplay(Graphics &g) {
     unsigned space = 32;
     unsigned fh = 24;
-    int x = 950;
+    int x = 1000;
     int y = 50;
     unsigned fldw = 600 / 5;
     int yspace = fh + space;
