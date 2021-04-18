@@ -35,6 +35,8 @@ PluginProcessor::SigParams::SigParams(AudioProcessorValueTreeState &apvt, String
 PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) :
     t_scale(*apvt.getParameter(ID::t_scale)),
     freeze(*apvt.getParameter(ID::freeze)),
+    trig_src(*apvt.getParameter(ID::trig_src)),
+    trig_lvl(*apvt.getParameter(ID::trig_lvl)),
     ab_xy(*apvt.getParameter(ID::ab_xy)),
     cd_xy(*apvt.getParameter(ID::cd_xy)) {
     for (unsigned i = 0; i < MAX_SIG_IN; i++) {
@@ -42,12 +44,48 @@ PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) 
     }
 }
 
+static constexpr unsigned MAX_TIME_SPEC = 11;
+
+struct TimeSpec {
+    TimeSpec(String n, float v) : n_(n), v_(v) { ; }
+
+    String n_;
+    float v_;
+} timeSpecs[MAX_TIME_SPEC] = {
+    TimeSpec("1 mS", 0.001f),
+    TimeSpec("5 mS", 0.005f),
+    TimeSpec("10 mS", 0.010f),
+    TimeSpec("20 mS", 0.020f),
+    TimeSpec("50 mS", 0.050f),
+    TimeSpec("100 mS", 0.100),
+    TimeSpec("250 mS", 0.250),
+    TimeSpec("500 mS", 0.500),
+    TimeSpec("1 S", 1.0),
+    TimeSpec("2 S", 2.0),
+    TimeSpec("5 S", 5.0)
+};
+
+
 AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLayout() {
     AudioProcessorValueTreeState::ParameterLayout params;
     BaseProcessor::addBaseParameters(params);
 
+    StringArray ts;
+    for (unsigned i = 0; i < MAX_TIME_SPEC; i++) {
+        ts.add(timeSpecs[i].n_);
+    }
 
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::t_scale, "Time", 1.0f, 1000.0f, 1.0f));
+    StringArray trigs;
+    trigs.add("None");
+    trigs.add("IN A");
+    trigs.add("IN B");
+    trigs.add("IN C");
+    trigs.add("IN D");
+    trigs.add("Trig");
+
+    params.add(std::make_unique<ssp::BaseChoiceParameter>(ID::t_scale, "Time", ts, 5));
+    params.add(std::make_unique<ssp::BaseChoiceParameter>(ID::trig_src, "Trig", trigs, 0));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::trig_lvl, "Trig Lvl", -1.0f, 1.0f, 0.f));
     params.add(std::make_unique<ssp::BaseBoolParameter>(ID::freeze, "Freeze", false));
     params.add(std::make_unique<ssp::BaseBoolParameter>(ID::ab_xy, "AB XY", false));
     params.add(std::make_unique<ssp::BaseBoolParameter>(ID::cd_xy, "CD XY", false));
@@ -92,30 +130,83 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
 }
 
+
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     if (params_.freeze.getValue() > 0.5f) return;
 
+
     unsigned n = buffer.getNumSamples();
-    unsigned long tS = params_.t_scale.convertFrom0to1((params_.t_scale.getValue()));
+    unsigned tidx = params_.t_scale.convertFrom0to1((params_.t_scale.getValue()));
+    float t = timeSpecs[tidx].v_;
 
-    for (unsigned i = 0; i < n; i++) {
+    float tS = t * getSampleRate() / DIV_RES;
 
-        if ( tS==1 || (sampleCounter_ + i) % tS == 0) {
-            DataMsg msg;
-            msg.sample_[0] = buffer.getSample(I_SIG_A, i);
-            msg.sample_[1] = buffer.getSample(I_SIG_B, i);
-            msg.sample_[2] = buffer.getSample(I_SIG_C, i);
-            msg.sample_[3] = buffer.getSample(I_SIG_D, i);
-            if (!messageQueue_.try_enqueue(msg)) {
-                // queue is full, perhaps editor is not consuming....\
-                // or is not consuming fast enough
-            }
-        }
+    float nextSample = lastSample_ + tS;
+    float endSample = sampleCounter_ + n;
+
+
+    if (nextSample - sampleCounter_ < -1) {
+        // happens when we change timebase from slow to fast
+        lastSample_ = sampleCounter_;
+        nextSample = sampleCounter_;
     }
 
-    sampleCounter_ = sampleCounter_ + buffer.getNumSamples();
-    static constexpr unsigned long MAX_SC = 480000 * 60 * 60; // 1 hour  @ 48k
-    if(sampleCounter_ > MAX_SC ) sampleCounter_ = sampleCounter_ % MAX_SC;
+    while (nextSample < endSample) {
+        float s = nextSample - sampleCounter_;
+
+        if (s >= 0 && s < n - 1) {
+            unsigned i0 = s, i1 = i0 + 1;
+            float f1 = s - i0, f0 = 1.0f - f1;
+
+            jassert(f0 >= 0.0f && f0 <= 1.0f);
+            jassert(f1 >= 0.0f && f1 <= 1.0f);
+            DataMsg msg;
+            msg.sample_[0] = buffer.getSample(I_SIG_A, i0) * f0 + buffer.getSample(I_SIG_A, i1) * f1;
+            msg.sample_[1] = buffer.getSample(I_SIG_B, i0) * f0 + buffer.getSample(I_SIG_B, i1) * f1;
+            msg.sample_[2] = buffer.getSample(I_SIG_C, i0) * f0 + buffer.getSample(I_SIG_C, i1) * f1;
+            msg.sample_[3] = buffer.getSample(I_SIG_D, i0) * f0 + buffer.getSample(I_SIG_D, i1) * f1;
+            msg.trig_ = buffer.getSample(I_TRIG, i0) * f0 + buffer.getSample(I_TRIG, i1) * f1;
+            if (!messageQueue_.try_enqueue(msg)) { ; } // queue full
+            lastSample_ = nextSample;
+        } else if (s < 0) {
+            unsigned i1 = 0;
+            float f1 = s + 1.0f, f0 = 1.0f - f1;
+            jassert(f0 >= 0.0f && f0 <= 1.0f);
+            jassert(f1 >= 0.0f && f1 <= 1.0f);
+            DataMsg msg;
+            msg.sample_[0] = lastS_[0] * f0 + buffer.getSample(I_SIG_A, i1) * f1;
+            msg.sample_[1] = lastS_[1] * f0 + buffer.getSample(I_SIG_B, i1) * f1;
+            msg.sample_[2] = lastS_[2] * f0 + buffer.getSample(I_SIG_C, i1) * f1;
+            msg.sample_[3] = lastS_[3] * f0 + buffer.getSample(I_SIG_D, i1) * f1;
+            msg.trig_ = lastS_[4] * f0 + buffer.getSample(I_TRIG, i1) * f1;
+            if (!messageQueue_.try_enqueue(msg)) { ; } // queue full
+            lastSample_ = nextSample;
+        } else { // i1==n
+            if (s + tS < n) {
+                unsigned i1 = n - 1;
+                DataMsg msg;
+                msg.sample_[0] = buffer.getSample(I_SIG_A, i1);
+                msg.sample_[1] = buffer.getSample(I_SIG_B, i1);
+                msg.sample_[2] = buffer.getSample(I_SIG_C, i1);
+                msg.sample_[3] = buffer.getSample(I_SIG_D, i1);
+                msg.trig_ = buffer.getSample(I_TRIG, i1);
+                if (!messageQueue_.try_enqueue(msg)) { ; } // queue full
+                lastSample_ = nextSample;
+            } else {
+                unsigned i0 = n - 1;
+                lastS_[0] = buffer.getSample(I_SIG_A, i0);
+                lastS_[1] = buffer.getSample(I_SIG_B, i0);
+                lastS_[2] = buffer.getSample(I_SIG_C, i0);
+                lastS_[3] = buffer.getSample(I_SIG_D, i0);
+                lastS_[4] = buffer.getSample(I_TRIG, i0);
+            }
+        }
+        nextSample += tS;
+    }
+
+    sampleCounter_ = endSample;
+//    static constexpr unsigned long MAX_SC = 480000 * 60 * 60; // 1 hour  @ 48k
+//    if(sampleCounter_ > MAX_SC ) sampleCounter_ = sampleCounter_ % MAX_SC;
 }
 
 

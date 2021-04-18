@@ -19,8 +19,8 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     addParamPage(
         std::make_shared<pcontrol_type>(processor_.params_.t_scale, 1),
         nullptr,
-        nullptr,
-        nullptr,
+        std::make_shared<pcontrol_type>(processor_.params_.trig_src, 1),
+        std::make_shared<pcontrol_type>(processor_.params_.trig_lvl, 0.25),
         juce::Colours::lightskyblue
     );
 
@@ -56,14 +56,14 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 
     for (int i = 0; i < MAX_SIG; i++) {
         std::string title = std::string("In ") + std::to_string(i);
-        mainScope_.initSignal(i, title, dataBuf_[i], MAX_DATA, clrs_[i]);
+        mainScope_.initSignal(i, title, dataBuf_[i], MAX_DATA, MAX_DISP, clrs_[i]);
 
-        miniScope_[i / 2].initSignal(i % 2, title, dataBuf_[i], MAX_DATA, clrs_[i]);
+        miniScope_[i / 2].initSignal(i % 2, title, dataBuf_[i], MAX_DATA, MAX_DISP, clrs_[i]);
 
     }
 
-    xyScope_[0].init("In A", dataBuf_[0], "In B", dataBuf_[1], MAX_DATA, clrs_[0]);
-    xyScope_[1].init("In C", dataBuf_[2], "In D", dataBuf_[3], MAX_DATA, clrs_[2]);
+    xyScope_[0].init("In A", dataBuf_[0], MAX_DATA, "In B", dataBuf_[1], MAX_DATA, MAX_DISP, clrs_[0]);
+    xyScope_[1].init("In C", dataBuf_[2], MAX_DATA, "In D", dataBuf_[3], MAX_DATA, MAX_DISP, clrs_[2]);
 
     addChildComponent(mainScope_);
     addChildComponent(miniScope_[0]);
@@ -103,9 +103,26 @@ void PluginEditor::timerCallback() {
         for (int i = 0; i < MAX_SIG; i++) {
             dataBuf_[i][wrPos_] = msg.sample_[i];
         }
+        dataBuf_[MAX_SIG][wrPos_] = msg.trig_;
         wrPos_ = (wrPos_ + 1) % MAX_DATA;
     }
 
+    syncPos_ = (int(wrPos_) - 1 - MAX_DISP + MAX_DATA) % MAX_DATA;
+
+    unsigned trigSrc = processor_.params_.trig_src.convertFrom0to1(processor_.params_.trig_src.getValue());
+
+    if (trigSrc != 0) {
+        float trigLvl = processor_.params_.trig_lvl.convertFrom0to1(processor_.params_.trig_lvl.getValue());
+        bool pos = false;
+        for (unsigned i = 0; i < (MAX_DISP); i++) {
+            unsigned idx = (syncPos_ - i + MAX_DATA) % MAX_DATA;
+            if (pos && dataBuf_[trigSrc - 1][idx] < trigLvl) {
+                syncPos_ = (idx + 1 + MAX_DATA) % MAX_DATA;
+                break;
+            }
+            pos = dataBuf_[trigSrc - 1][idx] >= trigLvl;
+        }
+    }
 
     for (int i = 0; i < MAX_SIG; i++) {
         auto &sParam = *processor_.params_.sigparams_[i];
@@ -116,6 +133,11 @@ void PluginEditor::timerCallback() {
         float scale = sParam.y_scale.convertFrom0to1(sParam.y_scale.getValue());
         float offset = sParam.y_offset.convertFrom0to1(sParam.y_offset.getValue());
         mainScope_.scaleOffset(i, scale, offset);
+
+        mainScope_.pos(i, syncPos_);
+
+        miniScope_[i / 2].pos(i % 2, syncPos_);
+        miniScope_[i / 2].pos(i % 2, syncPos_);
 
 //        miniScope_[i / 2].scaleOffset(i % 2, scale, offset);
 //        xyScope_[i / 2].scaleOffset(i % 2, scale, offset);
@@ -130,6 +152,9 @@ void PluginEditor::timerCallback() {
     xyScope_[0].setVisible(!main && abxy);
     xyScope_[1].setVisible(!main && cdxy);
     mainScope_.setVisible(main);
+
+    xyScope_[0].pos(syncPos_);
+    xyScope_[1].pos(syncPos_);
 
     base_type::timerCallback();
 }
@@ -208,13 +233,14 @@ void PluginEditor::drawValueDisplay(Graphics &g) {
         if (processor_.isInputEnabled(PluginProcessor::I_SIG_A + i)) {
 
             float min = 0.0f, max = 0.0f, sum = 0.0f, avg = 0.0f;
-            for (unsigned idx = 0; idx < MAX_DATA; idx++) {
-                float d = dataBuf_[i][idx];
+            for (unsigned idx = 0; idx < MAX_DISP; idx++) {
+                unsigned didx = (syncPos_ - idx + MAX_DATA) % MAX_DATA;
+                float d = dataBuf_[i][didx];
                 sum += d;
                 min = std::min(d, min);
                 max = std::max(d, max);
             }
-            avg = sum / MAX_DATA;
+            avg = sum / MAX_DISP;
 
             float mult = 1.0f;
             bool volt = true;

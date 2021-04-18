@@ -13,14 +13,16 @@ public:
             visible_[i] = true;
             scale_[i] = 1.0f;
             offset_[i] = 0.0f;
+            pos_[i] = 0;
             colour_[i] = clrs[i % 4];
             buffer_[i] = nullptr;
         }
     }
 
-    void initSignal(unsigned sigN, const std::string &label, float *buf, unsigned n, Colour c = juce::Colours::red) {
+    void initSignal(unsigned sigN, const std::string &label, float *buf, unsigned bufn, unsigned n, Colour c = juce::Colours::red) {
         label_[sigN] = label;
         buffer_[sigN] = buf;
+        bufN_[sigN] = bufn;
         n_[sigN] = n;
         colour_[sigN] = c;
     }
@@ -28,6 +30,10 @@ public:
     void scaleOffset(unsigned sigN, float s, float o) {
         scale_[sigN] = s;
         offset_[sigN] = o;
+    }
+
+    void pos(unsigned sigN, unsigned pos) {
+        pos_[sigN] = pos;
     }
 
     void signalVisible(unsigned sigN, bool v) {
@@ -52,7 +58,9 @@ private:
     juce::Colour colour_[N];
     std::string label_[N];
     float *buffer_[N];
+    unsigned bufN_[N];
     unsigned n_[N];
+    unsigned pos_[N];
     bool visible_[N];
     float scale_[N];
     float offset_[N];
@@ -85,7 +93,8 @@ private:
         float lastX = 0.0f, lastY = 0.5f * h;
         float stepW = (float) w / (float) n_[sigN];
         for (int t = 0; t < n_[sigN]; t++) {
-            val = constrain(buffer_[sigN][t] * scale_[sigN] + offset_[sigN], -1.0f, 1.0f);
+            unsigned idx = (t + pos_[sigN]) % bufN_[sigN];
+            val = constrain(buffer_[sigN][idx] * scale_[sigN] + offset_[sigN], -1.0f, 1.0f);
 
             y = (1.0f - (val + 1.0f) * 0.5f) * h;
             x = t * stepW;

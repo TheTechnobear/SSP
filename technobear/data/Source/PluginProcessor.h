@@ -9,27 +9,17 @@
 
 #include <readerwriterqueue.h>
 
-// t_scale
-// freeze
-// ab_xy
-// cd_xy
-
-// y_scale
-// y_offset
-// show
-
-
-
 namespace ID {
 #define PARAMETER_ID(str) constexpr const char* str { #str };
 constexpr const char *separator{":"};
 
 
 PARAMETER_ID (t_scale)
+PARAMETER_ID (trig_src)
+PARAMETER_ID (trig_lvl)
 PARAMETER_ID (freeze)
 PARAMETER_ID (ab_xy)
 PARAMETER_ID (cd_xy)
-
 
 // sig tree sig.y_scale etc
 PARAMETER_ID(sig)
@@ -91,8 +81,10 @@ public:
         explicit PluginParams(juce::AudioProcessorValueTreeState &);
 
         Parameter &t_scale;
-        Parameter &freeze;
+        Parameter &trig_src;
+        Parameter &trig_lvl;
 
+        Parameter &freeze;
         Parameter &ab_xy;
         Parameter &cd_xy;
 
@@ -100,16 +92,18 @@ public:
     } params_;
 
 
-    static constexpr float  MAX_FREQ = 24000.f;
-    static constexpr float  UI_FREQ = 50.f ; // ms
-    static constexpr float  OVERHEAD = 2.f ; // factor
-    static constexpr unsigned MAX_MSGS = unsigned((MAX_FREQ / 1000.f * UI_FREQ) * OVERHEAD) ;
     struct DataMsg {
-        float sample_[4];
+        float sample_[MAX_SIG_IN];
+        float trig_;
     };
 
+    static constexpr float DIV_RES = 50.f; // resolution per division
+    static constexpr unsigned DIV_COUNT = 10; // number of divisions
+    static constexpr unsigned MAX_ENTRY = DIV_RES * DIV_COUNT;
+    static constexpr float OVERHEAD = 6.f; // factor  , need to allow for 50ms data for ui
+    static constexpr unsigned MAX_MSGS = unsigned(MAX_ENTRY * OVERHEAD);
 
-    moodycamel::ReaderWriterQueue<DataMsg>& messageQueue() { return messageQueue_;}
+    moodycamel::ReaderWriterQueue<DataMsg> &messageQueue() { return messageQueue_; }
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -133,8 +127,9 @@ private:
         return props;
     }
 
-    unsigned long sampleCounter_= 0UL ;
-
+    unsigned long sampleCounter_ = 0UL;
+    float lastSample_ = 0.0f;
+    float lastS_[MAX_SIG_IN + 1] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f}; // inc trig
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 

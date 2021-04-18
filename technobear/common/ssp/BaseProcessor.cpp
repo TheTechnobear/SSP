@@ -6,6 +6,25 @@
 namespace ssp {
 
 
+#ifdef __APPLE__
+// apple
+#ifdef DISABLE_SSP_PARAMS
+// disable ssp parameters , so enable all io
+static constexpr bool exposeSSPParams = false;
+static constexpr bool defIOState = true;
+#else
+// enable ssp parameters
+static constexpr bool exposeSSPParams = true;
+static constexpr bool defIOState = true;
+#endif
+
+#else
+// linux etc
+static constexpr bool defIOState = false;
+static constexpr bool exposeSSPParams = true;
+#endif
+
+
 class EncoderParameter : public BaseFloatParameter {
 public:
     EncoderParameter(String parameterID,
@@ -22,6 +41,11 @@ public:
         return v_;
     }
 
+    bool isAutomatable() const override {
+        return exposeSSPParams;
+
+    }
+
     void setValue(float v) override {
         if (v > 0.5f) {
             v_ += v / 1000.f;
@@ -31,15 +55,29 @@ public:
             v_ = 0.0f;
         }
     }
+
 private:
-    float v_=0.0f;
+    float v_ = 0.0f;
 };
 
-#ifdef __APPLE__
-static constexpr bool defIOState = true;
-#else
-static constexpr bool defIOState = false;
-#endif
+
+class SSPBoolParameter : public BaseBoolParameter {
+public:
+
+    SSPBoolParameter(String parameterID,
+                     String parameterName,
+                     bool defaultValue,
+                     BaseBoolParameter::ParamCallback callback = nullptr)
+        : BaseBoolParameter(parameterID, parameterName, defaultValue, callback) {
+
+    }
+
+    bool isAutomatable() const override {
+        return exposeSSPParams;
+    }
+
+};
+
 
 void BaseProcessor::addBaseParameters(AudioProcessorValueTreeState::ParameterLayout &params) {
     for (unsigned i = 0; i < sspParams::numEnc; i++) {
@@ -50,21 +88,21 @@ void BaseProcessor::addBaseParameters(AudioProcessorValueTreeState::ParameterLay
     }
 
     for (unsigned i = 0; i < sspParams::numEnc; i++) {
-        params.add(std::make_unique<BaseBoolParameter>(
+        params.add(std::make_unique<SSPBoolParameter>(
             percussaParamsName[Percussa::sspEncSw1 + i],
             percussaParamsText[Percussa::sspEncSw1 + i],
             false));
     }
 
     for (unsigned i = 0; i < sspParams::numSw; i++) {
-        params.add(std::make_unique<BaseBoolParameter>(
+        params.add(std::make_unique<SSPBoolParameter>(
             percussaParamsName[Percussa::sspSw1 + i],
             percussaParamsText[Percussa::sspSw1 + i],
             false));
     }
 
     for (unsigned i = 0; i < sspParams::numCtrlSw; i++) {
-        params.add(std::make_unique<BaseBoolParameter>(
+        params.add(std::make_unique<SSPBoolParameter>(
             percussaParamsName[Percussa::sspSwLeft + i],
             percussaParamsText[Percussa::sspSwLeft + i],
             false));
@@ -72,7 +110,7 @@ void BaseProcessor::addBaseParameters(AudioProcessorValueTreeState::ParameterLay
 
 
     for (unsigned i = 0; i < sspParams::numOut; i++) {
-        params.add(std::make_unique<BaseBoolParameter>(
+        params.add(std::make_unique<SSPBoolParameter>(
             percussaParamsName[Percussa::sspOutEn1 + i],
             percussaParamsText[Percussa::sspOutEn1 + i],
             defIOState,
@@ -80,7 +118,7 @@ void BaseProcessor::addBaseParameters(AudioProcessorValueTreeState::ParameterLay
         );
     }
     for (unsigned i = 0; i < sspParams::numIn; i++) {
-        params.add(std::make_unique<BaseBoolParameter>(
+        params.add(std::make_unique<SSPBoolParameter>(
             percussaParamsName[Percussa::sspInEn1 + i],
             percussaParamsText[Percussa::sspInEn1 + i],
             defIOState,
@@ -97,7 +135,6 @@ void BaseProcessor::init() {
         onInputChanged(i, defIOState);
     }
 }
-
 
 
 void BaseProcessor::getStateInformation(MemoryBlock &destData) {

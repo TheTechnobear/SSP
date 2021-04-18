@@ -9,18 +9,23 @@ public:
     XYScope(bool grid = true, bool legend = false) : grid_(grid), legend_(legend) {
     }
 
-    void init(const std::string &l1, float *buf1, const std::string &l2, float *buf2, unsigned n, juce::Colour clr) {
+    void init(const std::string &l1, float *buf1, unsigned bufn1, const std::string &l2, float *buf2, unsigned bufn2, unsigned n, juce::Colour clr) {
         n_ = n;
         colour_ = clr;
         label_[0] = l1;
         buffer_[0] = buf1;
         label_[1] = l2;
         buffer_[1] = buf2;
+        bufN_ = bufn1 < bufn2 ? bufn1 : bufn2;
     }
 
     void scaleOffset(unsigned sigN, float s, float o) {
         scale_[sigN] = s;
         offset_[sigN] = o;
+    }
+
+    void pos(unsigned pos) {
+        pos_ = pos;
     }
 
     void paint(Graphics &g) {
@@ -37,6 +42,8 @@ private:
     juce::Colour colour_;
     bool visible_ = true;
     unsigned n_ = 0;
+    unsigned pos_ = 0;
+    unsigned bufN_ = 0;
 
     std::string label_[N];
     float *buffer_[N] = {nullptr, nullptr};
@@ -73,8 +80,9 @@ private:
         float lastX = 0.0f, lastY = 0.5f * h;
 
         for (int t = 0; t < n_; t++) {
-            valX = constrain(buffer_[0][t] * scale_[0] + offset_[0], -1.0f, 1.0f);
-            valY = constrain(buffer_[1][t] * scale_[1] + offset_[1], -1.0f, 1.0f);
+            unsigned idx = (t + pos_) % bufN_;
+            valX = constrain(buffer_[0][idx] * scale_[0] + offset_[0], -1.0f, 1.0f);
+            valY = constrain(buffer_[1][idx] * scale_[1] + offset_[1], -1.0f, 1.0f);
 
             x = (1.0f - (valX + 1.0f) * 0.5f) * w;
             y = (1.0f - (valY + 1.0f) * 0.5f) * h;
