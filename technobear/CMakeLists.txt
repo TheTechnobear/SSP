@@ -10,4 +10,5 @@ add_subdirectory(rngs)
 add_subdirectory(shq)
 add_subdirectory(swat)
 add_subdirectory(data)
+add_subdirectory(cart)
 
