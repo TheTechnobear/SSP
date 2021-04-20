@@ -14,9 +14,22 @@ set(triple arm-linux-gnueabihf)
 
 set(CMAKE_C_COMPILER /opt/homebrew/opt/llvm/bin/clang)
 set(CMAKE_CXX_COMPILER /opt/homebrew/opt/llvm/bin/clang++)
-# set(tools /opt/homebrew/opt/arm-linux-gnueabihf-binutils)
+
+
 set(CMAKE_C_COMPILER_TARGET ${triple})
 set(CMAKE_CXX_COMPILER_TARGET ${triple})
+
+
+set(XC_TOOLS /opt/homebrew/bin)
+set(XC_PREFIX arm-linux-gnueabihf-)
+
+find_program(CMAKE_AR ${XC_PREFIX}ar PATHS ${XC_TOOLS})
+find_program(CMAKE_RANLIB ${XC_PREFIX}ranlib PATHS ${XC_TOOLS})
+find_program(CMAKE_LINKER ${XC_PREFIX}ld PATHS ${XC_TOOLS})
+find_program(CMAKE_NM ${XC_PREFIX}nm PATHS ${XC_TOOLS})
+find_program(CMAKE_OBJCOPY ${XC_PREFIX}objcopy PATHS ${XC_TOOLS})
+find_program(CMAKE_OBJDUMP ${XC_PREFIX}objdump PATHS ${XC_TOOLS})
+find_program(CMAKE_STRIP ${XC_PREFIX}strip PATHS ${XC_TOOLS})
 
 set(ENV{PKG_CONFIG_DIR} "")
 set(ENV{PKG_CONFIG_LIBDIR} "${CMAKE_SYSROOT}/usr/lib/arm-linux-gnueabihf/pkgconfig:${CMAKE_SYSROOT}/usr/share/pkgconfig")
