@@ -20,8 +20,8 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     setSize(1600, 480);
 }
 
-void PluginEditor::paint(Graphics &g) {
-    base_type::paint(g);
+void PluginEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
     g.setColour(Colours::grey);
     g.drawSingleLineText("Instance : " + String(activeEngine_), 20, 60);
     processor_.algo(activeEngine_)->paint(g);

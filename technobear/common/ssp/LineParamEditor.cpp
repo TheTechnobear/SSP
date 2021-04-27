@@ -13,8 +13,8 @@ LineParamEditor::LineParamEditor(BaseProcessor *p, String title, String version)
     ;
 }
 
-void LineParamEditor::paint(Graphics &g) {
-    base_type::paint(g);
+void LineParamEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
 }
 
 void LineParamEditor::setParamBounds(unsigned idx, std::shared_ptr<BaseParamControl> c) {

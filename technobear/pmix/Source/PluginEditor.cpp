@@ -154,12 +154,12 @@ void PluginEditor::timerCallback() {
     if (viewHeldCount_ > 0) viewHeldCount_ -= POLL_TIME;
 }
 
-void PluginEditor::paint(Graphics &g) {
+void PluginEditor::drawView(Graphics &g) {
     leftShiftBtn_.active(view_ == 0);
     rightShiftBtn_.active(view_ == 1);
     upBtn_.active(view_ == 2);
 
-    base_type::paint(g);
+    base_type::drawView(g);
     for (unsigned i = 0; i < PluginProcessor::IN_T_MAX; i++) {
         inTracks_[i].enabled(processor_.isInputEnabled(i));
     }
@@ -194,6 +194,7 @@ void PluginEditor::paint(Graphics &g) {
 
 
 void PluginEditor::resized() {
+    base_type::resized();
     const unsigned space = 5;
     const unsigned inStart = space;
     const unsigned inw = 90;

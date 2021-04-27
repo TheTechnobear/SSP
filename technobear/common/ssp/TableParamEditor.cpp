@@ -13,8 +13,8 @@ TableParamEditor::TableParamEditor(BaseProcessor *p, String title, String versio
 }
 
 
-void TableParamEditor::paint(Graphics &g) {
-    base_type::paint(g);
+void TableParamEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
     int h = paramSpaceY;
     int w = int(900.0f / 4.0f);
 

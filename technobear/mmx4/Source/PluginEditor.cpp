@@ -120,23 +120,14 @@ void PluginEditor::drawGrid(Graphics &g) {
 }
 
 
-void PluginEditor::paint(Graphics &g) {
-    base_type::paint(g);
+void PluginEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
     drawGrid(g);
 }
 
 
 void PluginEditor::resized() {
+    base_type::resized();
 }
 
 
-#if 0
-if (paramActive_ < PluginProcessor::MAX_SIG_IN)  {
-    unsigned out = index - Percussa::sspEnc1;
-    unsigned in = paramActive_;
-    float v = processor_.getVCA(in, out) + value / 100.0f;
-    v = constrain(v, -4.0f, 4.0f);
-    processor_.setVCA(in, out, v);
-    unsigned pidx = P_VCA_1A + (in * PluginProcessor::MAX_SIG_OUT) + out;
-    params_[pidx].value(v);
-#endif

@@ -95,6 +95,11 @@ void BaseEditor::timerCallback() {
 }
 
 void BaseEditor::paint(Graphics &g) {
+    drawView(g);
+}
+
+
+void BaseEditor::drawView(Graphics &g) {
     // display 1600x 480
     // x= left/right (0..1599)
     // y= top/botton (0..479)

@@ -12,8 +12,8 @@ BarParamEditor::BarParamEditor(BaseProcessor *p, String title, String version,bo
 }
 
 
-void BarParamEditor::paint(Graphics &g) {
-    base_type::paint(g);
+void BarParamEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
 
     static juce::Colour clrs[4] = {Colours::red, Colours::blue, Colours::yellow, Colours::green};
     g.setColour(clrs[paramPage_ % 4]);

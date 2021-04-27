@@ -45,16 +45,18 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 }
 
 
-void PluginEditor::paint(Graphics &g) {
+void PluginEditor::drawView(Graphics &g) {
     float outL, outR;
     processor_.getRMS(outL, outR);
     outVu_.level(outL, outR);
 
-    base_type::paint(g);
+    base_type::drawView(g);
 }
 
 
 void PluginEditor::resized() {
+    base_type::resized();
+
     const unsigned h = 130;
     const unsigned sp = 10;
     const unsigned vuStart = 1500;

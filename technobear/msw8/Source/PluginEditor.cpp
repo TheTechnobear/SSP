@@ -88,8 +88,8 @@ void PluginEditor::drawGrid(Graphics &g) {
     }
 }
 
-void PluginEditor::paint(Graphics &g) {
-    base_type::paint(g);
+void PluginEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
     drawGrid(g);
 }
 

@@ -160,12 +160,14 @@ void PluginEditor::timerCallback() {
 }
 
 
-void PluginEditor::paint(Graphics &g) {
-    base_type::paint(g);
+void PluginEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
     drawValueDisplay(g);
 }
 
 void PluginEditor::resized() {
+    base_type::resized();
+
     static constexpr int x = 10, y = 50, w = 900 - 2 * x, h = 400 - 2 * y;
     mainScope_.setBounds(x, y, w, h);
 

@@ -42,8 +42,8 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 }
 
 
-void PluginEditor::paint(Graphics &g) {
-    base_type::paint(g);
+void PluginEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
     if (processor_.params_.quant.getValue() > 0) {
         unsigned fh = 48;
         g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));

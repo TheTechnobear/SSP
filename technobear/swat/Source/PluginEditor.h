@@ -10,7 +10,7 @@ public:
     explicit PluginEditor(PluginProcessor &);
     ~PluginEditor() override = default;
 
-    void paint(Graphics &) override;
+    void drawView(Graphics &) override;
 
     void onEncoder(unsigned enc, float v) override;
     void onEncoderSwitch(unsigned enc, bool v) override;
