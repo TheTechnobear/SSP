@@ -9,24 +9,19 @@ using namespace juce;
 namespace ssp {
 
 class BaseProcessor;
-
-class BaseParamControl;
-
-class ButtonControl;
-
 class EditorHost;
 
 
 #include "SSPActions.h"
 
-class BaseEditor :
+class SystemEditor :
     public Component,
     public Timer,
     public SSPActions {
 
 public:
-    explicit BaseEditor(BaseProcessor *p);
-    virtual ~BaseEditor();
+    explicit SystemEditor(BaseProcessor *p);
+    virtual ~SystemEditor();
 
     void timerCallback() override;
 
@@ -40,7 +35,6 @@ protected:
 
     // ssp actions
     friend class EditorHost;
-
     void onEncoder(unsigned enc, float v) override;
     void onEncoderSwitch(unsigned enc, bool v) override;
     void onButton(unsigned btn, bool v) override;
@@ -51,34 +45,19 @@ protected:
     void onLeftShiftButton(bool v) override;
     void onRightShiftButton(bool v) override;
 
-
-    void setButtonBounds(unsigned idx, std::shared_ptr<ButtonControl>);
-
-    // temp
     void setButtonBounds(SSPButton &btn, unsigned r, unsigned c);
 
     BaseProcessor *baseProcessor_;
-
-    struct ControlPage {
-        std::shared_ptr<BaseParamControl> control_[4] = {nullptr, nullptr, nullptr, nullptr};
-    };
-
-    struct ButtonPage {
-        std::shared_ptr<ButtonControl> control_[8] = {
-            nullptr, nullptr, nullptr, nullptr,
-            nullptr, nullptr, nullptr, nullptr
-        };
-    };
-
-    bool encoderState_[4] = {false, false, false, false};
-
 
     SSPButton leftBtn_, rightBtn_, upBtn_, downBtn_;
     SSPButton leftShiftBtn_, rightShiftBtn_;
 private:
     void paint(Graphics &) override;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BaseEditor)
+    std::vector<MidiDeviceInfo> inDevices_;
+    std::vector<MidiDeviceInfo> outDevices_;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SystemEditor)
 };
 
 }

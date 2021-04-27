@@ -9,9 +9,7 @@ using pcontrol_type = ssp::BarParamControl;
 using bcontrol_type = ssp::ButtonControl;
 
 PluginEditor::PluginEditor(PluginProcessor &p)
-    : base_type(&p,
-                String(JucePlugin_Name) + " : " + String(JucePlugin_Desc),
-                JucePlugin_VersionString, 3),
+    : base_type(&p, 3),
       processor_(p) {
 
     leftShiftBtn_.init("IN14", Colours::grey, Colours::black);

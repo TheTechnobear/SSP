@@ -1,6 +1,7 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_audio_devices/juce_audio_devices.h>
 
 using namespace juce;
 
@@ -74,7 +75,22 @@ protected:
     bool inputEnabled[sspParams::numIn];
     bool outputEnabled[sspParams::numOut];
 
+    virtual void midiFromXml(juce::XmlElement *);
+    virtual void midiToXml(juce::XmlElement *);
+    virtual void customFromXml(juce::XmlElement *);
+    virtual void customToXml(juce::XmlElement *);
+
     void addBaseParameters(AudioProcessorValueTreeState::ParameterLayout &);
+
+
+    class MidiCallback : public MidiInputCallback {
+        void handleIncomingMidiMessage (MidiInput* source, const MidiMessage& message);
+    } midiCallback_;
+
+    std::string midiInDeviceId_;
+    std::string midiOutDeviceId_;
+    std::unique_ptr<MidiInput> midiInDevice_;
+    std::unique_ptr<MidiOutput> midiOutDevice_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BaseProcessor)
 };

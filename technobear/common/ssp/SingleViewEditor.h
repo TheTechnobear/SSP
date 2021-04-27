@@ -16,7 +16,7 @@ class SingleViewEditor :
     public BaseEditor {
 
 public:
-    explicit SingleViewEditor(BaseProcessor *p, String title, String version);
+    explicit SingleViewEditor(BaseProcessor *p);
 
     virtual void onEncoder(unsigned enc, float v);
     virtual void onEncoderSwitch(unsigned enc, bool v);

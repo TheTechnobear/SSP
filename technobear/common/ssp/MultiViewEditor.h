@@ -19,7 +19,6 @@ class MultiViewEditor :
 
 public:
     explicit MultiViewEditor(BaseProcessor *p,
-                             String title, String version,
                              unsigned maxView);
 
     void onEncoder(unsigned enc, float v) override;

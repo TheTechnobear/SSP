@@ -3,9 +3,7 @@
 #include "PluginEditor.h"
 
 PluginEditor::PluginEditor(PluginProcessor &p)
-    : base_type(&p,
-                String(JucePlugin_Name) + " : " + String(JucePlugin_Desc),
-                JucePlugin_VersionString),
+    : base_type(&p),
       processor_(p) {
     activeEngine_ = 0;
     upBtn_.label("AG-");

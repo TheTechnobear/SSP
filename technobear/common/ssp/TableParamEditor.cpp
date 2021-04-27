@@ -7,8 +7,8 @@ namespace ssp {
 static constexpr unsigned paramSpaceY = 36;
 
 
-TableParamEditor::TableParamEditor(BaseProcessor *p, String title, String version)
-    : base_type(p, title, version) {
+TableParamEditor::TableParamEditor(BaseProcessor *p)
+    : base_type(p) {
     ;
 }
 

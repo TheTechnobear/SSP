@@ -6,7 +6,7 @@ namespace ssp {
 
 class TableParamEditor : public SingleViewEditor {
 public:
-    TableParamEditor(BaseProcessor *p, String title, String version);
+    TableParamEditor(BaseProcessor *p);
 
 protected:
     using base_type=ssp::SingleViewEditor;

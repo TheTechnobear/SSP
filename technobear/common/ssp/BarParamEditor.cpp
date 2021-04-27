@@ -6,8 +6,8 @@ namespace ssp {
 
 static constexpr unsigned paramSpaceY = 34;
 
-BarParamEditor::BarParamEditor(BaseProcessor *p, String title, String version,bool autoColour)
-    : base_type(p, title, version), autoColour_(autoColour) {
+BarParamEditor::BarParamEditor(BaseProcessor *p,bool autoColour)
+    : base_type(p), autoColour_(autoColour) {
     ;
 }
 
@@ -22,7 +22,7 @@ void BarParamEditor::drawView(Graphics &g) {
     int w = 900;
     int h = paramSpaceY / 4;
     int y = 480 - h;
-    unsigned sp = 2;
+    int sp = 2;
     g.fillRect(x + sp, y, w - (2 * sp), h);
 }
 
@@ -30,12 +30,12 @@ void BarParamEditor::drawView(Graphics &g) {
 void BarParamEditor::setParamBounds(unsigned page, unsigned idx, std::shared_ptr<BaseParamControl> c) {
     if (c == nullptr) return;
 
-    unsigned w = unsigned(900.0f / 4.0f);
-    unsigned x = idx * w;
-    unsigned h = 2 * paramSpaceY;
-    unsigned y = (page * h) + (h);
+    int w = int(900.0f / 4.0f);
+    int x = int(idx) * w;
+    int h = 2 * paramSpaceY;
+    int y = (int(page) * h) + h;
 
-    unsigned sp = 2;
+    int sp = 2;
     c->setBounds(x + sp, y, w - sp * 2, h);
 }
 
@@ -56,16 +56,14 @@ BaseEditor::ControlPage BarParamEditor::addParamPage(
 
     if(autoColour_) {
         static juce::Colour clrs[4] = {Colours::red, Colours::blue, Colours::yellow, Colours::green};
-        for (auto i = 0; i < 4; i++) {
-            auto c = page.control_[i];
+        for (const auto& c : page.control_) {
             if (c) {
                 c->fg(clrs[pageN % 4]);
             }
         }
     }
 
-    for (auto i = 0; i < 4; i++) {
-        auto c = page.control_[i];
+    for (const auto& c : page.control_) {
         if (c) {
             addAndMakeVisible(c.get());
             c->active(paramPage_ == pageN);

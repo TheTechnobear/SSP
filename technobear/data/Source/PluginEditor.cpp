@@ -10,10 +10,7 @@ using bcontrol_type = ssp::ButtonControl;
 
 
 PluginEditor::PluginEditor(PluginProcessor &p)
-    : base_type(&p,
-                String(JucePlugin_Name) + " : " + String(JucePlugin_Desc),
-                JucePlugin_VersionString),
-
+    : base_type(&p),
       processor_(p), clrs_{Colours::green, Colours::blue, Colours::red, Colours::yellow} {
 
     addParamPage(

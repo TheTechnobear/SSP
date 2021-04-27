@@ -6,7 +6,7 @@ namespace ssp {
 
 class BarParamEditor : public LineParamEditor {
 public:
-    BarParamEditor(BaseProcessor *p, String title, String version, bool autoColour=true);
+    BarParamEditor(BaseProcessor *p, bool autoColour=true);
 
 protected:
     using base_type = ssp::LineParamEditor;

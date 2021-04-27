@@ -9,8 +9,8 @@
 
 namespace ssp {
 
-SingleViewEditor::SingleViewEditor(BaseProcessor *p, String t, String v)
-    : base_type(p, t, v) {
+SingleViewEditor::SingleViewEditor(BaseProcessor *p)
+    : base_type(p) {
 
     upBtn_.init("EN-", Colours::red);
     setButtonBounds(upBtn_, 0, 5);

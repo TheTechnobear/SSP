@@ -10,9 +10,7 @@ using pcontrol_type = ssp::BarParamControl;
 using bcontrol_type = ssp::ButtonControl;
 
 PluginEditor::PluginEditor(PluginProcessor &p)
-    : base_type(&p,
-                String(JucePlugin_Name) + " : " + String(JucePlugin_Desc),
-                JucePlugin_VersionString),
+    : base_type(&p),
       processor_(p) {
 
     addParamPage(

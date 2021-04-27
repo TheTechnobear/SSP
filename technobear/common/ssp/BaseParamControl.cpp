@@ -53,8 +53,8 @@ void SimpleParamControl::reset() {
 
 void SimpleParamControl::paint(Graphics &g) {
     static constexpr unsigned fh = 36;
-    unsigned h = getHeight();
-    unsigned w = getWidth();
+    int h = getHeight();
+    int w = getWidth();
 
     auto &p = param_;
 
@@ -76,8 +76,8 @@ LineParamControl::LineParamControl(Parameter &p, float coarse, float fine)
 
 void LineParamControl::paint(Graphics &g) {
     static constexpr unsigned fh = 32;
-    unsigned h = getHeight();
-    unsigned w = getWidth();
+    int h = getHeight();
+    int w = getWidth();
 
     auto &p = param_;
 
@@ -100,8 +100,8 @@ BarParamControl::BarParamControl(Parameter &p, float coarse, float fine)
 
 void BarParamControl::paint(Graphics &g) {
     static constexpr unsigned fh = 28;
-    unsigned h = getHeight();
-    unsigned w = getWidth();
+    int h = getHeight();
+    int w = getWidth();
 
     auto &p = param_;
 
@@ -126,15 +126,15 @@ void BarParamControl::paint(Graphics &g) {
             float v = p.getValue() - 0.5f;
             int bl = (w - 4) * v;
             int bs = (bl > 0.0f ? 0.5f : 0.5 + v) * (w - 4);
-            g.fillRect(bs, h / 2 + 2, (bl > 0.0f ? bl : -bl), fh - 4);
+            g.fillRect(bs, int(h / 2) + 2, (bl > 0  ? bl : -bl), fh - 4);
         }
         g.setColour(Colours::white);
-        g.drawVerticalLine(be + 2, h / 2 + 2, (h / 2 + 2) + fh - 4);
+        g.drawVerticalLine(be + 2, int(h / 2) + 2, int(h / 2) + 2 + fh - 4);
     } else {
         int bl = ((w - 4) / p.getNumSteps());
         int s = p.getNumSteps() * (p.getValue() - 0.001);
         int bs = (s * bl) + 2;
-        g.fillRoundedRectangle(bs, h / 2 + 2, bl, fh - 4, 10.0f);
+        g.fillRoundedRectangle(bs, int(h / 2) + 2, bl, fh - 4, 10.0f);
     }
 
 

@@ -9,12 +9,8 @@
 
 namespace ssp {
 
-MultiViewEditor::MultiViewEditor(BaseProcessor *p,
-                                 String t, String v,
-                                 unsigned maxView)
-    : base_type(p, t, v) {
-//    setSize(1600, 480);
-
+MultiViewEditor::MultiViewEditor(BaseProcessor *p, unsigned maxView)
+    : base_type(p) {
     upBtn_.init("EN-", Colours::red);
     setButtonBounds(upBtn_, 0, 5);
     addAndMakeVisible(upBtn_);

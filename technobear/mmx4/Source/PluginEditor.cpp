@@ -14,9 +14,7 @@ using bcontrol_type = ssp::ButtonControl;
 
 
 PluginEditor::PluginEditor(PluginProcessor &p)
-    : base_type(&p,
-                String(JucePlugin_Name) + " : " + String(JucePlugin_Desc),
-                JucePlugin_VersionString),
+    : base_type(&p),
       processor_(p) {
 
     for (unsigned p = 0; p < PluginProcessor::MAX_SIG_OUT; p++) {

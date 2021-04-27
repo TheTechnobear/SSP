@@ -6,7 +6,7 @@ namespace ssp {
 
 class LineParamEditor : public SingleViewEditor {
 public:
-    LineParamEditor(BaseProcessor *p, String title, String version);
+    LineParamEditor(BaseProcessor *p);
 
 protected:
     using base_type=ssp::SingleViewEditor;

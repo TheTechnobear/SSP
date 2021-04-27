@@ -8,8 +8,8 @@ static constexpr unsigned paramTopY = 380 - 1;
 static constexpr unsigned paramSpaceY = 50;
 
 
-LineParamEditor::LineParamEditor(BaseProcessor *p, String title, String version)
-    : base_type(p, title, version) {
+LineParamEditor::LineParamEditor(BaseProcessor *p)
+    : base_type(p) {
     ;
 }
 
