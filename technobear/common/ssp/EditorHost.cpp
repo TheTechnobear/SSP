@@ -133,41 +133,52 @@ void EditorHost::sysEditor() {
 
 
 void EditorHost::onEncoder(unsigned enc, float v) {
-    editor_->onEncoder(enc, v);
+    if (sysActive_) system_->onEncoder(enc, v);
+    else editor_->onEncoder(enc, v);
 }
 
 void EditorHost::onEncoderSwitch(unsigned enc, bool v) {
-    editor_->onEncoderSwitch(enc, v);
+    if (sysActive_) system_->onEncoderSwitch(enc, v);
+    else editor_->onEncoderSwitch(enc, v);
 }
 
 void EditorHost::onButton(unsigned btn, bool v) {
-    editor_->onButton(btn, v);
+    if (sysActive_) system_->onButton(btn, v);
+    else editor_->onButton(btn, v);
 }
 
 void EditorHost::onLeftButton(bool v) {
-    editor_->onLeftButton(v);
+    if (sysActive_) system_->onLeftButton(v);
+    else editor_->onLeftButton(v);
 }
 
 void EditorHost::onRightButton(bool v) {
-    editor_->onRightButton(v);
+    if (sysActive_) system_->onRightButton(v);
+    else editor_->onRightButton(v);
 }
 
 void EditorHost::onUpButton(bool v) {
-    editor_->onUpButton(v);
+    if (sysActive_) system_->onUpButton(v);
+    else editor_->onUpButton(v);
 }
 
 void EditorHost::onDownButton(bool v) {
-    editor_->onDownButton(v);
+    if (sysActive_) system_->onDownButton(v);
+    else editor_->onDownButton(v);
 }
 
 void EditorHost::onLeftShiftButton(bool v) {
-    editor_->onLeftShiftButton(v);
+    if (sysActive_) system_->onLeftShiftButton(v);
+    else editor_->onLeftShiftButton(v);
+
     LSActive_ = v;
     if (RSActive_ && LSActive_) sysEditor();
 }
 
 void EditorHost::onRightShiftButton(bool v) {
-    editor_->onRightShiftButton(v);
+    if (sysActive_) system_->onRightShiftButton(v);
+    else editor_->onRightShiftButton(v);
+
     RSActive_ = v;
     if (LSActive_ && RSActive_) sysEditor();
 }

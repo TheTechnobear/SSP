@@ -1,6 +1,6 @@
 #include "BarParamEditor.h"
 
-#include "BaseParamControl.h"
+#include "ParamControl.h"
 
 namespace ssp {
 

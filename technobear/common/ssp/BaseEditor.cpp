@@ -4,8 +4,8 @@
 
 #include "SSP.h"
 
-#include "BaseParamControl.h"
-#include "ButtonControl.h"
+#include "ParamControl.h"
+#include "ParamButton.h"
 
 namespace ssp {
 
@@ -78,7 +78,7 @@ void BaseEditor::resized() {
 }
 
 
-void BaseEditor::setButtonBounds(unsigned idx, std::shared_ptr<ButtonControl> c) {
+void BaseEditor::setButtonBounds(unsigned idx, std::shared_ptr<ParamButton> c) {
     if (c == nullptr) return;
     unsigned col = idx % 4;
     unsigned row = idx / 4;

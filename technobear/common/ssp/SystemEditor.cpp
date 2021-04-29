@@ -12,7 +12,9 @@ static constexpr unsigned btnSpaceY = 50;
 
 
 SystemEditor::SystemEditor(BaseProcessor *p) :
-    baseProcessor_(p) {
+    baseProcessor_(p),
+    midiInCtrl("Midi IN", [&](float idx, const std::string &str) { midiInCallback(idx, str); }),
+    midiOutCtrl("Midi OUT", [&](float idx, const std::string &str) { midiOutCallback(idx, str); }) {
 
     upBtn_.init("EN-", Colours::red);
     setButtonBounds(upBtn_, 0, 5);
@@ -40,12 +42,48 @@ SystemEditor::SystemEditor(BaseProcessor *p) :
 //    addAndMakeVisible(rightShiftBtn_);
 
     auto in = MidiInput::getAvailableDevices();
-    for (int i = 0; i < in.size(); i++)inDevices_.push_back(in[i]);
-    auto out = MidiOutput::getAvailableDevices();
-    for (int i = 0; i < out.size(); i++)outDevices_.push_back(out[i]);
+    midiInStr.push_back("NONE");
+    for (int i = 0; i < in.size(); i++) {
+        inDevices_.push_back(in[i]);
+        midiInStr.push_back(in[i].name.toStdString());
+    }
+    midiInCtrl.setValues(midiInStr);
 
+    auto out = MidiOutput::getAvailableDevices();
+    midiOutStr.push_back("NONE");
+    for (int i = 0; i < out.size(); i++) {
+        outDevices_.push_back(out[i]);
+        midiOutStr.push_back(out[i].name.toStdString());
+    }
+    midiOutCtrl.setValues(midiOutStr);
+
+    addAndMakeVisible(midiInCtrl);
+    addAndMakeVisible(midiOutCtrl);
 
     startTimer(50);
+}
+
+
+void SystemEditor::midiInCallback(float idx, const std::string &dev) {
+    Logger::writeToLog("midiInCallback -> " + String(idx) + " : " + dev);
+    unsigned i = idx;
+    if (i > 1) { // 1 ==  NONE
+        auto dev = inDevices_[i - 1];
+        baseProcessor_->setMidiIn(dev.identifier.toStdString());
+    } else {
+        baseProcessor_->setMidiOut("");
+    }
+}
+
+void SystemEditor::midiOutCallback(float idx, const std::string &dev) {
+    Logger::writeToLog("midiOutCallback -> " + String(idx) + " : " + dev);
+    unsigned i = idx;
+    if (i > 1) { // 1 ==  NONE
+        auto dev = outDevices_[i - 1];
+        baseProcessor_->setMidiOut(dev.identifier.toStdString());
+    } else {
+        baseProcessor_->setMidiOut("");
+    }
 }
 
 
@@ -58,7 +96,11 @@ void SystemEditor::timerCallback() {
 }
 
 void SystemEditor::paint(Graphics &g) {
-//    drawBasicPanel(g);
+    const int fh = 24;
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setColour(Colours::yellow);
+    g.drawSingleLineText(String(JucePlugin_Name) + " : " + String(JucePlugin_Desc), 20, 30);
+
     drawView(g);
 }
 
@@ -67,14 +109,9 @@ void SystemEditor::drawView(Graphics &g) {
     // x= left/right (0..1599)
     // y= top/bottom (0..479)
 
-    const int fh = 24;
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
-    g.setColour(Colours::yellow);
-    g.drawSingleLineText(String(JucePlugin_Name) + " : " + String(JucePlugin_Desc), 20, 30);
-
-    for (int i = 0; i < inDevices_.size(); i++) {
-        g.drawSingleLineText(inDevices_[i].name, 40, (i + 2 ) * (fh + 5));
-    }
+//    for (int i = 0; i < inDevices_.size(); i++) {
+//        g.drawSingleLineText(inDevices_[i].name, 40, (i + 2 ) * (fh + 5));
+//    }
 }
 
 void SystemEditor::setButtonBounds(SSPButton &btn, unsigned r, unsigned c) {
@@ -85,12 +122,29 @@ void SystemEditor::setButtonBounds(SSPButton &btn, unsigned r, unsigned c) {
     btn.setBounds(x, y, w, h);
 }
 
-void SystemEditor::resized() {
 
+void SystemEditor::resized() {
+    const int fh = 36;
+    midiInCtrl.setBounds(700, 50, 600, fh * 2);
+    midiOutCtrl.setBounds(700, 50 + fh * 3, 600, fh * 2);
 }
 
 
 void SystemEditor::onEncoder(unsigned enc, float v) {
+    switch (enc) {
+        case 0 : {
+            if (v > 0) midiInCtrl.inc(false);
+            else midiInCtrl.dec(false);
+            break;
+        }
+        case 1 : {
+            if (v > 0) midiOutCtrl.inc(false);
+            else midiOutCtrl.dec(false);
+            break;
+        }
+        default: { ;
+        }
+    }
 }
 
 void SystemEditor::onEncoderSwitch(unsigned enc, bool v) {

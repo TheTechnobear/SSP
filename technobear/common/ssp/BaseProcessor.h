@@ -68,6 +68,9 @@ public:
 
     bool isInputEnabled(unsigned i) { return i < sspParams::numIn && inputEnabled[i]; }
 
+    void setMidiIn(std::string id);
+    void setMidiOut(std::string id);
+
 protected:
     friend class BaseEditor;
 

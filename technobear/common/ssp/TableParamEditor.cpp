@@ -1,6 +1,6 @@
 #include "TableParamEditor.h"
 
-#include "BaseParamControl.h"
+#include "ParamControl.h"
 
 namespace ssp {
 

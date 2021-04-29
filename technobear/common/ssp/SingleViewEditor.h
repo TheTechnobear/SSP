@@ -10,7 +10,7 @@ namespace ssp {
 
 class BaseParamControl;
 
-class ButtonControl;
+class ParamButton;
 
 class SingleViewEditor :
     public BaseEditor {
@@ -35,14 +35,14 @@ protected:
     );
 
     void addButtonPage(
-        std::shared_ptr<ButtonControl> c1,
-        std::shared_ptr<ButtonControl> c2,
-        std::shared_ptr<ButtonControl> c3,
-        std::shared_ptr<ButtonControl> c4,
-        std::shared_ptr<ButtonControl> c5,
-        std::shared_ptr<ButtonControl> c6,
-        std::shared_ptr<ButtonControl> c7,
-        std::shared_ptr<ButtonControl> c8
+        std::shared_ptr<ParamButton> c1,
+        std::shared_ptr<ParamButton> c2,
+        std::shared_ptr<ParamButton> c3,
+        std::shared_ptr<ParamButton> c4,
+        std::shared_ptr<ParamButton> c5,
+        std::shared_ptr<ParamButton> c6,
+        std::shared_ptr<ParamButton> c7,
+        std::shared_ptr<ParamButton> c8
     );
 
     std::vector<ControlPage> controlPages_;

@@ -5,6 +5,7 @@
 using namespace juce;
 
 #include "SSPButton.h"
+#include "ValueControl.h"
 
 namespace ssp {
 
@@ -51,8 +52,16 @@ protected:
 
     SSPButton leftBtn_, rightBtn_, upBtn_, downBtn_;
     SSPButton leftShiftBtn_, rightShiftBtn_;
+
+    ListValueControl midiInCtrl, midiOutCtrl;
+
+    void midiInCallback(float idx, const std::string& dev);
+    void midiOutCallback(float idx, const std::string& dev);
 private:
     void paint(Graphics &) override;
+
+    std::vector<std::string> midiInStr;
+    std::vector<std::string> midiOutStr;
 
     std::vector<MidiDeviceInfo> inDevices_;
     std::vector<MidiDeviceInfo> outDevices_;

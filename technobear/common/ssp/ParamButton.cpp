@@ -1,22 +1,22 @@
-#include "ButtonControl.h"
+#include "ParamButton.h"
 
 
 namespace ssp {
 
 /// ButtonControl
 
-ButtonControl::ButtonControl(Parameter &p, unsigned fh, const juce::Colour fg, const juce::Colour bg, bool momentary)
+ParamButton::ParamButton(Parameter &p, unsigned fh, const juce::Colour fg, const juce::Colour bg, bool momentary)
     : attachment_(p, [this](float f) { paramChanged(f); }), param_(p),
       fh_(fh), fg_(fg), bg_(bg),
       momentary_(momentary) {
 }
 
-void ButtonControl::paramChanged(float) {
+void ParamButton::paramChanged(float) {
     repaint();
 }
 
 
-void ButtonControl::onUp() {
+void ParamButton::onUp() {
     auto &p = param_;
     bool v = p.getValue() > 0.5f;
     if (momentary_) {
@@ -29,7 +29,7 @@ void ButtonControl::onUp() {
     p.endChangeGesture();
 }
 
-void ButtonControl::onDown() {
+void ParamButton::onDown() {
     auto &p = param_;
     if (momentary_) {
         // toggle on up
@@ -41,7 +41,7 @@ void ButtonControl::onDown() {
     }
 }
 
-void ButtonControl::paint(juce::Graphics &g) {
+void ParamButton::paint(juce::Graphics &g) {
     const int w = getWidth();
     const int h = getHeight();
     g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh_, juce::Font::plain));

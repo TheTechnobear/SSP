@@ -1,4 +1,4 @@
-#include "BaseParamControl.h"
+#include "ParamControl.h"
 
 using namespace juce;
 namespace ssp {

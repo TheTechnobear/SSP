@@ -12,7 +12,7 @@ class BaseProcessor;
 
 class BaseParamControl;
 
-class ButtonControl;
+class ParamButton;
 
 class EditorHost;
 
@@ -52,7 +52,7 @@ protected:
     void onRightShiftButton(bool v) override;
 
 
-    void setButtonBounds(unsigned idx, std::shared_ptr<ButtonControl>);
+    void setButtonBounds(unsigned idx, std::shared_ptr<ParamButton>);
 
     // temp
     void setButtonBounds(SSPButton &btn, unsigned r, unsigned c);
@@ -64,7 +64,7 @@ protected:
     };
 
     struct ButtonPage {
-        std::shared_ptr<ButtonControl> control_[8] = {
+        std::shared_ptr<ParamButton> control_[8] = {
             nullptr, nullptr, nullptr, nullptr,
             nullptr, nullptr, nullptr, nullptr
         };

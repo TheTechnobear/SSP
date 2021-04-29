@@ -1,6 +1,6 @@
 #include "LineParamEditor.h"
 
-#include "BaseParamControl.h"
+#include "ParamControl.h"
 
 namespace ssp {
 
