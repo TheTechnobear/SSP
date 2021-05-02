@@ -13,33 +13,27 @@ static constexpr unsigned btnSpaceY = 50;
 
 SystemEditor::SystemEditor(BaseProcessor *p) :
     baseProcessor_(p),
+    learnBtn_("Learn",[&](bool b) { midiLearn(b); }),
+    leftBtn_("PG-", nullptr, Colours::red), rightBtn_("PG+", nullptr, Colours::red),
+    upBtn_("EN-", nullptr, Colours::red), downBtn_("EN+", nullptr, Colours::red),
+    leftShiftBtn_("LS", nullptr, Colours::grey, Colours::black), rightShiftBtn_("RS", nullptr, Colours::grey, Colours::black),
     midiInCtrl("Midi IN", [&](float idx, const std::string &str) { midiInCallback(idx, str); }),
     midiOutCtrl("Midi OUT", [&](float idx, const std::string &str) { midiOutCallback(idx, str); }) {
 
-    upBtn_.init("EN-", Colours::red);
+    setButtonBounds(leftShiftBtn_, 0, 4);
     setButtonBounds(upBtn_, 0, 5);
-    addAndMakeVisible(upBtn_);
-
-    downBtn_.init("EN+", Colours::red);
+    setButtonBounds(rightShiftBtn_, 0, 6);
     setButtonBounds(downBtn_, 1, 5);
+    setButtonBounds(leftBtn_, 1, 4);
+    setButtonBounds(rightBtn_, 1, 6);
+
+    addAndMakeVisible(upBtn_);
     addAndMakeVisible(downBtn_);
 
-//    leftBtn_.init("PG-", Colours::red);
-//    setButtonBounds(leftBtn_, 	1, 4);
-//    addAndMakeVisible(leftBtn_);
-//
-//    rightBtn_.init("PG+", Colours::red);
-//    setButtonBounds(rightBtn_, 	1, 6);
-//    addAndMakeVisible(rightBtn_);
-//
+    setButtonBounds(learnBtn_,0,0);
+    addAndMakeVisible(learnBtn_);
 
-//    leftShiftBtn_.init("LS", Colours::grey, Colours::black);
-//    setButtonBounds(leftShiftBtn_,	0, 4);
-//    addAndMakeVisible(leftShiftBtn_);
-//
-//    rightShiftBtn_.init("RS", Colours::grey, Colours::black);
-//    setButtonBounds(rightShiftBtn_,	0, 6);
-//    addAndMakeVisible(rightShiftBtn_);
+    baseProcessor_->midiLearn(false);
 
     auto in = MidiInput::getAvailableDevices();
     midiInStr.push_back("NONE");
@@ -67,7 +61,7 @@ SystemEditor::SystemEditor(BaseProcessor *p) :
 void SystemEditor::midiInCallback(float idx, const std::string &dev) {
     Logger::writeToLog("midiInCallback -> " + String(idx) + " : " + dev);
     unsigned i = idx;
-    if (i > 1) { // 1 ==  NONE
+    if (i > 0) { // 0 ==  NONE
         auto dev = inDevices_[i - 1];
         baseProcessor_->setMidiIn(dev.identifier.toStdString());
     } else {
@@ -78,8 +72,8 @@ void SystemEditor::midiInCallback(float idx, const std::string &dev) {
 void SystemEditor::midiOutCallback(float idx, const std::string &dev) {
     Logger::writeToLog("midiOutCallback -> " + String(idx) + " : " + dev);
     unsigned i = idx;
-    if (i > 1) { // 1 ==  NONE
-        auto dev = outDevices_[i - 1];
+    if (i > 0) { // 0 ==  NONE
+        auto dev = outDevices_[i - 1 ];
         baseProcessor_->setMidiOut(dev.identifier.toStdString());
     } else {
         baseProcessor_->setMidiOut("");
@@ -88,6 +82,7 @@ void SystemEditor::midiOutCallback(float idx, const std::string &dev) {
 
 
 SystemEditor::~SystemEditor() {
+    baseProcessor_->midiLearn(false);
     stopTimer();
 }
 
@@ -109,12 +104,23 @@ void SystemEditor::drawView(Graphics &g) {
     // x= left/right (0..1599)
     // y= top/bottom (0..479)
 
-//    for (int i = 0; i < inDevices_.size(); i++) {
-//        g.drawSingleLineText(inDevices_[i].name, 40, (i + 2 ) * (fh + 5));
-//    }
+    const int fh = 24;
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setColour(Colours::white);
+
+    int x = 20;
+    int y = 50;
+
+    auto& plist=baseProcessor_->getParameters();
+    for(auto a : baseProcessor_->midiAutomation()) {
+        assert(a.paramIdx_ < plist.size());
+        auto p = plist[a.paramIdx_];
+        g.drawSingleLineText(p->getName(40), x, y);
+        y+= fh *2;
+    }
 }
 
-void SystemEditor::setButtonBounds(SSPButton &btn, unsigned r, unsigned c) {
+void SystemEditor::setButtonBounds(ValueButton &btn, unsigned r, unsigned c) {
     const int w = 100;
     const int h = btnSpaceY;
     unsigned x = 900 + (c * w);
@@ -129,6 +135,9 @@ void SystemEditor::resized() {
     midiOutCtrl.setBounds(700, 50 + fh * 3, 600, fh * 2);
 }
 
+void SystemEditor::midiLearn(bool b) {
+    baseProcessor_->midiLearn(b);
+}
 
 void SystemEditor::onEncoder(unsigned enc, float v) {
     switch (enc) {
@@ -151,31 +160,39 @@ void SystemEditor::onEncoderSwitch(unsigned enc, bool v) {
 }
 
 void SystemEditor::onButton(unsigned btn, bool v) {
+    switch(btn) {
+        case 0: {
+            if(!v) learnBtn_.toggle();
+            break;
+        }
+        default:
+            break;
+    }
 }
 
 
 void SystemEditor::onLeftButton(bool v) {
-    leftBtn_.active(v);
+    leftBtn_.value(v);
 }
 
 void SystemEditor::onRightButton(bool v) {
-    rightBtn_.active(v);
+    rightBtn_.value(v);
 }
 
 void SystemEditor::onUpButton(bool v) {
-    upBtn_.active(v);
+    upBtn_.value(v);
 }
 
 void SystemEditor::onDownButton(bool v) {
-    downBtn_.active(v);
+    downBtn_.value(v);
 }
 
 void SystemEditor::onLeftShiftButton(bool v) {
-    leftShiftBtn_.active(v);
+    leftShiftBtn_.value(v);
 }
 
 void SystemEditor::onRightShiftButton(bool v) {
-    rightShiftBtn_.active(v);
+    rightShiftBtn_.value(v);
 }
 
 

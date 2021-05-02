@@ -17,6 +17,10 @@ EditorHost::EditorHost(BaseProcessor *p, BaseEditor *e) :
     AudioProcessorEditor(p),
     processor_(p),
     editor_(e),
+    globalBtn_("G", nullptr, Colours::red),
+    networkBtn_("N", nullptr, Colours::red),
+    plugInBtn_("P", nullptr, Colours::red),
+    recBtn_("R", nullptr, Colours::red),
     leftAtt_(*p->getParameter(BaseProcessor::sspParams::getId(Percussa::sspSwLeft)), [this](float f) { onLeftButton(f); }),
     rightAtt_(*p->getParameter(BaseProcessor::sspParams::getId(Percussa::sspSwRight)), [this](float f) { onRightButton(f); }),
     upAtt_(*p->getParameter(BaseProcessor::sspParams::getId(Percussa::sspSwUp)), [this](float f) { onUpButton(f); }),
@@ -48,11 +52,6 @@ EditorHost::EditorHost(BaseProcessor *p, BaseEditor *e) :
 
     setSize(1600, 480);
 
-
-    globalBtn_.init("G", Colours::red);
-    networkBtn_.init("N", Colours::red);
-    plugInBtn_.init("P", Colours::red);
-    recBtn_.init("R", Colours::red);
     addAndMakeVisible(globalBtn_);
     addAndMakeVisible(networkBtn_);
     addAndMakeVisible(plugInBtn_);
@@ -75,7 +74,7 @@ EditorHost::~EditorHost() {
 }
 
 
-void EditorHost::setMenuBounds(SSPButton &btn, unsigned r) {
+void EditorHost::setMenuBounds(ValueButton &btn, unsigned r) {
     const int w = 70;
     const int h = 45;
     unsigned x = 1530 + 1;

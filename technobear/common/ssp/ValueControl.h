@@ -40,12 +40,15 @@ protected:
 
 class SimpleValueControl : public BaseValueControl {
 public:
-    SimpleValueControl(const std::string &name, const std::string &label = "",
+    SimpleValueControl(const std::string &name, const std::string &label,
+                       std::function<void(float v)> cb,
                        float min = 1.0f, float max = 1.0f, float def = 0.5f,
                        float coarse = 1.0f, float fine = 0.01f);
     void inc(bool coarse) override;
     void dec(bool coarse) override;
     void reset() override;
+
+    void valueChanged(float) override;
 
 protected:
     void paint(juce::Graphics &g) override;
@@ -53,12 +56,14 @@ protected:
 private:
     float coarseInc_ = 0.0f;
     float fineInc_ = 0.0f;
+    std::function<void(float value)> callback_;
     juce_UseDebuggingNewOperator
 };
 
 class LineValueControl : public SimpleValueControl {
 public:
-    LineValueControl(const std::string &name, const std::string &label = "",
+    LineValueControl(const std::string &name, const std::string &label,
+                     std::function<void(float v)> cb,
                      float min = 1.0f, float max = 1.0f, float def = 0.5f,
                      float coarse = 1.0f, float fine = 0.01f);
 protected:
@@ -70,6 +75,7 @@ protected:
 class BarValueControl : public SimpleValueControl {
 public:
     BarValueControl(const std::string &name, const std::string &label,
+                    std::function<void(float v)> cb,
                     float min = 1.0f, float max = 1.0f, float def = 0.5f,
                     float coarse = 1.0f, float fine = 0.01f);
 protected:

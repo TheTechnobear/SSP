@@ -11,19 +11,15 @@ namespace ssp {
 
 MultiViewEditor::MultiViewEditor(BaseProcessor *p, unsigned maxView)
     : base_type(p) {
-    upBtn_.init("EN-", Colours::red);
     setButtonBounds(upBtn_, 0, 5);
     addAndMakeVisible(upBtn_);
 
-    downBtn_.init("EN+", Colours::red);
     setButtonBounds(downBtn_, 1, 5);
     addAndMakeVisible(downBtn_);
 
-    leftBtn_.init("PG-", Colours::red);
     setButtonBounds(leftBtn_, 1, 4);
     addAndMakeVisible(leftBtn_);
 
-    rightBtn_.init("PG+", Colours::red);
     setButtonBounds(rightBtn_, 1, 6);
     addAndMakeVisible(rightBtn_);
 

@@ -3,6 +3,7 @@
 #include <juce_core/juce_core.h>
 #include <juce_audio_devices/juce_audio_devices.h>
 
+#include <assert.h>
 namespace ssp {
 
 #ifdef __APPLE__
@@ -78,6 +79,18 @@ public:
 };
 
 
+BaseProcessor::BaseProcessor(
+    const AudioProcessor::BusesProperties &ioLayouts,
+    juce::AudioProcessorValueTreeState::ParameterLayout pl)
+    : AudioProcessor(ioLayouts), apvts(*this, nullptr, "state", std::move(pl)) {
+    addListener(this);
+}
+
+BaseProcessor::~BaseProcessor() {
+    removeListener(this);
+}
+
+
 void BaseProcessor::addBaseParameters(AudioProcessorValueTreeState::ParameterLayout &params) {
     for (unsigned i = 0; i < sspParams::numEnc; i++) {
         params.add(std::make_unique<EncoderParameter>(
@@ -138,11 +151,6 @@ void BaseProcessor::init() {
 
 static const char *MIDI_TAG_IN_DEV = "MIDI_IN";
 static const char *MIDI_TAG_OUT_DEV = "MIDI_OUT";
-
-
-void BaseProcessor::MidiCallback::handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message) {
-    Logger::writeToLog("MidiCallback -> " + message.getDescription());
-}
 
 void BaseProcessor::midiFromXml(juce::XmlElement *xml) {
     setMidiIn(xml->getStringAttribute(MIDI_TAG_IN_DEV).toStdString());
@@ -219,7 +227,8 @@ void BaseProcessor::onOutputChanged(unsigned i, bool b) {
 void BaseProcessor::setMidiIn(std::string id) {
     midiInDeviceId_ = id;
     if (!midiInDeviceId_.empty()) {
-        midiInDevice_ = MidiInput::openDevice(midiInDeviceId_, &midiCallback_);
+//        midiInDevice_ = MidiInput::openDevice(midiInDeviceId_, &midiCallback_);
+        midiInDevice_ = MidiInput::openDevice(midiInDeviceId_, this);
         if (midiInDevice_ && midiInDevice_->getIdentifier().toStdString() == midiInDeviceId_) {
             midiInDevice_->start();
             Logger::writeToLog("MIDI IN OPEN -> " + id);
@@ -243,6 +252,82 @@ void BaseProcessor::setMidiOut(std::string id) {
         }
     } else {
         midiOutDevice_ = nullptr;
+    }
+}
+
+void BaseProcessor::automateParam(int idx, float v) {
+    assert(idx >= Percussa::sspLast);
+
+    auto &plist = getParameters();
+    if (idx < plist.size()) {
+        auto p = plist[idx];
+        if (p->getValue() != v) {
+            p->beginChangeGesture();
+            p->setValueNotifyingHost(v);
+            p->endChangeGesture();
+        }
+    }
+}
+
+void BaseProcessor::handleMidi(const MidiMessage &msg) {
+    if (midiChannel_ == 0 || msg.getChannel() == midiChannel_) {
+        if (midiLearn_) {
+            if (lastLearn_.paramIdx_ > 0) {
+                if (msg.isController()) {
+                    auto &m = lastLearn_.midi_;
+                    m.type_ = MidiAutomation::Midi::T_CC;
+                    m.num_ = msg.getControllerNumber();
+
+                    bool found = false;
+                    for (auto &a : midiAutomation_) {
+                        if (a.paramIdx_ == lastLearn_.paramIdx_) {
+                            found = true;
+                            a = lastLearn_;
+                        }
+                    }
+                    if (!found) {
+                        midiAutomation_.push_back(lastLearn_);
+                    }
+
+                    lastLearn_.reset();
+                }
+            }
+        }
+
+        for (auto &a : midiAutomation_) {
+            if ((msg.isController() && a.midi_.type_ == MidiAutomation::Midi::T_CC)
+                && (msg.getControllerNumber() == a.midi_.num_)
+                ) {
+                float val = float(msg.getControllerValue()) / 127.0f;
+                val = (val * a.scale_) + a.offset_;
+                automateParam(a.paramIdx_, val);
+            }
+        }
+    }
+}
+
+
+void BaseProcessor::handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message) {
+    Logger::writeToLog("MidiCallback -> " + message.getDescription());
+    handleMidi(message);
+}
+
+
+void BaseProcessor::midiLearn(bool b) {
+    if (midiLearn_ != b) {
+        midiLearn_ = b;
+        if (midiLearn_) {
+            lastLearn_.reset();
+        }
+    }
+}
+
+void BaseProcessor::audioProcessorParameterChanged(AudioProcessor *processor,
+                                                   int parameterIndex,
+                                                   float) {
+    assert(processor == this);
+    if (midiLearn_ && parameterIndex >= Percussa::sspLast) {
+        lastLearn_.paramIdx_ = parameterIndex;
     }
 }
 

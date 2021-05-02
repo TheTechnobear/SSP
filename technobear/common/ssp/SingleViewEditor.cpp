@@ -12,11 +12,9 @@ namespace ssp {
 SingleViewEditor::SingleViewEditor(BaseProcessor *p)
     : base_type(p) {
 
-    upBtn_.init("EN-", Colours::red);
     setButtonBounds(upBtn_, 0, 5);
     addAndMakeVisible(upBtn_);
 
-    downBtn_.init("EN+", Colours::red);
     setButtonBounds(downBtn_, 1, 5);
     addAndMakeVisible(downBtn_);
 }

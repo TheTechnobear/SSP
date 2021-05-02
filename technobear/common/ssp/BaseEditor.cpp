@@ -15,32 +15,20 @@ static constexpr unsigned btnSpaceY = 50;
 
 
 BaseEditor::BaseEditor(BaseProcessor *p) :
-    baseProcessor_(p) {
+    baseProcessor_(p),
+    leftBtn_("PG-", nullptr, Colours::red), rightBtn_("PG+", nullptr, Colours::red),
+    upBtn_("EN-", nullptr, Colours::red), downBtn_("EN+", nullptr, Colours::red),
+    leftShiftBtn_("LS", nullptr, Colours::grey, Colours::black), rightShiftBtn_("RS", nullptr, Colours::grey, Colours::black) {
 
-    upBtn_.init("EN-", Colours::red);
+    setButtonBounds(leftShiftBtn_, 0, 4);
     setButtonBounds(upBtn_, 0, 5);
-    addAndMakeVisible(upBtn_);
-
-    downBtn_.init("EN+", Colours::red);
+    setButtonBounds(rightShiftBtn_, 0, 6);
     setButtonBounds(downBtn_, 1, 5);
+    setButtonBounds(leftBtn_, 1, 4);
+    setButtonBounds(rightBtn_, 1, 6);
+
+    addAndMakeVisible(upBtn_);
     addAndMakeVisible(downBtn_);
-
-//    leftBtn_.init("PG-", Colours::red);
-//    setButtonBounds(leftBtn_, 	1, 4);
-//    addAndMakeVisible(leftBtn_);
-//
-//    rightBtn_.init("PG+", Colours::red);
-//    setButtonBounds(rightBtn_, 	1, 6);
-//    addAndMakeVisible(rightBtn_);
-//
-
-//    leftShiftBtn_.init("LS", Colours::grey, Colours::black);
-//    setButtonBounds(leftShiftBtn_,	0, 4);
-//    addAndMakeVisible(leftShiftBtn_);
-//
-//    rightShiftBtn_.init("RS", Colours::grey, Colours::black);
-//    setButtonBounds(rightShiftBtn_,	0, 6);
-    addAndMakeVisible(rightShiftBtn_);
 
     startTimer(50);
 }
@@ -65,7 +53,7 @@ void BaseEditor::drawView(Graphics &g) {
     // y= top/bottom (0..479)
 }
 
-void BaseEditor::setButtonBounds(SSPButton &btn, unsigned r, unsigned c) {
+void BaseEditor::setButtonBounds(ValueButton &btn, unsigned r, unsigned c) {
     const int w = 100;
     const int h = btnSpaceY;
     unsigned x = 900 + (c * w);
@@ -103,27 +91,27 @@ void BaseEditor::onButton(unsigned btn, bool v) {
 
 
 void BaseEditor::onLeftButton(bool v) {
-    leftBtn_.active(v);
+    leftBtn_.value(v);
 }
 
 void BaseEditor::onRightButton(bool v) {
-    rightBtn_.active(v);
+    rightBtn_.value(v);
 }
 
 void BaseEditor::onUpButton(bool v) {
-    upBtn_.active(v);
+    upBtn_.value(v);
 }
 
 void BaseEditor::onDownButton(bool v) {
-    downBtn_.active(v);
+    downBtn_.value(v);
 }
 
 void BaseEditor::onLeftShiftButton(bool v) {
-    leftShiftBtn_.active(v);
+    leftShiftBtn_.value(v);
 }
 
 void BaseEditor::onRightShiftButton(bool v) {
-    rightShiftBtn_.active(v);
+    rightShiftBtn_.value(v);
 }
 
 

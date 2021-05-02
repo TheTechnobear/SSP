@@ -12,14 +12,15 @@ using namespace juce;
 namespace ssp {
 
 class BaseProcessor : public AudioProcessor,
-                      private ValueTree::Listener {
+                      public MidiInputCallback,
+                      public AudioProcessorListener {
+//                      public AudioProcessorListener,
+//                      private ValueTree::Listener {
 public:
 
-    explicit BaseProcessor(
-        const AudioProcessor::BusesProperties &ioLayouts,
-        juce::AudioProcessorValueTreeState::ParameterLayout pl)
-        : AudioProcessor(ioLayouts), apvts(*this, nullptr, "state", std::move(pl)) {
-    }
+    explicit BaseProcessor(const AudioProcessor::BusesProperties &ioLayouts,
+                           juce::AudioProcessorValueTreeState::ParameterLayout pl);
+    virtual ~BaseProcessor();
 
     virtual void init();
 
@@ -71,6 +72,8 @@ public:
     void setMidiIn(std::string id);
     void setMidiOut(std::string id);
 
+    void midiLearn(bool b);
+
 protected:
     friend class BaseEditor;
 
@@ -86,14 +89,56 @@ protected:
     void addBaseParameters(AudioProcessorValueTreeState::ParameterLayout &);
 
 
-    class MidiCallback : public MidiInputCallback {
-        void handleIncomingMidiMessage (MidiInput* source, const MidiMessage& message);
-    } midiCallback_;
+    // midi automation
+    // AudioProcessorListener
+    void audioProcessorParameterChanged(AudioProcessor *p, int parameterIndex, float newValue) override;
+
+    void audioProcessorChanged(AudioProcessor *processor) override { ; }
+
+    // MidiInputCallback
+    void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message) override;
+
+    void handleMidi(const MidiMessage &message);
+    void automateParam(int idx, float v);
+
+    struct MidiAutomation {
+        int paramIdx_ = -1;
+        float scale_ = 1.0f;
+        float offset_ = 0.0f;
+        struct Midi {
+            int channel_ = 0;
+            int num_ = 0; // note num, cc , if applicable
+            enum {
+                T_CC,
+                T_PRESSURE,
+                T_NOTE,
+                T_MAX
+            } type_ = T_MAX;
+        } midi_;
+
+
+        void reset() {
+            paramIdx_ = -1;
+            midi_.channel_ = 0;
+            midi_.num_ = 0;
+            midi_.type_ = Midi::T_MAX;
+        }
+    };
+
+    std::vector<MidiAutomation> midiAutomation_;
 
     std::string midiInDeviceId_;
     std::string midiOutDeviceId_;
     std::unique_ptr<MidiInput> midiInDevice_;
     std::unique_ptr<MidiOutput> midiOutDevice_;
+    int midiChannel_ = 0;
+    bool midiLearn_ = false;
+
+    MidiAutomation lastLearn_;
+
+public:
+    std::vector<MidiAutomation>& midiAutomation() { return midiAutomation_;}
+private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BaseProcessor)
 };

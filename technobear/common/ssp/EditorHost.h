@@ -4,10 +4,10 @@
 
 using namespace juce;
 
-#include "SSPButton.h"
 
 #include "SSPActions.h"
 
+#include "ValueButton.h"
 #include "BaseEditor.h"
 #include "SystemEditor.h"
 #include "BaseProcessor.h"
@@ -50,10 +50,10 @@ private:
     void onLeftShiftButton(bool v) override;
     void onRightShiftButton(bool v) override;
 
-    void setMenuBounds(SSPButton &btn, unsigned r);
+    void setMenuBounds(ValueButton &btn, unsigned r);
 
     void sysEditor();
-    SSPButton globalBtn_, networkBtn_, plugInBtn_, recBtn_;
+    ValueButton globalBtn_, networkBtn_, plugInBtn_, recBtn_;
 
     bool LSActive_ = false;
     bool RSActive_ = false;

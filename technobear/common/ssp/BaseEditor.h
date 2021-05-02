@@ -4,7 +4,7 @@
 
 using namespace juce;
 
-#include "SSPButton.h"
+#include "ValueButton.h"
 
 namespace ssp {
 
@@ -55,7 +55,7 @@ protected:
     void setButtonBounds(unsigned idx, std::shared_ptr<ParamButton>);
 
     // temp
-    void setButtonBounds(SSPButton &btn, unsigned r, unsigned c);
+    void setButtonBounds(ValueButton &btn, unsigned r, unsigned c);
 
     BaseProcessor *baseProcessor_;
 
@@ -73,8 +73,8 @@ protected:
     bool encoderState_[4] = {false, false, false, false};
 
 
-    SSPButton leftBtn_, rightBtn_, upBtn_, downBtn_;
-    SSPButton leftShiftBtn_, rightShiftBtn_;
+    ValueButton leftBtn_, rightBtn_, upBtn_, downBtn_;
+    ValueButton leftShiftBtn_, rightShiftBtn_;
 private:
     void paint(Graphics &) override;
 

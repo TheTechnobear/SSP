@@ -4,7 +4,7 @@
 
 using namespace juce;
 
-#include "SSPButton.h"
+#include "ValueButton.h"
 #include "ValueControl.h"
 
 namespace ssp {
@@ -29,6 +29,7 @@ public:
     void resized() override;
 
 
+    void midiLearn(bool b);
 protected:
 //    using base_type = juce::AudioProcessorEditor;
 
@@ -46,12 +47,14 @@ protected:
     void onLeftShiftButton(bool v) override;
     void onRightShiftButton(bool v) override;
 
-    void setButtonBounds(SSPButton &btn, unsigned r, unsigned c);
+    void setButtonBounds(ValueButton &btn, unsigned r, unsigned c);
 
     BaseProcessor *baseProcessor_;
 
-    SSPButton leftBtn_, rightBtn_, upBtn_, downBtn_;
-    SSPButton leftShiftBtn_, rightShiftBtn_;
+    ValueButton leftBtn_, rightBtn_, upBtn_, downBtn_;
+    ValueButton leftShiftBtn_, rightShiftBtn_;
+
+    ValueButton learnBtn_;
 
     ListValueControl midiInCtrl, midiOutCtrl;
 

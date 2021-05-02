@@ -30,8 +30,9 @@ void BaseValueControl::valueChanged(float) {
 
 
 SimpleValueControl::SimpleValueControl(const std::string &name, const std::string &label,
+                                       std::function<void(float v)> cb,
                                        float min, float max, float def, float coarse, float fine)
-    : BaseValueControl(name, label, min, max, def), coarseInc_(coarse), fineInc_(fine) {
+    : BaseValueControl(name, label, min, max, def), callback_(cb), coarseInc_(coarse), fineInc_(fine) {
 }
 
 
@@ -53,6 +54,12 @@ void SimpleValueControl::reset() {
     set(default_);
 }
 
+
+void SimpleValueControl::valueChanged(float v) {
+    BaseValueControl::valueChanged(v);
+    if(callback_) callback_(v);
+}
+
 void SimpleValueControl::paint(Graphics &g) {
     static constexpr unsigned fh = 36;
     int h = getHeight();
@@ -71,8 +78,9 @@ void SimpleValueControl::paint(Graphics &g) {
 
 
 LineValueControl::LineValueControl(const std::string &name, const std::string &label,
+                                   std::function<void(float v)> cb,
                                    float min, float max, float def, float coarse, float fine)
-    : SimpleValueControl(name, label, min, max, def, coarse, fine) {
+    : SimpleValueControl(name, label, cb, min, max, def, coarse, fine) {
 };
 
 void LineValueControl::paint(Graphics &g) {
@@ -93,8 +101,9 @@ void LineValueControl::paint(Graphics &g) {
 
 
 BarValueControl::BarValueControl(const std::string &name, const std::string &label,
+                                 std::function<void(float v)> cb,
                                  float min, float max, float def, float coarse, float fine)
-    : SimpleValueControl(name, label, min, max, def, coarse, fine) {
+    : SimpleValueControl(name, label,cb, min, max, def, coarse, fine) {
 };
 
 void BarValueControl::paint(Graphics &g) {
@@ -158,8 +167,8 @@ void ListValueControl::reset() {
 
 void ListValueControl::setValues(std::vector<std::string> &v) {
     values_ = v;
-    min_ = v.empty() ? 0 : 1;
-    max_ = v.size();
+    min_ = 0;
+    max_ = v.size() - 1;
     default_ = min_;
     set(default_);
 }
@@ -167,8 +176,8 @@ void ListValueControl::setValues(std::vector<std::string> &v) {
 void ListValueControl::valueChanged(float nv) {
     BaseValueControl::valueChanged(nv);
     std::string val;
-    if (nv > 0 && !values_.empty()) val = values_[(unsigned) nv - 1];
-    callback_(nv, val);
+    if (!values_.empty()) val = values_[(unsigned) nv];
+    if(callback_) callback_(nv, val);
 }
 
 void ListValueControl::paint(Graphics &g) {
@@ -182,7 +191,7 @@ void ListValueControl::paint(Graphics &g) {
     g.drawText(name_, 0, 0, w, fh, Justification::centred);
 
     String val;
-    if (value_ > 0 && !values_.empty()) val = values_[(unsigned) value_ - 1];
+    if (!values_.empty()) val = values_[(unsigned) value_];
     if (!label_.empty()) { val = val + " " + label_; }
     g.setColour(Colours::white);
     g.drawText(val, 0, h / 2, w, fh, Justification::centred);

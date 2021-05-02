@@ -8,13 +8,9 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     activeEngine_ = 0;
     upBtn_.label("AG-");
     downBtn_.label("AG+");
-    leftBtn_.init("IN-", Colours::red);
-    setButtonBounds(leftBtn_, 1, 4);
-    addAndMakeVisible(leftBtn_);
+    leftBtn_.label("IN-");
 
-    rightBtn_.init("IN+", Colours::red);
-    setButtonBounds(rightBtn_, 1, 6);
-    addAndMakeVisible(rightBtn_);
+    rightBtn_.label("IN+");
     setSize(1600, 480);
 }
 

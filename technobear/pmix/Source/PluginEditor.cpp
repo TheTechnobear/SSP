@@ -1,22 +1,20 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-#include "ssp/BaseParamControl.h"
-#include "ssp/ButtonControl.h"
+#include "ssp/ParamControl.h"
+#include "ssp/ParamButton.h"
 
 using pcontrol_type = ssp::BarParamControl;
 //using pcontrol_type = ssp::LineParamControl;
-using bcontrol_type = ssp::ButtonControl;
+using bcontrol_type = ssp::ParamButton;
 
 PluginEditor::PluginEditor(PluginProcessor &p)
     : base_type(&p, 3),
       processor_(p) {
 
-    leftShiftBtn_.init("IN14", Colours::grey, Colours::black);
-    setButtonBounds(leftShiftBtn_, 0, 4);
+    leftShiftBtn_.label("IN14");
     addAndMakeVisible(leftShiftBtn_);
-    rightShiftBtn_.init("IN58", Colours::grey, Colours::black);
-    setButtonBounds(rightShiftBtn_, 0, 6);
+    rightShiftBtn_.label("IN58");
     addAndMakeVisible(rightShiftBtn_);
 
     leftBtn_.label("EN-");
@@ -153,9 +151,9 @@ void PluginEditor::timerCallback() {
 }
 
 void PluginEditor::drawView(Graphics &g) {
-    leftShiftBtn_.active(view_ == 0);
-    rightShiftBtn_.active(view_ == 1);
-    upBtn_.active(view_ == 2);
+    leftShiftBtn_.value(view_ == 0);
+    rightShiftBtn_.value(view_ == 1);
+    upBtn_.value(view_ == 2);
 
     base_type::drawView(g);
     for (unsigned i = 0; i < PluginProcessor::IN_T_MAX; i++) {
@@ -227,14 +225,14 @@ void PluginEditor::onButton(unsigned btn, bool v) {
 }
 
 void PluginEditor::onLeftButton(bool v) {
-    leftBtn_.active(v);
+    leftBtn_.value(v);
     if (!v) {
         chgParamPage(-1, true);
     }
 }
 
 void PluginEditor::onRightButton(bool v) {
-    rightBtn_.active(v);
+    rightBtn_.value(v);
     if (!v) {
         chgParamPage(1, true);
     }
@@ -242,7 +240,7 @@ void PluginEditor::onRightButton(bool v) {
 
 
 void PluginEditor::onDownButton(bool v) {
-    downBtn_.active(v);
+    downBtn_.value(v);
     if (!v) {
         auto &view = views_[view_];
         unsigned bmode = buttonPage_ + 1 >= view.buttonPages_.size() ? 0 : buttonPage_ + 1;
