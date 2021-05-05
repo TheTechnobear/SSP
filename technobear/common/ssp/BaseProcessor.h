@@ -72,10 +72,15 @@ public:
     void setMidiIn(std::string id);
     void setMidiOut(std::string id);
 
+    bool isActiveMidiIn(const std::string &id) { return midiInDeviceId_ == id; }
+
+    bool isActiveMidiOut(const std::string &id) { return midiOutDeviceId_ == id; }
+
     void midiLearn(bool b);
 
 protected:
     friend class BaseEditor;
+    friend class SystemEditor;
 
     AudioProcessorValueTreeState apvts;
     bool inputEnabled[sspParams::numIn];
@@ -108,7 +113,7 @@ protected:
         struct Midi {
             int channel_ = 0;
             int num_ = 0; // note num, cc , if applicable
-            enum {
+            enum Type {
                 T_CC,
                 T_PRESSURE,
                 T_NOTE,
@@ -119,10 +124,17 @@ protected:
 
         void reset() {
             paramIdx_ = -1;
+            scale_ = 1.0f;
+            offset_ = 0.0f;
             midi_.channel_ = 0;
             midi_.num_ = 0;
             midi_.type_ = Midi::T_MAX;
         }
+
+        bool valid() { return paramIdx_ >= 0 && midi_.type_ != Midi::T_MAX; }
+
+        void store(XmlElement *);
+        void recall(XmlElement *);
     };
 
     std::vector<MidiAutomation> midiAutomation_;
@@ -137,7 +149,8 @@ protected:
     MidiAutomation lastLearn_;
 
 public:
-    std::vector<MidiAutomation>& midiAutomation() { return midiAutomation_;}
+    std::vector<MidiAutomation> &midiAutomation() { return midiAutomation_; }
+
 private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BaseProcessor)

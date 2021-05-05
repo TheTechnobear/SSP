@@ -10,6 +10,7 @@ using namespace juce;
 namespace ssp {
 
 class BaseProcessor;
+
 class EditorHost;
 
 
@@ -30,6 +31,7 @@ public:
 
 
     void midiLearn(bool b);
+    void deleteAutomation(bool b);
 protected:
 //    using base_type = juce::AudioProcessorEditor;
 
@@ -37,6 +39,7 @@ protected:
 
     // ssp actions
     friend class EditorHost;
+
     void onEncoder(unsigned enc, float v) override;
     void onEncoderSwitch(unsigned enc, bool v) override;
     void onButton(unsigned btn, bool v) override;
@@ -54,12 +57,12 @@ protected:
     ValueButton leftBtn_, rightBtn_, upBtn_, downBtn_;
     ValueButton leftShiftBtn_, rightShiftBtn_;
 
-    ValueButton learnBtn_;
+    ValueButton learnBtn_, delBtn_;
 
     ListValueControl midiInCtrl, midiOutCtrl;
 
-    void midiInCallback(float idx, const std::string& dev);
-    void midiOutCallback(float idx, const std::string& dev);
+    void midiInCallback(float idx, const std::string &dev);
+    void midiOutCallback(float idx, const std::string &dev);
 private:
     void paint(Graphics &) override;
 
@@ -68,6 +71,11 @@ private:
 
     std::vector<MidiDeviceInfo> inDevices_;
     std::vector<MidiDeviceInfo> outDevices_;
+
+    static constexpr unsigned MAX_SHOWN = 12;
+    int idxOffset_ = 0;
+    int selIdx_ = -1;
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SystemEditor)
 };

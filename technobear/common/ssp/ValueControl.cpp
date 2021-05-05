@@ -57,7 +57,7 @@ void SimpleValueControl::reset() {
 
 void SimpleValueControl::valueChanged(float v) {
     BaseValueControl::valueChanged(v);
-    if(callback_) callback_(v);
+    if (callback_) callback_(v);
 }
 
 void SimpleValueControl::paint(Graphics &g) {
@@ -103,7 +103,7 @@ void LineValueControl::paint(Graphics &g) {
 BarValueControl::BarValueControl(const std::string &name, const std::string &label,
                                  std::function<void(float v)> cb,
                                  float min, float max, float def, float coarse, float fine)
-    : SimpleValueControl(name, label,cb, min, max, def, coarse, fine) {
+    : SimpleValueControl(name, label, cb, min, max, def, coarse, fine) {
 };
 
 void BarValueControl::paint(Graphics &g) {
@@ -165,19 +165,20 @@ void ListValueControl::reset() {
     set(default_);
 }
 
-void ListValueControl::setValues(std::vector<std::string> &v) {
+void ListValueControl::setValues(std::vector<std::string> &v, int selIdx) {
     values_ = v;
     min_ = 0;
     max_ = v.size() - 1;
     default_ = min_;
-    set(default_);
+    if (selIdx > -1) set(selIdx);
+    else set(default_);
 }
 
 void ListValueControl::valueChanged(float nv) {
     BaseValueControl::valueChanged(nv);
     std::string val;
     if (!values_.empty()) val = values_[(unsigned) nv];
-    if(callback_) callback_(nv, val);
+    if (callback_) callback_(nv, val);
 }
 
 void ListValueControl::paint(Graphics &g) {

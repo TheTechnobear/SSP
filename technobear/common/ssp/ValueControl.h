@@ -98,7 +98,7 @@ public:
 
     std::vector<std::string> &values() { return values_; }
 
-    void setValues(std::vector<std::string> &v);
+    void setValues(std::vector<std::string> &v, int selIdx = -1);
 protected:
     void paint(juce::Graphics &g) override;
 

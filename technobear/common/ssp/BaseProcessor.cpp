@@ -4,6 +4,7 @@
 #include <juce_audio_devices/juce_audio_devices.h>
 
 #include <assert.h>
+
 namespace ssp {
 
 #ifdef __APPLE__
@@ -87,6 +88,12 @@ BaseProcessor::BaseProcessor(
 }
 
 BaseProcessor::~BaseProcessor() {
+    if (midiInDevice_) {
+        midiInDevice_->stop();
+    }
+    if (midiOutDevice_) {
+        midiOutDevice_->stopBackgroundThread();
+    }
     removeListener(this);
 }
 
@@ -152,17 +159,58 @@ void BaseProcessor::init() {
 static const char *MIDI_TAG_IN_DEV = "MIDI_IN";
 static const char *MIDI_TAG_OUT_DEV = "MIDI_OUT";
 
+void BaseProcessor::MidiAutomation::store(XmlElement *xml) {
+    xml->setAttribute("paramId", paramIdx_);
+    xml->setAttribute("scale", scale_);
+    xml->setAttribute("offset", offset_);
+    xml->setAttribute("midi.channel", midi_.channel_);
+    xml->setAttribute("midi.num", midi_.num_);
+    xml->setAttribute("midi.type", midi_.type_);
+}
+
+void BaseProcessor::MidiAutomation::recall(XmlElement *xml) {
+    paramIdx_ = xml->getIntAttribute("paramId", -1);
+    scale_ = xml->getDoubleAttribute("scale", 1.0f);
+    offset_ = xml->getDoubleAttribute("offset", 0.0f);
+    midi_.channel_ = xml->getIntAttribute("midi.channel", 0);
+    midi_.num_ = xml->getIntAttribute("midi.num", -1);
+    midi_.type_ = static_cast<Midi::Type>(xml->getIntAttribute("midi.type", Midi::T_MAX));
+}
+
+
 void BaseProcessor::midiFromXml(juce::XmlElement *xml) {
-    setMidiIn(xml->getStringAttribute(MIDI_TAG_IN_DEV).toStdString());
-    setMidiOut(xml->getStringAttribute(MIDI_TAG_OUT_DEV).toStdString());
+    auto midiin = xml->getStringAttribute(MIDI_TAG_IN_DEV).toStdString();
+    auto midiout = xml->getStringAttribute(MIDI_TAG_OUT_DEV).toStdString();
+    setMidiIn(midiin);
+    setMidiOut(midiout);
+
+    midiAutomation_.clear();
+    auto amXml = xml->getChildByName("Automation");
+    if (amXml) {
+        for (int idx = 0; idx < amXml->getNumChildElements(); idx++) {
+            auto pxml = amXml->getChildElement(idx);
+            if (pxml) {
+                MidiAutomation am;
+                am.recall(pxml);
+                if (am.valid()) {
+                    midiAutomation_.push_back(am);
+                }
+            }
+        }
+    }
 }
 
 void BaseProcessor::midiToXml(juce::XmlElement *xml) {
-    auto in = MidiInput::getAvailableDevices();
-    if (in.size() > 0) midiInDeviceId_ = in[0].identifier.toStdString();
-
     xml->setAttribute(MIDI_TAG_IN_DEV, midiInDeviceId_);
     xml->setAttribute(MIDI_TAG_OUT_DEV, midiOutDeviceId_);
+
+    auto amXml = xml->createNewChildElement("Automation");
+    for (auto a : midiAutomation_) {
+        if (a.paramIdx_ != -1) {
+            auto pxml = amXml->createNewChildElement("P_" + String(a.paramIdx_));
+            a.store(pxml);
+        }
+    }
 }
 
 
@@ -199,6 +247,7 @@ void BaseProcessor::getStateInformation(MemoryBlock &destData) {
 void BaseProcessor::setStateInformation(const void *data, int sizeInBytes) {
     std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
     if (xml.get() != nullptr) {
+//        Logger::writeToLog(xml->toString());
         if (xml->hasTagName(apvts.state.getType())) {
             // backwards compat
             apvts.replaceState(juce::ValueTree::fromXml(*xml));
@@ -227,7 +276,6 @@ void BaseProcessor::onOutputChanged(unsigned i, bool b) {
 void BaseProcessor::setMidiIn(std::string id) {
     midiInDeviceId_ = id;
     if (!midiInDeviceId_.empty()) {
-//        midiInDevice_ = MidiInput::openDevice(midiInDeviceId_, &midiCallback_);
         midiInDevice_ = MidiInput::openDevice(midiInDeviceId_, this);
         if (midiInDevice_ && midiInDevice_->getIdentifier().toStdString() == midiInDeviceId_) {
             midiInDevice_->start();
@@ -277,6 +325,7 @@ void BaseProcessor::handleMidi(const MidiMessage &msg) {
                     auto &m = lastLearn_.midi_;
                     m.type_ = MidiAutomation::Midi::T_CC;
                     m.num_ = msg.getControllerNumber();
+                    m.channel_ = msg.getChannel();
 
                     bool found = false;
                     for (auto &a : midiAutomation_) {
@@ -308,7 +357,7 @@ void BaseProcessor::handleMidi(const MidiMessage &msg) {
 
 
 void BaseProcessor::handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message) {
-    Logger::writeToLog("MidiCallback -> " + message.getDescription());
+//    Logger::writeToLog("MidiCallback -> " + message.getDescription());
     handleMidi(message);
 }
 

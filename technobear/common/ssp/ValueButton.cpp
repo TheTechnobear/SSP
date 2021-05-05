@@ -30,7 +30,7 @@ bool ValueButton::toggle() {
 void ValueButton::paint(Graphics &g) {
     const int w = getWidth();
     const int h = getHeight();
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), 36, Font::plain));
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), 32, Font::plain));
 
 
     if (!value_) {
