@@ -12,6 +12,7 @@ using bcontrol_type = ssp::ParamButton;
 PluginEditor::PluginEditor(PluginProcessor &p)
     : base_type(&p),
       processor_(p), clrs_{Colours::green, Colours::blue, Colours::red, Colours::yellow} {
+    memset(dataBuf_,0,sizeof (dataBuf_));
 
     addParamPage(
         std::make_shared<pcontrol_type>(processor_.params_.t_scale, 1),
@@ -67,6 +68,14 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     addChildComponent(miniScope_[1]);
     addChildComponent(xyScope_[0]);
     addChildComponent(xyScope_[1]);
+
+    for (int i = 0; i < MAX_SIG; i++) {
+        auto &sParam = *processor_.params_.sigparams_[i];
+        bool vis = processor_.isInputEnabled(PluginProcessor::I_SIG_A + i) && sParam.show.getValue() > 0.5f;
+        mainScope_.signalVisible(i, vis);
+    }
+
+
 
     bool abxy = processor_.params_.ab_xy.getValue() > 0.5f;
     bool cdxy = processor_.params_.cd_xy.getValue() > 0.5f;

@@ -109,6 +109,7 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 }
 
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
+    BaseProcessor::prepareToPlay(sampleRate,samplesPerBlock);
     strummer_.Init(0.01f, sampleRate / RingsBlock);
     string_synth_.Init(buffer);
     part_.Init(buffer);

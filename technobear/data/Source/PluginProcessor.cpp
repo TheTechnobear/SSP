@@ -128,10 +128,6 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 }
 
 
-void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
-}
-
-
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     if (params_.freeze.getValue() > 0.5f) return;
 

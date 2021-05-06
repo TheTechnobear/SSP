@@ -29,6 +29,7 @@ void SimpleParamControl::inc(bool fine) {
     float inc = fine ? fineInc_ : coarseInc_;
     float v = p.getValue();
     float nv = v + (inc != 0 ? inc : 0.01f);
+    nv = std::min(nv,1.0f);
     p.setValueNotifyingHost(nv);
     p.endChangeGesture();
 }
@@ -39,6 +40,7 @@ void SimpleParamControl::dec(bool fine) {
     float inc = fine ? fineInc_ : coarseInc_;
     float v = p.getValue();
     float nv = v - (inc != 0 ? inc : 0.01f);
+    nv = std::max(nv,0.0f);
     p.setValueNotifyingHost(nv);
     p.endChangeGesture();
 }

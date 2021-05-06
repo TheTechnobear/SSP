@@ -155,6 +155,7 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 }
 
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
+    BaseProcessor::prepareToPlay(sampleRate,samplesPerBlock);
     inputBuffers_.setSize(I_MAX, samplesPerBlock);
     outputBuffers_.setSize(O_MAX, samplesPerBlock);
 

@@ -93,6 +93,7 @@ void PluginProcessor::onOutputChanged(unsigned i, bool b) {
 }
 
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
+    BaseProcessor::prepareToPlay(sampleRate,samplesPerBlock);
     inputBuffer_.setSize(1, samplesPerBlock);
     lastBuffer_.setSize(1, samplesPerBlock);
 }

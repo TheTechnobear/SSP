@@ -131,16 +131,23 @@ void SystemEditor::drawView(Graphics &g) {
     auto &plist = baseProcessor_->getParameters();
     auto &am = baseProcessor_->midiAutomation();
 
-    if(am.empty()) return;
+    if (am.empty()) return;
 
-    for (unsigned i = 0; i < MAX_SHOWN; i++) {
-        int idx = i + idxOffset_;
-        if (idx > am.size() - 1) break;
+    auto ai = am.begin();
+    int idx = 0;
+    while (idx < idxOffset_) {
+        if (ai != am.end()) ai++;
+        idx++;
+    }
+
+    for (unsigned i = 0; i < MAX_SHOWN && ai != am.end(); i++) {
+//        int idx = i + idxOffset_;
+//        if (idx > am.size() - 1) break;
 
         if (selIdx_ == idx) g.setColour(Colours::yellow);
         else g.setColour(Colours::white);
 
-        auto a = am[idx];
+        auto a = ai->second;
         auto p = plist[a.paramIdx_];
 
         String type = "None";
@@ -162,6 +169,8 @@ void SystemEditor::drawView(Graphics &g) {
         g.drawSingleLineText(type, 470, y);
         g.drawSingleLineText(String(a.midi_.num_), 540, y);
 
+        if (ai != am.end()) ai++;
+        idx++;
         y += fh;
     }
 }
@@ -186,15 +195,20 @@ void SystemEditor::midiLearn(bool b) {
 }
 
 void SystemEditor::deleteAutomation(bool b) {
-    if(!b) {
-        if(selIdx_ >=0) {
-            auto& am=baseProcessor_->midiAutomation();
-            if(am.empty()) return;
+    if (!b) {
+        if (selIdx_ >= 0) {
+            auto &am = baseProcessor_->midiAutomation();
+            if (am.empty() || selIdx_ >= am.size()) return;
+
             int idx=0;
-            for(auto a = am.begin(); a!=am.end() ; a++) {
+            for(auto ai = am.begin(); ai!=am.end() ; ai++) {
+                auto& a=ai->second;
                 if(idx==selIdx_) {
-                    am.erase(a);
-                    if(selIdx_!=0) selIdx_--;
+                    am.erase(a.paramIdx_);
+                    if(selIdx_!=0)  {
+                        selIdx_--;
+                        if (selIdx_ < idxOffset_) idxOffset_ = selIdx_;
+                    }
                     break;
                 }
                 idx++;
@@ -207,7 +221,7 @@ void SystemEditor::onEncoder(unsigned enc, float v) {
     switch (enc) {
         case 0: {
             auto amsize = baseProcessor_->midiAutomation().size();
-            if(amsize==0) return;
+            if (amsize == 0) return;
 
             if (v > 0) {
                 if (selIdx_ < amsize - 1) {

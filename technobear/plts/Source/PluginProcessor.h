@@ -49,7 +49,6 @@ public:
     const String getName() const override { return JucePlugin_Name; }
 
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
-    void releaseResources() override {}
 
     void processBlock(AudioSampleBuffer &, MidiBuffer &) override;
 

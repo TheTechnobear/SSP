@@ -13,9 +13,9 @@ namespace ssp {
 
 class BaseProcessor : public AudioProcessor,
                       public MidiInputCallback,
-                      public AudioProcessorListener {
-//                      public AudioProcessorListener,
-//                      private ValueTree::Listener {
+//                      public AudioProcessorListener {
+                      public AudioProcessorListener,
+                      private ValueTree::Listener {
 public:
 
     explicit BaseProcessor(const AudioProcessor::BusesProperties &ioLayouts,
@@ -41,6 +41,9 @@ public:
     const String getProgramName(int index) override { return ""; }
 
     void changeProgramName(int index, const juce::String &newName) override {}
+
+    void prepareToPlay(double newSampleRate, int estimatedSamplesPerBlock) override;
+    void releaseResources() override;
 
     void getStateInformation(MemoryBlock &destData) override;
     void setStateInformation(const void *data, int sizeInBytes) override;
@@ -80,6 +83,7 @@ public:
 
 protected:
     friend class BaseEditor;
+
     friend class SystemEditor;
 
     AudioProcessorValueTreeState apvts;
@@ -137,7 +141,7 @@ protected:
         void recall(XmlElement *);
     };
 
-    std::vector<MidiAutomation> midiAutomation_;
+    std::map<int, MidiAutomation> midiAutomation_;
 
     std::string midiInDeviceId_;
     std::string midiOutDeviceId_;
@@ -149,7 +153,7 @@ protected:
     MidiAutomation lastLearn_;
 
 public:
-    std::vector<MidiAutomation> &midiAutomation() { return midiAutomation_; }
+    std::map<int, MidiAutomation> &midiAutomation() { return midiAutomation_; }
 
 private:
 

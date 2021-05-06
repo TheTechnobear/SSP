@@ -97,6 +97,21 @@ BaseProcessor::~BaseProcessor() {
     removeListener(this);
 }
 
+void BaseProcessor::prepareToPlay(double newSampleRate, int estimatedSamplesPerBlock) {
+    ;
+}
+
+void BaseProcessor::releaseResources() {
+    if (midiInDevice_) {
+        midiInDevice_->stop();
+        midiOutDevice_ = nullptr;
+    }
+    if (midiOutDevice_) {
+        midiOutDevice_->stopBackgroundThread();
+        midiOutDevice_ = nullptr;
+    }
+}
+
 
 void BaseProcessor::addBaseParameters(AudioProcessorValueTreeState::ParameterLayout &params) {
     for (unsigned i = 0; i < sspParams::numEnc; i++) {
@@ -193,7 +208,7 @@ void BaseProcessor::midiFromXml(juce::XmlElement *xml) {
                 MidiAutomation am;
                 am.recall(pxml);
                 if (am.valid()) {
-                    midiAutomation_.push_back(am);
+                    midiAutomation_[am.paramIdx_] = am;
                 }
             }
         }
@@ -205,7 +220,8 @@ void BaseProcessor::midiToXml(juce::XmlElement *xml) {
     xml->setAttribute(MIDI_TAG_OUT_DEV, midiOutDeviceId_);
 
     auto amXml = xml->createNewChildElement("Automation");
-    for (auto a : midiAutomation_) {
+    for (auto &ap: midiAutomation_) {
+        auto &a = ap.second;
         if (a.paramIdx_ != -1) {
             auto pxml = amXml->createNewChildElement("P_" + String(a.paramIdx_));
             a.store(pxml);
@@ -252,14 +268,14 @@ void BaseProcessor::setStateInformation(const void *data, int sizeInBytes) {
             // backwards compat
             apvts.replaceState(juce::ValueTree::fromXml(*xml));
         } else if (xml->hasTagName(VST_XML_TAG)) {
-            auto xmlState = xml->getChildByName(apvts.state.getType()); //STATE
-            if (xmlState != nullptr) apvts.replaceState(juce::ValueTree::fromXml(*xmlState));
-
             auto xmlMidi = xml->getChildByName(MIDI_XML_TAG);
             if (xmlMidi != nullptr) midiFromXml(xmlMidi);
 
             auto xmlCustom = xml->getChildByName(CUSTOM_XML_TAG);
             if (xmlCustom != nullptr) customFromXml(xmlCustom);
+
+            auto xmlState = xml->getChildByName(apvts.state.getType()); //STATE
+            if (xmlState != nullptr) apvts.replaceState(juce::ValueTree::fromXml(*xmlState));
         }
     }
 }
@@ -328,22 +344,14 @@ void BaseProcessor::handleMidi(const MidiMessage &msg) {
                     m.channel_ = msg.getChannel();
 
                     bool found = false;
-                    for (auto &a : midiAutomation_) {
-                        if (a.paramIdx_ == lastLearn_.paramIdx_) {
-                            found = true;
-                            a = lastLearn_;
-                        }
-                    }
-                    if (!found) {
-                        midiAutomation_.push_back(lastLearn_);
-                    }
-
+                    midiAutomation_[lastLearn_.paramIdx_] = lastLearn_;
                     lastLearn_.reset();
                 }
             }
         }
 
-        for (auto &a : midiAutomation_) {
+        for (auto &ap : midiAutomation_) {
+            auto &a = ap.second;
             if ((msg.isController() && a.midi_.type_ == MidiAutomation::Midi::T_CC)
                 && (msg.getControllerNumber() == a.midi_.num_)
                 ) {
@@ -373,10 +381,44 @@ void BaseProcessor::midiLearn(bool b) {
 
 void BaseProcessor::audioProcessorParameterChanged(AudioProcessor *processor,
                                                    int parameterIndex,
-                                                   float) {
+                                                   float v) {
+
     assert(processor == this);
-    if (midiLearn_ && parameterIndex >= Percussa::sspLast) {
-        lastLearn_.paramIdx_ = parameterIndex;
+    if (parameterIndex >= Percussa::sspLast) {
+        if (midiLearn_) {
+            lastLearn_.paramIdx_ = parameterIndex;
+        } else {
+            if (midiOutDevice_ != nullptr) {
+                if (midiAutomation_.find(parameterIndex) != midiAutomation_.end()) {
+                    auto &a = midiAutomation_[parameterIndex];
+                    switch (a.midi_.type_) {
+                        case MidiAutomation::Midi::T_CC : {
+                            auto msg = MidiMessage::controllerEvent(a.midi_.channel_, a.midi_.num_, uint8(v * 127));
+                            midiOutDevice_->sendMessageNow(msg);
+                            break;
+                        }
+                        case MidiAutomation::Midi::T_NOTE : {
+                            if (v > 0.0f) {
+                                auto msg = MidiMessage::noteOn(a.midi_.channel_, a.midi_.num_, uint8 (v * 127));
+                                midiOutDevice_->sendMessageNow(msg);
+                            } else {
+                                auto msg = MidiMessage::noteOff(a.midi_.channel_, a.midi_.num_);
+                                midiOutDevice_->sendMessageNow(msg);
+                            }
+                            break;
+                        }
+                        case MidiAutomation::Midi::T_PRESSURE : {
+                            auto msg = MidiMessage::channelPressureChange(a.midi_.channel_, uint8(v * 127));
+                            midiOutDevice_->sendMessageNow(msg);
+                            break;
+                        }
+                        default: {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

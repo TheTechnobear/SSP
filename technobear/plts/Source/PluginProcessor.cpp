@@ -105,6 +105,7 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 }
 
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
+    BaseProcessor::prepareToPlay(sampleRate,samplesPerBlock);
     stmlib::BufferAllocator allocator(shared_buffer_, sizeof(shared_buffer_));
     voice_.Init(&allocator);
 }
