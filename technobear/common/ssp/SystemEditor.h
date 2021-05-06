@@ -32,6 +32,7 @@ public:
 
     void midiLearn(bool b);
     void deleteAutomation(bool b);
+    void noteInput(bool b);
 protected:
 //    using base_type = juce::AudioProcessorEditor;
 
@@ -57,17 +58,21 @@ protected:
     ValueButton leftBtn_, rightBtn_, upBtn_, downBtn_;
     ValueButton leftShiftBtn_, rightShiftBtn_;
 
-    ValueButton learnBtn_, delBtn_;
+    ValueButton learnBtn_, delBtn_, noteInputBtn_;
 
-    ListValueControl midiInCtrl, midiOutCtrl;
+    ListValueControl midiInCtrl_, midiOutCtrl_, midiChannelCtrl_;
 
     void midiInCallback(float idx, const std::string &dev);
     void midiOutCallback(float idx, const std::string &dev);
+    void midiChannelCallback(float idx, const std::string &ch);
 private:
     void paint(Graphics &) override;
 
-    std::vector<std::string> midiInStr;
-    std::vector<std::string> midiOutStr;
+    void drawLabel(Graphics&, const std::string& str,unsigned idx);
+
+    std::vector<std::string> midiInStr_;
+    std::vector<std::string> midiOutStr_;
+    std::vector<std::string> midiChStr_;
 
     std::vector<MidiDeviceInfo> inDevices_;
     std::vector<MidiDeviceInfo> outDevices_;

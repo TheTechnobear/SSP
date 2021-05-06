@@ -16,9 +16,9 @@ static constexpr unsigned btnSpaceY = 50;
 
 BaseEditor::BaseEditor(BaseProcessor *p) :
     baseProcessor_(p),
-    leftBtn_("PG-", nullptr, Colours::red), rightBtn_("PG+", nullptr, Colours::red),
-    upBtn_("EN-", nullptr, Colours::red), downBtn_("EN+", nullptr, Colours::red),
-    leftShiftBtn_("LS", nullptr, Colours::grey, Colours::black), rightShiftBtn_("RS", nullptr, Colours::grey, Colours::black) {
+    leftBtn_("PG-", nullptr, 32, Colours::red), rightBtn_("PG+", nullptr, 32, Colours::red),
+    upBtn_("EN-", nullptr, 32, Colours::red), downBtn_("EN+", nullptr, 32, Colours::red),
+    leftShiftBtn_("LS", nullptr, 32, Colours::grey, Colours::black), rightShiftBtn_("RS", nullptr, 32, Colours::grey, Colours::black) {
 
     setButtonBounds(leftShiftBtn_, 0, 4);
     setButtonBounds(upBtn_, 0, 5);

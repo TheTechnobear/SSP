@@ -8,6 +8,7 @@ class ValueButton : public Component {
 public:
     ValueButton(const String &label,
                 std::function<void(bool v)> cb,
+                unsigned fh = 32,
                 const Colour fg = Colours::white, const Colour bg = Colours::black,
                 bool def = false);
 
@@ -28,6 +29,7 @@ private:
 
     String label_;
     bool active_ = false;
+    int fh_=36;
     Colour fg_ = Colours::white;
     Colour bg_ = Colours::black;
 

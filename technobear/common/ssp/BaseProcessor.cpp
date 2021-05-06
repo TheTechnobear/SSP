@@ -171,9 +171,6 @@ void BaseProcessor::init() {
 }
 
 
-static const char *MIDI_TAG_IN_DEV = "MIDI_IN";
-static const char *MIDI_TAG_OUT_DEV = "MIDI_OUT";
-
 void BaseProcessor::MidiAutomation::store(XmlElement *xml) {
     xml->setAttribute("paramId", paramIdx_);
     xml->setAttribute("scale", scale_);
@@ -192,12 +189,19 @@ void BaseProcessor::MidiAutomation::recall(XmlElement *xml) {
     midi_.type_ = static_cast<Midi::Type>(xml->getIntAttribute("midi.type", Midi::T_MAX));
 }
 
+static const char *MIDI_TAG_IN_DEV = "MIDI_IN";
+static const char *MIDI_TAG_OUT_DEV = "MIDI_OUT";
+static const char *MIDI_TAG_CHANNEL = "MIDI_CH";
+static const char *MIDI_TAG_NOTE_INPUT = "MIDI_NOTE_IN";
 
 void BaseProcessor::midiFromXml(juce::XmlElement *xml) {
     auto midiin = xml->getStringAttribute(MIDI_TAG_IN_DEV).toStdString();
     auto midiout = xml->getStringAttribute(MIDI_TAG_OUT_DEV).toStdString();
     setMidiIn(midiin);
     setMidiOut(midiout);
+
+    midiChannel_ = xml->getIntAttribute(MIDI_TAG_CHANNEL,0);
+    noteInput_ = xml->getBoolAttribute(MIDI_TAG_NOTE_INPUT,false);
 
     midiAutomation_.clear();
     auto amXml = xml->getChildByName("Automation");
@@ -218,6 +222,8 @@ void BaseProcessor::midiFromXml(juce::XmlElement *xml) {
 void BaseProcessor::midiToXml(juce::XmlElement *xml) {
     xml->setAttribute(MIDI_TAG_IN_DEV, midiInDeviceId_);
     xml->setAttribute(MIDI_TAG_OUT_DEV, midiOutDeviceId_);
+    xml->setAttribute(MIDI_TAG_CHANNEL, midiChannel_);
+    xml->setAttribute(MIDI_TAG_NOTE_INPUT, noteInput_);
 
     auto amXml = xml->createNewChildElement("Automation");
     for (auto &ap: midiAutomation_) {
@@ -343,7 +349,6 @@ void BaseProcessor::handleMidi(const MidiMessage &msg) {
                     m.num_ = msg.getControllerNumber();
                     m.channel_ = msg.getChannel();
 
-                    bool found = false;
                     midiAutomation_[lastLearn_.paramIdx_] = lastLearn_;
                     lastLearn_.reset();
                 }
@@ -358,6 +363,20 @@ void BaseProcessor::handleMidi(const MidiMessage &msg) {
                 float val = float(msg.getControllerValue()) / 127.0f;
                 val = (val * a.scale_) + a.offset_;
                 automateParam(a.paramIdx_, val);
+            } else if ((msg.isNoteOnOrOff() && a.midi_.type_ == MidiAutomation::Midi::T_NOTE)
+                       && (msg.getNoteNumber() == a.midi_.num_)) {
+                float val = msg.getFloatVelocity();
+                val = (val * a.scale_) + a.offset_;
+                automateParam(a.paramIdx_, val);
+            }
+        }
+
+        if (noteInput_) {
+            float pcv = pitch2Cv(msg.getNoteNumber() - 60);
+            if (msg.isNoteOn()) {
+                midiNoteInput(pcv, msg.getFloatVelocity());
+            } else {
+                midiNoteInput(pcv, 0.0f);
             }
         }
     }
@@ -399,7 +418,7 @@ void BaseProcessor::audioProcessorParameterChanged(AudioProcessor *processor,
                         }
                         case MidiAutomation::Midi::T_NOTE : {
                             if (v > 0.0f) {
-                                auto msg = MidiMessage::noteOn(a.midi_.channel_, a.midi_.num_, uint8 (v * 127));
+                                auto msg = MidiMessage::noteOn(a.midi_.channel_, a.midi_.num_, uint8(v * 127));
                                 midiOutDevice_->sendMessageNow(msg);
                             } else {
                                 auto msg = MidiMessage::noteOff(a.midi_.channel_, a.midi_.num_);

@@ -75,11 +75,20 @@ public:
     void setMidiIn(std::string id);
     void setMidiOut(std::string id);
 
+
     bool isActiveMidiIn(const std::string &id) { return midiInDeviceId_ == id; }
 
     bool isActiveMidiOut(const std::string &id) { return midiOutDeviceId_ == id; }
 
     void midiLearn(bool b);
+
+    virtual void midiNoteInput(unsigned note, unsigned velocity) { ; }
+
+    void noteInput(bool b) { noteInput_ = b; }
+
+    void midiChannel(unsigned ch) { midiChannel_ = ch; }
+
+    int midiChannel() { return midiChannel_; }
 
 protected:
     friend class BaseEditor;
@@ -149,6 +158,7 @@ protected:
     std::unique_ptr<MidiOutput> midiOutDevice_;
     int midiChannel_ = 0;
     bool midiLearn_ = false;
+    bool noteInput_ = false;
 
     MidiAutomation lastLearn_;
 

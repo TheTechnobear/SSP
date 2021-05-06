@@ -3,14 +3,15 @@
 
 ValueButton::ValueButton(const String &label,
                          std::function<void(bool v)> cb,
+                         unsigned fh,
                          const Colour fg, const Colour bg,
                          bool def)
-    : label_(label), value_(def), callback_(cb), fg_(fg), bg_(bg) {
+    : label_(label), value_(def), callback_(cb), fh_(fh), fg_(fg), bg_(bg) {
 }
 
 void ValueButton::valueChanged(bool b) {
     repaint();
-    if(callback_) callback_(b);
+    if (callback_) callback_(b);
 }
 
 void ValueButton::value(bool v) {
@@ -30,7 +31,7 @@ bool ValueButton::toggle() {
 void ValueButton::paint(Graphics &g) {
     const int w = getWidth();
     const int h = getHeight();
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), 32, Font::plain));
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh_, Font::plain));
 
 
     if (!value_) {
