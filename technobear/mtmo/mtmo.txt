@@ -1,0 +1,23 @@
+# mtmo midi tools - midi monitor
+
+midi monitor
+
+
+## Change Log
+1.0.0 Initial Release 
+
+## Developer: TheTechnobear
+I develop these plugins for free, please consider supporting my efforts with a donation.
+https://ko-fi.com/thetechnobear
+
+
+## General Usage 
+
+
+## Tips
+
+
+## Credits: 
+
+Percussa SSP - https://www.percussa.com/ 
+
