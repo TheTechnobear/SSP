@@ -200,8 +200,8 @@ void BaseProcessor::midiFromXml(juce::XmlElement *xml) {
     setMidiIn(midiin);
     setMidiOut(midiout);
 
-    midiChannel_ = xml->getIntAttribute(MIDI_TAG_CHANNEL,0);
-    noteInput_ = xml->getBoolAttribute(MIDI_TAG_NOTE_INPUT,false);
+    midiChannel_ = xml->getIntAttribute(MIDI_TAG_CHANNEL, 0);
+    noteInput_ = xml->getBoolAttribute(MIDI_TAG_NOTE_INPUT, false);
 
     midiAutomation_.clear();
     auto amXml = xml->getChildByName("Automation");

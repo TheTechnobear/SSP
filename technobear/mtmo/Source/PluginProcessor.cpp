@@ -12,6 +12,8 @@ PluginProcessor::PluginProcessor(
     AudioProcessorValueTreeState::ParameterLayout layout)
     : BaseProcessor(ioLayouts, std::move(layout)), params_(vts()) {
     init();
+    blockCounter_ = 0;
+    sendClock_ = false;
 }
 
 PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) {
@@ -37,15 +39,31 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 }
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
-//    if (!midiMessages.isEmpty()) {
-//        Logger::writeToLog("processBlock :: midi msg " + String(midiMessages.getNumEvents()));
-//    }
+    int clockFreq = getSampleRate() * (50 / 1000);
+    blockCounter_ += buffer.getNumSamples();
+    if (blockCounter_ > clockFreq) {
+        blockCounter_ = 0;
+        sendClock_ = true;
+    }
 }
 
 
-void PluginProcessor::handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message){
-    BaseProcessor::handleIncomingMidiMessage(source,message);
-    if (!messageQueue_.try_enqueue(message)) { ; } // queue full
+void PluginProcessor::handleIncomingMidiMessage(MidiInput *source, const MidiMessage &msg) {
+    BaseProcessor::handleIncomingMidiMessage(source, msg);
+    if (midiChannel_ == 0 || msg.getChannel() == midiChannel_) {
+//        Logger::writeToLog("handleIncomingMidiMessage -> " + msg.getDescription());
+        if (msg.isNoteOnOrOff() || msg.isController() || msg.isPitchWheel()
+            || msg.isAftertouch() || msg.isChannelPressure()
+            ) {
+            if (!messageQueue_.try_enqueue(msg)) { ; } // queue full
+        } else if (msg.isMidiClock()) {
+            if (sendClock_) {
+                if (messageQueue_.try_enqueue(msg)) {
+                    sendClock_ = true;
+                }
+            }
+        }
+    }
 }
 
 

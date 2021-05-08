@@ -80,6 +80,9 @@ private:
         return props;
     }
 
+    unsigned blockCounter_ = 0;
+    std::atomic<bool> sendClock_;
+
     moodycamel::ReaderWriterQueue<MidiMessage> messageQueue_;
 
 

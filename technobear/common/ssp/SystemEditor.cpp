@@ -180,7 +180,7 @@ void SystemEditor::drawView(Graphics &g) {
                 type = "Note";
                 break;
             case BaseProcessor::MidiAutomation::Midi::T_PRESSURE:
-                type = "AT";
+                type = "CHP";
                 break;
             default:
                 break;
