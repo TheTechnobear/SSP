@@ -130,7 +130,8 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
             if (mv != lv) {
                 int ccNum = getCCNum(iidx);
                 if (ccNum > 0) {
-                    midimsgs.addEvent(MidiMessage::controllerEvent(midiChannel(), ccNum, mv), smp);
+                    int mch = midiChannel() ? midiChannel() : 1;
+                    midimsgs.addEvent(MidiMessage::controllerEvent(mch, ccNum, mv), smp);
                 }
                 lv = mv;
             }
@@ -151,11 +152,12 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
             if (gate != ngate) {
                 // gate change = note on or off!
+                int mch = midiChannel() ? midiChannel() : 1;
                 if (ngate) {
-                    midimsgs.addEvent(MidiMessage::noteOn(midiChannel(), nnote, (uint8) nvel), smp);
+                    midimsgs.addEvent(MidiMessage::noteOn(mch, nnote, (uint8) nvel), smp);
 
                 } else {
-                    midimsgs.addEvent(MidiMessage::noteOff(midiChannel(), nnote), smp);
+                    midimsgs.addEvent(MidiMessage::noteOff(mch, nnote), smp);
                 }
             } else if (ngate > 0.5f) {
                 // gate is high, lets check voct is not changing, and so pitchbend
@@ -165,7 +167,8 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
                 frac = std::max(std::min(frac, pbr), -pbr);
                 int pb = MidiMessage::pitchbendToPitchwheelPos(frac, pbr);
                 if (pb != pitchbend_) {
-                    midimsgs.addEvent(MidiMessage::pitchWheel(midiChannel(), pb), smp);
+                    int mch = midiChannel() ? midiChannel() : 1;
+                    midimsgs.addEvent(MidiMessage::pitchWheel(mch, pb), smp);
                     pitchbend_ = pb;
                 }
             }
