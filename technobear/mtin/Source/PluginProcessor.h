@@ -64,7 +64,7 @@ protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     enum {
-        I_DUMMY,
+//        I_DUMMY,
         I_MAX
     };
 

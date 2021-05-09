@@ -34,14 +34,14 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     AudioProcessorValueTreeState::ParameterLayout params;
     BaseProcessor::addBaseParameters(params);
 
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::cv_a, "CV A", 1.0f, 120.0f, 1.0f, 1.0f));
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::cv_b, "CV B", 1.0f, 120.0f, 2.0f, 1.0f));
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::cv_c, "CV C", 1.0f, 120.0f, 3.0f, 1.0f));
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::cv_d, "CV D", 1.0f, 120.0f, 4.0f, 1.0f));
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::cv_e, "CV E", 1.0f, 120.0f, 5.0f, 1.0f));
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::cv_f, "CV F", 1.0f, 120.0f, 6.0f, 1.0f));
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::cv_g, "CV G", 1.0f, 120.0f, 7.0f, 1.0f));
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::cv_h, "CV H", 1.0f, 120.0f, 8.0f, 1.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::cv_a, "CC A", 1.0f, 120.0f, 1.0f, 1.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::cv_b, "CC B", 1.0f, 120.0f, 2.0f, 1.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::cv_c, "CC C", 1.0f, 120.0f, 3.0f, 1.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::cv_d, "CC D", 1.0f, 120.0f, 4.0f, 1.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::cv_e, "CC E", 1.0f, 120.0f, 5.0f, 1.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::cv_f, "CC F", 1.0f, 120.0f, 6.0f, 1.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::cv_g, "CC G", 1.0f, 120.0f, 7.0f, 1.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::cv_h, "CC H", 1.0f, 120.0f, 8.0f, 1.0f));
 
     params.add(std::make_unique<ssp::BaseBoolParameter>(ID::slew, "Slew CC", false));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::pb_range, "PB Range", 0.0f, 48.0f, 2.0f, 1.0f));

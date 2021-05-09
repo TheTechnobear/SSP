@@ -7,12 +7,19 @@
 #include <atomic>
 #include <algorithm>
 
-#include <readerwriterqueue.h>
-
 namespace ID {
 #define PARAMETER_ID(str) constexpr const char* str { #str };
 
-// PARAMETER_ID (vca)
+PARAMETER_ID (cv_a)
+PARAMETER_ID (cv_b)
+PARAMETER_ID (cv_c)
+PARAMETER_ID (cv_d)
+PARAMETER_ID (cv_e)
+PARAMETER_ID (cv_f)
+PARAMETER_ID (cv_g)
+PARAMETER_ID (cv_h)
+
+PARAMETER_ID (pb_range)
 
 #undef PARAMETER_ID
 }
@@ -32,29 +39,41 @@ public:
 
     bool hasEditor() const override { return true; }
 
-    void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message) override;
-
     struct PluginParams {
         using Parameter = juce::RangedAudioParameter;
         explicit PluginParams(juce::AudioProcessorValueTreeState &);
 
-        // Parameter& vca;
+        Parameter &cv_a;
+        Parameter &cv_b;
+        Parameter &cv_c;
+        Parameter &cv_d;
+        Parameter &cv_e;
+        Parameter &cv_f;
+        Parameter &cv_g;
+        Parameter &cv_h;
+
+        Parameter &pb_range;
     } params_;
-
-    moodycamel::ReaderWriterQueue<MidiMessage> &messageQueue() { return messageQueue_; }
-
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
-    // note: VST has to have at least one input or output
     enum {
-        I_DUMMY,
+        I_CV_A,
+        I_CV_B,
+        I_CV_C,
+        I_CV_D,
+        I_CV_E,
+        I_CV_F,
+        I_CV_G,
+        I_CV_H,
+        I_VOCT,
+        I_GATE,
+        I_VEL,
         I_MAX
     };
 
     enum {
-//        O_DUMMY,
         O_MAX
     };
 
@@ -80,11 +99,10 @@ private:
         return props;
     }
 
-    unsigned blockCounter_ = 0;
-    std::atomic<bool> sendClock_;
+    int getCCNum(int idx);
 
-    moodycamel::ReaderWriterQueue<MidiMessage> messageQueue_;
-
+    int lastMidi_[I_MAX];
+    int pitchbend_=8192;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };

@@ -12,7 +12,6 @@ public:
     ~PluginEditor() override = default;
 
     void drawView(Graphics &) override;
-    void resized() override;
 protected:
     void timerCallback() override;
 
@@ -25,13 +24,13 @@ private:
         String num_;
         String value_;
         bool dispNum_;
-        bool active_=false;
+        bool active_ = false;
     };
 
-    static constexpr unsigned MAX_DATA=32;
-    std::array<Msg,MAX_DATA> dataBuf_;
-    unsigned wrPos_=0;
-    bool clock_=false;
+    static constexpr unsigned MAX_DATA = 32;
+    std::array<Msg, MAX_DATA> dataBuf_;
+    unsigned wrPos_ = 0;
+    bool clock_ = false;
 
     PluginProcessor &processor_;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)

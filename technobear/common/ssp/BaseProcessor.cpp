@@ -296,14 +296,21 @@ void BaseProcessor::onOutputChanged(unsigned i, bool b) {
 }
 
 void BaseProcessor::setMidiIn(std::string id) {
-    midiInDeviceId_ = id;
-    if (!midiInDeviceId_.empty()) {
-        midiInDevice_ = MidiInput::openDevice(midiInDeviceId_, this);
-        if (midiInDevice_ && midiInDevice_->getIdentifier().toStdString() == midiInDeviceId_) {
+    if (id == midiInDeviceId_) return;
+
+    if (!id.empty()) {
+        if (midiInDevice_) {
+            midiInDevice_->stop();
+            midiInDevice_ = nullptr;
+        }
+
+        midiInDevice_ = MidiInput::openDevice(id, this);
+        if (midiInDevice_ && midiInDevice_->getIdentifier().toStdString() == id) {
             midiInDevice_->start();
-            Logger::writeToLog("MIDI IN OPEN -> " + id);
+            Logger::writeToLog(getName() + ": MIDI IN OPEN -> " + id);
+            midiInDeviceId_ = id;
         } else {
-            Logger::writeToLog("MIDI FAILED TO OPEN -> " + id);
+            Logger::writeToLog(getName() + ": MIDI IN FAILED -> " + id);
         }
     } else {
         midiInDevice_ = nullptr;
@@ -311,14 +318,21 @@ void BaseProcessor::setMidiIn(std::string id) {
 }
 
 void BaseProcessor::setMidiOut(std::string id) {
-    midiOutDeviceId_ = id;
-    if (!midiOutDeviceId_.empty()) {
-        midiOutDevice_ = MidiOutput::openDevice(midiOutDeviceId_);
-        if (midiOutDevice_ && midiOutDevice_->getIdentifier().toStdString() == midiOutDeviceId_) {
+    if (id == midiOutDeviceId_) return;
+
+    if (!id.empty()) {
+        if (midiOutDevice_) {
+            midiOutDevice_->stopBackgroundThread();
+            midiOutDevice_ = nullptr;
+        }
+
+        midiOutDevice_ = MidiOutput::openDevice(id);
+        if (midiOutDevice_ && midiOutDevice_->getIdentifier().toStdString() == id) {
             midiOutDevice_->startBackgroundThread();
-            Logger::writeToLog("MIDI OUT OPEN -> " + id);
+            Logger::writeToLog(getName() + ": MIDI OUT OPEN -> " + id);
+            midiOutDeviceId_ = id;
         } else {
-            Logger::writeToLog("MIDI FAILED TO OPEN -> " + id);
+            Logger::writeToLog(getName() + ": MIDI OUT FAILED -> " + id);
         }
     } else {
         midiOutDevice_ = nullptr;

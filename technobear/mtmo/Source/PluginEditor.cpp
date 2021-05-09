@@ -96,7 +96,4 @@ void PluginEditor::drawView(Graphics &g) {
 }
 
 
-void PluginEditor::resized() {
-}
-
 

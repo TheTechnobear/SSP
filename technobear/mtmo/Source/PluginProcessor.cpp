@@ -23,13 +23,12 @@ PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) 
 AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLayout() {
     AudioProcessorValueTreeState::ParameterLayout params;
     BaseProcessor::addBaseParameters(params);
-
-    // params.add(std::make_unique<ssp::BaseFloatParameter>(ID::vca_1a, "VCA 1A", -4.0f, 4.0f, 0.0f));
     return params;
 }
 
 
 const String PluginProcessor::getInputBusName(int channelIndex) {
+    if (channelIndex == I_DUMMY) { return "Dummy"; }
     return "ZZIn-" + String(channelIndex);
 }
 
