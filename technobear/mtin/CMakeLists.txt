@@ -14,7 +14,7 @@ cmake_minimum_required(VERSION 3.15)
 # `project()` command. `project()` sets up some helpful variables that describe source/binary
 # directories, and the current project version. This is a standard CMake command.
 
-project(MTMO VERSION 1.3.1)
+project(MTIN VERSION 1.3.1)
 
 # If you've installed JUCE somehow (via a package manager, or directly using the CMake install
 # target), you'll need to tell this project that it depends on the installed copy of JUCE. If you've
@@ -41,14 +41,14 @@ project(MTMO VERSION 1.3.1)
 include_directories("${PROJECT_SOURCE_DIR}/../common")
 
 
-juce_add_plugin(MTMO
+juce_add_plugin(MTIN
         # VERSION ...                               # Set this if the plugin version is different to the project version
         # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
         # ICON_SMALL ...
         COMPANY_NAME "Technobear"                   # Specify the name of the plugin's author
         COMPANY_WEBSITE "www.technobear.com"
         COMPANY_EMAIL "mharris@technobear.com"
-        DESCRIPTION "midi monitor"
+        DESCRIPTION "midi input"
         # IS_SYNTH TRUE/FALSE                       # Is this a synth or an effect?
         NEEDS_MIDI_INPUT false                       # Does the plugin need midi input?
         # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
@@ -56,9 +56,9 @@ juce_add_plugin(MTMO
         # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
         COPY_PLUGIN_AFTER_BUILD TRUE                # Should the plugin be installed to a default location after building?
         PLUGIN_MANUFACTURER_CODE TB                 # A four-character manufacturer id with at least one upper-case character
-        PLUGIN_CODE MTMO                            # A unique four-character plugin id with at least one upper-case character
+        PLUGIN_CODE MTIN                            # A unique four-character plugin id with at least one upper-case character
         FORMATS VST VST3                            # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
-        PRODUCT_NAME "mtmo")                        # The name of the final executable, which can differ from the target name
+        PRODUCT_NAME "mtin")                        # The name of the final executable, which can differ from the target name
 
 # `juce_generate_juce_header` will create a JuceHeader.h for a given target, which will be generated
 # into your build tree. This should be included with `#include <JuceHeader.h>`. The include path for
@@ -66,19 +66,17 @@ juce_add_plugin(MTMO
 # include all your JUCE module headers; if you're happy to include module headers directly, you
 # probably don't need to call this.
 
-juce_generate_juce_header(MTMO)
+juce_generate_juce_header(MTIN)
 
 # `target_sources` adds source files to a target. We pass the target that needs the sources as the
 # first argument, then a visibility parameter for the sources (PRIVATE is normally best practice,
 # although it doesn't really affect executable targets). Finally, we supply a list of source files
 # that will be built into the target. This is a standard CMake command.
 
-include_directories("${PROJECT_SOURCE_DIR}/../../external/readerwriterqueue")
-
 include(${CMAKE_CURRENT_SOURCE_DIR}/../common/CMakeLists.txt)
 
 
-target_sources(MTMO PRIVATE
+target_sources(MTIN PRIVATE
         Source/PluginEditor.cpp
         Source/PluginProcessor.cpp
         ${COMMON_SRC}
@@ -91,7 +89,7 @@ target_sources(MTMO PRIVATE
 # definitions will be visible both to your code, and also the JUCE module code, so for new
 # definitions, pick unique names that are unlikely to collide! This is a standard CMake command.
 
-target_compile_definitions(MTMO
+target_compile_definitions(MTIN
         PUBLIC
         JUCE_DISPLAY_SPLASH_SCREEN=0
         # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
@@ -114,7 +112,7 @@ target_compile_definitions(MTMO
 # linked automatically. If we'd generated a binary data target above, we would need to link to it
 # here too. This is a standard CMake command.
 
-target_link_libraries(MTMO PRIVATE
+target_link_libraries(MTIN PRIVATE
         # AudioPluginData           # If we'd created a binary data target, we'd link to it here
         juce::juce_audio_utils)
 
