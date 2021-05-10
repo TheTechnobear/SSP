@@ -49,7 +49,7 @@ void PluginEditor::timerCallback() {
             data.channel_ = String(msg.getChannel());
             data.active_ = true;
             data.type_ = "C Pr";
-            data.value_ = String(msg.getAfterTouchValue());
+            data.value_ = String(msg.getChannelPressureValue());
             data.dispNum_ = false;
             wrPos_ = (wrPos_ + 1) % MAX_DATA;
         } else if (msg.isMidiClock()) {

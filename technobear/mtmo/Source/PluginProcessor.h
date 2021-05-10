@@ -12,11 +12,10 @@
 namespace ID {
 #define PARAMETER_ID(str) constexpr const char* str { #str };
 
-// PARAMETER_ID (vca)
+ PARAMETER_ID (dummy)
 
 #undef PARAMETER_ID
 }
-
 
 class PluginProcessor : public ssp::BaseProcessor {
 public:
@@ -38,7 +37,7 @@ public:
         using Parameter = juce::RangedAudioParameter;
         explicit PluginParams(juce::AudioProcessorValueTreeState &);
 
-        // Parameter& vca;
+         Parameter& dummy;
     } params_;
 
     moodycamel::ReaderWriterQueue<MidiMessage> &messageQueue() { return messageQueue_; }
@@ -47,14 +46,14 @@ public:
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
-    // note: VST has to have at least one input or output
+
     enum {
-        I_DUMMY,
         I_MAX
     };
 
     enum {
-//        O_DUMMY,
+        O_DUMMY_L,
+        O_DUMMY_R,
         O_MAX
     };
 
@@ -80,8 +79,7 @@ private:
         return props;
     }
 
-    unsigned blockCounter_ = 0;
-    std::atomic<bool> sendClock_;
+    double clockTs_ = 0.0f;
 
     moodycamel::ReaderWriterQueue<MidiMessage> messageQueue_;
 

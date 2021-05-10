@@ -12,43 +12,59 @@ PluginProcessor::PluginProcessor(
     AudioProcessorValueTreeState::ParameterLayout layout)
     : BaseProcessor(ioLayouts, std::move(layout)), params_(vts()) {
     init();
-    blockCounter_ = 0;
-    sendClock_ = false;
 }
 
-PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) {
+
+PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) :
+    dummy(*apvt.getParameter(ID::dummy)) {
 }
 
 
 AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLayout() {
     AudioProcessorValueTreeState::ParameterLayout params;
     BaseProcessor::addBaseParameters(params);
+    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::dummy, "dummy", false));
     return params;
 }
 
-
+#if 0
 const String PluginProcessor::getInputBusName(int channelIndex) {
     if (channelIndex == I_DUMMY) { return "Dummy"; }
     return "ZZIn-" + String(channelIndex);
 }
 
 
+
 const String PluginProcessor::getOutputBusName(int channelIndex) {
+    if (channelIndex == O_DUMMY) { return "Dummy"; }
+    return "ZZOut-" + String(channelIndex);
+}
+
+#endif
+
+const String PluginProcessor::getInputBusName(int channelIndex) {
+    return "ZZIn-" + String(channelIndex);
+}
+
+
+const String PluginProcessor::getOutputBusName(int channelIndex) {
+    switch (channelIndex) {
+        case O_DUMMY_L:
+            return "DummyL";
+        case O_DUMMY_R:
+            return "DummyR";
+        default:;
+    }
     return "ZZOut-" + String(channelIndex);
 }
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
-    int clockFreq = getSampleRate() * (50 / 1000);
-    blockCounter_ += buffer.getNumSamples();
-    if (blockCounter_ > clockFreq) {
-        blockCounter_ = 0;
-        sendClock_ = true;
-    }
 }
 
 
 void PluginProcessor::handleIncomingMidiMessage(MidiInput *source, const MidiMessage &msg) {
     BaseProcessor::handleIncomingMidiMessage(source, msg);
+
     if (midiChannel_ == 0 || msg.getChannel() == midiChannel_) {
 //        Logger::writeToLog("handleIncomingMidiMessage -> " + msg.getDescription());
         if (msg.isNoteOnOrOff() || msg.isController() || msg.isPitchWheel()
@@ -56,9 +72,10 @@ void PluginProcessor::handleIncomingMidiMessage(MidiInput *source, const MidiMes
             ) {
             if (!messageQueue_.try_enqueue(msg)) { ; } // queue full
         } else if (msg.isMidiClock()) {
-            if (sendClock_) {
+            auto diff = msg.getTimeStamp() - clockTs_;
+            if (diff > 0.025f) { // 25 millis (twice rate of ui)
                 if (messageQueue_.try_enqueue(msg)) {
-                    sendClock_ = true;
+                    clockTs_ = msg.getTimeStamp();
                 }
             }
         }
