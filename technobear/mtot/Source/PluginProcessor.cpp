@@ -150,22 +150,15 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
             int ngate = buffer.getSample(I_GATE, smp) > 0.5f;
             int nvel = isInputEnabled(I_VEL) ? int(buffer.getSample(I_VEL, smp) * 127) : 100;
 
-            if (gate != ngate) {
-                // gate change = note on or off!
-                int mch = midiChannel() ? midiChannel() : 1;
-                if (ngate) {
-                    midimsgs.addEvent(MidiMessage::noteOn(mch, nnote, (uint8) nvel), smp);
-
-                } else {
-                    midimsgs.addEvent(MidiMessage::noteOff(mch, nnote), smp);
-                }
-            } else if (ngate > 0.5f) {
+            if (ngate > 0) {
                 // gate is high, lets check voct is not changing, and so pitchbend
-
                 float pbr = GET_P_VAL(params_.pb_range);
-                float frac = note_frac - note; // bend from last note, in semis
-                frac = std::max(std::min(frac, pbr), -pbr);
-                int pb = MidiMessage::pitchbendToPitchwheelPos(frac, pbr);
+                int pb=8192;
+                if(pbr>0) {
+                    float frac = note_frac - ( (gate != ngate) ? nnote : note) ; // bend from note
+                    frac = std::max(std::min(frac, pbr), -pbr);
+                    pb = MidiMessage::pitchbendToPitchwheelPos(frac, pbr);
+                }
                 if (pb != pitchbend_) {
                     int mch = midiChannel() ? midiChannel() : 1;
                     midimsgs.addEvent(MidiMessage::pitchWheel(mch, pb), smp);
@@ -173,9 +166,20 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
                 }
             }
 
-            note = nnote;
-            gate = ngate;
+            if (gate != ngate) {
+                // gate change = note on or off!
+                int mch = midiChannel() ? midiChannel() : 1;
+                if (ngate) {
+                    midimsgs.addEvent(MidiMessage::noteOn(mch, nnote, (uint8) nvel), smp);
+                    note = nnote;
+                } else {
+                    midimsgs.addEvent(MidiMessage::noteOff(mch, note), smp);
+                }
+            }
+//            note = nnote; // note only changes when we send new note out
             vel = nvel;
+            gate = ngate;
+
         }
     }
 

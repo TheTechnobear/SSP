@@ -27,20 +27,6 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     return params;
 }
 
-#if 0
-const String PluginProcessor::getInputBusName(int channelIndex) {
-    if (channelIndex == I_DUMMY) { return "Dummy"; }
-    return "ZZIn-" + String(channelIndex);
-}
-
-
-
-const String PluginProcessor::getOutputBusName(int channelIndex) {
-    if (channelIndex == O_DUMMY) { return "Dummy"; }
-    return "ZZOut-" + String(channelIndex);
-}
-
-#endif
 
 const String PluginProcessor::getInputBusName(int channelIndex) {
     return "ZZIn-" + String(channelIndex);
