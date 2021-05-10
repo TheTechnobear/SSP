@@ -14,35 +14,47 @@ void PluginEditor::timerCallback() {
 //        Logger::writeToLog("timerCallback -> " + msg.getDescription());
         auto &data = dataBuf_[wrPos_];
 
-        data.channel_ = String(msg.getChannel());
-        data.active_ = true;
         if (msg.isNoteOnOrOff()) {
+            data.channel_ = String(msg.getChannel());
+            data.active_ = true;
             data.type_ = "Note";
             data.num_ = String(msg.getNoteNumber());
             data.value_ = String(msg.getVelocity());
             data.dispNum_ = true;
+            wrPos_ = (wrPos_ + 1) % MAX_DATA;
         } else if (msg.isController()) {
+            data.channel_ = String(msg.getChannel());
+            data.active_ = true;
             data.type_ = "CC";
             data.num_ = String(msg.getControllerNumber());
             data.value_ = String(msg.getControllerValue());
             data.dispNum_ = true;
+            wrPos_ = (wrPos_ + 1) % MAX_DATA;
         } else if (msg.isAftertouch()) {
+            data.channel_ = String(msg.getChannel());
+            data.active_ = true;
             data.type_ = "AT";
             data.num_ = String(msg.getNoteNumber());
             data.value_ = String(msg.getAfterTouchValue());
             data.dispNum_ = true;
-        } else if (msg.isChannelPressure()) {
+            wrPos_ = (wrPos_ + 1) % MAX_DATA;
+        } else if (msg.isPitchWheel()) {
+            data.channel_ = String(msg.getChannel());
+            data.active_ = true;
             data.type_ = "PB";
             data.value_ = String(msg.getPitchWheelValue());
             data.dispNum_ = false;
+            wrPos_ = (wrPos_ + 1) % MAX_DATA;
         } else if (msg.isChannelPressure()) {
+            data.channel_ = String(msg.getChannel());
+            data.active_ = true;
             data.type_ = "C Pr";
             data.value_ = String(msg.getAfterTouchValue());
             data.dispNum_ = false;
+            wrPos_ = (wrPos_ + 1) % MAX_DATA;
         } else if (msg.isMidiClock()) {
             clock_ = true;
         }
-        wrPos_ = (wrPos_ + 1) % MAX_DATA;
     }
 }
 
