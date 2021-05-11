@@ -252,14 +252,37 @@ static const char *CUSTOM_XML_TAG = "CUSTOM";
 void BaseProcessor::getStateInformation(MemoryBlock &destData) {
     auto state = apvts.copyState();
     std::unique_ptr<juce::XmlElement> xmlVst = std::make_unique<XmlElement>(VST_XML_TAG);
+
+    // first save state tree
     std::unique_ptr<juce::XmlElement> xmlState(state.createXml());
+
+    // clean this xml by removing SSP parameters (encoders and alike)
+    std::unique_ptr<XmlElement> cleanStateXml = std::make_unique<XmlElement>(xmlState->getTagName());
+    for (int i = 0; i < xmlState->getNumChildElements(); i++) {
+        XmlElement *p = xmlState->getChildElement(i);
+        bool found = false;
+        if (p->hasTagName("PARAM")) {
+            for (int i = 0; i < Percussa::sspLast && !found; i++) {
+                if (p->getStringAttribute("id") == percussaParamsName[i]) {
+                    found = true;
+                }
+            }
+        }
+        if (!found) {
+            XmlElement *ne = new XmlElement(*p);
+            cleanStateXml->addChildElement(ne);
+        }
+    }
+
+
     std::unique_ptr<juce::XmlElement> xmlMidi = std::make_unique<XmlElement>(MIDI_XML_TAG);
     std::unique_ptr<juce::XmlElement> xmlCustom = std::make_unique<XmlElement>(CUSTOM_XML_TAG);
+
 
     midiToXml(xmlMidi.get());
     customToXml(xmlCustom.get());
 
-    if (xmlState) xmlVst->addChildElement(xmlState.release());
+    if (xmlState) xmlVst->addChildElement(cleanStateXml.release());
     if (xmlMidi) xmlVst->addChildElement(xmlMidi.release());
     if (xmlCustom) xmlVst->addChildElement(xmlCustom.release());
     copyXmlToBinary(*xmlVst, destData);
@@ -269,7 +292,6 @@ void BaseProcessor::getStateInformation(MemoryBlock &destData) {
 void BaseProcessor::setStateInformation(const void *data, int sizeInBytes) {
     std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
     if (xml.get() != nullptr) {
-//        Logger::writeToLog(xml->toString());
         if (xml->hasTagName(apvts.state.getType())) {
             // backwards compat
             apvts.replaceState(juce::ValueTree::fromXml(*xml));
