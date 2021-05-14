@@ -1,31 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <FILTERGRAPH>
-  <FILTER uid="1" x="0.5" y="0.1" uiLastX="" uiLastY="">
+  <FILTER uid="1" x="0.5" y="0.1">
     <PLUGIN name="Audio Input" descriptiveName="" format="Internal" category="I/O devices"
-            manufacturer="Raw Material Software" version="1.0" file="" uid="246006c0"
-            isInstrument="0" fileTime="0" numInputs="0" numOutputs="12" isShell="0"/>
+            manufacturer="JUCE" version="1.0" file="" uid="246006c0" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="0" numOutputs="2"
+            isShell="0"/>
     <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="disabled"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="disabled"/>
+      </OUTPUTS>
+    </LAYOUT>
   </FILTER>
-  <FILTER uid="2" x="0.25" y="0.1" uiLastX="" uiLastY="">
-    <PLUGIN name="Midi Input" descriptiveName="" format="Internal" category="I/O devices"
-            manufacturer="Raw Material Software" version="1.0" file="" uid="cb5fde0b"
-            isInstrument="0" fileTime="0" numInputs="0" numOutputs="0" isShell="0"/>
-    <STATE>0.</STATE>
-  </FILTER>
-  <FILTER uid="3" x="0.5" y="0.9" uiLastX="" uiLastY="">
+  <FILTER uid="3" x="0.5" y="0.9">
     <PLUGIN name="Audio Output" descriptiveName="" format="Internal" category="I/O devices"
-            manufacturer="Raw Material Software" version="1.0" file="" uid="724248cb"
-            isInstrument="0" fileTime="0" numInputs="2" numOutputs="0" isShell="0"/>
+            manufacturer="JUCE" version="1.0" file="" uid="724248cb" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="0" numOutputs="0"
+            isShell="0"/>
     <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="L R"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="disabled"/>
+      </OUTPUTS>
+    </LAYOUT>
   </FILTER>
-  <FILTER uid="4" x="0.44875" y="0.438889" uiLastX="404" uiLastY="174">
-    <PLUGIN name="plts" format="VST" category="Effect" manufacturer="technobear"
-            version="V1.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/plts.vst"
-            uid="504c5453" isInstrument="0" fileTime="17425a8e9c8" numInputs="8"
-            numOutputs="2" isShell="0"/>
-    <STATE>265.CMlaKA....fQBMDZ....A.ESTME....Y....A...............................................................................................................................................................................oY0PxDBX....7.GazMGHvkFcigVOh.iHffVXx01atk1Xy0iHv3RMh.Bco0lXxUVOh.iK0HBHs8lbvgVOh.iK0HBHs8FYkwVOh.iHfvFbmM1ar8Vcx0iHv3RMh.BYkMVX40iHv3RMh7hO..</STATE>
+  <FILTER uid="5" x="0.25375" y="0.2673076923076923" uiLastX_Normal="492"
+          uiLastY_Normal="50" uiopen_Normal="0" uiLastX_Generic="381" uiLastY_Generic="816"
+          uiopen_Generic="1">
+    <PLUGIN name="mtin" format="VST" category="Effect" manufacturer="Technobear"
+            version="1.0.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/mtin.vst"
+            uid="4d54494e" isInstrument="0" fileTime="1794dbe399c" infoUpdateTime="1796b5adc82"
+            numInputs="0" numOutputs="11" isShell="0"/>
+    <STATE>3073.CMlaKA....fQBMDZ....AzDUI4D.A.......A.............................................................................................................................................................................vBgY0PxDBVK...77CdswFH1Ulbyk1at0iHw3BLh.RYtM1ajklam0iHUQkQsfiH+3CH7X0TT4COyQWXzUlO7.UPRETSfjFY8HxX18UXh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxX18kXh.hcgwVck0iHx3BLh7hO7.UPRETSfjFY8HxX180Xh.hcgwVck0iHy3BLh7hO7.UPRETSfjFY8HxX18EYh.hcgwVck0iHz3BLh7hO7.UPRETSfjFY8HxX18UYh.hcgwVck0iH03BLh7hO7.UPRETSfjFY8HxX18kYh.hcgwVck0iH13BLh7hO7.UPRETSfjFY8HxX180Yh.hcgwVck0iH23BLh7hO7.UPRETSfjFY8HxX18EZh.hcgwVck0iH33BLh7hO7.UPRETSfjFY8HBbh8kbg41YkIBH1EFa0UVOhHiKvHxK9vCTAIUPMARZj0iHywVY2IBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHyMGbE41XwHBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHyMGbE41XxHBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHyMGbE41XyHBH1EFa0UVOhzRLt.iHu3COPEjTA0DHoQVOhL2bvUjaiQiHfXWXrUWY8HBLt.iHu3COPEjTA0DHoQVOhL2bvUjaiM0cwHBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHyMGbE41XScmLh.hcgwVck0iHv3BLh7hO7.UPRETSfjFY8HxbyAWQtM1T2MiHfXWXrUWY8HBLt.iHu3COPEjTA0DHoQVOhL2bvUjaiM0czHBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHyMGbI4VQtEiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bvkjaE4VLvHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbI4VQtESLh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyAWRtUjawHiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bvkjaE4VLyHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbI4VQtECMh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyAWRtUjawTiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bvkjaE4VL1HBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbI4VQtEyMh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyAWRtUjawfiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bvkjaE4VL4HBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbI4VQtIiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bvkjaE4lLvHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbI4VQtISLh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyAWRtUjaxHiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bvkjaE4lLyHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbI4VQtICMh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyAWRtUjayHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbI4VQtQiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bvkjaE4VMh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyAWRtUja1HBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbI4VQtciHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bvkjaE4FNh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyAWRtUja4HBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbOUGcE4VLh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2S0QWQtECLh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2S0QWQtESLh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2S0QWQtEiLh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2S0QWQtEyLh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2S0QWQtECMh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2S0QWQtESMh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2S0QWQtEiMh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2S0QWQtEyMh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2S0QWQtECNh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2S0QWQtESNh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2S0QWQtIiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjax.iHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjaxDiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjaxHiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjaxLiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjaxPiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjayHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbOUGcE4FMh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2S0QWQtUiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUja1HBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbOUGcE41Mh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2S0QWQtgiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUja4HBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbScWLh.hcgwVck0iHv3BLh7hO7.UPRETSfjFY8HxbyA2T2IiHfXWXrUWY8HBLt.iHu3COPEjTA0DHoQVOhL2bvM0cyHBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHyMGbScGMh.hcgwVck0iHv3BLh7hO7.UPRETSfjFY8HxbyA2T2UiHfXWXrUWY8HBLt.iHu3COPEjTA0DHoQVOhL2bvM0c1HBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHyMGbSc2Mh.hcgwVck0iHv3BLh7hO7.UPRETSfjFY8HxbyA2T2giHfXWXrUWY8HBLt.iHu3COPEjTA0DHoQVOhL2bvM0cD81ctIBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHyMGbScGSkYFch.hcgwVck0iHv3BLh7hO7.UPRETSfjFY8HxbyA2T2IUZmgFch.hcgwVck0iHv3BLh7hO7.UPRETSfjFY8HxbyA2T2MEZoYFcLIBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbSc2TnklYzIkHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bvM0cUAmHfXWXrUWY8HBLt.iHu3COuLGcgQWY9vSSIQTRfzTRDkzWI4TOhfSL0HSM2LiLv.RK1PSL0TSMvfyMh.RSIQTRe8TUT0iHh.RSIQTReMDR8HBLh.RSIQTRe4zSTUzWI4TOh.iH9vSP0Q2asEFco8lau3COuzTRDkjO7LTUSQ0SM8hO77hUSQkO..</STATE>
+    <LAYOUT>
+      <INPUTS/>
+      <OUTPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+        <BUS index="2" layout="C"/>
+        <BUS index="3" layout="C"/>
+        <BUS index="4" layout="C"/>
+        <BUS index="5" layout="C"/>
+        <BUS index="6" layout="C"/>
+        <BUS index="7" layout="C"/>
+        <BUS index="8" layout="C"/>
+        <BUS index="9" layout="C"/>
+        <BUS index="10" layout="C"/>
+      </OUTPUTS>
+    </LAYOUT>
   </FILTER>
-  <CONNECTION srcFilter="4" srcChannel="0" dstFilter="3" dstChannel="0"/>
-  <CONNECTION srcFilter="4" srcChannel="1" dstFilter="3" dstChannel="1"/>
+  <FILTER uid="7" x="0.75375" y="0.5557692307692308" uiLastX_Normal="1249"
+          uiLastY_Normal="161" uiopen_Normal="1">
+    <PLUGIN name="swat" format="VST" category="Effect" manufacturer="Technobear"
+            version="1.4.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/swat.vst"
+            uid="53574154" isInstrument="0" fileTime="1765d888ed2" infoUpdateTime="1796b5adc82"
+            numInputs="12" numOutputs="8" isShell="0"/>
+    <STATE>289.CMlaKA....fQBMDZ....AL0UAQE.AP......A...............................................................................................................................................................................AZ0PxDBd....77CdswFH1Ulbyk1at0iHw3BLh.RYtM1ajklam0iHUQkQsfiH+3CH7L2cgQmO7DFam8VLfDFam8VOh.iHu3COgw1YuICHgw1Yu0iHvHxK9vSXrc1ay.RXrc1a8HBLh7hO7DFam8FMfDFam8VOh.iHu3COuL2cgQmO..</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+        <BUS index="2" layout="C"/>
+        <BUS index="3" layout="C"/>
+        <BUS index="4" layout="C"/>
+        <BUS index="5" layout="C"/>
+        <BUS index="6" layout="C"/>
+        <BUS index="7" layout="C"/>
+        <BUS index="8" layout="C"/>
+        <BUS index="9" layout="C"/>
+        <BUS index="10" layout="C"/>
+        <BUS index="11" layout="C"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+        <BUS index="2" layout="C"/>
+        <BUS index="3" layout="C"/>
+        <BUS index="4" layout="C"/>
+        <BUS index="5" layout="C"/>
+        <BUS index="6" layout="C"/>
+        <BUS index="7" layout="C"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="8" x="0.19375" y="0.5076923076923077" uiLastX_Normal="338"
+          uiLastY_Normal="91" uiopen_Normal="1" uiLastX_Generic="159" uiLastY_Generic="326"
+          uiopen_Generic="1">
+    <PLUGIN name="plts" format="VST" category="Effect" manufacturer="Technobear"
+            version="1.4.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/plts.vst"
+            uid="504c5453" isInstrument="0" fileTime="1765d86a063" infoUpdateTime="1796b5adc83"
+            numInputs="8" numOutputs="2" isShell="0"/>
+    <STATE>646.CMlaKA....fQBMDZ....A.ESTME.AP......A.............................................................................................................................................................................P.la0PxDR2A...77CdswFH1Ulbyk1at0iHw3BLh.RYtM1ajklam0iHUQkQsfiH+3CH7X0TT4COyQWXzUlO7.UPRETSfjFY8HhYxUVbe01ajIBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHnElbs8laoM1bh.hcgwVck0iHv3BLh7hO7.UPRETSfjFY8HBavclHfXWXrUWY8HRMv3BLh7hO7.UPRETSfjFY8HRauQVYrIBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHs8lbvglHfXWXrUWY8HBLt.iHu3COPEjTA0DHoQVOhz1axAGZe01ajIBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHvkFciglHfXWXrUWY8HBLt.iHu3COPEjTA0DHoQVOhPWZsIlbkIBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHzkVahIWYe01ajIBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iH1MVXh.hcgwVck0iH0.iKvHxK9vyKyQWXzUlO7zTRDkDHMkDQI8URN0iHh.RSIQTRe8TUT0iHh.RSIQTReMDR8HBLh.RSIQTRe4zSTUzWI4TOh.iH9vSP0Q2asEFco8lau3COuzTRDkjO7LTUSQ0SM8hO77hUSQkO..</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+        <BUS index="2" layout="C"/>
+        <BUS index="3" layout="C"/>
+        <BUS index="4" layout="C"/>
+        <BUS index="5" layout="C"/>
+        <BUS index="6" layout="C"/>
+        <BUS index="7" layout="C"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <CONNECTION srcFilter="5" srcChannel="8" dstFilter="7" dstChannel="0"/>
+  <CONNECTION srcFilter="5" srcChannel="8" dstFilter="8" dstChannel="0"/>
+  <CONNECTION srcFilter="5" srcChannel="9" dstFilter="8" dstChannel="1"/>
+  <CONNECTION srcFilter="8" srcChannel="0" dstFilter="3" dstChannel="0"/>
+  <CONNECTION srcFilter="8" srcChannel="1" dstFilter="3" dstChannel="1"/>
 </FILTERGRAPH>

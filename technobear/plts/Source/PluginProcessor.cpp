@@ -42,7 +42,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     AudioProcessorValueTreeState::ParameterLayout params;
     BaseProcessor::addBaseParameters(params);
 
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::pitch, "Pitch", -30.0f, +30.0f, 0.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::pitch, "Pitch", -48.0f, +48.0f, 0.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::harmonics, "Harmonics", 0.0f, 100.0f, 0.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::timbre, "Timbre", 0.0f, 100.0f, 50.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::morph, "Morph", 0.0f, 100.0f, 50.0f));
@@ -135,13 +135,13 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
         // static constexpr float PltsPitchOffset = 60.0f - 3.044f;
         static constexpr float PltsPitchOffset = 60.0f;
-        float pitch = params_.pitch.convertFrom0to1(params_.pitch.getValue()) + PltsPitchOffset;
+        float pitch = params_.pitch.convertFrom0to1(params_.pitch.getValue());
 
         patch_.engine = (int) constrain(params_.model.convertFrom0to1(params_.model.getValue()),
                                  0.0f, PltsMaxEngine);
 
-        patch_.note = pitch;
-        //patch_.note = 60.f + pitch * 12.f;
+        patch_.note = PltsPitchOffset + pitch;
+//        patch_.note = 60.f + pitch * 12.f;
         patch_.harmonics = params_.harmonics.getValue();
         patch_.timbre = params_.timbre.getValue();
         patch_.morph = params_.morph.getValue();
@@ -161,7 +161,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         modulations.timbre = buffer.getSample(I_TIMBRE, bidx) * 0.625f;
         modulations.morph = buffer.getSample(I_MORPH, bidx) * 0.625f;
 
-        modulations.trigger = trig_; //TODO  trig || trig_ ?
+        modulations.trigger = trig;
         modulations.level = buffer.getSample(I_LEVEL, bidx) * 0.625f;
 
         // modulations.frequency_patched = voctEn;

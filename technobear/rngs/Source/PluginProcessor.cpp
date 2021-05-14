@@ -56,7 +56,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     AudioProcessorValueTreeState::ParameterLayout params;
     BaseProcessor::addBaseParameters(params);
 
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::pitch, "Pitch", -48.0f, +48.0f, 0.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::pitch, "Pitch", -30.0f, +30.0f, 0.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::structure, "Structure", 0.0f, 100.0f, 40.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::brightness, "Brightness", 0.0f, 100.0f, 50.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::damping, "Damping", 0.0f, 100.0f, 50.0f));
@@ -109,7 +109,7 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 }
 
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
-    BaseProcessor::prepareToPlay(sampleRate,samplesPerBlock);
+    BaseProcessor::prepareToPlay(sampleRate, samplesPerBlock);
     strummer_.Init(0.01f, sampleRate / RingsBlock);
     string_synth_.Init(buffer);
     part_.Init(buffer);
@@ -164,7 +164,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         }
 
         // control rate
-        static constexpr float RngsPitchOffset = 24.0f;
+        static constexpr float RngsPitchOffset = 30.f;
         float transpose = params_.pitch.convertFrom0to1(params_.pitch.getValue()) + RngsPitchOffset;
         float note = cv2Pitch(buffer.getSample(I_VOCT, bidx));
         float fm = cv2Pitch(buffer.getSample(I_FM, bidx));
@@ -243,7 +243,7 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
 
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
-    return new ssp::EditorHost(this,new PluginEditor(*this));
+    return new ssp::EditorHost(this, new PluginEditor(*this));
 }
 
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {

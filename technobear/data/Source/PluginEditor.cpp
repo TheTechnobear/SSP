@@ -209,14 +209,17 @@ static const char tonics[MAX_TONICS][3] = {
 
 String getNoteValue(float f) {
     float voct = cv2Pitch(f) + 60.0f; // -5v = 0
+    voct += 0.005f; // so we round up fractions of cent
     int oct = voct / 12;
     unsigned note = unsigned(voct) % MAX_TONICS;
-    unsigned cents = (voct - floorf(voct)) * 100;
+    int cents = ((voct - floorf(voct)) * 100.0f);
     if (cents > 50) {
-        cents -= 50;
+        cents = 50-cents;
         note = (note + 1) % MAX_TONICS;
+        oct += (note==0);
     }
-    return String(tonics[note] + String(oct - (note < 3))) + "." + String(cents);
+    String cts=String::formatted("%+02d", cents);
+    return String(tonics[note] + String(oct - (note < 3))) + " " + cts;
 }
 
 void PluginEditor::drawValueDisplay(Graphics &g) {
