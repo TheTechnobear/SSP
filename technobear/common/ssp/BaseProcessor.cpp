@@ -415,7 +415,7 @@ void BaseProcessor::handleMidi(const MidiMessage &msg) {
             }
         }
 
-        if (noteInput_) {
+        if (noteInput_ && msg.isNoteOnOrOff()) {
             if (msg.isNoteOn()) {
                 midiNoteInput(msg.getNoteNumber() , msg.getVelocity());
             } else {
