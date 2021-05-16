@@ -56,8 +56,8 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     AudioProcessorValueTreeState::ParameterLayout params;
     BaseProcessor::addBaseParameters(params);
 
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::pitch, "Pitch", -30.0f, +30.0f, 0.0f));
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::structure, "Structure", 0.0f, 100.0f, 40.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::pitch, "Pitch", -36.0f, +36.0f, 0.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::structure, "Structure", 0.0f, 100.0f, 33.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::brightness, "Brightness", 0.0f, 100.0f, 50.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::damping, "Damping", 0.0f, 100.0f, 50.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::position, "Position", 0.0f, 100.0f, 50.0f));
@@ -164,8 +164,12 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         }
 
         // control rate
-        static constexpr float RngsPitchOffset = 30.f;
-        float transpose = params_.pitch.convertFrom0to1(params_.pitch.getValue()) + RngsPitchOffset;
+        static constexpr float RngsPitchOffset = 30.f - 6.0f; // 30 is normal, but 6. makes it in turn at 12 oclock
+        float transpose =
+            params_.pitch.convertFrom0to1(params_.pitch.getValue())
+            + RngsPitchOffset
+            + (noteInput_ ? noteInputTranspose_ : 0.0f);
+
         float note = cv2Pitch(buffer.getSample(I_VOCT, bidx));
         float fm = cv2Pitch(buffer.getSample(I_FM, bidx));
         float damping = params_.damping.getValue() + buffer.getSample(I_DAMPING, bidx);

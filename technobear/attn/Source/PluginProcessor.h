@@ -37,6 +37,8 @@ public:
 
     bool hasEditor() const override { return true; }
 
+    void prepareToPlay(double newSampleRate, int estimatedSamplesPerBlock) override;
+
     enum {
         I_SIG_A,
         I_SIG_B,
@@ -116,7 +118,7 @@ private:
         return props;
     }
 
-    float lastCV_[MAX_SIG_OUT];
+    float lastParam_[MAX_SIG_OUT];
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };

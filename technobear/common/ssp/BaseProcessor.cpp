@@ -361,15 +361,27 @@ void BaseProcessor::setMidiOut(std::string id) {
     }
 }
 
-void BaseProcessor::automateParam(int idx, float v) {
+void BaseProcessor::automateParam(int idx, const MidiAutomation &a, const MidiMessage &msg) {
     assert(idx >= Percussa::sspLast);
 
     auto &plist = getParameters();
     if (idx < plist.size()) {
         auto p = plist[idx];
-        if (p->getValue() != v) {
+
+        float val = p->getValue();
+        if (msg.isController()) {
+            val = float(msg.getControllerValue()) / 127.0f;
+        } else if (msg.isNoteOn()) {
+            val = msg.getFloatVelocity();
+        } else if (msg.isNoteOff()) {
+            val = 0.0f;
+        }
+
+        val = (val * a.scale_) + a.offset_;
+
+        if (p->getValue() != val) {
             p->beginChangeGesture();
-            p->setValueNotifyingHost(v);
+            p->setValueNotifyingHost(val);
             p->endChangeGesture();
         }
     }
@@ -396,23 +408,18 @@ void BaseProcessor::handleMidi(const MidiMessage &msg) {
             if ((msg.isController() && a.midi_.type_ == MidiAutomation::Midi::T_CC)
                 && (msg.getControllerNumber() == a.midi_.num_)
                 ) {
-                float val = float(msg.getControllerValue()) / 127.0f;
-                val = (val * a.scale_) + a.offset_;
-                automateParam(a.paramIdx_, val);
+                automateParam(a.paramIdx_, a, msg);
             } else if ((msg.isNoteOnOrOff() && a.midi_.type_ == MidiAutomation::Midi::T_NOTE)
                        && (msg.getNoteNumber() == a.midi_.num_)) {
-                float val = msg.getFloatVelocity();
-                val = (val * a.scale_) + a.offset_;
-                automateParam(a.paramIdx_, val);
+                automateParam(a.paramIdx_, a, msg);
             }
         }
 
         if (noteInput_) {
-            float pcv = pitch2Cv(msg.getNoteNumber() - 60);
             if (msg.isNoteOn()) {
-                midiNoteInput(pcv, msg.getFloatVelocity());
+                midiNoteInput(msg.getNoteNumber() , msg.getVelocity());
             } else {
-                midiNoteInput(pcv, 0.0f);
+                midiNoteInput(msg.getNoteNumber() , 0);
             }
         }
     }

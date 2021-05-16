@@ -117,7 +117,6 @@ protected:
     void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message) override;
 
     void handleMidi(const MidiMessage &message);
-    void automateParam(int idx, float v);
 
     struct MidiAutomation {
         int paramIdx_ = -1;
@@ -134,7 +133,6 @@ protected:
             } type_ = T_MAX;
         } midi_;
 
-
         void reset() {
             paramIdx_ = -1;
             scale_ = 1.0f;
@@ -149,6 +147,8 @@ protected:
         void store(XmlElement *);
         void recall(XmlElement *);
     };
+
+    void automateParam(int idx,const MidiAutomation& a, const MidiMessage &msg);
 
     std::map<int, MidiAutomation> midiAutomation_;
 

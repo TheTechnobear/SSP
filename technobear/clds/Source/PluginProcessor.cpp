@@ -153,7 +153,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
             ibuf_[i].l = TO_SHORTFRAME(buffer.getSample(I_LEFT, bidx + i) * in_gain);
             ibuf_[i].r = stereoIn ? TO_SHORTFRAME(buffer.getSample(I_RIGHT, bidx + i) * in_gain) : ibuf_[i].l;
 
-            if (buffer.getSample(I_TRIG, bidx + i) > 0.5) {
+            if (buffer.getSample(I_TRIG, bidx + i) > 0.5f) {
                 trig = true;
             }
         }
@@ -178,7 +178,11 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
         auto p = processor.mutable_parameters();
 
-        float pitch = params_.pitch.convertFrom0to1(params_.pitch.getValue()) + cv2Pitch(buffer.getSample(I_VOCT, bidx));
+        float pitch =
+            params_.pitch.convertFrom0to1(params_.pitch.getValue())
+            + cv2Pitch(buffer.getSample(I_VOCT, bidx))
+            + (noteInput_ ? noteInputTranspose_ : 0.0f) ;
+
         float position = params_.position.getValue() + buffer.getSample(I_POS, bidx);
         float size = params_.size.getValue() + buffer.getSample(I_SIZE, bidx);
         float density = params_.density.getValue() + buffer.getSample(I_DENSITY, bidx);

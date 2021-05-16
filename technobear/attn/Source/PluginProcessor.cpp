@@ -15,7 +15,7 @@ PluginProcessor::PluginProcessor(
     : BaseProcessor(ioLayouts, std::move(layout)), params_(vts()) {
     init();
     for (int i = 0; i < MAX_SIG_OUT; i++) {
-        lastCV_[i] = 0.0f;
+        lastParam_[i] = params_.attnparams_[i]->val.getValue();
     }
 }
 
@@ -51,7 +51,8 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     auto sg = std::make_unique<AudioProcessorParameterGroup>(ID::attn, "Attn", ID::separator);
     for (unsigned sn = 0; sn < MAX_SIG_IN; sn++) {
         char ar[2];
-        ar[0]='A'+sn;ar[1]=0;
+        ar[0] = 'A' + sn;
+        ar[1] = 0;
         String desc = "Attn " + String(ar);
         sg->addChild(std::make_unique<ssp::BaseFloatParameter>(getPID(ID::attn, sn, ID::val), desc, 0.0f, 1.0f, 1.0f));
     }
@@ -108,6 +109,13 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
     return "ZZOut-" + String(channelIndex);
 }
 
+void PluginProcessor::prepareToPlay(double newSampleRate, int estimatedSamplesPerBlock) {
+    BaseProcessor::prepareToPlay(newSampleRate,estimatedSamplesPerBlock);
+    for (int i = 0; i < MAX_SIG_OUT; i++) {
+        lastParam_[i] = params_.attnparams_[i]->val.getValue();
+    }
+}
+
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     unsigned sz = buffer.getNumSamples();
@@ -118,18 +126,18 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         if (!isOutputEnabled(O_SIG_A + i)) continue;
 
         bool in = isInputEnabled(I_SIG_A + i);
-        float attn = params_.attnparams_[i]->val.getValue();
+        float attnP = params_.attnparams_[i]->val.getValue();
 
         for (int smp = 0; smp < sz; smp++) {
-            auto & lv=lastCV_[i];
+            auto &lP = lastParam_[i];
             float sigv = in ? buffer.getSample(I_SIG_A + i, smp) : 1.0f; // normalise to 1
-            float val = sigv * attn;
+            float attn = attnP;
             if (slew) {
                 static constexpr float slewRate = (1.0f / 128.0f);
-                val =  lv + ( ( val - lv) * slewRate);
+                attn = lP + ((attnP - lP) * slewRate);
             }
-            buffer.setSample(O_SIG_A + i, smp, val);
-            lv = val;
+            buffer.setSample(O_SIG_A + i, smp, sigv * attn);
+            lP = attn;
         }
     }
 }

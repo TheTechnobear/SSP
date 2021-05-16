@@ -235,6 +235,7 @@ AudioProcessorEditor *PluginProcessor::createEditor() {
     return new ssp::EditorHost(this,new PluginEditor(*this));
 }
 
+
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {
     return new PluginProcessor();
 }

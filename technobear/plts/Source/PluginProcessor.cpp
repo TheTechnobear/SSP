@@ -15,7 +15,7 @@ PluginProcessor::PluginProcessor(
     : BaseProcessor(ioLayouts, std::move(layout)), params_(vts()) {
     init();
 
-    memset(shared_buffer_,0,sizeof(shared_buffer_));
+    memset(shared_buffer_, 0, sizeof(shared_buffer_));
 #if __APPLE__
     // so that we get some sound, without patching
     inputEnabled[I_TRIG] = false;
@@ -105,7 +105,7 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 }
 
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
-    BaseProcessor::prepareToPlay(sampleRate,samplesPerBlock);
+    BaseProcessor::prepareToPlay(sampleRate, samplesPerBlock);
     stmlib::BufferAllocator allocator(shared_buffer_, sizeof(shared_buffer_));
     voice_.Init(&allocator);
 }
@@ -135,10 +135,12 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
         // static constexpr float PltsPitchOffset = 60.0f - 3.044f;
         static constexpr float PltsPitchOffset = 60.0f;
-        float pitch = params_.pitch.convertFrom0to1(params_.pitch.getValue());
+        float pitch =
+            params_.pitch.convertFrom0to1(params_.pitch.getValue())
+            + (noteInput_ ? noteInputTranspose_ : 0.0f);
 
         patch_.engine = (int) constrain(params_.model.convertFrom0to1(params_.model.getValue()),
-                                 0.0f, PltsMaxEngine);
+                                        0.0f, PltsMaxEngine);
 
         patch_.note = PltsPitchOffset + pitch;
 //        patch_.note = 60.f + pitch * 12.f;
@@ -153,7 +155,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         patch_.morph_modulation_amount = (params_.morph_mod.getValue() * 2.0f) - 1.0f;
 
         // Construct modulations
-        plaits::Modulations modulations {};
+        plaits::Modulations modulations{};
         modulations.engine = buffer.getSample(I_MODEL, bidx);
         modulations.note = cv2Pitch(buffer.getSample(I_VOCT, bidx));
         modulations.frequency = cv2Pitch(buffer.getSample(I_FM, bidx));
@@ -193,7 +195,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 }
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
-    return new ssp::EditorHost(this,new PluginEditor(*this));
+    return new ssp::EditorHost(this, new PluginEditor(*this));
 }
 
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {

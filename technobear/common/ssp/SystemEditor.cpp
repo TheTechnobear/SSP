@@ -75,6 +75,8 @@ SystemEditor::SystemEditor(BaseProcessor *p) :
     selIdx_ = 0;
     idxOffset_ = 0;
 
+    noteInputBtn_.value(baseProcessor_->noteInput_);
+
     startTimer(50);
 }
 

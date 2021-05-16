@@ -72,6 +72,8 @@ public:
     }
 
 protected:
+    void midiNoteInput(unsigned note, unsigned velocity) override { if (velocity > 0) noteInputTranspose_ = float(note) - 60.f; }
+
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 private:
     enum {
@@ -129,6 +131,8 @@ private:
 
     ssp::RmsTrack inRms_[2];
     ssp::RmsTrack outRms_[2];
+
+    float noteInputTranspose_ = 0.0f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
