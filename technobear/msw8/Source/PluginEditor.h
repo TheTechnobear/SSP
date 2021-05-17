@@ -10,7 +10,7 @@ public:
     explicit PluginEditor(PluginProcessor &);
     ~PluginEditor() override = default;
 
-    void paint(Graphics &) override;
+    void drawView(Graphics &) override;
 protected:
     void drawGrid(Graphics &g);
     using base_type = ssp::LineParamEditor;

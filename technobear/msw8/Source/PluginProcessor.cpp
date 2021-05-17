@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "ssp/EditorHost.h"
 
 inline float constrain(float v, float vMin, float vMax) {
     return std::max<float>(vMin, std::min<float>(vMax, v));
@@ -92,6 +93,7 @@ void PluginProcessor::onOutputChanged(unsigned i, bool b) {
 }
 
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
+    BaseProcessor::prepareToPlay(sampleRate,samplesPerBlock);
     inputBuffer_.setSize(1, samplesPerBlock);
     lastBuffer_.setSize(1, samplesPerBlock);
 }
@@ -186,7 +188,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
-    return new PluginEditor(*this);
+    return new ssp::EditorHost(this,new PluginEditor(*this));
 }
 
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {

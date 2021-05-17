@@ -3,8 +3,10 @@
 sample and hold module with optional quantizer and tranposition
 
 ## Change Log
+1.4.0 early access release - midi learn
+
 1.3.1 release, re-write using new infra and ui
-1.3.0 pre-release
+1.3.0 early access release
 
 1.0.1 Adjust for pitch cv changes
 1.0.0 Initial Release 

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<FILTERGRAPH>
+  <FILTER uid="1" x="0.5" y="0.1">
+    <PLUGIN name="Audio Input" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="JUCE" version="1.0" file="" uid="246006c0" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="0" numOutputs="16"
+            isShell="0"/>
+    <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="disabled"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="3" x="0.5" y="0.9">
+    <PLUGIN name="Audio Output" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="JUCE" version="1.0" file="" uid="724248cb" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="16" numOutputs="0"
+            isShell="0"/>
+    <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="disabled"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="8" x="0.45125" y="0.3673076923076923" uiLastX_Normal="6"
+          uiLastY_Normal="190" uiopen_Normal="0" uiLastX_Generic="787"
+          uiLastY_Generic="382" uiopen_Generic="0">
+    <PLUGIN name="swat" format="VST" category="Effect" manufacturer="Technobear"
+            version="1.4.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/swat.vst"
+            uid="53574154" isInstrument="0" fileTime="1765d888ed2" infoUpdateTime="1795c2368c4"
+            numInputs="12" numOutputs="8" isShell="0"/>
+    <STATE>320.CMlaKA....fQBMDZ....AL0UAQE.AP......A...............................................................................................................................................................................fZ0PxDxk....77CdswFH1Ulbyk1at0iHw3BLh.RYtM1ajklam0iHUQkQsfiH+3CH7L2cgQmO7DFam8VLfDFam8VOhDiHfDTOh.iK0jSMv.CLyfiMxLCNvjCNwHBHB0iHv3RMh7hO7DFam8lLfDFam8VOh.iHu3COgw1YuMCHgw1Yu0iHvHxK9vSXrc1az.RXrc1a8HBLh7hO77xb2EFc9..</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+        <BUS index="2" layout="C"/>
+        <BUS index="3" layout="C"/>
+        <BUS index="4" layout="C"/>
+        <BUS index="5" layout="C"/>
+        <BUS index="6" layout="C"/>
+        <BUS index="7" layout="C"/>
+        <BUS index="8" layout="C"/>
+        <BUS index="9" layout="C"/>
+        <BUS index="10" layout="C"/>
+        <BUS index="11" layout="C"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+        <BUS index="2" layout="C"/>
+        <BUS index="3" layout="C"/>
+        <BUS index="4" layout="C"/>
+        <BUS index="5" layout="C"/>
+        <BUS index="6" layout="C"/>
+        <BUS index="7" layout="C"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="10" x="0.44125" y="0.5923076923076923" uiLastX_Normal="321"
+          uiLastY_Normal="47" uiopen_Normal="1" uiLastX_Generic="803" uiLastY_Generic="772"
+          uiopen_Generic="0">
+    <PLUGIN name="mtot" format="VST" category="Effect" manufacturer="Technobear"
+            version="1.0.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/mtot.vst"
+            uid="4d544f54" isInstrument="0" fileTime="17951b0918b" infoUpdateTime="1795c2368c5"
+            numInputs="11" numOutputs="0" isShell="0"/>
+    <STATE>648.CMlaKA....fQBMDZ....AzDUOQE.A.......A.............................................................................................................................................................................P.na0PxDx2A...77CdswFH1Ulbyk1at0iHw3BLh.RYtM1ajklam0iHUQkQsfiH+3CH7X0TT4COyQWXzUlO7.UPRETSfjFY8HxX18UXh.hcgwVck0iHzHiKvHxK9vCTAIUPMARZj0iHiY2WhIBH1EFa0UVOhHiKvHxK9vCTAIUPMARZj0iHiY2WiIBH1EFa0UVOhLiKvHxK9vCTAIUPMARZj0iHiY2WjIBH1EFa0UVOhPiKvHxK9vCTAIUPMARZj0iHiY2WkIBH1EFa0UVOhTiKvHxK9vCTAIUPMARZj0iHiY2WlIBH1EFa0UVOhXiKvHxK9vCTAIUPMARZj0iHiY2WmIBH1EFa0UVOhbiKvHxK9vCTAIUPMARZj0iHiY2WnIBH1EFa0UVOhfiKvHxK9vCTAIUPMARZj0iHvI1WxElamUlHfXWXrUWY8HhLz3BLh7hO7.UPRETSfjFY8HxbrU1ch.hcgwVck0iHv3BLh7hO77xbzEFck4COMkDQIARSIQTRekjS8HhHfzTRDkzWOUEU8HRKyHiL2TiM3HCHsDSNzjCMz.iM1biHfzTRDkzWCgTOhHiHfzTRDkzWN8DUE8URN0iHvHhO7DTcz8VagQWZu41K9vyKMkDQI4COCU0TT8TSu3COuX0TT4C.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+        <BUS index="2" layout="C"/>
+        <BUS index="3" layout="C"/>
+        <BUS index="4" layout="C"/>
+        <BUS index="5" layout="C"/>
+        <BUS index="6" layout="C"/>
+        <BUS index="7" layout="C"/>
+        <BUS index="8" layout="C"/>
+        <BUS index="9" layout="C"/>
+        <BUS index="10" layout="C"/>
+      </INPUTS>
+      <OUTPUTS/>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="11" x="0.7837499999999999" y="0.3365384615384616" uiLastX_Normal="28"
+          uiLastY_Normal="81" uiopen_Normal="1" uiLastX_Generic="1274"
+          uiLastY_Generic="794" uiopen_Generic="1">
+    <PLUGIN name="mtin" format="VST" category="Effect" manufacturer="Technobear"
+            version="1.0.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/mtin.vst"
+            uid="4d54494e" isInstrument="0" fileTime="1794dbe399c" infoUpdateTime="1795c2368c8"
+            numInputs="0" numOutputs="11" isShell="0"/>
+    <STATE>3076.CMlaKA....fQBMDZ....AzDUI4D.A.......A.............................................................................................................................................................................vBjY0PxDxVK...77CdswFH1Ulbyk1at0iHw3BLh.RYtM1ajklam0iHUQkQsfiH+3CH7X0TT4COyQWXzUlO7.UPRETSfjFY8HxX18UXh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxX18kXh.hcgwVck0iHx3BLh7hO7.UPRETSfjFY8HxX180Xh.hcgwVck0iHy3BLh7hO7.UPRETSfjFY8HxX18EYh.hcgwVck0iHz3BLh7hO7.UPRETSfjFY8HxX18UYh.hcgwVck0iH03BLh7hO7.UPRETSfjFY8HxX18kYh.hcgwVck0iH13BLh7hO7.UPRETSfjFY8HxX180Yh.hcgwVck0iH23BLh7hO7.UPRETSfjFY8HxX18EZh.hcgwVck0iH33BLh7hO7.UPRETSfjFY8HBbh8kbg41YkIBH1EFa0UVOhHiKvHxK9vCTAIUPMARZj0iHywVY2IBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHyMGbE41XwHBH1EFa0UVOhzRLt.iHu3COPEjTA0DHoQVOhL2bvUjaiIiHfXWXrUWY8HRKw3BLh7hO7.UPRETSfjFY8HxbyAWQtM1Lh.hcgwVck0iHsDiKvHxK9vCTAIUPMARZj0iHyMGbE41XzHBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHyMGbE41XScWLh.hcgwVck0iHv3BLh7hO7.UPRETSfjFY8HxbyAWQtM1T2IiHfXWXrUWY8HBLt.iHu3COPEjTA0DHoQVOhL2bvUjaiM0cyHBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHyMGbE41XScGMh.hcgwVck0iHv3BLh7hO7.UPRETSfjFY8HxbyAWRtUjawHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbI4VQtECLh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyAWRtUjawDiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bvkjaE4VLxHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbI4VQtEyLh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyAWRtUjawPiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bvkjaE4VL0HBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbI4VQtEiMh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyAWRtUjawbiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bvkjaE4VL3HBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbI4VQtESNh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyAWRtUjaxHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbI4VQtICLh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyAWRtUjaxDiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bvkjaE4lLxHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbI4VQtIyLh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyAWRtUjaxPiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bvkjaE41Lh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyAWRtUjazHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbI4VQtUiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bvkjaE4lMh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyAWRtUja2HBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbI4VQtgiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bvkjaE4VNh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2S0QWQtEiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjaw.iHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjawDiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjawHiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjawLiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjawPiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjawTiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjawXiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjawbiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjawfiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjawjiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUjaxHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbOUGcE4lLvHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbOUGcE4lLwHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbOUGcE4lLxHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbOUGcE4lLyHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbOUGcE4lLzHBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbOUGcE41Lh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2S0QWQtQiHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUja0HBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbOUGcE4lMh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2S0QWQtciHfXWXrUWY8HRLt.iHu3COPEjTA0DHoQVOhL2bv8TczUja3HBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbOUGcE4VNh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2T2EiHfXWXrUWY8HBLt.iHu3COPEjTA0DHoQVOhL2bvM0cxHBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHyMGbSc2Lh.hcgwVck0iHv3BLh7hO7.UPRETSfjFY8HxbyA2T2QiHfXWXrUWY8HBLt.iHu3COPEjTA0DHoQVOhL2bvM0c0HBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHyMGbScmMh.hcgwVck0iHv3BLh7hO7.UPRETSfjFY8HxbyA2T2ciHfXWXrUWY8HBLt.iHu3COPEjTA0DHoQVOhL2bvM0c3HBH1EFa0UVOh.iKvHxK9vCTAIUPMARZj0iHyMGbScGQucmah.hcgwVck0iHv3BLh7hO7.UPRETSfjFY8HxbyA2T2wTYlQmHfXWXrUWY8HBLt.iHu3COPEjTA0DHoQVOhL2bvM0cRk1YnQmHfXWXrUWY8HBLt.iHu3COPEjTA0DHoQVOhL2bvM0cSgVZlQGSh.hcgwVck0iHw3BLh7hO7.UPRETSfjFY8HxbyA2T2MEZoYFcRIBH1EFa0UVOhDiKvHxK9vCTAIUPMARZj0iHyMGbScWUvIBH1EFa0UVOh.iKvHxK9vyKyQWXzUlO7zTRDkDHMkDQI8URN0iHsTiMwDiM4LCNx.RK1DSM3LiM3jiLh.RSIQTRe8TUT0iHh.RSIQTReMDR8HRLh.RSIQTRe4zSTUzWI4TOh.iH9vSP0Q2asEFco8lau3COuzTRDkjO7LTUSQ0SM8hO77hUSQkO..</STATE>
+    <LAYOUT>
+      <INPUTS/>
+      <OUTPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+        <BUS index="2" layout="C"/>
+        <BUS index="3" layout="C"/>
+        <BUS index="4" layout="C"/>
+        <BUS index="5" layout="C"/>
+        <BUS index="6" layout="C"/>
+        <BUS index="7" layout="C"/>
+        <BUS index="8" layout="C"/>
+        <BUS index="9" layout="C"/>
+        <BUS index="10" layout="C"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="12" x="0.79" y="0.6576923076923077" uiLastX_Normal="337"
+          uiLastY_Normal="372" uiopen_Normal="0">
+    <PLUGIN name="swat" format="VST" category="Effect" manufacturer="Technobear"
+            version="1.4.0.0" file="/Users/kodiak/Library/Audio/Plug-Ins/VST/swat.vst"
+            uid="53574154" isInstrument="0" fileTime="1765d888ed2" infoUpdateTime="1795c2368c9"
+            numInputs="12" numOutputs="8" isShell="0"/>
+    <STATE>289.CMlaKA....fQBMDZ....AL0UAQE.AP......A...............................................................................................................................................................................AZ0PxDBd....77CdswFH1Ulbyk1at0iHw3BLh.RYtM1ajklam0iHUQkQsfiH+3CH7L2cgQmO7DFam8VLfDFam8VOh.iHu3COgw1YuICHgw1Yu0iHvHxK9vSXrc1ay.RXrc1a8HBLh7hO7DFam8FMfDFam8VOh.iHu3COuL2cgQmO..</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+        <BUS index="2" layout="C"/>
+        <BUS index="3" layout="C"/>
+        <BUS index="4" layout="C"/>
+        <BUS index="5" layout="C"/>
+        <BUS index="6" layout="C"/>
+        <BUS index="7" layout="C"/>
+        <BUS index="8" layout="C"/>
+        <BUS index="9" layout="C"/>
+        <BUS index="10" layout="C"/>
+        <BUS index="11" layout="C"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+        <BUS index="2" layout="C"/>
+        <BUS index="3" layout="C"/>
+        <BUS index="4" layout="C"/>
+        <BUS index="5" layout="C"/>
+        <BUS index="6" layout="C"/>
+        <BUS index="7" layout="C"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <CONNECTION srcFilter="8" srcChannel="0" dstFilter="10" dstChannel="0"/>
+  <CONNECTION srcFilter="11" srcChannel="8" dstFilter="10" dstChannel="8"/>
+  <CONNECTION srcFilter="11" srcChannel="9" dstFilter="10" dstChannel="9"/>
+  <CONNECTION srcFilter="11" srcChannel="10" dstFilter="10" dstChannel="10"/>
+  <CONNECTION srcFilter="11" srcChannel="8" dstFilter="12" dstChannel="0"/>
+  <CONNECTION srcFilter="11" srcChannel="9" dstFilter="12" dstChannel="1"/>
+</FILTERGRAPH>

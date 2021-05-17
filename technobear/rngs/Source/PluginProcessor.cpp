@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "ssp/EditorHost.h"
 
 inline float constrain(float v, float vMin, float vMax) {
     return std::max<float>(vMin, std::min<float>(vMax, v));
@@ -55,8 +56,8 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     AudioProcessorValueTreeState::ParameterLayout params;
     BaseProcessor::addBaseParameters(params);
 
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::pitch, "Pitch", -48.0f, +48.0f, 0.0f));
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::structure, "Structure", 0.0f, 100.0f, 40.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::pitch, "Pitch", -36.0f, +36.0f, 0.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::structure, "Structure", 0.0f, 100.0f, 33.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::brightness, "Brightness", 0.0f, 100.0f, 50.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::damping, "Damping", 0.0f, 100.0f, 50.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::position, "Position", 0.0f, 100.0f, 50.0f));
@@ -108,6 +109,7 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 }
 
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
+    BaseProcessor::prepareToPlay(sampleRate, samplesPerBlock);
     strummer_.Init(0.01f, sampleRate / RingsBlock);
     string_synth_.Init(buffer);
     part_.Init(buffer);
@@ -162,8 +164,12 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         }
 
         // control rate
-        static constexpr float RngsPitchOffset = 24.0f;
-        float transpose = params_.pitch.convertFrom0to1(params_.pitch.getValue()) + RngsPitchOffset;
+        static constexpr float RngsPitchOffset = 30.f - 6.0f; // 30 is normal, but 6. makes it in turn at 12 oclock
+        float transpose =
+            params_.pitch.convertFrom0to1(params_.pitch.getValue())
+            + RngsPitchOffset
+            + (noteInput_ ? noteInputTranspose_ : 0.0f);
+
         float note = cv2Pitch(buffer.getSample(I_VOCT, bidx));
         float fm = cv2Pitch(buffer.getSample(I_FM, bidx));
         float damping = params_.damping.getValue() + buffer.getSample(I_DAMPING, bidx);
@@ -241,7 +247,7 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
 
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
-    return new PluginEditor(*this);
+    return new ssp::EditorHost(this, new PluginEditor(*this));
 }
 
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {

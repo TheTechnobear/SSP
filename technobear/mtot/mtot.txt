@@ -1,0 +1,47 @@
+# mtin midi tools - midi output
+
+midi output 
+
+
+## Change Log
+1.0.1 release
+1.0.0 early access release
+
+## Developer: TheTechnobear
+I develop these plugins for free, please consider supporting my efforts with a donation.
+https://ko-fi.com/thetechnobear
+
+
+## General Usage 
+
+This module allows output of midi notes and cc to a selected device.
+the midi output device and channel is select in the system view (Left Shift+Right Shift)
+hint: if OMNI is selected for channel, it will use channel 1
+
+
+## Limitations
+
+do NOT use at audio rate, you'll almost certainly overrun a buffer, either on the ssp or your midi router/device ;)
+
+the SSP currently has an issue where it internally connects to the output device that is created  (argghh!)
+this means the MIDI module will cease to work.
+ALSO if you attempt to switch patches, you will get an ERROR
+the 'workaround' to this is before you switch patches is to reconnect a physical midi device to get the SSP to connect to that!
+
+I will be letting Percussa know of this issue, and hopefully a new release can fix this.
+
+
+## Tips
+if a pitchbend range is specified then if the v/oct changes whilst the gate is high
+pitchbends will be output to keep achieve the note. of course, this is only within the pitchbend range.
+set a pitchbend range appropriately.
+sub tip: small pitchbend ranges have more resolution, but (duh) less range.
+
+new notes sent on gate change
+
+
+
+## Credits: 
+
+Percussa SSP - https://www.percussa.com/ 
+

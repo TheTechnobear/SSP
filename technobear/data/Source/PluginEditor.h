@@ -15,7 +15,7 @@ public:
 protected:
     using base_type = ssp::LineParamEditor;
 
-    void paint(Graphics &) override;
+    void drawView(Graphics &) override;
     void timerCallback() override;
     void resized() override;
 

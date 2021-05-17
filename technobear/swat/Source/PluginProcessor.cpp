@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "ssp/EditorHost.h"
 
 #include "algos/Algos.h"
 
@@ -130,6 +131,7 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 
 
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
+    BaseProcessor::prepareToPlay(sampleRate,samplesPerBlock);
     Algo::setSampleRate(sampleRate);
     outBufs_.setSize(2 * MAX_ENG, samplesPerBlock);
 }
@@ -173,7 +175,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
-    return new PluginEditor(*this);
+    return new ssp::EditorHost(this,new PluginEditor(*this));
 }
 
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {

@@ -6,12 +6,12 @@ namespace ssp {
 
 class TableParamEditor : public SingleViewEditor {
 public:
-    TableParamEditor(BaseProcessor *p, String title, String version);
+    TableParamEditor(BaseProcessor *p);
 
 protected:
     using base_type=ssp::SingleViewEditor;
 
-    void paint(Graphics &) override;
+    void drawView(Graphics &) override;
 
     void onUpButton(bool v) override;
     void onDownButton(bool v) override;

@@ -3,8 +3,11 @@
 swat is designed to be like the famous swiss army knife, a useful utility to bring out to solve your problems.
 
 ## Change Log
+1.4.1 release
+1.4.0 early access release - midi learn
+
 1.3.1 release, re-write using new infra and ui
-1.3.0 pre-release, add delay (sample)
+1.3.0 early access release - add delay (sample)
 
 1.0.1 Adjust for pitch cv changes
 1.0.0 Initial Release 

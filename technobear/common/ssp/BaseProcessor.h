@@ -1,6 +1,7 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_audio_devices/juce_audio_devices.h>
 
 using namespace juce;
 
@@ -11,14 +12,15 @@ using namespace juce;
 namespace ssp {
 
 class BaseProcessor : public AudioProcessor,
+                      public MidiInputCallback,
+//                      public AudioProcessorListener {
+                      public AudioProcessorListener,
                       private ValueTree::Listener {
 public:
 
-    explicit BaseProcessor(
-        const AudioProcessor::BusesProperties &ioLayouts,
-        juce::AudioProcessorValueTreeState::ParameterLayout pl)
-        : AudioProcessor(ioLayouts), apvts(*this, nullptr, "state", std::move(pl)) {
-    }
+    explicit BaseProcessor(const AudioProcessor::BusesProperties &ioLayouts,
+                           juce::AudioProcessorValueTreeState::ParameterLayout pl);
+    virtual ~BaseProcessor();
 
     virtual void init();
 
@@ -39,6 +41,9 @@ public:
     const String getProgramName(int index) override { return ""; }
 
     void changeProgramName(int index, const juce::String &newName) override {}
+
+    void prepareToPlay(double newSampleRate, int estimatedSamplesPerBlock) override;
+    void releaseResources() override;
 
     void getStateInformation(MemoryBlock &destData) override;
     void setStateInformation(const void *data, int sizeInBytes) override;
@@ -67,14 +72,100 @@ public:
 
     bool isInputEnabled(unsigned i) { return i < sspParams::numIn && inputEnabled[i]; }
 
+    void setMidiIn(std::string id);
+    void setMidiOut(std::string id);
+
+
+    bool isActiveMidiIn(const std::string &id) { return midiInDeviceId_ == id; }
+
+    bool isActiveMidiOut(const std::string &id) { return midiOutDeviceId_ == id; }
+
+    void midiLearn(bool b);
+
+    virtual void midiNoteInput(unsigned note, unsigned velocity) { ; }
+
+    void noteInput(bool b) { noteInput_ = b; }
+
+    void midiChannel(unsigned ch) { midiChannel_ = ch; }
+
+    int midiChannel() { return midiChannel_; }
+
 protected:
     friend class BaseEditor;
+
+    friend class SystemEditor;
 
     AudioProcessorValueTreeState apvts;
     bool inputEnabled[sspParams::numIn];
     bool outputEnabled[sspParams::numOut];
 
+    virtual void midiFromXml(juce::XmlElement *);
+    virtual void midiToXml(juce::XmlElement *);
+    virtual void customFromXml(juce::XmlElement *);
+    virtual void customToXml(juce::XmlElement *);
+
     void addBaseParameters(AudioProcessorValueTreeState::ParameterLayout &);
+
+
+    // midi automation
+    // AudioProcessorListener
+    void audioProcessorParameterChanged(AudioProcessor *p, int parameterIndex, float newValue) override;
+
+    void audioProcessorChanged(AudioProcessor *processor) override { ; }
+
+    // MidiInputCallback
+    void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message) override;
+
+    void handleMidi(const MidiMessage &message);
+
+    struct MidiAutomation {
+        int paramIdx_ = -1;
+        float scale_ = 1.0f;
+        float offset_ = 0.0f;
+        struct Midi {
+            int channel_ = 0;
+            int num_ = 0; // note num, cc , if applicable
+            enum Type {
+                T_CC,
+                T_PRESSURE,
+                T_NOTE,
+                T_MAX
+            } type_ = T_MAX;
+        } midi_;
+
+        void reset() {
+            paramIdx_ = -1;
+            scale_ = 1.0f;
+            offset_ = 0.0f;
+            midi_.channel_ = 0;
+            midi_.num_ = 0;
+            midi_.type_ = Midi::T_MAX;
+        }
+
+        bool valid() { return paramIdx_ >= 0 && midi_.type_ != Midi::T_MAX; }
+
+        void store(XmlElement *);
+        void recall(XmlElement *);
+    };
+
+    void automateParam(int idx,const MidiAutomation& a, const MidiMessage &msg);
+
+    std::map<int, MidiAutomation> midiAutomation_;
+
+    std::string midiInDeviceId_;
+    std::string midiOutDeviceId_;
+    std::unique_ptr<MidiInput> midiInDevice_;
+    std::unique_ptr<MidiOutput> midiOutDevice_;
+    int midiChannel_ = 0;
+    bool midiLearn_ = false;
+    bool noteInput_ = false;
+
+    MidiAutomation lastLearn_;
+
+public:
+    std::map<int, MidiAutomation> &midiAutomation() { return midiAutomation_; }
+
+private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BaseProcessor)
 };

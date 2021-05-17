@@ -1,6 +1,6 @@
 #include "LineParamEditor.h"
 
-#include "BaseParamControl.h"
+#include "ParamControl.h"
 
 namespace ssp {
 
@@ -8,13 +8,13 @@ static constexpr unsigned paramTopY = 380 - 1;
 static constexpr unsigned paramSpaceY = 50;
 
 
-LineParamEditor::LineParamEditor(BaseProcessor *p, String title, String version)
-    : base_type(p, title, version) {
+LineParamEditor::LineParamEditor(BaseProcessor *p)
+    : base_type(p) {
     ;
 }
 
-void LineParamEditor::paint(Graphics &g) {
-    base_type::paint(g);
+void LineParamEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
 }
 
 void LineParamEditor::setParamBounds(unsigned idx, std::shared_ptr<BaseParamControl> c) {

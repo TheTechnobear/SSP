@@ -3,25 +3,19 @@
 #include "PluginEditor.h"
 
 PluginEditor::PluginEditor(PluginProcessor &p)
-    : base_type(&p,
-                String(JucePlugin_Name) + " : " + String(JucePlugin_Desc),
-                JucePlugin_VersionString),
+    : base_type(&p),
       processor_(p) {
     activeEngine_ = 0;
     upBtn_.label("AG-");
     downBtn_.label("AG+");
-    leftBtn_.init("IN-", Colours::red);
-    setButtonBounds(leftBtn_, 1, 4);
-    addAndMakeVisible(leftBtn_);
+    leftBtn_.label("IN-");
 
-    rightBtn_.init("IN+", Colours::red);
-    setButtonBounds(rightBtn_, 1, 6);
-    addAndMakeVisible(rightBtn_);
+    rightBtn_.label("IN+");
     setSize(1600, 480);
 }
 
-void PluginEditor::paint(Graphics &g) {
-    base_type::paint(g);
+void PluginEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
     g.setColour(Colours::grey);
     g.drawSingleLineText("Instance : " + String(activeEngine_), 20, 60);
     processor_.algo(activeEngine_)->paint(g);

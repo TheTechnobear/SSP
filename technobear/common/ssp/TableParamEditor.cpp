@@ -1,20 +1,20 @@
 #include "TableParamEditor.h"
 
-#include "BaseParamControl.h"
+#include "ParamControl.h"
 
 namespace ssp {
 
 static constexpr unsigned paramSpaceY = 36;
 
 
-TableParamEditor::TableParamEditor(BaseProcessor *p, String title, String version)
-    : base_type(p, title, version) {
+TableParamEditor::TableParamEditor(BaseProcessor *p)
+    : base_type(p) {
     ;
 }
 
 
-void TableParamEditor::paint(Graphics &g) {
-    base_type::paint(g);
+void TableParamEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
     int h = paramSpaceY;
     int w = int(900.0f / 4.0f);
 
@@ -83,7 +83,7 @@ BaseEditor::ControlPage TableParamEditor::addParamPage(
 
 
 void TableParamEditor::onUpButton(bool v) {
-    upBtn_.active(v);
+    upBtn_.value(v);
 
     if (v) return; // change on button up
 
@@ -91,7 +91,7 @@ void TableParamEditor::onUpButton(bool v) {
 }
 
 void TableParamEditor::onDownButton(bool v) {
-    downBtn_.active(v);
+    downBtn_.value(v);
 
     if (v) return; // change on button up
     chgParamPage(1,false);

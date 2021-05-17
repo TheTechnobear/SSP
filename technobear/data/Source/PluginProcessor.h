@@ -39,10 +39,6 @@ public:
 
     const String getName() const override { return JucePlugin_Name; }
 
-    void prepareToPlay(double sampleRate, int samplesPerBlock) override;
-
-    void releaseResources() override {}
-
     void processBlock(AudioSampleBuffer &, MidiBuffer &) override;
 
     AudioProcessorEditor *createEditor() override;
@@ -131,10 +127,9 @@ private:
     float lastSample_ = 0.0f;
     float lastS_[MAX_SIG_IN + 1] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f}; // inc trig
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
-
     moodycamel::ReaderWriterQueue<DataMsg> messageQueue_;
 
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
 
 

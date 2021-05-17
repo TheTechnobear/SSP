@@ -41,8 +41,6 @@ public:
 
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
 
-    void releaseResources() override {}
-
     void processBlock(AudioSampleBuffer &, MidiBuffer &) override;
 
     AudioProcessorEditor *createEditor() override;
@@ -75,6 +73,9 @@ public:
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+
+    void midiNoteInput(unsigned note, unsigned velocity) override { if (velocity > 0) noteInputTranspose_ = float(note) - 60.f; }
+
 private:
     enum {
         I_IN,
@@ -134,6 +135,7 @@ private:
     ssp::RmsTrack inRms_;
     ssp::RmsTrack outRms_[2];
     bool trig_;
+    float noteInputTranspose_ = 0.0f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };

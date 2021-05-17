@@ -4,15 +4,15 @@
 
 namespace ssp {
 
-class ButtonControl : public juce::Component {
+class ParamButton : public juce::Component {
 public:
     using Parameter = juce::RangedAudioParameter;
-    ButtonControl(Parameter &p,
+    ParamButton(Parameter &p,
                   unsigned fh = 36,
                   const juce::Colour fg = juce::Colours::white,
                   const juce::Colour bg = juce::Colours::black,
                   bool momentary = true);
-    virtual ~ButtonControl() = default;
+    virtual ~ParamButton() = default;
 
     void onUp();
     void onDown();

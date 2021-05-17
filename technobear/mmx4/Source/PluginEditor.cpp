@@ -2,21 +2,19 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-#include "ssp/BaseParamControl.h"
-#include "ssp/ButtonControl.h"
+#include "ssp/ParamControl.h"
+#include "ssp/ParamButton.h"
 
 inline float constrain(float v, float vMin, float vMax) {
     return std::max<float>(vMin, std::min<float>(vMax, v));
 }
 
 using pcontrol_type = ssp::BarParamControl;
-using bcontrol_type = ssp::ButtonControl;
+using bcontrol_type = ssp::ParamButton;
 
 
 PluginEditor::PluginEditor(PluginProcessor &p)
-    : base_type(&p,
-                String(JucePlugin_Name) + " : " + String(JucePlugin_Desc),
-                JucePlugin_VersionString),
+    : base_type(&p),
       processor_(p) {
 
     for (unsigned p = 0; p < PluginProcessor::MAX_SIG_OUT; p++) {
@@ -120,23 +118,14 @@ void PluginEditor::drawGrid(Graphics &g) {
 }
 
 
-void PluginEditor::paint(Graphics &g) {
-    base_type::paint(g);
+void PluginEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
     drawGrid(g);
 }
 
 
 void PluginEditor::resized() {
+    base_type::resized();
 }
 
 
-#if 0
-if (paramActive_ < PluginProcessor::MAX_SIG_IN)  {
-    unsigned out = index - Percussa::sspEnc1;
-    unsigned in = paramActive_;
-    float v = processor_.getVCA(in, out) + value / 100.0f;
-    v = constrain(v, -4.0f, 4.0f);
-    processor_.setVCA(in, out, v);
-    unsigned pidx = P_VCA_1A + (in * PluginProcessor::MAX_SIG_OUT) + out;
-    params_[pidx].value(v);
-#endif

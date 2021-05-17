@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "ssp/EditorHost.h"
 
 #include <cmath>
 
@@ -154,6 +155,7 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 }
 
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
+    BaseProcessor::prepareToPlay(sampleRate,samplesPerBlock);
     inputBuffers_.setSize(I_MAX, samplesPerBlock);
     outputBuffers_.setSize(O_MAX, samplesPerBlock);
 
@@ -288,7 +290,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 }
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
-    return new PluginEditor(*this);
+    return new ssp::EditorHost(this,new PluginEditor(*this));
 }
 
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {

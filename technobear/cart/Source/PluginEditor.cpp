@@ -2,19 +2,17 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-#include "ssp/BaseParamControl.h"
-#include "ssp/ButtonControl.h"
+#include "ssp/ParamControl.h"
+#include "ssp/ParamButton.h"
 
 using pcontrol_type = ssp::BarParamControl;
-using bcontrol_type = ssp::ButtonControl;
+using bcontrol_type = ssp::ParamButton;
 
 
 PluginEditor::PluginEditor(PluginProcessor &p)
-    : base_type(&p,
-                String(JucePlugin_Name) + " : " + String(JucePlugin_Desc),
-                JucePlugin_VersionString),
-
-      processor_(p), clrs_{Colours::red, Colours::green, Colours::orange} {
+    : base_type(&p),
+      processor_(p),
+      clrs_{Colours::red, Colours::green, Colours::orange} {
 
     unsigned layer = 0;
     for (unsigned i = 0; i < 4; i++) {
@@ -57,13 +55,8 @@ ssp::BaseEditor::ControlPage PluginEditor::addParamPage(
 }
 
 
-void PluginEditor::timerCallback() {
-    base_type::timerCallback();
-}
-
-
-void PluginEditor::paint(Graphics &g) {
-    base_type::paint(g);
+void PluginEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
 }
 
 void PluginEditor::resized() {

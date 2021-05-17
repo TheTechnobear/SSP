@@ -2,19 +2,17 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-#include "ssp/BaseParamControl.h"
-#include "ssp/ButtonControl.h"
+#include "ssp/ParamControl.h"
+#include "ssp/ParamButton.h"
 
 using pcontrol_type = ssp::BarParamControl;
-using bcontrol_type = ssp::ButtonControl;
+using bcontrol_type = ssp::ParamButton;
 
 
 PluginEditor::PluginEditor(PluginProcessor &p)
-    : base_type(&p,
-                String(JucePlugin_Name) + " : " + String(JucePlugin_Desc),
-                JucePlugin_VersionString),
-
+    : base_type(&p),
       processor_(p), clrs_{Colours::green, Colours::blue, Colours::red, Colours::yellow} {
+    memset(dataBuf_,0,sizeof (dataBuf_));
 
     addParamPage(
         std::make_shared<pcontrol_type>(processor_.params_.t_scale, 1),
@@ -70,6 +68,14 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     addChildComponent(miniScope_[1]);
     addChildComponent(xyScope_[0]);
     addChildComponent(xyScope_[1]);
+
+    for (int i = 0; i < MAX_SIG; i++) {
+        auto &sParam = *processor_.params_.sigparams_[i];
+        bool vis = processor_.isInputEnabled(PluginProcessor::I_SIG_A + i) && sParam.show.getValue() > 0.5f;
+        mainScope_.signalVisible(i, vis);
+    }
+
+
 
     bool abxy = processor_.params_.ab_xy.getValue() > 0.5f;
     bool cdxy = processor_.params_.cd_xy.getValue() > 0.5f;
@@ -160,12 +166,14 @@ void PluginEditor::timerCallback() {
 }
 
 
-void PluginEditor::paint(Graphics &g) {
-    base_type::paint(g);
+void PluginEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
     drawValueDisplay(g);
 }
 
 void PluginEditor::resized() {
+    base_type::resized();
+
     static constexpr int x = 10, y = 50, w = 900 - 2 * x, h = 400 - 2 * y;
     mainScope_.setBounds(x, y, w, h);
 
@@ -201,14 +209,17 @@ static const char tonics[MAX_TONICS][3] = {
 
 String getNoteValue(float f) {
     float voct = cv2Pitch(f) + 60.0f; // -5v = 0
+    voct += 0.005f; // so we round up fractions of cent
     int oct = voct / 12;
     unsigned note = unsigned(voct) % MAX_TONICS;
-    unsigned cents = (voct - floorf(voct)) * 100;
+    int cents = ((voct - floorf(voct)) * 100.0f);
     if (cents > 50) {
-        cents -= 50;
+        cents = 50-cents;
         note = (note + 1) % MAX_TONICS;
+        oct += (note==0);
     }
-    return String(tonics[note] + String(oct - (note < 3))) + "." + String(cents);
+    String cts=String::formatted("%+02d", cents);
+    return String(tonics[note] + String(oct - (note < 3))) + " " + cts;
 }
 
 void PluginEditor::drawValueDisplay(Graphics &g) {

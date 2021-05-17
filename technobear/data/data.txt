@@ -8,7 +8,9 @@ the UI and functionality is still very fluid and subject to change.
 
 
 ## Change Log
-1.0.0 Early Access Release
+1.0.2 release, fix cents
+1.0.1 early access release - midi learn,
+1.0.0 early access release
 
 ## Developer: TheTechnobear
 I develop these plugins for free, please consider supporting my efforts with a donation.

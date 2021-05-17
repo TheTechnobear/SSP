@@ -5,16 +5,14 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-#include "ssp/BaseParamControl.h"
-#include "ssp/ButtonControl.h"
+#include "ssp/ParamControl.h"
+#include "ssp/ParamButton.h"
 
 using pcontrol_type = ssp::BarParamControl;
-using bcontrol_type = ssp::ButtonControl;
+using bcontrol_type = ssp::ParamButton;
 
 PluginEditor::PluginEditor(PluginProcessor &p)
-    : base_type(&p,
-                String(JucePlugin_Name) + " : " + String(JucePlugin_Desc),
-                JucePlugin_VersionString),
+    : base_type(&p),
       processor_(p) {
 
     addParamPage(
@@ -42,8 +40,8 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 }
 
 
-void PluginEditor::paint(Graphics &g) {
-    base_type::paint(g);
+void PluginEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
     if (processor_.params_.quant.getValue() > 0) {
         unsigned fh = 48;
         g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));

@@ -12,7 +12,7 @@ public:
     explicit PluginEditor(PluginProcessor &);
     ~PluginEditor() override = default;
 
-    void paint(Graphics &) override;
+    void drawView(Graphics &) override;
     void resized() override;
 protected:
     using base_type = ssp::BarParamEditor;

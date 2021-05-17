@@ -1,18 +1,16 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-#include "ssp/BaseParamControl.h"
-#include "ssp/ButtonControl.h"
+#include "ssp/ParamControl.h"
+#include "ssp/ParamButton.h"
 
 //using pcontrol_type = ssp::SimpleParamControl;
 //using pcontrol_type = ssp::LineParamControl;
 using pcontrol_type = ssp::BarParamControl;
-using bcontrol_type = ssp::ButtonControl;
+using bcontrol_type = ssp::ParamButton;
 
 PluginEditor::PluginEditor(PluginProcessor &p)
-    : base_type(&p,
-                String(JucePlugin_Name) + " : " + String(JucePlugin_Desc),
-                JucePlugin_VersionString),
+    : base_type(&p),
       processor_(p) {
 
     addParamPage(
@@ -80,17 +78,18 @@ void PluginEditor::onButton(unsigned int btn, bool v) {
 }
 
 
-void PluginEditor::paint(Graphics &g) {
+void PluginEditor::drawView(Graphics &g) {
     float inL, inR, outL, outR;
     processor_.getRMS(inL, inR, outL, outR);
     inVu_.level(inL, inR);
     outVu_.level(outL, outR);
 
-    base_type::paint(g);
+    base_type::drawView(g);
 }
 
 
 void PluginEditor::resized() {
+    base_type::resized();
     const unsigned h = 130;
     const unsigned sp = 10;
     const unsigned vuStart = 1500;

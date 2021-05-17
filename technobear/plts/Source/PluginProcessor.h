@@ -49,7 +49,6 @@ public:
     const String getName() const override { return JucePlugin_Name; }
 
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
-    void releaseResources() override {}
 
     void processBlock(AudioSampleBuffer &, MidiBuffer &) override;
 
@@ -80,6 +79,8 @@ public:
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+    void midiNoteInput(unsigned note, unsigned velocity) override { if (velocity > 0) noteInputTranspose_ = float(note) - 60.f; }
+
 private:
     enum {
         I_VOCT,
@@ -128,6 +129,7 @@ private:
     ssp::RmsTrack outRms_[2];
 
     float trig_ =0.0f;
+    float noteInputTranspose_ = 0.0f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
