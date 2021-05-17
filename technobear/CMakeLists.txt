@@ -15,3 +15,5 @@ add_subdirectory(mtin)
 add_subdirectory(mtot)
 add_subdirectory(mttr)
 add_subdirectory(attn)
+add_subdirectory(vost)
+
