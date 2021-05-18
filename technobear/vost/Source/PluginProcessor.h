@@ -15,10 +15,12 @@ constexpr const char *separator{":"};
 
 PARAMETER_ID (select)
 PARAMETER_ID (slew)
+PARAMETER_ID (morph)
 
-// tree volt:layer:val
-PARAMETER_ID (volt)
-PARAMETER_ID (layer)
+
+// tree layers:1-9:volts:1-16:val
+PARAMETER_ID (layers)
+PARAMETER_ID (volts)
 PARAMETER_ID (val)
 
 #undef PARAMETER_ID
@@ -42,6 +44,7 @@ public:
     void prepareToPlay(double newSampleRate, int estimatedSamplesPerBlock) override;
 
     enum {
+        I_SELECT,
         I_SIG_A,
         I_SIG_B,
         I_SIG_C,
@@ -83,17 +86,22 @@ public:
     static constexpr unsigned MAX_SIG_IN = (I_SIG_P - I_SIG_A) + 1;
     static constexpr unsigned MAX_SIG_OUT = (O_SIG_P - O_SIG_A) + 1;
 
-    static constexpr unsigned MAX_LAYERS = 16;
+    static constexpr unsigned MAX_LAYERS = 10;
 
     struct VoltParam {
         using Parameter = juce::RangedAudioParameter;
-        VoltParam(AudioProcessorValueTreeState &apvt, StringRef pre, unsigned id);
+        VoltParam(AudioProcessorValueTreeState &apvt, unsigned lid, unsigned id);
+        unsigned id_ = 0;
+        unsigned lid_ = 0;
+        String pid_; // e.g. layers:1:volts:1
         Parameter &val;
     };
 
     struct Layer {
         using Parameter = juce::RangedAudioParameter;
-//        Layer(AudioProcessorValueTreeState &apvt, StringRef pre, unsigned id);
+        Layer(AudioProcessorValueTreeState &apvt, unsigned id);
+        unsigned id_ = 0;
+        String pid_; // e.g layers:1
         std::vector<std::unique_ptr<VoltParam>> volts_;
     };
 
@@ -103,17 +111,21 @@ public:
 
         Parameter &slew;
         Parameter &select;
+        Parameter &morph;
 
         std::vector<std::unique_ptr<Layer>> layers_;
     } params_;
 
-    Layer& getLayer(unsigned layer) { assert(layer < params_.layers_.size()); return * (params_.layers_[layer]);}
+    Layer &getLayer(unsigned layer) {
+        jassert(layer < params_.layers_.size());
+        return *(params_.layers_[layer]);
+    }
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
 
-    float getCurrentVolt(float layer, unsigned volt);
+    float getCurrentVolt(float layer, unsigned volt,bool morph);
 
 private:
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {

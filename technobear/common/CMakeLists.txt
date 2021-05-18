@@ -5,6 +5,7 @@ set(COMMON_SRC
         ../common/ssp/SystemEditor.cpp
         ../common/ssp/SingleViewEditor.cpp
         ../common/ssp/MultiViewEditor.cpp
+        ../common/ssp/MultiBarEditor.cpp
         ../common/ssp/LineParamEditor.cpp
         ../common/ssp/TableParamEditor.cpp
         ../common/ssp/BarParamEditor.cpp

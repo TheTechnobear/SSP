@@ -123,8 +123,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     bool levelEn = inputEnabled[I_LEVEL];
 
     for (int bidx = 0; bidx < buffer.getNumSamples(); bidx += n) {
-
-        bool trig = false; //todo check
+        bool trig = false;
         for (int i = 0; i < n; i++) {
             bool t = buffer.getSample(I_TRIG, bidx + i) > 0.5;
             if (t != trig_ && t) {
