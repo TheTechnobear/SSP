@@ -8,11 +8,63 @@ https://ko-fi.com/thetechnobear
 
 
 ## Installation
-copy plugins/*.so to SSP's sdcard `/plugins`
+copy `*.so` to SSP's sdcard `/plugins`
 
 
 ## Documentation 
 this packages contains a docs directory with a file for each plugin which contains details about how to use each plugin
+
+some general notes about my plugins are included in this document
+
+
+### Midi 
+My plugins now support midi.
+to configure you must go to the 'general' panel of the VST.
+this is accessed by pressing and holding Right Shift(RS), and then pressing Left Shift (LS).
+use the same to exit this panel.
+
+here you can set a midi input device, and also a midi output device.
+you may also 'filter' the midi input to a fixed midi channel
+
+these are used for all midi functions, including midi learn (see below)
+
+
+#### Midi Learn
+to use midi learn, select a midi input device 
+then activate LEARN, 
+now return to the VST main panel using RS+LS (as you used to enter general panel)
+
+now press change a parameter on vst (could be encoders or buttons!)
+then turn a pot/encoder on you midi controller.
+
+you may repeat this process, so change parameter, then send midi...
+
+note: when you send midi, you should immediatly see the parameter respond to the midim 
+if NOT check you are getting midi on the SSP.
+
+
+if you enable midi output, then the SSP will send out the corresponding midi to the output device, 
+this allows you midi device to stay in sync (if your midi device supports this!)
+
+note: currently only midi cc 7 bit, and note messages are supported.
+
+
+#### Midi Tools modules
+all these use the same 'general' panel for their midi input and output needs.
+
+
+
+#### Midi Output 
+currently there is an issue in the SSP firmware which means it will connect to the 'virtual' output device that is created.
+this will mean the MIDI objects stops working, and cause issues when you switch patches.
+
+workaround: re-connect a physical midi device so that the SSP picks that up 
+
+
+
+
+note: these text files are using markdown format, this allows extra formatting in some editors/browsers
+
 
 
 ## License

@@ -3,7 +3,9 @@ attenuator
 
 
 ## Change Log
+1.0.1 release, only slew param not signal
 1.0.0 early access release
+
 
 ## Developer: TheTechnobear
 I develop these plugins for free, please consider supporting my efforts with a donation.
@@ -20,16 +22,13 @@ well it has 3 nice features:
 
 a) an unconnected input is normalled to 1.0 (or 5v)  - this means, the sliders act at a value
 
-b) slewed values - you can optionally slew the input/attenuation changes
+b) slewed values - you can optionally slew parameter changes
 
 c) midi learn - since its a technobear VST the sliders can all be assigned directly to midi controllers.
 hint: this is why the slew exists ;)
 
 
 combined the general purpose is as a useful module to allow CV that is an assigned to an external controller, and changed via midi.
-
-
-
 
 
 ## Credits: 
