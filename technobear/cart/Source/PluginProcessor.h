@@ -117,6 +117,7 @@ public:
     } params_;
 
 
+    static constexpr unsigned MAX_LAYERS=PluginParams::MAX_LAYER;
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
