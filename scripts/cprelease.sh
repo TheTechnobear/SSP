@@ -1,3 +1,4 @@
+cp ./technobear/README.txt ./releases
 cp ./build/technobear/*/*/Release/VST/*.so ./releases/plugins
 cp ./technobear/*/*.txt ./releases/docs
 rm ./releases/docs/CMakeLists.txt
