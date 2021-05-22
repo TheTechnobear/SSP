@@ -22,13 +22,16 @@ PARAMETER_ID (y)
 PARAMETER_ID (c)
 
 // layer params
-PARAMETER_ID (cv)
-PARAMETER_ID (access)
-PARAMETER_ID (gate)
 PARAMETER_ID (glide)
 PARAMETER_ID (snake)
 PARAMETER_ID (fun)
 PARAMETER_ID (quant)
+
+// layer step params
+PARAMETER_ID (cv)
+PARAMETER_ID (access)
+PARAMETER_ID (gate)
+
 
 #undef PARAMETER_ID
 }
@@ -86,20 +89,21 @@ public:
 
     struct LayerStep {
         using Parameter = juce::RangedAudioParameter;
-        LayerStep(AudioProcessorValueTreeState &apvt, StringRef pre, unsigned ln, unsigned sn);
+        explicit LayerStep(AudioProcessorValueTreeState &apvt, unsigned ln, unsigned sn);
         Parameter &cv;
         Parameter &access;
         Parameter &gate;
+    };
+
+
+    struct Layer {
+        using Parameter = juce::RangedAudioParameter;
+        explicit Layer(AudioProcessorValueTreeState &apvt, unsigned ln);
+        std::vector<std::unique_ptr<LayerStep>> steps_;
         Parameter &glide;
         Parameter &snake;
         Parameter &fun;
         Parameter &quant;
-    };
-
-
-
-    struct Layer {
-        std::vector<std::unique_ptr<LayerStep>> steps_;
     };
 
     struct PluginParams {
@@ -117,10 +121,11 @@ public:
     } params_;
 
 
-    static constexpr unsigned MAX_LAYERS=PluginParams::MAX_LAYER;
+    static constexpr unsigned MAX_LAYERS = PluginParams::MAX_LAYER;
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+
 
 private:
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
@@ -140,6 +145,31 @@ private:
         }
         return props;
     }
+
+
+    struct LayerData {
+        bool lastClk_ = false;
+        unsigned  gateTime_ = 0; // smps of gate left
+        float cv_ = 0.0f;
+        unsigned pos_ = 0;
+    } x_, y_, c_;
+
+    unsigned findNextStep(unsigned cpos,Layer& params);
+    void advanceLayer(LayerData &ld, Layer &params);
+    void advanceCartLayer(LayerData &ld, Layer &params, unsigned xPos, unsigned yPos);
+    void initSnakes();
+
+public:
+    class SnakeAlgo {
+    public:
+        explicit SnakeAlgo() {;}
+        virtual ~SnakeAlgo() {;}
+        virtual String name() = 0;
+        virtual unsigned findNext(unsigned cpos) = 0;
+    };
+private:
+
+    std::vector<std::unique_ptr<SnakeAlgo>> snakes_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 

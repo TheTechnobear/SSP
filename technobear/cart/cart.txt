@@ -4,7 +4,7 @@ cartesian sequencer
 
 
 ## Status 
-Dev
+Dev - see dev notes, remove before release ;)
 
 ## Change Log
 1.0.0 none
@@ -24,4 +24,82 @@ https://ko-fi.com/thetechnobear
 ## Credits: 
 
 Percussa SSP - https://www.percussa.com/ 
+
+
+-----------------------------------
+
+
+# dev notes
+
+## milestones/stages
+
+- get fundamental sequencing with generic params
+really basic ui, with simple seq functionality incl, diff snakes/ x/y/c, access
+
+- start consider final ui
+how would it extend to fuller functionality
+more advanced sequencing functionality
+decide scope of v1, and what can slip
+
+- quant/glide?
+
+- mod functionality (!)
+
+- check rene functionality
+look to see whats missing, and what we might want
+
+
+---------
+
+# dev todo / reminders
+
+## editor - layer params
+glide, quant, snake, fun
+
+## editor - general display?
+use param bar, or move to something more unique?
+
+## x/y/z mod and cv
+
+check functionality
+        I_X_CLK,
+        I_X_MOD,
+        I_X_CV,
+        I_Y_CLK,
+        I_Y_MOD,
+        I_Y_CV,
+        I_Z_MOD,
+        I_Z_CV,
+
+some of these are 'fun' modes?
+
+
+things to implement/check...
+
+## layer :: glide
+glide is on all layers, for CV only
+do we need glide time?
+
+## layer :: snake
+determines routing (findnextstep)
+
+## layer :: fun
+check functionality !
+
+## layer :: quant
+how do we want this , fixed scales, or like Rene?
+
+## step cv
+affected by glide, quant
+
+## step access
+changes find next pos
+... is this always skip?
+I think there is a function to just suppress gate
+and so keep time? double check!
+
+## step gate
+do we need gate time?
+
+
 

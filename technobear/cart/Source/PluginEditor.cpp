@@ -49,6 +49,9 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     }
 
 
+    // TODO : add layer parameters (snake, glide, fun, quant)
+
+
     setSize(1600, 480);
 }
 
