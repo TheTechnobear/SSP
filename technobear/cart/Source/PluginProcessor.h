@@ -72,8 +72,8 @@ public:
         I_Y_CLK,
         I_Y_MOD,
         I_Y_CV,
-        I_Z_MOD,
-        I_Z_CV,
+//        I_Z_MOD,
+//        I_Z_CV,
         I_MAX
     };
     enum {
@@ -149,12 +149,13 @@ private:
 
     struct LayerData {
         bool lastClk_ = false;
-        unsigned  gateTime_ = 0; // smps of gate left
+        unsigned gateTime_ = 0; // smps of gate left
         float cv_ = 0.0f;
+        bool gate_ = false;
         unsigned pos_ = 0;
     } x_, y_, c_;
 
-    unsigned findNextStep(unsigned cpos,Layer& params);
+    unsigned findNextStep(unsigned cpos, Layer &params);
     void advanceLayer(LayerData &ld, Layer &params);
     void advanceCartLayer(LayerData &ld, Layer &params, unsigned xPos, unsigned yPos);
     void initSnakes();
@@ -162,11 +163,14 @@ private:
 public:
     class SnakeAlgo {
     public:
-        explicit SnakeAlgo() {;}
-        virtual ~SnakeAlgo() {;}
-        virtual String name() = 0;
+        explicit SnakeAlgo() { ; }
+
+        virtual ~SnakeAlgo() { ; }
+
+        virtual const String &name() = 0;
         virtual unsigned findNext(unsigned cpos) = 0;
     };
+
 private:
 
     std::vector<std::unique_ptr<SnakeAlgo>> snakes_;

@@ -14,7 +14,18 @@ I develop these plugins for free, please consider supporting my efforts with a d
 https://ko-fi.com/thetechnobear
 
 
-## General Usage 
+## General Usage
+This module is inspired by Rene from Make Noise.
+
+
+
+# Future Ideas
+
+Rene 2 introduced the Z plane, which is 64 stores states or x/y/c
+with ability to copy between them, and also move thru by cv.
+I have to figure out parameter control for this, since it would introduce too many parameters
+to have all planes as vst parameters
+I guess, I'll make the parameters represent the 'current plane' - then persist these to others layers
 
 
 
@@ -36,17 +47,45 @@ Percussa SSP - https://www.percussa.com/
 - get fundamental sequencing with generic params
 really basic ui, with simple seq functionality incl, diff snakes/ x/y/c, access
 
+
 - start consider final ui
 how would it extend to fuller functionality
 more advanced sequencing functionality
 decide scope of v1, and what can slip
 
 - quant/glide?
+quantizer - free quantizer
+also has range of output - 1, 2, 3, or 4 octave
+no-octave = unquantised
 
-- mod functionality (!)
+glide is fixed, and proportional to clk speed
+
+- mod functionality
+see fun.mod
 
 - check rene functionality
 look to see whats missing, and what we might want
+- not going to implement Z for now
+
+
+fun.op
+- none?
+- sleep - access skip, or stay but dont fire gate
+- trig - off = trig length = clk length, on= short trig
+- scan - scans all knobs, copy to current channel
+
+fun.mod - how to use mod signal
+reset - reset to first position, that is access ON
+clk - combines clk + mod, allows retrig
+runstp - runs on high mod
+dir  - fwd/reverse
+
+fun.cv - how to use cv signal
+add - add to cv values (pre quant), not c
+loc - location
+snake - use for snake
+s&h - same as cv/add but only change on rising edge of mod
+
 
 
 ---------
