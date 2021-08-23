@@ -127,88 +127,77 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
     return "ZZOut-" + String(channelIndex);
 }
 
+void PluginProcessor::prepareToPlay(double newSampleRate, int estimatedSamplesPerBlock) {
+    BaseProcessor::prepareToPlay(newSampleRate, estimatedSamplesPerBlock);
+    backoffTs_ = newSampleRate * (25.0f / 1000.0f);
+}
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     if (params_.freeze.getValue() > 0.5f) return;
 
-
     unsigned n = buffer.getNumSamples();
+
     unsigned tidx = params_.t_scale.convertFrom0to1((params_.t_scale.getValue()));
     float t = timeSpecs[tidx].v_;
-
     float tS = t * getSampleRate() / DIV_RES;
 
-    float nextSample = lastSample_ + tS;
-    float endSample = sampleCounter_ + n;
-
-
-    if (nextSample - sampleCounter_ < -1) {
-        // happens when we change timebase from slow to fast
-        lastSample_ = sampleCounter_;
-        nextSample = sampleCounter_;
+    if (t != timeSpec_) {
+        // if our timebase changes, adjust sampleCounter.
+        timeSpec_ = t;
+        if (sampleCounter_ > tS) {
+            sampleCounter_ = tS;
+        }
     }
 
-    while (nextSample < endSample) {
-        float s = nextSample - sampleCounter_;
+    //using s and s+1 to interp, therefore we cannot do last sample in buffer
+    while (sampleCounter_ < (n - 1)) {
+        float s = sampleCounter_;
 
-        if (s >= 0 && s < n - 1) {
+        if (s >= 0.0f) {
+            // in middle of buffer, so just linear interp
             unsigned i0 = s, i1 = i0 + 1;
             float f1 = s - i0, f0 = 1.0f - f1;
-
-            jassert(f0 >= 0.0f && f0 <= 1.0f);
-            jassert(f1 >= 0.0f && f1 <= 1.0f);
+//            jassert(f0 >= 0.0f && f0 <= 1.0f);
+//            jassert(f1 >= 0.0f && f1 <= 1.0f);
             DataMsg msg;
             msg.sample_[0] = buffer.getSample(I_SIG_A, i0) * f0 + buffer.getSample(I_SIG_A, i1) * f1;
             msg.sample_[1] = buffer.getSample(I_SIG_B, i0) * f0 + buffer.getSample(I_SIG_B, i1) * f1;
             msg.sample_[2] = buffer.getSample(I_SIG_C, i0) * f0 + buffer.getSample(I_SIG_C, i1) * f1;
             msg.sample_[3] = buffer.getSample(I_SIG_D, i0) * f0 + buffer.getSample(I_SIG_D, i1) * f1;
             msg.trig_ = buffer.getSample(I_TRIG, i0) * f0 + buffer.getSample(I_TRIG, i1) * f1;
-            if (!messageQueue_.try_enqueue(msg)) { ; } // queue full
-            lastSample_ = nextSample;
-        } else if (s < 0) {
+            if (messageQueue_.try_enqueue(msg)) { sampleCounter_ += tS;  }
+            else { sampleCounter_ += backoffTs_;  } // queue full
+        } else if (s < 0.0f) {
+            // we are doing the sample from the last buffer
             unsigned i1 = 0;
             float f1 = s + 1.0f, f0 = 1.0f - f1;
-            jassert(f0 >= 0.0f && f0 <= 1.0f);
-            jassert(f1 >= 0.0f && f1 <= 1.0f);
+//            jassert(f0 >= 0.0f && f0 <= 1.0f);
+//            jassert(f1 >= 0.0f && f1 <= 1.0f);
             DataMsg msg;
             msg.sample_[0] = lastS_[0] * f0 + buffer.getSample(I_SIG_A, i1) * f1;
             msg.sample_[1] = lastS_[1] * f0 + buffer.getSample(I_SIG_B, i1) * f1;
             msg.sample_[2] = lastS_[2] * f0 + buffer.getSample(I_SIG_C, i1) * f1;
             msg.sample_[3] = lastS_[3] * f0 + buffer.getSample(I_SIG_D, i1) * f1;
             msg.trig_ = lastS_[4] * f0 + buffer.getSample(I_TRIG, i1) * f1;
-            if (!messageQueue_.try_enqueue(msg)) { ; } // queue full
-            lastSample_ = nextSample;
-        } else { // i1==n
-            if (s + tS < n) {
-                unsigned i1 = n - 1;
-                DataMsg msg;
-                msg.sample_[0] = buffer.getSample(I_SIG_A, i1);
-                msg.sample_[1] = buffer.getSample(I_SIG_B, i1);
-                msg.sample_[2] = buffer.getSample(I_SIG_C, i1);
-                msg.sample_[3] = buffer.getSample(I_SIG_D, i1);
-                msg.trig_ = buffer.getSample(I_TRIG, i1);
-                if (!messageQueue_.try_enqueue(msg)) { ; } // queue full
-                lastSample_ = nextSample;
-            } else {
-                unsigned i0 = n - 1;
-                lastS_[0] = buffer.getSample(I_SIG_A, i0);
-                lastS_[1] = buffer.getSample(I_SIG_B, i0);
-                lastS_[2] = buffer.getSample(I_SIG_C, i0);
-                lastS_[3] = buffer.getSample(I_SIG_D, i0);
-                lastS_[4] = buffer.getSample(I_TRIG, i0);
-            }
+            if (messageQueue_.try_enqueue(msg)) { sampleCounter_ += tS;  }
+            else { sampleCounter_ += backoffTs_;  } // queue full
         }
-        nextSample += tS;
     }
 
-    sampleCounter_ = endSample;
-//    static constexpr unsigned long MAX_SC = 480000 * 60 * 60; // 1 hour  @ 48k
-//    if(sampleCounter_ > MAX_SC ) sampleCounter_ = sampleCounter_ % MAX_SC;
+    sampleCounter_ -= n;
+
+    // store last sample
+    unsigned i0 = n - 1;
+    lastS_[0] = buffer.getSample(I_SIG_A, i0);
+    lastS_[1] = buffer.getSample(I_SIG_B, i0);
+    lastS_[2] = buffer.getSample(I_SIG_C, i0);
+    lastS_[3] = buffer.getSample(I_SIG_D, i0);
+    lastS_[4] = buffer.getSample(I_TRIG, i0);
 }
 
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
-    return new ssp::EditorHost(this,new PluginEditor(*this));
+    return new ssp::EditorHost(this, new PluginEditor(*this));
 }
 
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {
