@@ -101,6 +101,8 @@ public:
 
     moodycamel::ReaderWriterQueue<DataMsg> &messageQueue() { return messageQueue_; }
 
+    void prepareToPlay(double newSampleRate, int estimatedSamplesPerBlock) override;
+
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
@@ -123,9 +125,11 @@ private:
         return props;
     }
 
-    unsigned long sampleCounter_ = 0UL;
-    float lastSample_ = 0.0f;
+    float sampleCounter_ = 0.0f;
+    float timeSpec_ = 0.0f;
     float lastS_[MAX_SIG_IN + 1] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f}; // inc trig
+
+    float backoffTs_=0.0f;
 
     moodycamel::ReaderWriterQueue<DataMsg> messageQueue_;
 
