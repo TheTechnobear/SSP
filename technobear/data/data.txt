@@ -8,6 +8,7 @@ the UI and functionality is still very fluid and subject to change.
 
 
 ## Change Log
+1.0.3 fix: running over 6 minutes
 1.0.2 release, fix cents
 1.0.1 early access release - midi learn,
 1.0.0 early access release

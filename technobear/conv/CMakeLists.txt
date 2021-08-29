@@ -14,7 +14,7 @@ cmake_minimum_required(VERSION 3.15)
 # `project()` command. `project()` sets up some helpful variables that describe source/binary
 # directories, and the current project version. This is a standard CMake command.
 
-project(DATA VERSION 1.0.3)
+project(CONV VERSION 0.0.1)
 
 # If you've installed JUCE somehow (via a package manager, or directly using the CMake install
 # target), you'll need to tell this project that it depends on the installed copy of JUCE. If you've
@@ -41,14 +41,14 @@ project(DATA VERSION 1.0.3)
 include_directories("${PROJECT_SOURCE_DIR}/../common")
 
 
-juce_add_plugin(DATA
-        # VERSION ...                               # Set this if the plugin version is different to the project version
+juce_add_plugin(CONV
+        # VERSION CONV                              # Set this if the plugin version is different to the project version
         # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
         # ICON_SMALL ...
         COMPANY_NAME "Technobear"                   # Specify the name of the plugin's author
         COMPANY_WEBSITE "www.technobear.com"
         COMPANY_EMAIL "mharris@technobear.com"
-        DESCRIPTION "oscilloscope and analyser"
+        DESCRIPTION "convolution reverb"
         # IS_SYNTH TRUE/FALSE                       # Is this a synth or an effect?
         # NEEDS_MIDI_INPUT TRUE/FALSE               # Does the plugin need midi input?
         # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
@@ -56,9 +56,9 @@ juce_add_plugin(DATA
         # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
         COPY_PLUGIN_AFTER_BUILD TRUE                # Should the plugin be installed to a default location after building?
         PLUGIN_MANUFACTURER_CODE TB                 # A four-character manufacturer id with at least one upper-case character
-        PLUGIN_CODE DATA                            # A unique four-character plugin id with at least one upper-case character
+        PLUGIN_CODE CONV                            # A unique four-character plugin id with at least one upper-case character
         FORMATS VST VST3                            # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
-        PRODUCT_NAME "data")                        # The name of the final executable, which can differ from the target name
+        PRODUCT_NAME "conv")                        # The name of the final executable, which can differ from the target name
 
 # `juce_generate_juce_header` will create a JuceHeader.h for a given target, which will be generated
 # into your build tree. This should be included with `#include <JuceHeader.h>`. The include path for
@@ -66,19 +66,18 @@ juce_add_plugin(DATA
 # include all your JUCE module headers; if you're happy to include module headers directly, you
 # probably don't need to call this.
 
-juce_generate_juce_header(DATA)
+juce_generate_juce_header(CONV)
 
 # `target_sources` adds source files to a target. We pass the target that needs the sources as the
 # first argument, then a visibility parameter for the sources (PRIVATE is normally best practice,
 # although it doesn't really affect executable targets). Finally, we supply a list of source files
 # that will be built into the target. This is a standard CMake command.
 
-include_directories("${PROJECT_SOURCE_DIR}/../../external/readerwriterqueue")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../common/CMakeLists.txt)
 
 
-target_sources(DATA PRIVATE
+target_sources(CONV PRIVATE
         Source/PluginEditor.cpp
         Source/PluginProcessor.cpp
         ${COMMON_SRC}
@@ -91,7 +90,7 @@ target_sources(DATA PRIVATE
 # definitions will be visible both to your code, and also the JUCE module code, so for new
 # definitions, pick unique names that are unlikely to collide! This is a standard CMake command.
 
-target_compile_definitions(DATA
+target_compile_definitions(CONV
         PUBLIC
         JUCE_DISPLAY_SPLASH_SCREEN=0
         # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
@@ -114,9 +113,10 @@ target_compile_definitions(DATA
 # linked automatically. If we'd generated a binary data target above, we would need to link to it
 # here too. This is a standard CMake command.
 
-target_link_libraries(DATA PRIVATE
+target_link_libraries(CONV PRIVATE
         # AudioPluginData           # If we'd created a binary data target, we'd link to it here
-        juce::juce_audio_utils)
+        juce::juce_audio_utils
+        juce::juce_dsp)
 
 
 set_target_properties(${PROJECT_NAME}_VST PROPERTIES PREFIX "")
