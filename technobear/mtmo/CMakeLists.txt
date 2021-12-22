@@ -55,7 +55,7 @@ juce_add_plugin(MTMO
 #        IS_MIDI_EFFECT true                         # Is this plugin a MIDI effect?
         # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
         COPY_PLUGIN_AFTER_BUILD TRUE                # Should the plugin be installed to a default location after building?
-        PLUGIN_MANUFACTURER_CODE TB                 # A four-character manufacturer id with at least one upper-case character
+        PLUGIN_MANUFACTURER_CODE TB00               # A four-character manufacturer id with at least one upper-case character
         PLUGIN_CODE MTMO                            # A unique four-character plugin id with at least one upper-case character
         FORMATS VST VST3                            # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
         PRODUCT_NAME "mtmo")                        # The name of the final executable, which can differ from the target name
