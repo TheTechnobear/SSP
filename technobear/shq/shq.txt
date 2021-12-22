@@ -1,8 +1,10 @@
-# shq - sample and hold, with quantizer
+# shq4 - quad sample and hold, with quantizer
 
 sample and hold module with optional quantizer and tranposition
 
 ## Change Log
+1.4.2 renamed to shq4 since plugins need to be 4 chars
+
 1.4.1 release
 1.4.0 early access release - midi learn
 

@@ -14,7 +14,7 @@ cmake_minimum_required(VERSION 3.15)
 # `project()` command. `project()` sets up some helpful variables that describe source/binary
 # directories, and the current project version. This is a standard CMake command.
 
-project(SHQ VERSION 1.4.1)
+project(SHQ VERSION 1.4.2)
 
 # If you've installed JUCE somehow (via a package manager, or directly using the CMake install
 # target), you'll need to tell this project that it depends on the installed copy of JUCE. If you've
@@ -55,7 +55,7 @@ juce_add_plugin(SHQ
         # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
         COPY_PLUGIN_AFTER_BUILD TRUE                # Should the plugin be installed to a default location after building?
         PLUGIN_MANUFACTURER_CODE TB00               # A four-character manufacturer id with at least one upper-case character
-        PLUGIN_CODE SHQ0                            # A unique four-character plugin id with at least one upper-case character
+        PLUGIN_CODE SHQ4                            # A unique four-character plugin id with at least one upper-case character
         FORMATS VST VST3                            # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
         PRODUCT_NAME "shq")                         # The name of the final executable, which can differ from the target name
 
