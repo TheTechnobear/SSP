@@ -33,7 +33,8 @@ if (DISABLE_SSP_PARAMS)
 endif (DISABLE_SSP_PARAMS)
 
 
-add_subdirectory(technobear)
+#add_subdirectory(technobear)
+add_subdirectory(percussa)
 
 # set(CMAKE_FOLDER .)
 function(_juce_add_pips)
