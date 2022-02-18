@@ -31,6 +31,8 @@ public:
     explicit PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts, AudioProcessorValueTreeState::ParameterLayout layout);
     ~PluginProcessor() override = default;
 
+    static Percussa::SSP::PluginDescriptor *createDescriptor();
+
     const String getName() const override { return JucePlugin_Name; }
 
     void processBlock(AudioSampleBuffer &, MidiBuffer &) override;

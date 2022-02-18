@@ -122,7 +122,7 @@ void SingleViewEditor::onEncoderSwitch(unsigned enc, bool v) {
 }
 
 void SingleViewEditor::onButton(unsigned btn, bool v) {
-//    std::cerr << "onButton " << btn <<  " : " << v << std::endl;
+//    std::cerr << "SingleViewEditor:: onButton " << btn <<  " : " << v << std::endl;
 
     base_type::onButton(btn, v);
 

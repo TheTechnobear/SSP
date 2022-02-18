@@ -30,6 +30,8 @@ public:
     explicit PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts, AudioProcessorValueTreeState::ParameterLayout layout);
     ~PluginProcessor();
 
+    static Percussa::SSP::PluginDescriptor *createDescriptor();
+
     const String getName() const override { return JucePlugin_Name; }
 
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
@@ -50,11 +52,11 @@ public:
         Parameter &soft;
     } params_;
 
+    void onInputChanged(unsigned i, bool b) override;
+    void onOutputChanged(unsigned i, bool b) override;
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
-    void onInputChanged(unsigned i, bool b) override;
-    void onOutputChanged(unsigned i, bool b) override;
 
 public:
     enum {

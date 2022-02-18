@@ -57,7 +57,7 @@ juce_add_plugin(MMX4
         COPY_PLUGIN_AFTER_BUILD TRUE                # Should the plugin be installed to a default location after building?
         PLUGIN_MANUFACTURER_CODE TB00               # A four-character manufacturer id with at least one upper-case character
         PLUGIN_CODE MMX4                            # A unique four-character plugin id with at least one upper-case character
-        FORMATS VST VST3                            # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+        FORMATS VST3                                # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
         PRODUCT_NAME "mmx4")                        # The name of the final executable, which can differ from the target name
 
 # `juce_generate_juce_header` will create a JuceHeader.h for a given target, which will be generated
@@ -124,6 +124,5 @@ target_link_libraries(MMX4 PRIVATE
 
 
 
-set_target_properties(${PROJECT_NAME}_VST PROPERTIES PREFIX "")
 set_target_properties(${PROJECT_NAME}_VST3 PROPERTIES PREFIX "")
 

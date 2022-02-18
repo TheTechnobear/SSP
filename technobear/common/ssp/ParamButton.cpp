@@ -24,6 +24,7 @@ void ParamButton::onUp() {
     } else {
         v = 0.0f;
     }
+//    std::cerr << "ParamButton onUp " <<  v << std::endl;
     p.beginChangeGesture();
     p.setValueNotifyingHost(v ? 1.0f : 0.0f);
     p.endChangeGesture();
