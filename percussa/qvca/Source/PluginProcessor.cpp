@@ -257,6 +257,7 @@ Percussa::SSP::PluginEditorInterface* QVCA::getEditor() {
 }
 
 // called by the SSP plugin hosting code to create/get a descriptor for the plugin. 
+extern "C" __attribute__ ((visibility("default")))
 Percussa::SSP::PluginDescriptor* createDescriptor() {
 
 	// descriptor is deallocated by caller. 
@@ -275,7 +276,8 @@ Percussa::SSP::PluginDescriptor* createDescriptor() {
 }
 
 // called by the SSP plugin hosting code to create/get an instance of the plugin. 
-Percussa::SSP::PluginInterface* createInstance() { 
+extern "C" __attribute__ ((visibility("default")))
+Percussa::SSP::PluginInterface* createInstance() {
 
 	// instance is deallocated by caller. 
 	return new QVCA(); 

@@ -25,16 +25,8 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     juce_set_vst2_sdk_path("$ENV{HOME}/SDKs/vst3-sdk")
 endif ()
 
-
-# on apple desktop, do we want ssp encoders etc
-# set(DISABLE_SSP_PARAMS 1)
-if (DISABLE_SSP_PARAMS)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDISABLE_SSP_PARAMS=1")
-endif (DISABLE_SSP_PARAMS)
-
-
-#add_subdirectory(technobear)
-add_subdirectory(percussa)
+add_subdirectory(technobear)
+#add_subdirectory(percussa)
 
 # set(CMAKE_FOLDER .)
 function(_juce_add_pips)

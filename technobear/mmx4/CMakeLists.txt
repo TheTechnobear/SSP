@@ -77,7 +77,10 @@ juce_generate_juce_header(MMX4)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../common/CMakeLists.txt)
 
 
-target_sources(MMX4 PRIVATE
+target_sources(MMX4
+        PUBLIC
+        Source/SSPApi.cpp
+        PRIVATE
         Source/PluginEditor.cpp
         Source/PluginProcessor.cpp
         ${COMMON_SRC}
@@ -116,6 +119,9 @@ target_compile_definitions(MMX4
 target_link_libraries(MMX4 PRIVATE
         # AudioPluginData           # If we'd created a binary data target, we'd link to it here
         juce::juce_audio_utils)
+
+
+
 
 
 set_target_properties(${PROJECT_NAME}_VST PROPERTIES PREFIX "")

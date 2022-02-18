@@ -8,76 +8,11 @@
 namespace ssp {
 
 #ifdef __APPLE__
-// apple
-#ifdef DISABLE_SSP_PARAMS
-// disable ssp parameters , so enable all io
-static constexpr bool exposeSSPParams = false;
 static constexpr bool defIOState = true;
-#else
-// enable ssp parameters
-static constexpr bool exposeSSPParams = true;
-static constexpr bool defIOState = true;
-#endif
-
 #else
 // linux etc
 static constexpr bool defIOState = false;
-static constexpr bool exposeSSPParams = true;
 #endif
-
-
-class EncoderParameter : public BaseFloatParameter {
-public:
-    EncoderParameter(String parameterID,
-                     String parameterName,
-                     float minValue,
-                     float maxValue,
-                     float defaultValue,
-                     float inc,
-                     BaseFloatParameter::ParamCallback callback = nullptr)
-        : BaseFloatParameter(parameterID, parameterName, minValue, maxValue, defaultValue, 0.0f, callback) {
-    }
-
-    float getValue() const override {
-        return v_;
-    }
-
-    bool isAutomatable() const override {
-        return exposeSSPParams;
-
-    }
-
-    void setValue(float v) override {
-        if (v > 0.5f) {
-            v_ += v / 1000.f;
-        } else if (v < 0.5f) {
-            v_ -= v / 1000.f;
-        } else {
-            v_ = 0.0f;
-        }
-    }
-
-private:
-    float v_ = 0.0f;
-};
-
-
-class SSPBoolParameter : public BaseBoolParameter {
-public:
-
-    SSPBoolParameter(String parameterID,
-                     String parameterName,
-                     bool defaultValue,
-                     BaseBoolParameter::ParamCallback callback = nullptr)
-        : BaseBoolParameter(parameterID, parameterName, defaultValue, callback) {
-
-    }
-
-    bool isAutomatable() const override {
-        return exposeSSPParams;
-    }
-
-};
 
 
 BaseProcessor::BaseProcessor(
@@ -114,58 +49,13 @@ void BaseProcessor::releaseResources() {
 
 
 void BaseProcessor::addBaseParameters(AudioProcessorValueTreeState::ParameterLayout &params) {
-    for (unsigned i = 0; i < sspParams::numEnc; i++) {
-        params.add(std::make_unique<EncoderParameter>(
-            percussaParamsName[Percussa::sspEnc1 + i],
-            percussaParamsText[Percussa::sspEnc1 + i],
-            -1.0f, 1.0f, 0.0f, 0.5f));
-    }
-
-    for (unsigned i = 0; i < sspParams::numEnc; i++) {
-        params.add(std::make_unique<SSPBoolParameter>(
-            percussaParamsName[Percussa::sspEncSw1 + i],
-            percussaParamsText[Percussa::sspEncSw1 + i],
-            false));
-    }
-
-    for (unsigned i = 0; i < sspParams::numSw; i++) {
-        params.add(std::make_unique<SSPBoolParameter>(
-            percussaParamsName[Percussa::sspSw1 + i],
-            percussaParamsText[Percussa::sspSw1 + i],
-            false));
-    }
-
-    for (unsigned i = 0; i < sspParams::numCtrlSw; i++) {
-        params.add(std::make_unique<SSPBoolParameter>(
-            percussaParamsName[Percussa::sspSwLeft + i],
-            percussaParamsText[Percussa::sspSwLeft + i],
-            false));
-    }
-
-
-    for (unsigned i = 0; i < sspParams::numOut; i++) {
-        params.add(std::make_unique<SSPBoolParameter>(
-            percussaParamsName[Percussa::sspOutEn1 + i],
-            percussaParamsText[Percussa::sspOutEn1 + i],
-            defIOState,
-            [this, i](const String &id, bool b) { onOutputChanged(i, b); })
-        );
-    }
-    for (unsigned i = 0; i < sspParams::numIn; i++) {
-        params.add(std::make_unique<SSPBoolParameter>(
-            percussaParamsName[Percussa::sspInEn1 + i],
-            percussaParamsText[Percussa::sspInEn1 + i],
-            defIOState,
-            [this, i](const String &id, bool b) { onInputChanged(i, b); })
-        );
-    }
 }
 
 void BaseProcessor::init() {
-    for (unsigned i = 0; i < sspParams::numOut; i++) {
+    for (unsigned i = 0; i < numOut; i++) {
         onOutputChanged(i, defIOState);
     }
-    for (unsigned i = 0; i < sspParams::numIn; i++) {
+    for (unsigned i = 0; i < numIn; i++) {
         onInputChanged(i, defIOState);
     }
 }
@@ -260,18 +150,8 @@ void BaseProcessor::getStateInformation(MemoryBlock &destData) {
     std::unique_ptr<XmlElement> cleanStateXml = std::make_unique<XmlElement>(xmlState->getTagName());
     for (int i = 0; i < xmlState->getNumChildElements(); i++) {
         XmlElement *p = xmlState->getChildElement(i);
-        bool found = false;
-        if (p->hasTagName("PARAM")) {
-            for (int i = 0; i < Percussa::sspLast && !found; i++) {
-                if (p->getStringAttribute("id") == percussaParamsName[i]) {
-                    found = true;
-                }
-            }
-        }
-        if (!found) {
-            XmlElement *ne = new XmlElement(*p);
-            cleanStateXml->addChildElement(ne);
-        }
+        XmlElement *ne = new XmlElement(*p);
+        cleanStateXml->addChildElement(ne);
     }
 
 
@@ -310,11 +190,11 @@ void BaseProcessor::setStateInformation(const void *data, int sizeInBytes) {
 
 
 void BaseProcessor::onInputChanged(unsigned i, bool b) {
-    if (i < sspParams::numIn) inputEnabled[i] = b;
+    if (i < numIn) inputEnabled[i] = b;
 }
 
 void BaseProcessor::onOutputChanged(unsigned i, bool b) {
-    if (i < sspParams::numOut) outputEnabled[i] = b;
+    if (i < numOut) outputEnabled[i] = b;
 }
 
 void BaseProcessor::setMidiIn(std::string id) {
@@ -362,8 +242,6 @@ void BaseProcessor::setMidiOut(std::string id) {
 }
 
 void BaseProcessor::automateParam(int idx, const MidiAutomation &a, const MidiMessage &msg) {
-    assert(idx >= Percussa::sspLast);
-
     auto &plist = getParameters();
     if (idx < plist.size()) {
         auto p = plist[idx];
@@ -403,7 +281,7 @@ void BaseProcessor::handleMidi(const MidiMessage &msg) {
             }
         }
 
-        for (auto &ap : midiAutomation_) {
+        for (auto &ap: midiAutomation_) {
             auto &a = ap.second;
             if ((msg.isController() && a.midi_.type_ == MidiAutomation::Midi::T_CC)
                 && (msg.getControllerNumber() == a.midi_.num_)
@@ -417,9 +295,9 @@ void BaseProcessor::handleMidi(const MidiMessage &msg) {
 
         if (noteInput_ && msg.isNoteOnOrOff()) {
             if (msg.isNoteOn()) {
-                midiNoteInput(msg.getNoteNumber() , msg.getVelocity());
+                midiNoteInput(msg.getNoteNumber(), msg.getVelocity());
             } else {
-                midiNoteInput(msg.getNoteNumber() , 0);
+                midiNoteInput(msg.getNoteNumber(), 0);
             }
         }
     }
@@ -446,37 +324,35 @@ void BaseProcessor::audioProcessorParameterChanged(AudioProcessor *processor,
                                                    float v) {
 
     assert(processor == this);
-    if (parameterIndex >= Percussa::sspLast) {
-        if (midiLearn_) {
-            lastLearn_.paramIdx_ = parameterIndex;
-        } else {
-            if (midiOutDevice_ != nullptr) {
-                if (midiAutomation_.find(parameterIndex) != midiAutomation_.end()) {
-                    auto &a = midiAutomation_[parameterIndex];
-                    switch (a.midi_.type_) {
-                        case MidiAutomation::Midi::T_CC : {
-                            auto msg = MidiMessage::controllerEvent(a.midi_.channel_, a.midi_.num_, uint8(v * 127));
+    if (midiLearn_) {
+        lastLearn_.paramIdx_ = parameterIndex;
+    } else {
+        if (midiOutDevice_ != nullptr) {
+            if (midiAutomation_.find(parameterIndex) != midiAutomation_.end()) {
+                auto &a = midiAutomation_[parameterIndex];
+                switch (a.midi_.type_) {
+                    case MidiAutomation::Midi::T_CC : {
+                        auto msg = MidiMessage::controllerEvent(a.midi_.channel_, a.midi_.num_, uint8(v * 127));
+                        midiOutDevice_->sendMessageNow(msg);
+                        break;
+                    }
+                    case MidiAutomation::Midi::T_NOTE : {
+                        if (v > 0.0f) {
+                            auto msg = MidiMessage::noteOn(a.midi_.channel_, a.midi_.num_, uint8(v * 127));
                             midiOutDevice_->sendMessageNow(msg);
-                            break;
-                        }
-                        case MidiAutomation::Midi::T_NOTE : {
-                            if (v > 0.0f) {
-                                auto msg = MidiMessage::noteOn(a.midi_.channel_, a.midi_.num_, uint8(v * 127));
-                                midiOutDevice_->sendMessageNow(msg);
-                            } else {
-                                auto msg = MidiMessage::noteOff(a.midi_.channel_, a.midi_.num_);
-                                midiOutDevice_->sendMessageNow(msg);
-                            }
-                            break;
-                        }
-                        case MidiAutomation::Midi::T_PRESSURE : {
-                            auto msg = MidiMessage::channelPressureChange(a.midi_.channel_, uint8(v * 127));
+                        } else {
+                            auto msg = MidiMessage::noteOff(a.midi_.channel_, a.midi_.num_);
                             midiOutDevice_->sendMessageNow(msg);
-                            break;
                         }
-                        default: {
-                            break;
-                        }
+                        break;
+                    }
+                    case MidiAutomation::Midi::T_PRESSURE : {
+                        auto msg = MidiMessage::channelPressureChange(a.midi_.channel_, uint8(v * 127));
+                        midiOutDevice_->sendMessageNow(msg);
+                        break;
+                    }
+                    default: {
+                        break;
                     }
                 }
             }

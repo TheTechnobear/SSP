@@ -80,9 +80,9 @@ void SingleViewEditor::addButtonPage(
 
 
 void SingleViewEditor::onEncoder(unsigned enc, float v) {
+//    std::cerr << "onEncoder " << enc <<  " : " << v << std::endl;
     base_type::onEncoder(enc, v);
     if (v > -0.01f && v < 0.01f) return;
-    auto &p = *baseProcessor_->getParameter(BaseProcessor::sspParams::getId(Percussa::sspEnc1 + enc));
 
     if (paramPage_ < controlPages_.size()) {
         auto page = controlPages_[paramPage_];
@@ -101,6 +101,8 @@ void SingleViewEditor::onEncoder(unsigned enc, float v) {
 }
 
 void SingleViewEditor::onEncoderSwitch(unsigned enc, bool v) {
+//    std::cerr << "onEncoderSwitch " << enc <<  " : " << v << std::endl;
+
     base_type::onEncoderSwitch(enc, v);
 
     if (v) return; // change on button up
@@ -120,6 +122,8 @@ void SingleViewEditor::onEncoderSwitch(unsigned enc, bool v) {
 }
 
 void SingleViewEditor::onButton(unsigned btn, bool v) {
+//    std::cerr << "onButton " << btn <<  " : " << v << std::endl;
+
     base_type::onButton(btn, v);
 
     if (buttonPage_ < buttonPages_.size()) {

@@ -71,7 +71,10 @@ juce_generate_juce_header(QVCA)
 
 
 
-target_sources(QVCA PRIVATE
+target_sources(QVCA
+        PUBLIC
+        Source/PluginProcessor.cpp
+        PRIVATE
         Source/Oscilloscope.cpp
         Source/PluginEditor.cpp
         Source/PluginProcessor.cpp

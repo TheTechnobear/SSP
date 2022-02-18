@@ -50,6 +50,7 @@ public:
 
     bool hasEditor() const override { return true; }
 
+    static Percussa::SSP::PluginDescriptor *createDescriptor();
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -121,7 +122,6 @@ private:
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
         return true;
     }
-
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
 

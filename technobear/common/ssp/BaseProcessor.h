@@ -48,18 +48,6 @@ public:
     void getStateInformation(MemoryBlock &destData) override;
     void setStateInformation(const void *data, int sizeInBytes) override;
 
-    struct sspParams {
-        static constexpr unsigned numEnc = Percussa::sspEnc4 - Percussa::sspEnc1 + 1;
-        static constexpr unsigned numIn = Percussa::sspInEn24 - Percussa::sspInEn1 + 1;
-        static constexpr unsigned numOut = Percussa::sspOutEn24 - Percussa::sspOutEn1 + 1;
-        static constexpr unsigned numSw = Percussa::sspSw8 - Percussa::sspSw1 + 1;
-        static constexpr unsigned numCtrlSw = Percussa::sspSwShiftR - Percussa::sspSwLeft + 1;
-
-        static const char *getId(unsigned id) {
-            if (id < Percussa::sspLast) return percussaParamsName[id];
-            return "unknown";
-        };
-    };
 
     RangedAudioParameter *getParameter(StringRef n) { return apvts.getParameter(n); }
 
@@ -68,9 +56,9 @@ public:
     virtual void onInputChanged(unsigned i, bool b);
     virtual void onOutputChanged(unsigned i, bool b);
 
-    bool isOutputEnabled(unsigned i) { return i < sspParams::numOut && outputEnabled[i]; }
+    bool isOutputEnabled(unsigned i) { return i < numOut && outputEnabled[i]; }
 
-    bool isInputEnabled(unsigned i) { return i < sspParams::numIn && inputEnabled[i]; }
+    bool isInputEnabled(unsigned i) { return i < numIn && inputEnabled[i]; }
 
     void setMidiIn(std::string id);
     void setMidiOut(std::string id);
@@ -95,9 +83,13 @@ protected:
 
     friend class SystemEditor;
 
+    //FIXME : or at least clean up!
+    static constexpr unsigned numIn=24;
+    static constexpr unsigned numOut=24;
+
     AudioProcessorValueTreeState apvts;
-    bool inputEnabled[sspParams::numIn];
-    bool outputEnabled[sspParams::numOut];
+    bool inputEnabled[numIn];
+    bool outputEnabled[numOut];
 
     virtual void midiFromXml(juce::XmlElement *);
     virtual void midiToXml(juce::XmlElement *);

@@ -30,16 +30,6 @@ public:
         editor_->resized();
     }
 
-private:
-    std::vector<std::unique_ptr<ParameterAttachment>> encAtt_;
-    std::vector<std::unique_ptr<ParameterAttachment>> encSwAtt_;
-    std::vector<std::unique_ptr<ParameterAttachment>> btnAtt_;
-    ParameterAttachment leftAtt_, rightAtt_, upAtt_, downAtt_, LSAtt_, RSAtt_;
-
-    void drawMenuBox(Graphics &g);
-    void drawButtonBox(Graphics &g);
-    void drawBasicPanel(Graphics &g);
-
     void onEncoder(unsigned enc, float v) override;
     void onEncoderSwitch(unsigned enc, bool v) override;
     void onButton(unsigned btn, bool v) override;
@@ -49,6 +39,12 @@ private:
     void onDownButton(bool v) override;
     void onLeftShiftButton(bool v) override;
     void onRightShiftButton(bool v) override;
+
+private:
+    void drawMenuBox(Graphics &g);
+    void drawButtonBox(Graphics &g);
+    void drawBasicPanel(Graphics &g);
+
 
     void setMenuBounds(ValueButton &btn, unsigned r);
 
