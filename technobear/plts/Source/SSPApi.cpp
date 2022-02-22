@@ -34,11 +34,15 @@ enum SSPButtons {
     SSP_LastBtn
 };
 
+//SSPHASH
+#define SSP_IMAGECACHE_HASHCODE 0x53535048415348
+
 
 class SSP_PluginEditorInterface : public Percussa::SSP::PluginEditorInterface {
 public:
     SSP_PluginEditorInterface(ssp::EditorHost *editor) :
         editor_(editor) {
+        img_= nullptr;
     }
 
     SSP_PluginEditorInterface() {
@@ -46,22 +50,55 @@ public:
 //    if (editor_) delete editor_;
     }
 
+    ~SSP_PluginEditorInterface() override {
+
+    }
+
+    void frameStart() override {
+        PluginEditorInterface::frameStart();
+    }
+
+    void visibilityChanged(bool b) override {
+        PluginEditorInterface::visibilityChanged(b);
+    }
+
     void renderToImage(unsigned char *buffer, int width, int height) override {
-        if (img_ == nullptr) {
-            img_ = new Image(Image::ARGB, width, height, false);
+        Image img = ImageCache::getFromHashCode(SSP_IMAGECACHE_HASHCODE);
+        if(!img.isValid()) {
+            std::cerr << "new render image created" << std::endl;
+//            ImageCache::setCacheTimeout(30*60*1000); // 30 mins
+            Image newimg(Image::ARGB, width, height, true);
+            ImageCache::addImageToCache(newimg,SSP_IMAGECACHE_HASHCODE);
+            img = newimg;
+        }
+
+        if(!editor_->isVisible()) {
+//        if (img_ == nullptr) {
+//            img_ = new Image(Image::ARGB, width, height, false);
             editor_->setBounds(Rectangle<int>(0, 0, width, height));
             editor_->setOpaque(true);
             editor_->setVisible(true);
         }
 
         // draw editor component onto image.
-        Graphics g(*img_);
+//        Graphics g(*img_);
+//        editor_->paintEntireComponent(g, true);
+//        Image::BitmapData bitmap(*img_, Image::BitmapData::readOnly);
+        Graphics g(img);
         editor_->paintEntireComponent(g, true);
-        Image::BitmapData bitmap(*img_, Image::BitmapData::readOnly);
+        Image::BitmapData bitmap(img, Image::BitmapData::readOnly);
+        lastRenderAddr_ = bitmap.data;
+
         memcpy(buffer, bitmap.data, width * height * 4);
     }
 
+    void * lastRenderAddr_ = nullptr;
+
     void buttonPressed(int n, bool val) {
+        if(lastRenderAddr_) {
+            std::cerr <<  "Last render addr : " << std::hex << lastRenderAddr_ << std::dec << std::endl;
+        }
+
 //        std::cerr << "buttonPressed " << n <<  " : " << val << std::endl;
         if (n <= SSP_Soft_8) {
             editor_->onButton(n, val);
@@ -113,15 +150,48 @@ private:
     Image *img_ = nullptr;
 };
 
+// do NOT use MSG MANAGER unless you have to !
+#define USE_MSG_MANAGER
+
+#ifdef USE_MSG_MANAGER
+class MsgThead : public juce::Thread {
+public:
+    MsgThead() : Thread(String(JucePlugin_Name) + String(": MsgThread")) {}
+    void run() override {
+        MessageManager::getInstance()->runDispatchLoop();
+    }
+};
+
+static MsgThead msgThread_;
+
+void startMessageManager() {
+    if(MessageManager::getInstanceWithoutCreating()== nullptr) {
+        std::cerr << "create Message manager in " << JucePlugin_Name << std::endl;
+        MessageManager::getInstance();
+    }
+    msgThread_.startThread();
+}
+#endif
+
+
+
+
+
 class SSP_PluginInterface : public Percussa::SSP::PluginInterface {
 public:
     SSP_PluginInterface(PluginProcessor *p) : processor_(p), editor_(nullptr) {
+
+#ifdef USE_MSG_MANAGER
+        startMessageManager();
+#endif
     }
 
     ~SSP_PluginInterface() {
 //        if(editor_) delete editor_;
 //        if(processor_) delete processor_;
     }
+
+
 
     Percussa::SSP::PluginEditorInterface *getEditor() override {
         if (editor_ == nullptr) {
@@ -161,10 +231,6 @@ public:
 
     void setState(void *buffer, size_t size) override {
         processor_->setStateInformation(buffer, size);
-    }
-
-    void setParam(int paramNr, float val) override {
-//        processor_->setParameter(paramNr, val);
     }
 
     void prepare(double sampleRate, int samplesPerBlock) override {

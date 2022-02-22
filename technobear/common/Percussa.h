@@ -57,15 +57,30 @@ namespace SSP {
 	public: 
 		virtual ~PluginEditorInterface() {} 
 
+		// this function gets called at the start of each GUI frame rendered.
+		// it is called before renderToImage(), regardless of whether the editor
+		// is visible or not. this function is called from the UI thread.  
+		virtual void frameStart() {}
+
+		// this function is called when the visibility of the plugin editor 
+		// changes. true is passed into the function when the editor becomes 
+		// visible, and false is passed when the editor becomes hidden.
+		// typically, this is called before renderToImage() starts being called,
+		// and after renderToImage() stops being called (see below).   
+		// this function is called from the UI thread. 
+		virtual void visibilityChanged(bool b) {}
+
 		// this function gets passed a pointer to a BGRA image buffer, 
 		// and width and height contains the size of the image. 
 		// the function should draw the plugin GUI graphics into this buffer 
 		// by writing BGRA pixels to it. the pixels are stored as consecutive 
 		// bytes in the buffer: B G R A B G R A B G R A ...   
-		// note that the buffer is NOT CLEARED between successive calls. this
-		// means that you can blend with previously drawn pixels, using the 
-		// alpha channel (A). 
-		// this function is called from the UI thread. 
+		// note that the buffer is NOT CLEARED between successive calls.
+		// the buffer passed in via this function, is also used when rendering
+		// other plugin editors of potentially different plugin types, so you cannot
+		// assume that the previously drawn graphics for this particular plugin instance
+		// type are still valid. this function is called from the UI thread. 
+		// it is only called when the plugin editor is visible.  
 		virtual void renderToImage(unsigned char* buffer, int width, int height) = 0; 
 	}; 
 
@@ -144,10 +159,6 @@ namespace SSP {
 		// this function is called from the UI thread. 
 		virtual void setState(void* buffer, size_t size) {}
 
-		// this is called to set a parameter value on your plugin. 
-		// this function is called from the audio callback. 
-		virtual void setParam(int paramNr, float val) {}
-
 		// called right before processBlock() will start to be called
 		// by the audio DSP code in the host. 
 		// this function is called from the UI thread. 
@@ -168,7 +179,8 @@ namespace SSP {
 	// the functions need to have C linkage (use extern "C" {...}) so they can
 	// be found when the host loads your plugin shared object file. both functions
 	// take no arguments and return a pointer to PluginDescriptor/PluginInterface 
-	// respectively (see below for example). 
+	// respectively (see below for example). you need to make sure the functions are
+	// visible/exported, so use the necessary visibility attribute (see below).  
 	//
 	// these functions are called from the UI thread.  
 	//
@@ -176,8 +188,8 @@ namespace SSP {
 	// instance, so you should not deallocate these yourself. 
 	// 
 	// extern "C" {
-	//	Percussa::SSP::PluginDescriptor* createDescriptor();
-	//	Percussa::SSP::PluginInterface* createInstance();
+	//	__attribute__ ((visibility("default"))) Percussa::SSP::PluginDescriptor* createDescriptor();
+	//	__attribute__ ((visibility("default"))) Percussa::SSP::PluginInterface* createInstance();
 	// }
 
 	static const char* createInstanceName = "createInstance"; 
