@@ -30,8 +30,6 @@ public:
     explicit PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts, AudioProcessorValueTreeState::ParameterLayout layout);
     ~PluginProcessor();
 
-    static Percussa::SSP::PluginDescriptor *createDescriptor();
-
     const String getName() const override { return JucePlugin_Name; }
 
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
@@ -84,14 +82,6 @@ public:
         O_MAX
     };
 
-private:
-    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
-        return true;
-    }
-
-    static const String getInputBusName(int channelIndex);
-    static const String getOutputBusName(int channelIndex);
-
     static BusesProperties getBusesProperties() {
         BusesProperties props;
         for (auto i = 0; i < I_MAX; i++) {
@@ -102,6 +92,13 @@ private:
         }
         return props;
     }
+private:
+    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
+        return true;
+    }
+
+    static const String getInputBusName(int channelIndex);
+    static const String getOutputBusName(int channelIndex);
 
     // processor updates
     std::atomic<unsigned> lastInIdx_;

@@ -33,8 +33,6 @@ public:
     explicit PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts, AudioProcessorValueTreeState::ParameterLayout layout);
     ~PluginProcessor();
 
-    static Percussa::SSP::PluginDescriptor *createDescriptor();
-
     const String getName() const override { return JucePlugin_Name; }
 
     void processBlock(AudioSampleBuffer &, MidiBuffer &) override;
@@ -123,19 +121,6 @@ public:
         return *(params_.layers_[layer]);
     }
 
-protected:
-    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
-
-
-    float getCurrentVolt(float layer, unsigned volt,bool morph);
-
-private:
-    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
-        return true;
-    }
-
-    static const String getInputBusName(int channelIndex);
-    static const String getOutputBusName(int channelIndex);
 
     static BusesProperties getBusesProperties() {
         BusesProperties props;
@@ -147,6 +132,18 @@ private:
         }
         return props;
     }
+
+protected:
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+
+    float getCurrentVolt(float layer, unsigned volt,bool morph);
+
+private:
+    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
+        return true;
+    }
+    static const String getInputBusName(int channelIndex);
+    static const String getOutputBusName(int channelIndex);
 
     float lastVolt_[MAX_SIG_OUT];
 

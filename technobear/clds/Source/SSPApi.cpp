@@ -5,16 +5,12 @@
 #include "ssp/EditorHost.h"
 
 // this is a common file in ALL my plugin projects
-// it is copied between them, so do not alter it without propagating to others.
-
-// there are two reasons for it to be duplicated
-// - it has to reference the specific PluginProcessor
-// - there are static functions , and we may want different variations
-
-// note: if a plugin needs a variation , the COPY the file and rename it
-// and ref new file name in cmake, this way f I propagate a changed version it will NOT
-// overwrite the custom version !
-// this is HIGHLY likely to occur !!!!
+// the 'template' lives in the common directory
+// however, it needs to be in project folder because it needs to create PluginProcessor
+// so it gets copied with:
+// find . -name Source -exec cp common/SSPApi.cpp {} \;
+// if a project needs a 'special' verison of this, then rename (so it does not get overwritten)
+// and setup in the project CMakeFile
 
 enum SSPButtons {
     SSP_Soft_1,
@@ -42,12 +38,10 @@ class SSP_PluginEditorInterface : public Percussa::SSP::PluginEditorInterface {
 public:
     SSP_PluginEditorInterface(ssp::EditorHost *editor) :
         editor_(editor) {
-        img_= nullptr;
     }
 
     SSP_PluginEditorInterface() {
-        if (img_) delete img_;
-//    if (editor_) delete editor_;
+        if (editor_) delete editor_;
     }
 
     ~SSP_PluginEditorInterface() override {
@@ -64,41 +58,27 @@ public:
 
     void renderToImage(unsigned char *buffer, int width, int height) override {
         Image img = ImageCache::getFromHashCode(SSP_IMAGECACHE_HASHCODE);
-        if(!img.isValid()) {
+        if (!img.isValid()) {
             std::cerr << "new render image created" << std::endl;
-//            ImageCache::setCacheTimeout(30*60*1000); // 30 mins
             Image newimg(Image::ARGB, width, height, true);
-            ImageCache::addImageToCache(newimg,SSP_IMAGECACHE_HASHCODE);
+            ImageCache::addImageToCache(newimg, SSP_IMAGECACHE_HASHCODE);
             img = newimg;
         }
 
-        if(!editor_->isVisible()) {
-//        if (img_ == nullptr) {
-//            img_ = new Image(Image::ARGB, width, height, false);
+        if (!editor_->isVisible()) {
             editor_->setBounds(Rectangle<int>(0, 0, width, height));
             editor_->setOpaque(true);
             editor_->setVisible(true);
         }
 
-        // draw editor component onto image.
-//        Graphics g(*img_);
-//        editor_->paintEntireComponent(g, true);
-//        Image::BitmapData bitmap(*img_, Image::BitmapData::readOnly);
         Graphics g(img);
         editor_->paintEntireComponent(g, true);
         Image::BitmapData bitmap(img, Image::BitmapData::readOnly);
-        lastRenderAddr_ = bitmap.data;
 
         memcpy(buffer, bitmap.data, width * height * 4);
     }
 
-    void * lastRenderAddr_ = nullptr;
-
     void buttonPressed(int n, bool val) {
-        if(lastRenderAddr_) {
-            std::cerr <<  "Last render addr : " << std::hex << lastRenderAddr_ << std::dec << std::endl;
-        }
-
 //        std::cerr << "buttonPressed " << n <<  " : " << val << std::endl;
         if (n <= SSP_Soft_8) {
             editor_->onButton(n, val);
@@ -147,16 +127,17 @@ public:
 
 private:
     ssp::EditorHost *editor_;
-    Image *img_ = nullptr;
 };
 
 // do NOT use MSG MANAGER unless you have to !
 #define USE_MSG_MANAGER
 
 #ifdef USE_MSG_MANAGER
+
 class MsgThead : public juce::Thread {
 public:
     MsgThead() : Thread(String(JucePlugin_Name) + String(": MsgThread")) {}
+
     void run() override {
         MessageManager::getInstance()->runDispatchLoop();
     }
@@ -165,16 +146,14 @@ public:
 static MsgThead msgThread_;
 
 void startMessageManager() {
-    if(MessageManager::getInstanceWithoutCreating()== nullptr) {
+    if (MessageManager::getInstanceWithoutCreating() == nullptr) {
         std::cerr << "create Message manager in " << JucePlugin_Name << std::endl;
         MessageManager::getInstance();
     }
     msgThread_.startThread();
 }
+
 #endif
-
-
-
 
 
 class SSP_PluginInterface : public Percussa::SSP::PluginInterface {
@@ -187,10 +166,9 @@ public:
     }
 
     ~SSP_PluginInterface() {
-//        if(editor_) delete editor_;
-//        if(processor_) delete processor_;
+        if (editor_) delete editor_;
+        if (processor_) delete processor_;
     }
-
 
 
     Percussa::SSP::PluginEditorInterface *getEditor() override {
@@ -259,12 +237,39 @@ private:
 
 extern "C" __attribute__ ((visibility("default")))
 Percussa::SSP::PluginDescriptor *createDescriptor() {
-    return PluginProcessor::createDescriptor();
+    std::vector<std::string> inNames;
+    std::vector<std::string> outNames;
+    auto busProps = PluginProcessor::getBusesProperties();
+
+    for (auto layout: busProps.inputLayouts) {
+        inNames.push_back(layout.busName.toStdString());
+    }
+    for (auto layout: busProps.outputLayouts) {
+        outNames.push_back(layout.busName.toStdString());
+    }
+
+    auto desc = new Percussa::SSP::PluginDescriptor;
+
+    desc->name = JucePlugin_Name;
+    desc->descriptiveName = JucePlugin_Desc;
+    desc->manufacturerName = JucePlugin_Manufacturer;
+    desc->version = JucePlugin_VersionString;
+    desc->uid = (int) JucePlugin_VSTUniqueID;
+    desc->inputChannelNames = inNames;
+    desc->outputChannelNames = outNames;
+
+    return desc;
 }
 
 extern "C" __attribute__ ((visibility("default")))
 Percussa::SSP::PluginInterface *createInstance() {
     return new SSP_PluginInterface(new PluginProcessor());
 
+}
+
+extern "C" __attribute__ ((visibility("default")))
+void getApiVersion(unsigned &major, unsigned &minor) {
+    major = Percussa::SSP::API_MAJOR_VERSION;
+    minor = Percussa::SSP::API_MINOR_VERSION;
 }
 

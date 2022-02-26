@@ -37,8 +37,6 @@ public:
     explicit PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts, AudioProcessorValueTreeState::ParameterLayout layout);
     ~PluginProcessor();
 
-    static Percussa::SSP::PluginDescriptor *createDescriptor();
-
     const String getName() const override { return JucePlugin_Name; }
 
     void processBlock(AudioSampleBuffer &, MidiBuffer &) override;
@@ -105,6 +103,17 @@ public:
 
     void prepareToPlay(double newSampleRate, int estimatedSamplesPerBlock) override;
 
+    static BusesProperties getBusesProperties() {
+        BusesProperties props;
+        for (auto i = 0; i < I_MAX; i++) {
+            props.addBus(true, getInputBusName(i), AudioChannelSet::mono());
+        }
+        for (auto i = 0; i < O_MAX; i++) {
+            props.addBus(false, getOutputBusName(i), AudioChannelSet::mono());
+        }
+        return props;
+    }
+
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
@@ -116,16 +125,6 @@ private:
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
 
-    static BusesProperties getBusesProperties() {
-        BusesProperties props;
-        for (auto i = 0; i < I_MAX; i++) {
-            props.addBus(true, getInputBusName(i), AudioChannelSet::mono());
-        }
-        for (auto i = 0; i < O_MAX; i++) {
-            props.addBus(false, getOutputBusName(i), AudioChannelSet::mono());
-        }
-        return props;
-    }
 
     float sampleCounter_ = 0.0f;
     float timeSpec_ = 0.0f;

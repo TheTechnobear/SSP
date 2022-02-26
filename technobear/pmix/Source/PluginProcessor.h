@@ -82,8 +82,6 @@ public:
     explicit PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts, AudioProcessorValueTreeState::ParameterLayout layout);
     ~PluginProcessor() override = default;
 
-    static Percussa::SSP::PluginDescriptor *createDescriptor();
-
     const String getName() const override { return JucePlugin_Name; }
 
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
@@ -135,15 +133,6 @@ public:
 
     unsigned numOutTracks() { return OUT_T_MAX; }
 
-private:
-
-    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
-        return true;
-    }
-
-    static const String getInputBusName(int channelIndex);
-    static const String getOutputBusName(int channelIndex);
-
     static BusesProperties getBusesProperties() {
         BusesProperties props;
         for (auto i = 0; i < I_MAX; i++) {
@@ -154,6 +143,14 @@ private:
         }
         return props;
     }
+private:
+
+    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
+        return true;
+    }
+
+    static const String getInputBusName(int channelIndex);
+    static const String getOutputBusName(int channelIndex);
 
     inline void dcBlock(float x, float &x1, float &y, float &y1) {
         // y[n] = x[n] - x[n-1] + a * y[n-1]
