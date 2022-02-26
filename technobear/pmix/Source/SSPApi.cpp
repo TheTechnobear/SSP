@@ -130,7 +130,7 @@ private:
 };
 
 // do NOT use MSG MANAGER unless you have to !
-#define USE_MSG_MANAGER
+//#define USE_MSG_MANAGER
 
 #ifdef USE_MSG_MANAGER
 
