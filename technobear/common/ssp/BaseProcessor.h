@@ -103,7 +103,7 @@ protected:
     // AudioProcessorListener
     void audioProcessorParameterChanged(AudioProcessor *p, int parameterIndex, float newValue) override;
 
-    void audioProcessorChanged(AudioProcessor *processor, const ChangeDetails& details) override { ; }
+    void audioProcessorChanged(AudioProcessor *processor, const AudioProcessorListener::ChangeDetails& details) override { ; }
 
     // MidiInputCallback
     void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message) override;

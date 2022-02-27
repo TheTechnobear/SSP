@@ -11,6 +11,5 @@
     <mapping directory="$PROJECT_DIR$/mi/avrlibx" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/mi/stm_audio_bootloader" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/mi/stmlib" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/ssp-sdk" vcs="Git" />
   </component>
 </project>
