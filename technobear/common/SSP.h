@@ -1,8 +1,6 @@
 #pragma once 
 
-#include "Percussa.h"
-
-
+#include "../../ssp-sdk/Percussa.h"
 
 #include <algorithm>
 

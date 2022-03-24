@@ -1,5 +1,5 @@
 
-#include "Percussa.h"
+#include "../../ssp-sdk/Percussa.h"
 
 #include "PluginProcessor.h"
 #include "ssp/EditorHost.h"
