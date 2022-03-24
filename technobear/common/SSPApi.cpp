@@ -40,12 +40,8 @@ public:
         editor_(editor) {
     }
 
-    SSP_PluginEditorInterface() {
-        if (editor_) delete editor_;
-    }
-
     ~SSP_PluginEditorInterface() override {
-
+        if (editor_) delete editor_;
     }
 
     void frameStart() override {
@@ -234,7 +230,6 @@ private:
     PluginProcessor *processor_ = nullptr;
 };
 
-
 extern "C" __attribute__ ((visibility("default")))
 Percussa::SSP::PluginDescriptor *createDescriptor() {
     std::vector<std::string> inNames;
@@ -272,4 +267,3 @@ void getApiVersion(unsigned &major, unsigned &minor) {
     major = Percussa::SSP::API_MAJOR_VERSION;
     minor = Percussa::SSP::API_MINOR_VERSION;
 }
-

@@ -84,7 +84,20 @@ namespace SSP {
 		// assume that the previously drawn graphics for this particular plugin instance
 		// type are still valid. this function is called from the UI thread.
 		// it is only called when the plugin editor is visible.
-		virtual void renderToImage(unsigned char* buffer, int width, int height) = 0;
+		virtual void renderToImage(unsigned char* buffer, int width, int height) {} 
+
+		// this function is called on every frame to draw OpenGLES graphics. 
+		// the code in this function might look something like this: 
+		// 	glUseProgram ... 
+		//	glBindVertexArray(VAO);
+		//		activate texture ... 
+		//		update triangle coordinates ... 
+		//	glDrawArrays(GL_TRIANGLES, 0, ...); 
+		//	glBindVertexArray(0);
+		// the initialization code to compile shaders, init VBOs and VAOs and textures
+		// should go into the constructors of the plugin or plugin editor. the parameters
+		// passed to this function contain the size of the viewport.  
+		virtual void draw(int width, int height) {} 
 	};
 
 	// class interface allowing the host application to ask your plugin
@@ -102,9 +115,9 @@ namespace SSP {
 		// the above PluginEditorInterface interface. this function should
 		// only allocate one instance of the class, and subsequent calls
 		// should return the same instance, which was allocated previously.
-		// the host will deallocate the intance, so your plugin should not
-		// deallocate it under any circumstances.
-		// this function is called from the UI thread.
+		// the host will NOT deallocate the instance returned via this function, 
+		// your plugin is responsible for doing that. this function is called 
+		// from the UI thread.
 		virtual PluginEditorInterface* getEditor() = 0;
 
 		// called when a button is pressed. mapping of buttons is as follows:
@@ -152,8 +165,10 @@ namespace SSP {
 		// so it can be saved in the preset files written to disk.
 		// you should return a pointer to a buffer containing your
 		// plugin data, as well as the size of the buffer containing
-		// the data.
-		// this function is called from the UI thread.
+		// the data. the host will call delete[] on the buffer pointer
+		// you return, after it is done copying data from it, so inside 
+		// getState you should use new char[...] to allocate the buffer 
+		// you are returning. this function is called from the UI thread.
 		virtual void getState(void** buffer, size_t* size) {}
 
 		// this is called to set the state of your plugin, after a
