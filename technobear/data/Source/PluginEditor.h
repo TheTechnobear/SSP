@@ -26,6 +26,11 @@ protected:
         std::shared_ptr<ssp::BaseParamControl> c4,
         juce::Colour clr
     );
+    void onSSPTimer() override {
+        base_type::onSSPTimer();
+        timerCallback();
+    }
+
 
 private:
 

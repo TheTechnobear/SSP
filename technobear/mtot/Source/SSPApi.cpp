@@ -46,6 +46,7 @@ public:
 
     void frameStart() override {
         PluginEditorInterface::frameStart();
+        if(editor_) editor_->onSSPTimer();
     }
 
     void visibilityChanged(bool b) override {

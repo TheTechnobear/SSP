@@ -11,4 +11,6 @@ public:
     virtual void onDownButton(bool v) = 0;
     virtual void onLeftShiftButton(bool v) = 0;
     virtual void onRightShiftButton(bool v) = 0;
+
+    virtual void onSSPTimer() = 0;
 };

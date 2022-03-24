@@ -163,5 +163,9 @@ void EditorHost::onRightShiftButton(bool v) {
     if (LSActive_ && RSActive_) sysEditor();
 }
 
+void EditorHost::onSSPTimer() {
+    editor_->onSSPTimer();
+}
+
 
 }

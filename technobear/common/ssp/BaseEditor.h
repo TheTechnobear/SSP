@@ -50,6 +50,7 @@ protected:
     void onDownButton(bool v) override;
     void onLeftShiftButton(bool v) override;
     void onRightShiftButton(bool v) override;
+    void onSSPTimer() override;
 
 
     void setButtonBounds(unsigned idx, std::shared_ptr<ParamButton>);

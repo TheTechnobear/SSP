@@ -30,6 +30,7 @@ public:
         editor_->resized();
     }
 
+    // SSPActions
     void onEncoder(unsigned enc, float v) override;
     void onEncoderSwitch(unsigned enc, bool v) override;
     void onButton(unsigned btn, bool v) override;
@@ -39,6 +40,7 @@ public:
     void onDownButton(bool v) override;
     void onLeftShiftButton(bool v) override;
     void onRightShiftButton(bool v) override;
+    void onSSPTimer() override;
 
 private:
     void drawMenuBox(Graphics &g);

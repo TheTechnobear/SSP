@@ -114,5 +114,9 @@ void BaseEditor::onRightShiftButton(bool v) {
     rightShiftBtn_.value(v);
 }
 
+void BaseEditor::onSSPTimer() {
+
+}
+
 
 }
