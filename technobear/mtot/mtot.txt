@@ -1,4 +1,4 @@
-# mtin midi tools - midi output
+# mtot midi tools - midi output
 
 midi output 
 
