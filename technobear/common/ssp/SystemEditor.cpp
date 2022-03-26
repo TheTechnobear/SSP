@@ -48,7 +48,7 @@ SystemEditor::SystemEditor(BaseProcessor *p) :
     midiInStr_.push_back("NONE");
     for (int i = 0; i < in.size(); i++) {
         inDevices_.push_back(in[i]);
-        midiInStr_.push_back(in[i].name.toStdString());
+        midiInStr_.push_back(std::to_string(i)+":"+in[i].name.toStdString());
         if (baseProcessor_->isActiveMidiIn(in[i].identifier.toStdString())) selIdx = i + 1; // none
     }
     midiInCtrl_.setValues(midiInStr_, selIdx);
@@ -58,7 +58,7 @@ SystemEditor::SystemEditor(BaseProcessor *p) :
     midiOutStr_.push_back("NONE");
     for (int i = 0; i < out.size(); i++) {
         outDevices_.push_back(out[i]);
-        midiOutStr_.push_back(out[i].name.toStdString());
+        midiOutStr_.push_back(std::to_string(i)+":"+out[i].name.toStdString());
         if (baseProcessor_->isActiveMidiOut(out[i].identifier.toStdString())) selIdx = i + 1; //none
     }
     midiOutCtrl_.setValues(midiOutStr_, selIdx);

@@ -268,7 +268,7 @@ void BaseProcessor::automateParam(int idx, const MidiAutomation &a, const MidiMe
 void BaseProcessor::handleMidi(const MidiMessage &msg) {
     if (midiChannel_ == 0 || msg.getChannel() == midiChannel_) {
         if (midiLearn_) {
-            if (lastLearn_.paramIdx_ > 0) {
+            if (lastLearn_.paramIdx_ >= 0) {
                 if (msg.isController()) {
                     auto &m = lastLearn_.midi_;
                     m.type_ = MidiAutomation::Midi::T_CC;
