@@ -18,8 +18,6 @@ public:
 protected:
     using base_type = ssp::BarParamEditor;
 
-    void timerCallback() override;
-
     void onEncoder(unsigned enc, float v) override;
     void onButton(unsigned btn, bool v) override;
     void onEncoderSwitch(unsigned enc, bool v) override;

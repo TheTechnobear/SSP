@@ -50,7 +50,6 @@ public:
 
     bool hasEditor() const override { return true; }
 
-
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
@@ -112,19 +111,6 @@ public:
 
     float getVCACV(unsigned i, unsigned o) { return lastVcaCV_[i][o]; }
 
-private:
-    std::atomic<float> lastVcaCV_[MAX_SIG_IN][MAX_SIG_OUT];
-
-    AudioSampleBuffer outBufs_;
-    AudioSampleBuffer workBuf_;
-
-    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
-        return true;
-    }
-
-    static const String getInputBusName(int channelIndex);
-    static const String getOutputBusName(int channelIndex);
-
     static BusesProperties getBusesProperties() {
         BusesProperties props;
         for (auto i = 0; i < I_MAX; i++) {
@@ -135,6 +121,19 @@ private:
         }
         return props;
     }
+
+private:
+    std::atomic<float> lastVcaCV_[MAX_SIG_IN][MAX_SIG_OUT];
+
+    AudioSampleBuffer outBufs_;
+    AudioSampleBuffer workBuf_;
+
+    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
+        return true;
+    }
+    static const String getInputBusName(int channelIndex);
+    static const String getOutputBusName(int channelIndex);
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
 

@@ -21,7 +21,6 @@ PluginProcessor::PluginProcessor(
 }
 
 
-
 PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) :
     root(*apvt.getParameter(ID::root)),
     scale(*apvt.getParameter(ID::scale)),
@@ -179,12 +178,9 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 }
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
-    return new ssp::EditorHost(this,new PluginEditor(*this));
+    return new ssp::EditorHost(this, new PluginEditor(*this));
 }
-
-
 
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {
     return new PluginProcessor();
 }
-

@@ -60,10 +60,6 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     setSize(1600, 480);
 }
 
-void PluginEditor::timerCallback() {
-    base_type::timerCallback();
-}
-
 void PluginEditor::onEncoder(unsigned enc, float v) {
     base_type::onEncoder(enc, v);
 }

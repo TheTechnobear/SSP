@@ -18,19 +18,15 @@ endif ()
 
 add_subdirectory(juce)
 
-
-if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    juce_set_vst2_sdk_path("$ENV{HOME}/SDKs/Steinberg/VST3/VST3 SDK")
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    juce_set_vst2_sdk_path("$ENV{HOME}/SDKs/vst3-sdk")
+if (DEFINED ENV{VSTSDK})
+    set(VSTSDK $ENV{VSTSDK})
+else ()
+    set(VSTSDK "$ENV{HOME}/SDKs/vst3-sdk")
 endif ()
 
+message("using VSTSDK  :  ${VSTSDK}")
 
-# on apple desktop, do we want ssp encoders etc
-# set(DISABLE_SSP_PARAMS 1)
-if (DISABLE_SSP_PARAMS)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDISABLE_SSP_PARAMS=1")
-endif (DISABLE_SSP_PARAMS)
+juce_set_vst2_sdk_path(${VSTSDK})
 
 
 add_subdirectory(technobear)

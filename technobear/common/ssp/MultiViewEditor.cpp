@@ -133,7 +133,6 @@ void MultiViewEditor::addButtonPage(
 void MultiViewEditor::onEncoder(unsigned enc, float v) {
     base_type::onEncoder(enc, v);
     if (v > -0.01f && v < 0.01f) return;
-    auto &p = *baseProcessor_->getParameter(BaseProcessor::sspParams::getId(Percussa::sspEnc1 + enc));
 
     auto &view = views_[view_];
     if (paramPage_ < view.controlPages_.size()) {

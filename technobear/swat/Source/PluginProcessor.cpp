@@ -219,3 +219,4 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
         readFromXml(*pXML);
     }
 }
+

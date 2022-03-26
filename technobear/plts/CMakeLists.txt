@@ -58,7 +58,7 @@ juce_add_plugin(PLTS
         COPY_PLUGIN_AFTER_BUILD TRUE                # Should the plugin be installed to a default location after building?
         PLUGIN_MANUFACTURER_CODE TB00               # A four-character manufacturer id with at least one upper-case character
         PLUGIN_CODE PLTS                            # A unique four-character plugin id with at least one upper-case character
-        FORMATS VST VST3                            # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+        FORMATS VST3                                # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
         PRODUCT_NAME "plts")                        # The name of the final executable, which can differ from the target name
 
 # `juce_generate_juce_header` will create a JuceHeader.h for a given target, which will be generated
@@ -119,7 +119,10 @@ set(MI_SRC
 include(${CMAKE_CURRENT_SOURCE_DIR}/../common/CMakeLists.txt)
 
 
-target_sources(PLTS PRIVATE
+target_sources(PLTS
+        PUBLIC
+        Source/SSPApi.cpp
+        PRIVATE
         Source/PluginEditor.cpp
         Source/PluginProcessor.cpp
         ${MI_SRC}
@@ -161,6 +164,6 @@ target_link_libraries(PLTS PRIVATE
         juce::juce_audio_utils)
 
 
-set_target_properties(${PROJECT_NAME}_VST PROPERTIES PREFIX "")
+#set_target_properties(${PROJECT_NAME}_VST PROPERTIES PREFIX "")
 set_target_properties(${PROJECT_NAME}_VST3 PROPERTIES PREFIX "")
 

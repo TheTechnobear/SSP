@@ -20,26 +20,7 @@ EditorHost::EditorHost(BaseProcessor *p, BaseEditor *e) :
     globalBtn_("G", nullptr, 32, Colours::red),
     networkBtn_("N", nullptr, 32, Colours::red),
     plugInBtn_("P", nullptr, 32, Colours::red),
-    recBtn_("R", nullptr, 32, Colours::red),
-    leftAtt_(*p->getParameter(BaseProcessor::sspParams::getId(Percussa::sspSwLeft)), [this](float f) { onLeftButton(f); }),
-    rightAtt_(*p->getParameter(BaseProcessor::sspParams::getId(Percussa::sspSwRight)), [this](float f) { onRightButton(f); }),
-    upAtt_(*p->getParameter(BaseProcessor::sspParams::getId(Percussa::sspSwUp)), [this](float f) { onUpButton(f); }),
-    downAtt_(*p->getParameter(BaseProcessor::sspParams::getId(Percussa::sspSwDown)), [this](float f) { onDownButton(f); }),
-    LSAtt_(*p->getParameter(BaseProcessor::sspParams::getId(Percussa::sspSwShiftL)), [this](float f) { onLeftShiftButton(f); }),
-    RSAtt_(*p->getParameter(BaseProcessor::sspParams::getId(Percussa::sspSwShiftR)), [this](float f) { onRightShiftButton(f); }) {
-
-    for (int i = 0; i < BaseProcessor::sspParams::numEnc; i++) {
-        encAtt_.push_back(std::make_unique<ParameterAttachment>(*p->getParameter(BaseProcessor::sspParams::getId(Percussa::sspEnc1 + i)),
-                                                                [this, i](float f) { onEncoder(i, f); }));
-    }
-    for (int i = 0; i < BaseProcessor::sspParams::numEnc; i++) {
-        encSwAtt_.push_back(std::make_unique<ParameterAttachment>(*p->getParameter(BaseProcessor::sspParams::getId(Percussa::sspEncSw1 + i)),
-                                                                  [this, i](float f) { onEncoderSwitch(i, f); }));
-    }
-    for (int i = 0; i < BaseProcessor::sspParams::numSw; i++) {
-        btnAtt_.push_back(std::make_unique<ParameterAttachment>(*p->getParameter(BaseProcessor::sspParams::getId(Percussa::sspSw1 + i)),
-                                                                [this, i](float f) { onButton(i, f); }));
-    }
+    recBtn_("R", nullptr, 32, Colours::red) {
 
     sysActive_ = false;
     system_ = new SystemEditor(p);
@@ -180,6 +161,10 @@ void EditorHost::onRightShiftButton(bool v) {
 
     RSActive_ = v;
     if (LSActive_ && RSActive_) sysEditor();
+}
+
+void EditorHost::onSSPTimer() {
+    editor_->onSSPTimer();
 }
 
 

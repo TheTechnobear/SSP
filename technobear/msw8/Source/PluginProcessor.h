@@ -50,11 +50,11 @@ public:
         Parameter &soft;
     } params_;
 
+    void onInputChanged(unsigned i, bool b) override;
+    void onOutputChanged(unsigned i, bool b) override;
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
-    void onInputChanged(unsigned i, bool b) override;
-    void onOutputChanged(unsigned i, bool b) override;
 
 public:
     enum {
@@ -82,14 +82,6 @@ public:
         O_MAX
     };
 
-private:
-    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
-        return true;
-    }
-
-    static const String getInputBusName(int channelIndex);
-    static const String getOutputBusName(int channelIndex);
-
     static BusesProperties getBusesProperties() {
         BusesProperties props;
         for (auto i = 0; i < I_MAX; i++) {
@@ -100,6 +92,13 @@ private:
         }
         return props;
     }
+private:
+    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
+        return true;
+    }
+
+    static const String getInputBusName(int channelIndex);
+    static const String getOutputBusName(int channelIndex);
 
     // processor updates
     std::atomic<unsigned> lastInIdx_;

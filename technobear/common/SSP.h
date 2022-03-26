@@ -1,16 +1,8 @@
 #pragma once 
 
-#include "Percussa.h"
-
-
+#include "../../ssp-sdk/Percussa.h"
 
 #include <algorithm>
-
-
-extern const char* percussaParamsName[Percussa::sspLast];
-
-extern const char* percussaParamsText[Percussa::sspLast];
-
 
 inline float cv2Pitch(float r) {
     static constexpr float p1 = 0.0f; // first C note

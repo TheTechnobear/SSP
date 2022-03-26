@@ -77,6 +77,17 @@ public:
         rOut = outRms_[1].lvl();
     }
 
+    static BusesProperties getBusesProperties() {
+        BusesProperties props;
+        for (auto i = 0; i < I_MAX; i++) {
+            props.addBus(true, getInputBusName(i), AudioChannelSet::mono());
+        }
+        for (auto i = 0; i < O_MAX; i++) {
+            props.addBus(false, getOutputBusName(i), AudioChannelSet::mono());
+        }
+        return props;
+    }
+
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     void midiNoteInput(unsigned note, unsigned velocity) override { if (velocity > 0) noteInputTranspose_ = float(note) - 60.f; }
@@ -100,25 +111,12 @@ private:
         O_MAX
     };
 
-
-
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
         return true;
     }
 
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
-
-    static BusesProperties getBusesProperties() {
-        BusesProperties props;
-        for (auto i = 0; i < I_MAX; i++) {
-            props.addBus(true, getInputBusName(i), AudioChannelSet::mono());
-        }
-        for (auto i = 0; i < O_MAX; i++) {
-            props.addBus(false, getOutputBusName(i), AudioChannelSet::mono());
-        }
-        return props;
-    }
 
     static constexpr unsigned PltsBlock = 16;
     static constexpr float PltsMaxEngine = 15.0f;

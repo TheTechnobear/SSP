@@ -102,7 +102,6 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     return params;
 }
 
-
 const String PluginProcessor::getInputBusName(int channelIndex) {
     static String inBusName[I_MAX] = {
         "In A",
@@ -165,8 +164,8 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
             msg.sample_[2] = buffer.getSample(I_SIG_C, i0) * f0 + buffer.getSample(I_SIG_C, i1) * f1;
             msg.sample_[3] = buffer.getSample(I_SIG_D, i0) * f0 + buffer.getSample(I_SIG_D, i1) * f1;
             msg.trig_ = buffer.getSample(I_TRIG, i0) * f0 + buffer.getSample(I_TRIG, i1) * f1;
-            if (messageQueue_.try_enqueue(msg)) { sampleCounter_ += tS;  }
-            else { sampleCounter_ += backoffTs_;  } // queue full
+            if (messageQueue_.try_enqueue(msg)) { sampleCounter_ += tS; }
+            else { sampleCounter_ += backoffTs_; } // queue full
         } else if (s < 0.0f) {
             // we are doing the sample from the last buffer
             unsigned i1 = 0;
@@ -179,8 +178,8 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
             msg.sample_[2] = lastS_[2] * f0 + buffer.getSample(I_SIG_C, i1) * f1;
             msg.sample_[3] = lastS_[3] * f0 + buffer.getSample(I_SIG_D, i1) * f1;
             msg.trig_ = lastS_[4] * f0 + buffer.getSample(I_TRIG, i1) * f1;
-            if (messageQueue_.try_enqueue(msg)) { sampleCounter_ += tS;  }
-            else { sampleCounter_ += backoffTs_;  } // queue full
+            if (messageQueue_.try_enqueue(msg)) { sampleCounter_ += tS; }
+            else { sampleCounter_ += backoffTs_; } // queue full
         }
     }
 

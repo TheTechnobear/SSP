@@ -1,9 +1,6 @@
 [submodule "juce"]
 	path = juce
 	url = https://github.com/juce-framework/JUCE.git
-[submodule "ssp-sdk"]
-	path = ssp-sdk
-	url = https://github.com/percussa/ssp-sdk
 [submodule "mi"]
 	path = mi
 	url = https://github.com/TheTechnobear/mi.git
@@ -13,3 +10,6 @@
 [submodule "external/readerwriterqueue"]
 	path = external/readerwriterqueue
 	url = https://github.com/cameron314/readerwriterqueue
+[submodule "ssp-sdk"]
+	path = ssp-sdk
+	url = https://github.com/percussa/ssp-sdk

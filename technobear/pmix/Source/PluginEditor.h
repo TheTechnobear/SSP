@@ -26,6 +26,11 @@ public:
     void onDownButton(bool v) override;
     void onLeftShiftButton(bool v) override;
     void onRightShiftButton(bool v) override;
+    void onSSPTimer() override {
+        base_type::onSSPTimer();
+        timerCallback();
+    }
+
 protected:
     using base_type = ssp::MultiViewEditor;
 

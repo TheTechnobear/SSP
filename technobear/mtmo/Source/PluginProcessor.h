@@ -42,6 +42,16 @@ public:
 
     moodycamel::ReaderWriterQueue<MidiMessage> &messageQueue() { return messageQueue_; }
 
+    static BusesProperties getBusesProperties() {
+        BusesProperties props;
+        for (auto i = 0; i < I_MAX; i++) {
+            props.addBus(true, getInputBusName(i), AudioChannelSet::mono());
+        }
+        for (auto i = 0; i < O_MAX; i++) {
+            props.addBus(false, getOutputBusName(i), AudioChannelSet::mono());
+        }
+        return props;
+    }
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -57,27 +67,13 @@ protected:
         O_MAX
     };
 
-
 private:
-
-
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
         return true;
     }
 
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
-
-    static BusesProperties getBusesProperties() {
-        BusesProperties props;
-        for (auto i = 0; i < I_MAX; i++) {
-            props.addBus(true, getInputBusName(i), AudioChannelSet::mono());
-        }
-        for (auto i = 0; i < O_MAX; i++) {
-            props.addBus(false, getOutputBusName(i), AudioChannelSet::mono());
-        }
-        return props;
-    }
 
     double clockTs_ = 0.0f;
 

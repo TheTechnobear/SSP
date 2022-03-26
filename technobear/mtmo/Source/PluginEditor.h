@@ -15,6 +15,11 @@ public:
 protected:
     void timerCallback() override;
 
+    void onSSPTimer() override {
+        base_type::onSSPTimer();
+        timerCallback();
+    }
+
     using base_type = ssp::BaseEditor;
 private:
 
