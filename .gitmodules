@@ -13,3 +13,6 @@
 [submodule "ssp-sdk"]
 	path = ssp-sdk
 	url = https://github.com/percussa/ssp-sdk
+[submodule "lualib/lua"]
+	path = lualib/lua
+	url = https://github.com/lua/lua.git
