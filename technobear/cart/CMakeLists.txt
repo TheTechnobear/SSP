@@ -82,6 +82,7 @@ target_sources(CART
         PRIVATE
         Source/PluginEditor.cpp
         Source/PluginProcessor.cpp
+        Source/Snakes.cpp
         ${COMMON_SRC}
         )
 

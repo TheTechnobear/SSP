@@ -49,7 +49,7 @@ PARAMETER_ID (gate)
 //fun
 //quant
 
-
+#include "Snakes.h"
 
 class PluginProcessor : public ssp::BaseProcessor {
 public:
@@ -160,22 +160,8 @@ private:
     unsigned findNextStep(unsigned cpos, Layer &params);
     void advanceLayer(LayerData &ld, Layer &params);
     void advanceCartLayer(LayerData &ld, Layer &params, unsigned xPos, unsigned yPos);
-    void initSnakes();
 
-public:
-    class SnakeAlgo {
-    public:
-        explicit SnakeAlgo() { ; }
-
-        virtual ~SnakeAlgo() { ; }
-
-        virtual const String &name() = 0;
-        virtual unsigned findNext(unsigned cpos) = 0;
-    };
-
-private:
-
-    std::vector<std::unique_ptr<SnakeAlgo>> snakes_;
+    static Snakes snakes_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 
