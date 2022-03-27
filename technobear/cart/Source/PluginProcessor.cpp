@@ -9,6 +9,12 @@ inline float constrain(float v, float vMin, float vMax) {
 
 #define GET_P_VAL(x) x.convertFrom0to1(x.getValue())
 
+
+//TODO: parameter?
+static constexpr unsigned gateTime = 64; // samples
+static constexpr float clockLevel = 0.2f; // 1v
+
+
 Snakes PluginProcessor::snakes_;
 
 PluginProcessor::PluginProcessor()
@@ -83,7 +89,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     }
 
     auto lgs = std::make_unique<AudioProcessorParameterGroup>(ID::layer, "Layers", ID::separator);
-    for (unsigned ln = 0; ln < 3; ln++) {
+    for (unsigned ln = 0; ln < MAX_LAYERS; ln++) {
         auto lg = std::make_unique<AudioProcessorParameterGroup>(layerID(ln), layerID(ln), ID::separator);
         lg->addChild(std::make_unique<ssp::BaseBoolParameter>(getLayerPID(ln) + ID::glide, "glide", false));
         lg->addChild(std::make_unique<ssp::BaseChoiceParameter>(getLayerPID(ln) + ID::snake, "snake", snakeTypes,0));
@@ -91,7 +97,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
         lg->addChild(std::make_unique<ssp::BaseBoolParameter>(getLayerPID(ln) + ID::quant, "quant", true));
 
 
-        for (unsigned n = 0; n < 16; n++) {
+        for (unsigned n = 0; n < MAX_STEPS; n++) {
             lg->addChild(std::make_unique<ssp::BaseFloatParameter>(getLayerStepPID(ln, n) + ID::cv, "CV", -5.0f, 5.0f, 0.0f));
             lg->addChild(std::make_unique<ssp::BaseBoolParameter>(getLayerStepPID(ln, n) + ID::access, "access", true));
             lg->addChild(std::make_unique<ssp::BaseBoolParameter>(getLayerStepPID(ln, n) + ID::gate, "gate", false));
@@ -144,6 +150,8 @@ AudioProcessor *JUCE_CALLTYPE createPluginFilter() {
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
 
+    //TODO: where to put fun_ops?
+    // add as parameters? (to each later?)
     struct fun_op {
         struct _op {
             bool sleep_ = false; // on = stay  on pos, but dont fire gate
@@ -173,12 +181,12 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
     for (int smp = 0; smp < sz; smp++) {
         bool xTrig = false, yTrig = false;
-        bool xClk = buffer.getSample(I_X_CLK, smp);
-        bool yClk = buffer.getSample(I_Y_CLK, smp);
+        float xClk = buffer.getSample(I_X_CLK, smp);
+        float yClk = buffer.getSample(I_Y_CLK, smp);
 
-        xTrig = xClk && (x_.lastClk_ != xClk);
+        xTrig = xClk > clockLevel && (x_.lastClk_ <= clockLevel );
         x_.lastClk_ = xClk;
-        yTrig = yClk && (y_.lastClk_ != yClk);
+        yTrig = yClk > clockLevel  && (y_.lastClk_ <= clockLevel );
         y_.lastClk_ = yClk;
 
         if (xTrig) {
@@ -194,10 +202,9 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
         //TODO : glide
         buffer.setSample(O_X_CV, smp, x_.cv_);
-        buffer.setSample(O_X_GATE, smp, fun_[0].op_.trig_ ? x_.gateTime_ > 0 : x_.gate_ && xClk);
+        buffer.setSample(O_X_GATE, smp, fun_[0].op_.trig_ ? x_.gateTime_ > 0 : x_.gate_ && (xClk > clockLevel ));
         buffer.setSample(O_Y_CV, smp, y_.cv_);
-        buffer.setSample(O_Y_GATE, smp, y_.gateTime_ > 0);
-        buffer.setSample(O_Y_GATE, smp, fun_[0].op_.trig_ ? y_.gateTime_ > 0 : y_.gate_ && yClk);
+        buffer.setSample(O_Y_GATE, smp, fun_[0].op_.trig_ ? y_.gateTime_ > 0 : y_.gate_ && (yClk > clockLevel));
         buffer.setSample(O_C_CV, smp, c_.cv_);
         buffer.setSample(O_C_GATE, smp, fun_[0].op_.trig_ ? c_.gateTime_ > 0 : c_.gate_);
 
@@ -218,29 +225,65 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 // step access - next pos
 // step gate - quant?
 
-//TODO: parameter?
-static constexpr unsigned gateTime = 64; // samples
 
 
 void PluginProcessor::advanceLayer(LayerData &ld, Layer &params) {
-
     // todo x/y/z mod and cv?
-    unsigned npos = findNextStep(ld.pos_, params);
-    ld.pos_ = npos;
-    ld.cv_ = params.steps_[ld.pos_]->cv.getValue();
+    // sleep - will allow to reach non-access steps, but CV will not be updated
+    // i.e. gates work, but not cv
+
+    unsigned pos = findNextStep(ld.pos_, params);
+//    bool sleep = params.fun.sleep;
+    bool sleep = false;
+    ld.pos_ = pos;
+    jassert(ld.pos_ < MAX_STEPS);
+
+    if(params.steps_[pos]->access.getValue()>0.0f) {
+        ld.cv_ = params.steps_[ld.pos_]->cv.getValue();
+    }
     ld.gate_ = params.steps_[ld.pos_]->gate.getValue() > 0.5f;
     ld.gateTime_ = (ld.gate_ ? gateTime : 0);
 }
 
 void PluginProcessor::advanceCartLayer(LayerData &ld, Layer &params, unsigned xPos, unsigned yPos) {
-    // cart layer does not have its own pos, instead it is inferred x/y
-    // this means we can ignore snake/access etc
-    unsigned x = xPos % 4;
-    unsigned y = yPos / 4;
-    ld.pos_ = (y * 4) + x;
-    ld.cv_ = params.steps_[ld.pos_]->cv.getValue();
-    ld.gate_ = params.steps_[ld.pos_]->gate.getValue() > 0.5f;
-    ld.gateTime_ = (ld.gate_ ? gateTime : 0);
+    // TODO: verify C movement with RENE
+    unsigned xX = xPos % 4;
+    unsigned yY = yPos / 4;
+    // simply track x/y position
+    //    unsigned pos = (yY * 4) + xX;
+
+    // use change of x/y as a clock & direction;
+    unsigned cPos = ld.pos_;
+    int xC = cPos % 4;
+    int yC = cPos / 4;
+    int dX = (xX > xC ) - (xX < xC);
+    int dY = (yY > yC ) - (yY < yC);
+
+    int pos = ld.pos_;
+    int tryCount=4;
+    while(tryCount>0) {
+        xC = (xC + dX + 4) % 4;
+        yC = (yC + dY + 4) % 4;
+        pos = (yC * 4) + xC;
+
+
+        // TODO: sleep on C ?
+        if(params.steps_[pos]->access.getValue()>0.0f) {
+            tryCount = 0;
+            break;
+        }
+        tryCount--;
+    }
+
+    jassert(pos < MAX_STEPS);
+
+    if(params.steps_[pos]->access.getValue()>0.0f) {
+        ld.pos_ = pos;
+        ld.cv_ = params.steps_[ld.pos_]->cv.getValue();
+        ld.gate_ = params.steps_[ld.pos_]->gate.getValue() > 0.5f;
+        ld.gateTime_ = (ld.gate_ ? gateTime : 0);
+    }
+    // else, not allow at this position, so stay put.
 }
 
 
@@ -250,25 +293,23 @@ unsigned PluginProcessor::findNextStep(unsigned cpos, Layer &params) {
     if (snake >= snakes_.size()) snake = 0;
 
     unsigned pos = cpos;
-    bool found = false;
 
-    //TODO is this the best approach?
-    //another possibility is to send in a 'mask' to snake algo
     unsigned tryCount = 16;
-
-    while (!found && tryCount > 0) {
+    while (tryCount > 0) {
         pos = snakes_.findNext(snake,pos);
+//        jassert(pos < MAX_STEPS);
+
+        //TODO : implement funs?
+//        bool sleep = params.fun.sleep;
+        bool sleep = false;
 
         bool access = params.steps_[pos]->access.getValue() > 0.5f;
-        found = access;
-        if (!found) {
-            tryCount--;
+        if(sleep || access) {
+            return pos;
         }
+        tryCount--;
     }
-
-    if (tryCount == 0) pos = cpos;
-
-    return pos;
+    return cpos;
 }
 
 Percussa::SSP::PluginDescriptor* PluginProcessor::createDescriptor() {

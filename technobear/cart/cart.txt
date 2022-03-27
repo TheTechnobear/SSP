@@ -45,13 +45,22 @@ Percussa SSP - https://www.percussa.com/
 ## milestones/stages
 
 - get fundamental sequencing with generic params
-really basic ui, with simple seq functionality incl, diff snakes/ x/y/c, access
+really basic ui, with simple seq functionality incl, diff snakes/ x/y/c, access (done?)
+
+- basic UI
+needs to shows X / Y / C position
+... perhaps might be good to reflect CV/gate values?
+
+
 
 
 - start consider final ui
 how would it extend to fuller functionality
 more advanced sequencing functionality
 decide scope of v1, and what can slip
+
+
+
 
 - quant/glide?
 quantizer - free quantizer
@@ -70,7 +79,7 @@ look to see whats missing, and what we might want
 
 fun.op
 - none?
-- sleep - access skip, or stay but dont fire gate
+- sleep - allow movement, but dont change CV on non-accessible
 - trig - off = trig length = clk length, on= short trig
 - scan - scans all knobs, copy to current channel
 
@@ -136,6 +145,8 @@ changes find next pos
 ... is this always skip?
 I think there is a function to just suppress gate
 and so keep time? double check!
+TODO : looks like SLEEP , says ACCESS works for gate, but CV is not updated
+
 
 ## step gate
 do we need gate time?

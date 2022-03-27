@@ -63,6 +63,22 @@ void PluginEditor::drawView(Graphics &g) {
 void PluginEditor::resized() {
 }
 
+
+void PluginEditor::onUpButton(bool v) {
+    base_type::onUpButton(v);
+    if(!v) {
+        chgButtonPage(-1);
+    }
+}
+
+void PluginEditor::onDownButton(bool v) {
+    base_type::onDownButton(v);
+    if(!v) {
+        chgButtonPage(1);
+    }
+}
+
+
 static constexpr unsigned MAX_TONICS = 12;
 
 static const char tonics[MAX_TONICS][3] = {

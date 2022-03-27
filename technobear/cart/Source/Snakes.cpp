@@ -8,8 +8,9 @@ public:
 
         // nxtPattern - for a cpos find next
         for (int i = 0; i < NSTEPS; i++) {
-            unsigned ni=(NSTEPS - 1 + i )  % NSTEPS;
-            nxtPattern_[ni] = pattern_[i];
+            unsigned ni = (NSTEPS - 1 + i) % NSTEPS;
+            unsigned ns = pattern_[i];
+            nxtPattern_[ni] = ns;
         }
     }
 
@@ -46,7 +47,7 @@ Snakes::Snakes() {
             0,  1,  2,  3,
             4,  5,  6,  7,
             8,  9,  10, 11,
-            12, 14, 14, 15
+            12, 13, 14, 15
         },
 
         { // pattern 2

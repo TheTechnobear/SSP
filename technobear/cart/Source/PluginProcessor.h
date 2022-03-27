@@ -124,6 +124,7 @@ public:
 
 
     static constexpr unsigned MAX_LAYERS = PluginParams::MAX_LAYER;
+    static constexpr unsigned MAX_STEPS = 16;
 
 
     static BusesProperties getBusesProperties() {
@@ -150,7 +151,7 @@ private:
     static const String getOutputBusName(int channelIndex);
 
     struct LayerData {
-        bool lastClk_ = false;
+        float lastClk_ = 0;
         unsigned gateTime_ = 0; // smps of gate left
         float cv_ = 0.0f;
         bool gate_ = false;

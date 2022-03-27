@@ -16,6 +16,8 @@ protected:
     void drawView(Graphics &) override;
     void resized() override;
 
+    void onUpButton(bool v) override;
+    void onDownButton(bool v) override;
 private:
 
     PluginProcessor &processor_;
