@@ -96,6 +96,12 @@ protected:
     virtual void customFromXml(juce::XmlElement *);
     virtual void customToXml(juce::XmlElement *);
 
+
+#if __APPLE__
+    virtual void testFromXml(juce::XmlElement *);
+    virtual void testToXml(juce::XmlElement *);
+#endif
+
     void addBaseParameters(AudioProcessorValueTreeState::ParameterLayout &);
 
 
