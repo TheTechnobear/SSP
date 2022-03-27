@@ -30,20 +30,27 @@ EditorHost::EditorHost(BaseProcessor *p, BaseEditor *e) :
     editor_->setVisible(!sysActive_);
     system_->setVisible(sysActive_);
 
+    int uih=0;
+#ifdef __APPLE__
+    uih=220;
+    sspui_ = new SSPUI(processor_,this);
+    sspui_->setBounds(0,480,1600,220);
+    addChildComponent(sspui_);
+    sspui_->setVisible(true);
+#endif
 
-    setSize(1600, 480);
+    setSize(1600, 480+uih);
+
 
     addAndMakeVisible(globalBtn_);
     addAndMakeVisible(networkBtn_);
     addAndMakeVisible(plugInBtn_);
     addAndMakeVisible(recBtn_);
 
-
     setMenuBounds(globalBtn_, 0);
     setMenuBounds(networkBtn_, 1);
     setMenuBounds(plugInBtn_, 2);
     setMenuBounds(recBtn_, 3);
-
 
     editor_->setBounds(0, 0, 1600, 480);
     system_->setBounds(0, 0, 1600, 480);
@@ -52,6 +59,7 @@ EditorHost::EditorHost(BaseProcessor *p, BaseEditor *e) :
 EditorHost::~EditorHost() {
     delete editor_;
     delete system_;
+    delete sspui_;
 }
 
 
