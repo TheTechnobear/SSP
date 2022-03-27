@@ -125,6 +125,36 @@ void BaseProcessor::midiToXml(juce::XmlElement *xml) {
     }
 }
 
+#if __APPLE__
+
+static const char *TEST_TAG_INPUT = "INPUT_";
+static const char *TEST_TAG_OUTPUT = "OUTPUT_";
+
+
+void BaseProcessor::testFromXml(juce::XmlElement *xml) {
+    for (unsigned i = 0; i < numIn; i++) {
+        bool v = xml->getBoolAttribute(std::string(TEST_TAG_INPUT) + std::to_string(i), false);
+        onInputChanged(i, v);
+    }
+    for (unsigned i = 0; i < numOut; i++) {
+        bool v = xml->getBoolAttribute(std::string(TEST_TAG_OUTPUT) + std::to_string(i), false);
+        onOutputChanged(i, v);
+    }
+}
+
+
+void BaseProcessor::testToXml(juce::XmlElement *xml) {
+
+    for (unsigned i = 0; i < numIn; i++) {
+        xml->setAttribute((std::string(TEST_TAG_INPUT) + std::to_string(i)).c_str(), (int) isInputEnabled(i));
+    }
+    for (unsigned i = 0; i < numOut; i++) {
+        xml->setAttribute((std::string(TEST_TAG_OUTPUT) + std::to_string(i)).c_str(), (int) isOutputEnabled(i));
+    }
+}
+#endif
+
+
 
 void BaseProcessor::customFromXml(juce::XmlElement *xml) {
 
@@ -136,6 +166,7 @@ void BaseProcessor::customToXml(juce::XmlElement *xml) {
 
 static const char *VST_XML_TAG = "VST";
 static const char *MIDI_XML_TAG = "MIDI";
+static const char *TEST_XML_TAG = "TEST";
 static const char *CUSTOM_XML_TAG = "CUSTOM";
 
 
@@ -161,6 +192,11 @@ void BaseProcessor::getStateInformation(MemoryBlock &destData) {
 
     midiToXml(xmlMidi.get());
     customToXml(xmlCustom.get());
+#ifdef __APPLE__
+    std::unique_ptr<juce::XmlElement> xmlTest = std::make_unique<XmlElement>(TEST_XML_TAG);
+    testToXml(xmlTest.get());
+    if (xmlTest) xmlVst->addChildElement(xmlTest.release());
+#endif
 
     if (xmlState) xmlVst->addChildElement(cleanStateXml.release());
     if (xmlMidi) xmlVst->addChildElement(xmlMidi.release());
@@ -176,6 +212,10 @@ void BaseProcessor::setStateInformation(const void *data, int sizeInBytes) {
             // backwards compat
             apvts.replaceState(juce::ValueTree::fromXml(*xml));
         } else if (xml->hasTagName(VST_XML_TAG)) {
+#ifdef __APPLE__
+            auto xmlTest = xml->getChildByName(TEST_XML_TAG);
+            if (xmlTest != nullptr) testFromXml(xmlTest);
+#endif
             auto xmlMidi = xml->getChildByName(MIDI_XML_TAG);
             if (xmlMidi != nullptr) midiFromXml(xmlMidi);
 

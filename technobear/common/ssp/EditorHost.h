@@ -11,6 +11,7 @@ using namespace juce;
 #include "BaseEditor.h"
 #include "SystemEditor.h"
 #include "BaseProcessor.h"
+#include "SSPUI.h"
 
 namespace ssp {
 
@@ -28,6 +29,7 @@ public:
     void resized() override {
         system_->resized();
         editor_->resized();
+        if(sspui_) sspui_->resized();
     }
 
     // SSPActions
@@ -60,6 +62,9 @@ private:
     BaseProcessor *processor_;
     BaseEditor *editor_;
     SystemEditor *system_;
+
+    SSPUI *sspui_= nullptr;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EditorHost)
 };
 
