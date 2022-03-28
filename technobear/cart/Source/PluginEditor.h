@@ -22,7 +22,7 @@ private:
 
     PluginProcessor &processor_;
 
-    static constexpr unsigned L_CLRS = 4;
+    static constexpr unsigned L_CLRS = 3;
 
     juce::Colour clrs_[L_CLRS];
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)

@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <algorithm>
+#include "Quantizer.h"
 
 
 namespace ID {
@@ -22,15 +23,19 @@ PARAMETER_ID (y)
 PARAMETER_ID (c)
 
 // layer params
-PARAMETER_ID (glide)
 PARAMETER_ID (snake)
-PARAMETER_ID (fun)
-PARAMETER_ID (quant)
+PARAMETER_ID (scale)
+PARAMETER_ID (root)
+PARAMETER_ID (fun_op_trig)
+PARAMETER_ID (fun_op_sleep)
+PARAMETER_ID (fun_mod_mode)
+PARAMETER_ID (fun_cv_mode)
 
 // layer step params
 PARAMETER_ID (cv)
 PARAMETER_ID (access)
 PARAMETER_ID (gate)
+PARAMETER_ID (glide)
 
 
 #undef PARAMETER_ID
@@ -88,6 +93,21 @@ public:
         O_MAX
     };
 
+    enum {
+        MOD_MODE_RESET,
+        MOD_MODE_CLK,
+        MOD_MODE_RUNSTP,
+        MOD_MODE_DIR,
+        MOD_MODE_MAX
+    };
+
+    enum {
+        CV_MODE_ADD,
+        CV_MODE_LOC,
+        CV_MODE_SNAKE,
+        CV_MODE_SH,
+        CV_MODE_MAX
+    };
 
     struct LayerStep {
         using Parameter = juce::RangedAudioParameter;
@@ -95,6 +115,7 @@ public:
         Parameter &cv;
         Parameter &access;
         Parameter &gate;
+        Parameter &glide;
     };
 
 
@@ -102,10 +123,13 @@ public:
         using Parameter = juce::RangedAudioParameter;
         explicit Layer(AudioProcessorValueTreeState &apvt, unsigned ln);
         std::vector<std::unique_ptr<LayerStep>> steps_;
-        Parameter &glide;
         Parameter &snake;
-        Parameter &fun;
-        Parameter &quant;
+        Parameter &scale;
+        Parameter &root;
+        Parameter &fun_op_trig;
+        Parameter &fun_op_sleep;
+        Parameter &fun_mod_mode;
+        Parameter &fun_cv_mode;
     };
 
     struct PluginParams {
@@ -151,22 +175,24 @@ private:
     static const String getOutputBusName(int channelIndex);
 
     struct LayerData {
-        float lastClk_ = 0;
-        unsigned gateTime_ = 0; // smps of gate left
+        unsigned pos_ = 0;
         float cv_ = 0.0f;
         bool gate_ = false;
-        unsigned pos_ = 0;
+        float glide_ = 0.0f;
+
+        float lastClk_ = 0;
+        float lastCV_ = 0;
+        unsigned gateTime_ = 0; // smps of gate left
     } x_, y_, c_;
 
-    unsigned findNextStep(unsigned cpos, Layer &params);
-    void advanceLayer(LayerData &ld, Layer &params);
-    void advanceCartLayer(LayerData &ld, Layer &params, unsigned xPos, unsigned yPos);
+    unsigned findNextStep(unsigned cpos, Layer &params, bool sleep);
+    void advanceLayer(LayerData &ld, Layer &params, bool sleep);
+    void advanceCartLayer(LayerData &ld, Layer &params, bool xTrig, bool yTrig);
 
     static Snakes snakes_;
+    Quantizer quantizer_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
-
-
 };
 
 

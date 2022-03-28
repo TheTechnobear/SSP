@@ -10,18 +10,18 @@ using bcontrol_type = ssp::ParamButton;
 
 static constexpr unsigned MAX_LAYERS = PluginProcessor::MAX_LAYERS;
 //static constexpr unsigned MAX_VIEW = MAX_LAYERS + 1;
-static constexpr unsigned MAX_VIEW = MAX_LAYERS;
+static constexpr unsigned MAX_VIEW = MAX_LAYERS * 3;
 
 
 PluginEditor::PluginEditor(PluginProcessor &p)
     : base_type(&p, MAX_VIEW),
       processor_(p),
-      clrs_{Colours::red, Colours::green, Colours::orange, Colours::cyan} {
+      clrs_{Colours::red, Colours::green, Colours::orange} {
 
     unsigned view = 0;
 
     for (unsigned layer = 0; layer < MAX_LAYERS; layer++) {
-        auto &l = processor_.params_.layers_[view];
+        auto &l = processor_.params_.layers_[view % MAX_LAYERS];
         for (unsigned i = 0; i < 16 / 4; i++) {
             int pi = i * 4;
             addParamPage(
@@ -48,9 +48,67 @@ PluginEditor::PluginEditor(PluginProcessor &p)
         view++;
     }
 
+    // TODO  : temp !
+    for (unsigned layer = 0; layer < MAX_LAYERS; layer++) {
+        auto &l = processor_.params_.layers_[view % MAX_LAYERS];
+        for (unsigned i = 0; i < 16 / 4; i++) {
+            int pi = i * 4;
+            // duplication we dont need this ;)
+            addParamPage(
+                std::make_shared<pcontrol_type>(l->steps_[pi + 0]->cv, 0.25),
+                std::make_shared<pcontrol_type>(l->steps_[pi + 1]->cv, 0.25),
+                std::make_shared<pcontrol_type>(l->steps_[pi + 2]->cv, 0.25),
+                std::make_shared<pcontrol_type>(l->steps_[pi + 3]->cv, 0.25),
+                view,
+                clrs_[view % L_CLRS]
+            );
 
-    // TODO : add layer parameters (snake, glide, fun, quant)
+            addButtonPage(
+                std::make_shared<bcontrol_type>(l->steps_[pi + 0]->glide, 24, clrs_[view]),
+                std::make_shared<bcontrol_type>(l->steps_[pi + 1]->glide, 24, clrs_[view]),
+                std::make_shared<bcontrol_type>(l->steps_[pi + 2]->glide, 24, clrs_[view]),
+                std::make_shared<bcontrol_type>(l->steps_[pi + 3]->glide, 24, clrs_[view]),
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr,
+                view
+            );
+        }
+        view++;
+    }
 
+    for (unsigned layer = 0; layer < MAX_LAYERS; layer++) {
+        auto &l = processor_.params_.layers_[view % MAX_LAYERS];
+        addParamPage(
+            std::make_shared<pcontrol_type>(l->snake, 1),
+            std::make_shared<pcontrol_type>(l->scale, 1),
+            std::make_shared<pcontrol_type>(l->root, 1),
+            nullptr,
+            view,
+            clrs_[view % L_CLRS]
+        );
+        addParamPage(
+            std::make_shared<pcontrol_type>(l->fun_op_trig, 1),
+            std::make_shared<pcontrol_type>(l->fun_op_sleep, 1),
+            std::make_shared<pcontrol_type>(l->fun_mod_mode, 1),
+            std::make_shared<pcontrol_type>(l->fun_cv_mode, 1),
+            view,
+            clrs_[view % L_CLRS]
+        );
+        addButtonPage(
+            nullptr,
+            nullptr,
+            nullptr,
+            nullptr,
+            nullptr,
+            nullptr,
+            nullptr,
+            nullptr,
+            view
+        );
+        view++;
+    }
 
     setSize(1600, 480);
 }
@@ -66,47 +124,47 @@ void PluginEditor::resized() {
 
 void PluginEditor::onUpButton(bool v) {
     base_type::onUpButton(v);
-    if(!v) {
+    if (!v) {
         chgButtonPage(-1);
     }
 }
 
 void PluginEditor::onDownButton(bool v) {
     base_type::onDownButton(v);
-    if(!v) {
+    if (!v) {
         chgButtonPage(1);
     }
 }
 
+//
+//static constexpr unsigned MAX_TONICS = 12;
+//
+//static const char tonics[MAX_TONICS][3] = {
+//    "C ",
+//    "C#",
+//    "D ",
+//    "D#",
+//    "E ",
+//    "F ",
+//    "F#",
+//    "G ",
+//    "G#",
+//    "A ",
+//    "A#",
+//    "B ",
+//};
 
-static constexpr unsigned MAX_TONICS = 12;
-
-static const char tonics[MAX_TONICS][3] = {
-    "C ",
-    "C#",
-    "D ",
-    "D#",
-    "E ",
-    "F ",
-    "F#",
-    "G ",
-    "G#",
-    "A ",
-    "A#",
-    "B ",
-};
-
-String getNoteValue(float f) {
-    float voct = cv2Pitch(f) + 60.0f; // -5v = 0
-    voct += 0.005f; // so we round up fractions of cent
-    int oct = voct / 12;
-    unsigned note = unsigned(voct) % MAX_TONICS;
-    int cents = ((voct - floorf(voct)) * 100.0f);
-    if (cents > 50) {
-        cents = 50 - cents;
-        note = (note + 1) % MAX_TONICS;
-        oct += (note == 0);
-    }
-    String cts = String::formatted("%+02d", cents);
-    return String(tonics[note] + String(oct - (note < 3))) + " " + cts;
-}
+//String getNoteValue(float f) {
+//    float voct = cv2Pitch(f) + 60.0f; // -5v = 0
+//    voct += 0.005f; // so we round up fractions of cent
+//    int oct = voct / 12;
+//    unsigned note = unsigned(voct) % MAX_TONICS;
+//    int cents = ((voct - floorf(voct)) * 100.0f);
+//    if (cents > 50) {
+//        cents = 50 - cents;
+//        note = (note + 1) % MAX_TONICS;
+//        oct += (note == 0);
+//    }
+//    String cts = String::formatted("%+02d", cents);
+//    return String(tonics[note] + String(oct - (note < 3))) + " " + cts;
+//}

@@ -83,6 +83,7 @@ target_sources(CART
         Source/PluginEditor.cpp
         Source/PluginProcessor.cpp
         Source/Snakes.cpp
+        Source/Quantizer.cpp
         ${COMMON_SRC}
         )
 
