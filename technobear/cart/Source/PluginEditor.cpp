@@ -9,19 +9,22 @@ using pcontrol_type = ssp::BarParamControl;
 using bcontrol_type = ssp::ParamButton;
 
 static constexpr unsigned MAX_LAYERS = PluginProcessor::MAX_LAYERS;
-//static constexpr unsigned MAX_VIEW = MAX_LAYERS + 1;
-static constexpr unsigned MAX_VIEW = MAX_LAYERS * 3;
+static constexpr unsigned MAX_VIEW = MAX_LAYERS * 2;
+static const unsigned MAX_PARAM_LINES = 4;
 
 
 PluginEditor::PluginEditor(PluginProcessor &p)
     : base_type(&p, MAX_VIEW),
       processor_(p),
-      clrs_{Colours::red, Colours::green, Colours::orange} {
+      clrs_{Colours::red, Colours::green, Colours::orange},
+      currentLayer_(0),
+      cvButtonMode_(B_GATEACCESS), encoderMode_(E_CV) {
 
-    unsigned view = 0;
+    unsigned encView = 0;
 
     for (unsigned layer = 0; layer < MAX_LAYERS; layer++) {
-        auto &l = processor_.params_.layers_[view % MAX_LAYERS];
+        auto &l = processor_.params_.layers_[layer % MAX_LAYERS];
+        Colour clr = clrs_[layer % MAX_LAYERS];
         for (unsigned i = 0; i < 16 / 4; i++) {
             int pi = i * 4;
             addParamPage(
@@ -29,85 +32,60 @@ PluginEditor::PluginEditor(PluginProcessor &p)
                 std::make_shared<pcontrol_type>(l->steps_[pi + 1]->cv, 0.25),
                 std::make_shared<pcontrol_type>(l->steps_[pi + 2]->cv, 0.25),
                 std::make_shared<pcontrol_type>(l->steps_[pi + 3]->cv, 0.25),
-                view,
-                clrs_[view % L_CLRS]
+                encView,
+                clr
             );
 
             addButtonPage(
-                std::make_shared<bcontrol_type>(l->steps_[pi + 0]->gate, 24, clrs_[view]),
-                std::make_shared<bcontrol_type>(l->steps_[pi + 1]->gate, 24, clrs_[view]),
-                std::make_shared<bcontrol_type>(l->steps_[pi + 2]->gate, 24, clrs_[view]),
-                std::make_shared<bcontrol_type>(l->steps_[pi + 3]->gate, 24, clrs_[view]),
-                std::make_shared<bcontrol_type>(l->steps_[pi + 0]->access, 24, clrs_[view]),
-                std::make_shared<bcontrol_type>(l->steps_[pi + 1]->access, 24, clrs_[view]),
-                std::make_shared<bcontrol_type>(l->steps_[pi + 2]->access, 24, clrs_[view]),
-                std::make_shared<bcontrol_type>(l->steps_[pi + 3]->access, 24, clrs_[view]),
-                view
+                std::make_shared<bcontrol_type>(l->steps_[pi + 0]->gate, 24, clr),
+                std::make_shared<bcontrol_type>(l->steps_[pi + 1]->gate, 24, clr),
+                std::make_shared<bcontrol_type>(l->steps_[pi + 2]->gate, 24, clr),
+                std::make_shared<bcontrol_type>(l->steps_[pi + 3]->gate, 24, clr),
+                std::make_shared<bcontrol_type>(l->steps_[pi + 0]->access, 24, clr),
+                std::make_shared<bcontrol_type>(l->steps_[pi + 1]->access, 24, clr),
+                std::make_shared<bcontrol_type>(l->steps_[pi + 2]->access, 24, clr),
+                std::make_shared<bcontrol_type>(l->steps_[pi + 3]->access, 24, clr),
+                encView
             );
         }
-        view++;
-    }
-
-    // TODO  : temp !
-    for (unsigned layer = 0; layer < MAX_LAYERS; layer++) {
-        auto &l = processor_.params_.layers_[view % MAX_LAYERS];
         for (unsigned i = 0; i < 16 / 4; i++) {
             int pi = i * 4;
-            // duplication we dont need this ;)
-            addParamPage(
-                std::make_shared<pcontrol_type>(l->steps_[pi + 0]->cv, 0.25),
-                std::make_shared<pcontrol_type>(l->steps_[pi + 1]->cv, 0.25),
-                std::make_shared<pcontrol_type>(l->steps_[pi + 2]->cv, 0.25),
-                std::make_shared<pcontrol_type>(l->steps_[pi + 3]->cv, 0.25),
-                view,
-                clrs_[view % L_CLRS]
-            );
-
             addButtonPage(
-                std::make_shared<bcontrol_type>(l->steps_[pi + 0]->glide, 24, clrs_[view]),
-                std::make_shared<bcontrol_type>(l->steps_[pi + 1]->glide, 24, clrs_[view]),
-                std::make_shared<bcontrol_type>(l->steps_[pi + 2]->glide, 24, clrs_[view]),
-                std::make_shared<bcontrol_type>(l->steps_[pi + 3]->glide, 24, clrs_[view]),
+                std::make_shared<bcontrol_type>(l->steps_[pi + 0]->glide, 24, clr),
+                std::make_shared<bcontrol_type>(l->steps_[pi + 1]->glide, 24, clr),
+                std::make_shared<bcontrol_type>(l->steps_[pi + 2]->glide, 24, clr),
+                std::make_shared<bcontrol_type>(l->steps_[pi + 3]->glide, 24, clr),
                 nullptr,
                 nullptr,
                 nullptr,
                 nullptr,
-                view
+                encView
             );
         }
-        view++;
+        encView++;
     }
 
+
     for (unsigned layer = 0; layer < MAX_LAYERS; layer++) {
-        auto &l = processor_.params_.layers_[view % MAX_LAYERS];
+        auto &l = processor_.params_.layers_[layer % MAX_LAYERS];
+        Colour clr = clrs_[layer % MAX_LAYERS];
         addParamPage(
             std::make_shared<pcontrol_type>(l->snake, 1),
             std::make_shared<pcontrol_type>(l->scale, 1),
             std::make_shared<pcontrol_type>(l->root, 1),
             nullptr,
-            view,
-            clrs_[view % L_CLRS]
+            encView,
+            clr
         );
         addParamPage(
             std::make_shared<pcontrol_type>(l->fun_op_trig, 1),
             std::make_shared<pcontrol_type>(l->fun_op_sleep, 1),
             std::make_shared<pcontrol_type>(l->fun_mod_mode, 1),
             std::make_shared<pcontrol_type>(l->fun_cv_mode, 1),
-            view,
-            clrs_[view % L_CLRS]
+            encView,
+            clr
         );
-        addButtonPage(
-            nullptr,
-            nullptr,
-            nullptr,
-            nullptr,
-            nullptr,
-            nullptr,
-            nullptr,
-            nullptr,
-            view
-        );
-        view++;
+        encView++;
     }
 
     setSize(1600, 480);
@@ -121,18 +99,80 @@ void PluginEditor::drawView(Graphics &g) {
 void PluginEditor::resized() {
 }
 
+void PluginEditor::onLeftShiftButton(bool v) {
+    leftShiftBtn_.value(v);
+    if (!v) {
+        switch (encoderMode_) {
+            case E_CV : {
+                switch (cvButtonMode_) {
+                    case B_GATEACCESS :
+                        cvButtonMode_ = B_GLIDE;
+                        setButtonPage(buttonPage_ + MAX_PARAM_LINES);
+                        break;
+                    case B_GLIDE :
+                        cvButtonMode_ = B_GATEACCESS;
+                        setButtonPage(buttonPage_ - MAX_PARAM_LINES);
+                        break;
+                    default:
+                        break;
+                } // but mode
+                break;
+            }
+            default:
+                break;
+        } // enc mode
+    }
+}
+
+void PluginEditor::onRightShiftButton(bool v) {
+    rightShiftBtn_.value(v);
+    if (!v) {
+        encoderMode_ = (EncoderMode) ((encoderMode_ + 1) % MAX_ENCODER_MODE);
+        setView(currentLayer_ + (encoderMode_ == E_CV ? 0 : MAX_LAYERS));
+    }
+}
+
 
 void PluginEditor::onUpButton(bool v) {
-    base_type::onUpButton(v);
+    upBtn_.value(v);
     if (!v) {
-        chgButtonPage(-1);
+        chgParamPage(-1);
+        unsigned nextP = buttonPage_;
+        unsigned minP = encoderMode_ == E_CV && cvButtonMode_ == B_GLIDE ? MAX_PARAM_LINES : 0;
+        if (nextP > minP) nextP--;
+        if (nextP != buttonPage_) setButtonPage(nextP);
     }
 }
 
 void PluginEditor::onDownButton(bool v) {
-    base_type::onDownButton(v);
+    downBtn_.value(v);
     if (!v) {
-        chgButtonPage(1);
+        chgParamPage(1);
+        unsigned nextP = buttonPage_;
+        unsigned maxP = encoderMode_ == E_CV && cvButtonMode_ == B_GATEACCESS ?
+                        MAX_PARAM_LINES : (views_[view_].buttonPages_.size());
+        if (nextP < (maxP - 1)) nextP++;
+        if (nextP != buttonPage_) setButtonPage(nextP);
+    }
+}
+
+void PluginEditor::onLeftButton(bool v) {
+    leftBtn_.value(v);
+    if (!v) {
+        if (currentLayer_ > 0) {
+            currentLayer_--;
+            setView(currentLayer_ + (encoderMode_ == E_CV ? 0 : MAX_LAYERS));
+        }
+    }
+}
+
+void PluginEditor::onRightButton(bool v) {
+    rightBtn_.value(v);
+    if (!v) {
+        if (currentLayer_ < (MAX_LAYERS - 1)) {
+            currentLayer_++;
+            setView(currentLayer_ + (encoderMode_ == E_CV ? 0 : MAX_LAYERS));
+        }
     }
 }
 
