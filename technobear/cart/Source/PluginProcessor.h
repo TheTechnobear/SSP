@@ -150,7 +150,6 @@ public:
     static constexpr unsigned MAX_LAYERS = PluginParams::MAX_LAYER;
     static constexpr unsigned MAX_STEPS = 16;
 
-
     static BusesProperties getBusesProperties() {
         BusesProperties props;
         for (auto i = 0; i < I_MAX; i++) {
@@ -161,6 +160,11 @@ public:
         }
         return props;
     }
+
+    void getActiveData(unsigned &xp, unsigned &yp, unsigned &cp,
+                       float &xCv, float &yCv, float &cCv,
+                       bool &xGate, bool &yGate, bool &cGate) const;
+
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();

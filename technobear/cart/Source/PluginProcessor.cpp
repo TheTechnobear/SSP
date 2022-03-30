@@ -273,7 +273,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 }
 
 void PluginProcessor::advanceLayer(LayerData &ld, Layer &params, bool sleep) {
-    unsigned pos = findNextStep(ld.pos_, params,sleep);
+    unsigned pos = findNextStep(ld.pos_, params, sleep);
     ld.pos_ = pos;
     jassert(ld.pos_ < MAX_STEPS);
 
@@ -281,7 +281,7 @@ void PluginProcessor::advanceLayer(LayerData &ld, Layer &params, bool sleep) {
     ld.glide_ = params.steps_[ld.pos_]->glide.getValue() > 0.5f;
     ld.gateTime_ = (ld.gate_ ? gateTime : 0);
     if (sleep || params.steps_[pos]->access.getValue() > 0.0f) {
-        ld.cv_ = params.steps_[ld.pos_]->cv.getValue();
+        ld.cv_ = (params.steps_[ld.pos_]->cv.getValue() * 2.0f) - 1.0f;
         if (!ld.glide_) {
             ld.lastCV_ = ld.cv_;
         }
@@ -294,7 +294,7 @@ void PluginProcessor::advanceCartLayer(LayerData &ld, Layer &params, bool xTrig,
     int yC = cPos / 4;
 
     unsigned pos = cPos;
-    unsigned tryCount=4;
+    unsigned tryCount = 4;
     while (tryCount > 0) {
         xC = (xC + (xTrig ? 1 : 0)) % 4;
         yC = (yC + (yTrig ? 1 : 0)) % 4;
@@ -310,7 +310,7 @@ void PluginProcessor::advanceCartLayer(LayerData &ld, Layer &params, bool xTrig,
 
     if (params.steps_[pos]->access.getValue() > 0.0f) {
         ld.pos_ = pos;
-        ld.cv_ = params.steps_[ld.pos_]->cv.getValue();
+        ld.cv_ = (params.steps_[ld.pos_]->cv.getValue() * 2.0f) - 1.0f;
         ld.gate_ = params.steps_[ld.pos_]->gate.getValue() > 0.5f;
         ld.gateTime_ = (ld.gate_ ? gateTime : 0);
     }
@@ -338,6 +338,22 @@ unsigned PluginProcessor::findNextStep(unsigned cpos, Layer &params, bool sleep)
     }
     return cpos;
 }
+
+
+void PluginProcessor::getActiveData(unsigned &xp, unsigned &yp, unsigned &cp,
+                                    float &xCv, float &yCv, float &cCv,
+                                    bool &xGate, bool &yGate, bool &cGate) const {
+    xp = x_.pos_;
+    yp = y_.pos_;
+    cp = c_.pos_;
+    xCv = x_.cv_;
+    yCv = y_.cv_;
+    cCv = c_.cv_;
+    xGate = x_.gate_;
+    yGate = y_.gate_;
+    cGate = c_.gate_;
+}
+
 
 Percussa::SSP::PluginDescriptor *PluginProcessor::createDescriptor() {
     auto desc = new Percussa::SSP::PluginDescriptor;

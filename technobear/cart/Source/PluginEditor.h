@@ -24,11 +24,27 @@ protected:
     void onRightButton(bool v) override;
 private:
 
+    class SeqCell : public Component {
+    public:
+        using Parameter = juce::RangedAudioParameter;
+
+        SeqCell(PluginProcessor::PluginParams &params, unsigned step);
+        void activeStep(unsigned xP, unsigned yP, unsigned cP);
+
+        void paint(Graphics &g);
+
+    private:
+        unsigned step_;
+        bool activeX_, activeY_, activeC_;
+        PluginProcessor::PluginParams &params_;
+    };
+
+
     PluginProcessor &processor_;
 
     static constexpr unsigned L_CLRS = 3;
 
-    unsigned currentLayer_=0;
+    unsigned currentLayer_ = 0;
 
     enum CVButtonMode {
         B_GATEACCESS,
@@ -44,6 +60,8 @@ private:
 
 
     juce::Colour clrs_[L_CLRS];
+
+    std::vector<std::shared_ptr<SeqCell>> cells_;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)
 };
 

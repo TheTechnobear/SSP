@@ -11,16 +11,50 @@ using bcontrol_type = ssp::ParamButton;
 static constexpr unsigned MAX_LAYERS = PluginProcessor::MAX_LAYERS;
 static constexpr unsigned MAX_STEPS = PluginProcessor::MAX_STEPS;
 static constexpr unsigned MAX_VIEW = MAX_LAYERS * 2;
-static const unsigned MAX_X = 4, MAX_Y=4;
+static const unsigned MAX_X = 4, MAX_Y = 4;
+
+static Colour LAYER_COLOURS[3] = {Colours::red, Colours::green, Colours::orange};
 
 inline float constrain(float v, float vMin, float vMax) {
     return std::max<float>(vMin, std::min<float>(vMax, v));
 }
 
+
+static const char tonics[MAX_TONICS][3] = {
+    "C ",
+    "C#",
+    "D ",
+    "D#",
+    "E ",
+    "F ",
+    "F#",
+    "G ",
+    "G#",
+    "A ",
+    "A#",
+    "B ",
+};
+
+
+String getNoteValue(float f) {
+    float voct = cv2Pitch(f) + 60.0f; // -5v = 0
+    voct += 0.005f; // so we round up fractions of cent
+    int oct = voct / 12;
+    unsigned note = unsigned(voct) % MAX_TONICS;
+    int cents = ((voct - floorf(voct)) * 100.0f);
+    if (cents > 50) {
+        cents = 50 - cents;
+        note = (note + 1) % MAX_TONICS;
+        oct += (note == 0);
+    }
+    String cts = String::formatted("%+02d", cents);
+    return String(tonics[note] + String(oct - (note < 3))) + " " + cts;
+}
+
+
 PluginEditor::PluginEditor(PluginProcessor &p)
     : base_type(&p, MAX_VIEW),
       processor_(p),
-      clrs_{Colours::red, Colours::green, Colours::orange},
       currentLayer_(0),
       cvButtonMode_(B_GATEACCESS), encoderMode_(E_CV) {
 
@@ -28,8 +62,8 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 
     for (unsigned layer = 0; layer < MAX_LAYERS; layer++) {
         auto &l = processor_.params_.layers_[layer % MAX_LAYERS];
-        Colour clr = clrs_[layer % MAX_LAYERS];
-        for (unsigned i = 0; i <  MAX_STEPS / MAX_Y; i++) {
+        Colour clr = LAYER_COLOURS[layer % MAX_LAYERS];
+        for (unsigned i = 0; i < MAX_STEPS / MAX_Y; i++) {
             int pi = i * MAX_X;
             addParamPage(
                 std::make_shared<pcontrol_type>(l->steps_[pi + 0]->cv, 0.25),
@@ -52,7 +86,7 @@ PluginEditor::PluginEditor(PluginProcessor &p)
                 encView
             );
         }
-        for (unsigned i = 0; i <  MAX_STEPS / MAX_Y; i++) {
+        for (unsigned i = 0; i < MAX_STEPS / MAX_Y; i++) {
             int pi = i * MAX_X;
             addButtonPage(
                 std::make_shared<bcontrol_type>(l->steps_[pi + 0]->glide, 24, clr),
@@ -72,7 +106,7 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 
     for (unsigned layer = 0; layer < MAX_LAYERS; layer++) {
         auto &l = processor_.params_.layers_[layer % MAX_LAYERS];
-        Colour clr = clrs_[layer % MAX_LAYERS];
+        Colour clr = LAYER_COLOURS[layer % MAX_LAYERS];
         addParamPage(
             std::make_shared<pcontrol_type>(l->snake, 1),
             std::make_shared<pcontrol_type>(l->scale, 1),
@@ -92,113 +126,28 @@ PluginEditor::PluginEditor(PluginProcessor &p)
         encView++;
     }
 
+
+    // create cell UI
+    {
+        const int startX = 950, startY = 40;
+        const int cellX = 82, cellY = 82;
+        const int sp = 2;
+
+        for (unsigned i = 0; i < MAX_STEPS; i++) {
+
+            auto cell = std::make_shared<SeqCell>(processor_.params_, i);
+            cells_.push_back(cell);
+            int xc = startX + ((i % 4) * (cellX + sp));
+            int yc = startY + ((i / 4) * (cellY + sp));
+
+            cell->setBounds(xc, yc, cellX, cellY);
+            addAndMakeVisible(*cell);
+        }
+    }
+
     setSize(1600, 480);
 }
 
-
-void PluginEditor::drawView(Graphics &g) {
-    base_type::drawView(g);
-    int startX = 1000;
-    int y = 30;
-    int fh = 18;
-    int lsz = 75;;
-
-    int szx = fh * 4;
-    int szy = szx;
-    int sp = fh;
-
-    int x = startX;
-
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
-    g.setColour(Colours::red);
-
-    x += sp + (szx * 2.5f);
-    g.drawText("Outputs", x, y, lsz, fh, Justification::left);
-
-    x = startX;
-    y += sp;
-
-
-    // draw header
-    g.drawText("Inputs", x, y, lsz, fh, Justification::left);
-    x += lsz + sp;
-    for (unsigned xi = 0; xi < MAX_X; xi++) {
-        if (processor_.isOutputEnabled(xi * 2))  {
-            g.setColour(Colours::red);
-        } else {
-            g.setColour(Colours::grey);
-        }
-        char chout[2] = "A";
-        chout[0] = 'A' + xi;
-        g.drawText(String(chout), x, y, szx, fh, Justification::centred);
-        x += szx;
-    }
-
-
-
-    static float values[MAX_X][MAX_Y];
-    static bool init= false;
-    if(!init) {
-        init=true;
-        Random random;
-        for (unsigned yi = 0; yi < MAX_Y; yi++) {
-            for (unsigned xi = 0; xi < MAX_X; xi++) {
-                values[xi][yi] = (random.nextFloat() * 2.0f) - 1.0f;
-            }
-        }
-    }
-
-    y += szy;
-    // draw each input line
-    for (unsigned yi = 0; yi < MAX_Y; yi++) {
-        x = startX;
-
-        if (processor_.isInputEnabled(yi * 2) ) {
-            g.setColour(Colours::red);
-        } else {
-            g.setColour(Colours::grey);
-        }
-        g.drawText(String(yi + 1), x, (y - (fh / 2)), lsz, fh, Justification::left);
-        x += lsz + sp;
-
-
-        for (unsigned xi = 0; xi < MAX_X; xi++) {
-//            float vca = processor_.getVCA(yi, xi) + processor_.getVCACV(yi, xi);
-            float vca = values[xi][yi];
-            vca = constrain(vca / 1.2f, -1.0f, 1.0f);
-
-            if (vca == 0.0f) {
-                unsigned d = 5;
-                unsigned o = ((szy - d) / 2);
-                unsigned cy = y - (szy / 2) + o;
-                unsigned cx = x + o;
-                g.setColour(Colours::white);
-                g.fillEllipse(cx, cy, d, d);
-                // g.drawEllipse(cx, cy, d, d, 1);
-            } else {
-                unsigned d = szy;
-                if (vca > 0.0f) {
-                    d = vca * szy;
-                    g.setColour(Colours::green);
-
-                } else {
-                    d = vca * -szy;
-                    g.setColour(Colours::red);
-                }
-                unsigned o = ((szy - d) / 2);
-                unsigned cy = y - (szy / 2) + o;
-                unsigned cx = x + o;
-                g.fillEllipse(cx, cy, d, d);
-            }
-            x += szx;
-
-            // String v = "-";
-            // if (vca <= -0.01f || vca >= 0.01f) v = String::formatted("%4.2f", vca);
-            // g.drawText(v, x + lx + xi * (szx + sp), y , sp + szx, fh, Justification::left);
-        }
-        y += szy;
-    }
-}
 
 void PluginEditor::resized() {
 }
@@ -280,35 +229,128 @@ void PluginEditor::onRightButton(bool v) {
     }
 }
 
-//
-//static constexpr unsigned MAX_TONICS = 12;
-//
-//static const char tonics[MAX_TONICS][3] = {
-//    "C ",
-//    "C#",
-//    "D ",
-//    "D#",
-//    "E ",
-//    "F ",
-//    "F#",
-//    "G ",
-//    "G#",
-//    "A ",
-//    "A#",
-//    "B ",
-//};
 
-//String getNoteValue(float f) {
-//    float voct = cv2Pitch(f) + 60.0f; // -5v = 0
-//    voct += 0.005f; // so we round up fractions of cent
-//    int oct = voct / 12;
-//    unsigned note = unsigned(voct) % MAX_TONICS;
-//    int cents = ((voct - floorf(voct)) * 100.0f);
-//    if (cents > 50) {
-//        cents = 50 - cents;
-//        note = (note + 1) % MAX_TONICS;
-//        oct += (note == 0);
-//    }
-//    String cts = String::formatted("%+02d", cents);
-//    return String(tonics[note] + String(oct - (note < 3))) + " " + cts;
-//}
+void PluginEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
+    unsigned xP, yP, cP;
+    float cv[3];
+    bool gates[3];
+    processor_.getActiveData(xP, yP, cP, cv[0], cv[1], cv[2], gates[0], gates[1], gates[2]);
+
+    for (auto &cell: cells_) {
+        cell->activeStep(xP, yP, cP);
+    }
+
+    const int tstartX = 1325, startX = tstartX + 30, startY = 50;
+    const int sp = 50;
+    const int bw = 100, gw = 30;
+
+    g.setFont(20);
+    g.setColour(LAYER_COLOURS[0]);
+    g.drawText("X", tstartX, startY, 30, sp, Justification::centredLeft);
+    g.setColour(LAYER_COLOURS[1]);
+    g.drawText("Y", tstartX, startY + sp, 30, sp, Justification::centredLeft);
+    g.setColour(LAYER_COLOURS[2]);
+    g.drawText("C", tstartX, startY + (2 * sp), 30, sp, Justification::centredLeft);
+
+    // draw current values
+    for (int i = 0; i < 3; i++) {
+        float v = cv[i];
+        bool gate = gates[i];
+        int y = startY + (sp * i);
+
+        auto &l = processor_.params_.layers_[i % MAX_LAYERS];
+        if (l->scale.getValue() == 0.0f) {
+            if (v >= 0) {
+                g.setColour(Colours::green);
+                g.fillRect(startX, y + 10, int(bw * v), sp - 20);
+            } else {
+                g.setColour(Colours::red);
+                g.fillRect(startX, y + 10, int(bw * v * -1), sp - 20);
+            }
+            g.setColour(LAYER_COLOURS[i]);
+            if (gate) {
+                g.fillRect(startX + bw + 10, y + 10, gw - 1, sp - 20);
+            } else {
+                g.drawRect(startX + bw + 10, y + 10, gw - 1, sp - 20);
+            }
+        } else {
+            g.setColour(LAYER_COLOURS[i]);
+            g.drawText(getNoteValue(v), startX, y, bw, sp, Justification::centredLeft);
+
+        }
+
+
+    }
+}
+
+PluginEditor::SeqCell::SeqCell(PluginProcessor::PluginParams &params, unsigned step) :
+    params_(params), step_(step),
+    activeX_(false), activeY_(false), activeC_(false) {
+
+}
+
+void PluginEditor::SeqCell::activeStep(unsigned xP, unsigned yP, unsigned cP) {
+    activeX_ = step_ == xP;
+    activeY_ = step_ == yP;
+    activeC_ = step_ == cP;
+}
+
+void PluginEditor::SeqCell::paint(Graphics &g) {
+    const int sp = 3, ls = 3;
+    int sz = getHeight() - (2 * (sp * 2));
+    int pos = 2 * sp;
+
+    // draw active cells
+    if (activeX_) {
+        g.setColour(LAYER_COLOURS[0]);
+        g.drawRect(pos, pos, sz, sz, ls);
+        pos -= sp;
+        sz += (sp * 2);
+    }
+    if (activeY_) {
+        g.setColour(LAYER_COLOURS[1]);
+        g.drawRect(pos, pos, sz, sz, ls);
+        pos -= sp;
+        sz += (sp * 2);
+    }
+    if (activeC_) {
+        g.setColour(LAYER_COLOURS[2]);
+        g.drawRect(pos, pos, sz, sz, ls);
+    }
+
+    int iw = getWidth() - (4 * (sp * 2));
+    int isz = getHeight() - (4 * (sp * 2));
+    int ih = isz / 3;
+    int ix = 4 * sp;
+    int iy = 4 * sp;
+    int gw = 10;
+
+    // draw cell values
+    for (int i = 0; i < 3; i++) {
+        auto &s = params_.layers_[i]->steps_[step_];
+        float v = (s->cv.getValue() * 2.0f) - 1.0f;
+        bool gate = s->gate.getValue() > 0.5;
+        if (v >= 0) {
+            g.setColour(Colours::green);
+            g.fillRect(ix, iy + 2, int((iw - gw) * v), ih - 4);
+        } else {
+            g.setColour(Colours::red);
+            g.fillRect(ix, iy + 2, int((iw - gw) * v * -1.0f), ih - 4);
+        }
+        Colour clr = LAYER_COLOURS[i];
+        g.setColour(clr);
+        if (gate) {
+            g.fillRect(ix + (iw - gw) + 1, iy + 2, gw - 1, ih - 4);
+        } else {
+            g.drawRect(ix + (iw - gw) + 1, iy + 2, gw - 1, ih - 4);
+        }
+        iy += ih;
+    }
+
+
+}
+
+
+
+
