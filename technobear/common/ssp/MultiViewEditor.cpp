@@ -237,23 +237,28 @@ void MultiViewEditor::setButtonPage(unsigned p) {
     auto &view = views_[view_];
     unsigned lastP = buttonPage_;
     unsigned nextP = p;
+
     if (lastP != nextP) {
-        buttonPage_ = nextP;
-        auto page = view.buttonPages_[lastP];
-        for (auto i = 0; i < MAX_BTN; i++) {
-            auto &c = page.control_[i];
-            if (c != nullptr) {
-                c->setVisible(false);
-//                c->active(false);
+        if(buttonPage_ < view.buttonPages_.size()) {
+            buttonPage_ = nextP;
+            auto page = view.buttonPages_[lastP];
+            for (auto i = 0; i < MAX_BTN; i++) {
+                auto &c = page.control_[i];
+                if (c != nullptr) {
+                    c->setVisible(false);
+                    //                c->active(false);
+                }
             }
         }
 
-        page = view.buttonPages_[nextP];
-        for (auto i = 0; i < MAX_BTN; i++) {
-            auto &c = page.control_[i];
-            if (c != nullptr) {
-                c->setVisible(true);
+        if(nextP < view.buttonPages_.size()) {
+            auto page = view.buttonPages_[nextP];
+            for (auto i = 0; i < MAX_BTN; i++) {
+                auto &c = page.control_[i];
+                if (c != nullptr) {
+                    c->setVisible(true);
 //                c->active(true);
+                }
             }
         }
     }
@@ -278,11 +283,13 @@ void MultiViewEditor::setView(unsigned v) {
 
         {  // display current buttons/params
             auto &view = views_[lastV];
-            auto bpage = view.buttonPages_[buttonPage_];
-            for (auto i = 0; i < MAX_BTN; i++) {
-                auto &c = bpage.control_[i];
-                if (c != nullptr) {
-                    c->setVisible(false);
+            if(buttonPage_ < view.buttonPages_.size()) {
+                auto bpage = view.buttonPages_[buttonPage_];
+                for (auto i = 0; i < MAX_BTN; i++) {
+                    auto &c = bpage.control_[i];
+                    if (c != nullptr) {
+                        c->setVisible(false);
+                    }
                 }
             }
             auto ppage = view.controlPages_[paramPage_];
@@ -297,11 +304,16 @@ void MultiViewEditor::setView(unsigned v) {
 
         {   // enable new buttons/controls
             auto &view = views_[nextV];
-            auto bpage = view.buttonPages_[buttonPage_];
-            for (auto i = 0; i < MAX_BTN; i++) {
-                auto &c = bpage.control_[i];
-                if (c != nullptr) {
-                    c->setVisible(true);
+            if(buttonPage_ >= view.buttonPages_.size()) {
+                buttonPage_=0;
+            }
+            if(buttonPage_ < view.buttonPages_.size()) {
+                auto bpage = view.buttonPages_[buttonPage_];
+                for (auto i = 0; i < MAX_BTN; i++) {
+                    auto &c = bpage.control_[i];
+                    if (c != nullptr) {
+                        c->setVisible(true);
+                    }
                 }
             }
             auto ppage = view.controlPages_[paramPage_];

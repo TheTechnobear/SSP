@@ -52,11 +52,13 @@ void MultiBarEditor::setView(unsigned v) {
 
         {  // display current buttons/params
             auto &view = views_[lastV];
-            auto bpage = view.buttonPages_[buttonPage_];
-            for (auto i = 0; i < MAX_BTN; i++) {
-                auto &c = bpage.control_[i];
-                if (c != nullptr) {
-                    c->setVisible(false);
+            if(buttonPage_ < view.buttonPages_.size()) {
+                auto bpage = view.buttonPages_[buttonPage_];
+                for (auto i = 0; i < MAX_BTN; i++) {
+                    auto &c = bpage.control_[i];
+                    if (c != nullptr) {
+                        c->setVisible(false);
+                    }
                 }
             }
 
@@ -73,11 +75,16 @@ void MultiBarEditor::setView(unsigned v) {
 
         {   // enable new buttons/controls
             auto &view = views_[nextV];
-            auto bpage = view.buttonPages_[buttonPage_];
-            for (auto i = 0; i < MAX_BTN; i++) {
-                auto &c = bpage.control_[i];
-                if (c != nullptr) {
-                    c->setVisible(true);
+            if(buttonPage_ >= view.buttonPages_.size()) {
+                buttonPage_=0;
+            }
+            if(buttonPage_ < view.buttonPages_.size()) {
+                auto bpage = view.buttonPages_[buttonPage_];
+                for (auto i = 0; i < MAX_BTN; i++) {
+                    auto &c = bpage.control_[i];
+                    if (c != nullptr) {
+                        c->setVisible(true);
+                    }
                 }
             }
 
