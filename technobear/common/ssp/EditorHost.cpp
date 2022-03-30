@@ -30,16 +30,16 @@ EditorHost::EditorHost(BaseProcessor *p, BaseEditor *e) :
     editor_->setVisible(!sysActive_);
     system_->setVisible(sysActive_);
 
-    int uih=0;
+    int uih = 0;
 #ifdef __APPLE__
-    uih=220;
-    sspui_ = new SSPUI(processor_,this);
-    sspui_->setBounds(0,480,1600,220);
+    uih = 220;
+    sspui_ = new SSPUI(processor_, this);
+    sspui_->setBounds(0, 480, 1600, 220);
     addChildComponent(sspui_);
     sspui_->setVisible(true);
 #endif
 
-    setSize(1600, 480+uih);
+    setSize(1600, 480 + uih);
 
 
     addAndMakeVisible(globalBtn_);
@@ -78,9 +78,18 @@ void EditorHost::drawBasicPanel(Graphics &g) {
     // title
     g.setFont(Font(Font::getDefaultMonospacedFontName(), 24, Font::plain));
     g.setColour(Colours::yellow);
-    g.drawSingleLineText(String(JucePlugin_Name) + " : " + String(JucePlugin_Desc), 20, 30);
+    g.drawSingleLineText(String(JucePlugin_Name) + " : "
+                         + String(JucePlugin_Desc)
+                         + String(" @ thetechnobear"),
+                         10, 30);
+
+//    g.drawSingleLineText("thetechnobear's "
+//                         + String(JucePlugin_Name) + " : "
+//                         + String(JucePlugin_Desc),
+//                         10, 30);
+
     g.setColour(Colours::grey);
-    g.drawSingleLineText("version : " + String(JucePlugin_VersionString), 1400, 30);
+    g.drawSingleLineText("v " + String(JucePlugin_VersionString), 1505, 30);
 
     drawMenuBox(g);
     drawButtonBox(g);
