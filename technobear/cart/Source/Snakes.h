@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-
+#include <memory>
 
 
 class SnakeAlgo {

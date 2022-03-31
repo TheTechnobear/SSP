@@ -130,7 +130,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 
 
         for (unsigned n = 0; n < MAX_STEPS; n++) {
-            lg->addChild(std::make_unique<ssp::BaseFloatParameter>(getLayerStepPID(ln, n) + ID::cv, "CV", -5.0f, 5.0f, 0.0f,0.0f));
+            lg->addChild(std::make_unique<ssp::BaseFloatParameter>(getLayerStepPID(ln, n) + ID::cv, "CV", -5.0f, 5.0f, 0.0f, 0.0f));
             lg->addChild(std::make_unique<ssp::BaseBoolParameter>(getLayerStepPID(ln, n) + ID::access, "access", true));
             lg->addChild(std::make_unique<ssp::BaseBoolParameter>(getLayerStepPID(ln, n) + ID::gate, "gate", false));
             lg->addChild(std::make_unique<ssp::BaseBoolParameter>(getLayerStepPID(ln, n) + ID::glide, "glide", false));
@@ -190,8 +190,6 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     static constexpr unsigned O_L_OFFSET = O_Y_CV - O_X_CV;
     static constexpr unsigned I_L_OFFSET = I_Y_CLK - I_X_CLK;
 
-    unsigned xyLastPos[2], xyNewPos[2];
-
     for (int smp = 0; smp < sz; smp++) {
         for (int layer = 0; layer < PluginParams::MAX_LAYER; layer++) {
             bool enabled = outputEnabled[(layer * O_L_OFFSET) + O_X_CV] || outputEnabled[(layer * O_L_OFFSET) + O_X_GATE];
@@ -207,7 +205,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
             unsigned root = normValue(layerParam->root);
 
             bool o_gate = false;
-            float o_cv =0.0f;
+            float o_cv = 0.0f;
 
 
             if (layer < PluginParams::C) {
@@ -216,24 +214,38 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
                 float cvIn = buffer.getSample((layer * I_L_OFFSET) + I_X_CV, smp);
 
                 ld.clkTrig_ = clkIn > clockLevel && (ld.lastClkIn_ <= clockLevel);
-                ld.lastClkIn_ = clkIn;
-                xyLastPos[layer] = ld.pos_;
 
-                bool reset = modMode == MOD_MODE_RESET && (modIn >= trigLevel && ld.lastModIn_ < trigLevel);
-                bool reverse = modMode == MOD_MODE_DIR && modIn < trigLevel;
-                bool run = modMode != MOD_MODE_RUNSTP || modIn > trigLevel;
+                if (ld.clkTrig_) {
+                    ld.lastClkSmp_ = ld.lastClkSmpCnt_;
+                    ld.lastClkSmpCnt_ = 0;
+                } else {
+                    ld.lastClkSmpCnt_++;
+                }
+
+                ld.lastClkIn_ = clkIn;
+
+                ld.reset_ = modMode == MOD_MODE_RESET && (modIn >= trigLevel && ld.lastModIn_ < trigLevel);
+                ld.reverse_ = modMode == MOD_MODE_DIR && modIn < trigLevel;
+                ld.run_ = modMode != MOD_MODE_RUNSTP || modIn > trigLevel;
                 bool modClkTrig = modMode == MOD_MODE_CLK
                                   && (modIn >= trigLevel && ld.lastModIn_ < trigLevel)
                                   && clkIn < clockLevel;
+
                 ld.clkTrig_ = ld.clkTrig_ || modClkTrig;
 
-                if (reset) {
+                if (ld.reset_) {
                     setLayerStep(0, ld, *layerParam, op_sleep);
-                } else if (run && ld.clkTrig_) {
-                    advanceLayer(ld, *layerParam, op_sleep, reverse);
+                    if (ld.glide_) ld.glideTime_ = ld.lastClkSmp_;
+                } else if (ld.run_ && ld.clkTrig_) {
+                    advanceLayer(ld, *layerParam, op_sleep, ld.reverse_);
+                    if (ld.glide_) ld.glideTime_ = ld.lastClkSmp_;
                 }
 
-                xyNewPos[layer] = ld.pos_;
+                //TODO: posOffset, I assume should be live value, i.e. not just changing
+                //when clkTrigs, so sounds like CV should be 'constantly' look up, not just on advance step
+                if (cvMode == CV_MODE_LOC) {
+                    ld.posOffset_ = cvIn * MAX_STEPS;
+                }
 
                 if (modClkTrig && clkIn < clockLevel) {
                     o_gate = ld.gateTime_ > 0;
@@ -242,37 +254,86 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
                 }
                 o_cv = ld.cv_;
 
+                if (cvMode == CV_MODE_ADD) {
+                    ld.cvOffset_ = cvIn;
+                } else if (cvMode == CV_MODE_SH) {
+                    if (modIn >= trigLevel && (modIn >= trigLevel && ld.lastModIn_ < trigLevel)) {
+                        ld.cvOffset_ = cvIn;
+                    }
+                } else {
+                    ld.cvOffset_ = 0.0f;
+                }
+                o_cv += ld.cvOffset_;
+
+
+                // TODO : glide time : for X/Y is based on clock rate?
+                // so count samples?
+
                 ld.lastCvIn_ = cvIn;
                 ld.lastModIn_ = modIn;
             } else {
+                // these are different from C... need to carefully read manual on these bits
+                // TODO : op_trig behaviour for C
+                // TODO : op_sleep behaviour for C
+                auto &xld = layerData_[PluginParams::X];
+                auto &yld = layerData_[PluginParams::Y];
+                bool xTrig = xld.clkTrig_ && xld.run_;
+                bool yTrig = yld.clkTrig_ && yld.run_;
 
-                // TODO : mod_reset, reset layer to start
-                // TODO : mod_dir, run forwards or backward ?
-                // TODO : mod_clk, another clk trig
+                unsigned xPosOffset = xld.posOffset_;
+                unsigned yPosOffset = yld.posOffset_;
 
-                // "C moves horizontally every time X moves horizontally, vertically everytime Y moves vertically"
-                // not clear, if C will reverse direction or not... that I need to check
-                bool xTrig = (xyLastPos[PluginParams::X] % 4) != (xyNewPos[PluginParams::X] % 4);
-                bool yTrig = unsigned (xyLastPos[PluginParams::Y] / 4) != unsigned(xyNewPos[PluginParams::Y] / 4);
+                // TODO : glide time : for C is a constant rate.
+                if (xld.reset_) {
+                    setCartLayerX(ld, *layerParam, 0);
+                    if (ld.glide_) ld.glideTime_ = getSampleRate() / 100; // 10ms
+                    xTrig = false;
+                }
+                if (yld.reset_) {
+                    setCartLayerY(ld, *layerParam, 0);
+                    if (ld.glide_) ld.glideTime_ = getSampleRate() / 100; // 10ms
+                    yTrig = false;
+                }
 
                 ld.clkTrig_ = xTrig || yTrig; // not used ;
-                if (xTrig || yTrig) {
+                if (ld.clkTrig_) {
+                    //TODO consider x/y pos offset
                     advanceCartLayer(ld, *layerParam, xTrig, yTrig);
+                    if (ld.glide_)  {
+                        ld.glideTime_ = getSampleRate() / 100; // 10ms
+                    }
                 }
 
                 o_gate = op_trig ? ld.gateTime_ > 0 : ld.gate_;
                 o_cv = ld.cv_;
             }
 
+            // glide idea
+            // when we move to step.... we know the new target cv value
+            // we look up the clock, and calculate glideAmt (or incCV amount)  target - current
+            // then each sample, we add incCV, until we hit target (or glideClk = 0?)
+
+            if (scale > 0) {
+                //TODO : presumably glide is AFTER quantization !
+                constexpr float halfSemi = 0.5;
+                constexpr bool roundUp = true;
+                // cv2pitch, returns fractional semitones e.g 24.0 = C2
+                float voct = cv2Pitch(o_cv) + 60.f + (roundUp ? halfSemi : 0.0f); // -5v = 0
+
+                int oct = voct / 12;
+                unsigned note = unsigned(voct) % MAX_TONICS;
+                // Logger::writeToLog("float " + String(v) + " voct " + String(voct) + " oct " + String(oct) + " note " + String(note));
+
+                quantizer_.quantize(root, scale, oct, note);
+
+                float pv = float(oct * 12.0f) + float(note) - 60.0f;
+                float o_cv = pitch2Cv(pv);
+            }
+
+
             //TODO : glide, use lastCV , and glide towards it - time?
-            //TODO : scale,root  - quantise or not (scale=0)
-
-            //TODO : cv_add , add CV value
-            //TODO : cv_loc, add to layers position value
-            //TODO : cv_snake, add to snake value
-            //TODO : cv_sh, same as add, but only on mod trig
-
             buffer.setSample((layer * O_L_OFFSET) + O_X_CV, smp, o_cv);
+
             buffer.setSample((layer * O_L_OFFSET) + O_X_GATE, smp, o_gate);
             if (ld.gateTime_ > 0) ld.gateTime_--;
         }
@@ -280,9 +341,9 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 }
 
 void PluginProcessor::setLayerStep(unsigned pos, LayerData &ld, Layer &params, bool sleep) {
+    //TODO: this needs to skip to find ACCESS = ON (for reset)
     ld.pos_ = pos;
     jassert(ld.pos_ < MAX_STEPS);
-
     ld.gate_ = params.steps_[ld.pos_]->gate.getValue() > 0.5f;
     ld.glide_ = params.steps_[ld.pos_]->glide.getValue() > 0.5f;
     ld.gateTime_ = (ld.gate_ ? gateTime : 0);
@@ -294,9 +355,39 @@ void PluginProcessor::setLayerStep(unsigned pos, LayerData &ld, Layer &params, b
     }
 }
 
+
 void PluginProcessor::advanceLayer(LayerData &ld, Layer &params, bool sleep, bool rev) {
     unsigned pos = findNextStep(ld.pos_, params, sleep, rev);
     setLayerStep(pos, ld, params, sleep);
+}
+
+
+void PluginProcessor::setCartLayerX(LayerData &ld, Layer &params, unsigned pos) {
+    unsigned cPos = ld.pos_;
+    int xC = 0;
+    int yC = cPos / 4;
+    //TODO: this needs to skip to find ACCESS = ON (for reset)
+    if (params.steps_[pos]->access.getValue() > 0.0f) {
+        ld.pos_ = pos;
+        ld.cv_ = (params.steps_[ld.pos_]->cv.getValue() * 2.0f) - 1.0f;
+        ld.gate_ = params.steps_[ld.pos_]->gate.getValue() > 0.5f;
+        ld.gateTime_ = (ld.gate_ ? gateTime : 0);
+    }
+}
+
+void PluginProcessor::setCartLayerY(LayerData &ld, Layer &params, unsigned pos) {
+    unsigned cPos = ld.pos_;
+    int xC = cPos % 4;
+    int yC = 0;
+
+    //TODO: this needs to skip to find ACCESS = ON (for reset)
+    if (params.steps_[pos]->access.getValue() > 0.0f) {
+        ld.pos_ = pos;
+        ld.cv_ = (params.steps_[ld.pos_]->cv.getValue() * 2.0f) - 1.0f;
+        ld.gate_ = params.steps_[ld.pos_]->gate.getValue() > 0.5f;
+        ld.gateTime_ = (ld.gate_ ? gateTime : 0);
+    }
+
 }
 
 
@@ -344,8 +435,6 @@ unsigned PluginProcessor::findNextStep(unsigned cpos, Layer &params, bool sleep,
         } else {
             pos = snakes_.findPrev(snake, pos);
         }
-
-//        jassert(pos < MAX_STEPS);
 
         bool access = params.steps_[pos]->access.getValue() > 0.5f;
         if (sleep || access) {
