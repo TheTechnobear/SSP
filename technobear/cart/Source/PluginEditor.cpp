@@ -5,7 +5,20 @@
 #include "ssp/ParamControl.h"
 #include "ssp/ParamButton.h"
 
+
+class SeqStepControl : public ssp::BarParamControl {
+public:
+    SeqStepControl(PluginEditor& editor, unsigned layer, Parameter &p);
+    String getTextValue() override;
+    void inc(bool fine) override;
+    void dec(bool fine) override;
+private:
+    PluginEditor& editor_;
+    unsigned layer_;
+};
+
 using pcontrol_type = ssp::BarParamControl;
+using scontrol_type = SeqStepControl;
 using bcontrol_type = ssp::ParamButton;
 
 static constexpr unsigned MAX_LAYERS = PluginProcessor::MAX_LAYERS;
@@ -52,6 +65,66 @@ String getNoteValue(float f) {
 }
 
 
+SeqStepControl::SeqStepControl(
+    PluginEditor& editor, unsigned layer,Parameter &p)
+ : BarParamControl(p,0.2f,0.01f), editor_(editor), layer_(layer) {
+}
+
+#define GET_P_VAL(x) x.convertFrom0to1(x.getValue())
+
+String SeqStepControl::getTextValue() {
+    if( editor_.useNotesForSteps(layer_)) {
+        // parameters are 0..1, v/oct cv is -1 to 1
+        float v = (param_.getValue() * 2.0f) - 1.0f;
+        String val = getNoteValue(v);
+        return val;
+    }
+
+    float v = GET_P_VAL(param_);
+    String val = String::formatted("%0.3f", v);
+    return val;
+}
+
+void SeqStepControl::inc(bool fine) {
+    if( editor_.useNotesForSteps(layer_)) {
+        static constexpr float coarseInc = 1.0f / ( 10.0f * 12.0f ); // +/-5 oct
+        static constexpr float fineInc = coarseInc / 100.0f; //cents
+        auto& p = param_;
+        p.beginChangeGesture();
+        float inc = fine ? fineInc : coarseInc;
+        float v = p.getValue();
+        float nv = v + (inc != 0 ? inc : 0.01f);
+        nv = std::min(nv, 1.0f);
+        p.setValueNotifyingHost(nv);
+        p.endChangeGesture();
+        return;
+    }
+    ssp::BarParamControl::inc(fine);
+}
+
+void SeqStepControl::dec(bool fine) {
+    if( editor_.useNotesForSteps(layer_)) {
+        static constexpr float coarseInc = 1.0f / ( 10.0f * 12.0f ); // +/-5 oct
+        static constexpr float fineInc = coarseInc / 100.0f; //cents
+        auto& p = param_;
+        p.beginChangeGesture();
+        float inc = fine ? fineInc : coarseInc;
+        float v = p.getValue();
+        float nv = v - (inc != 0 ? inc : 0.01f);
+        nv = std::max(nv, 0.0f);
+        p.setValueNotifyingHost(nv);
+        p.endChangeGesture();
+        return;
+    }
+    ssp::BarParamControl::dec(fine);
+}
+
+bool PluginEditor::useNotesForSteps(unsigned int layer) {
+    auto &l = processor_.params_.layers_[layer];
+    return l->scale.getValue() != 0.0f;
+}
+
+
 PluginEditor::PluginEditor(PluginProcessor &p)
     : base_type(&p, MAX_VIEW),
       processor_(p),
@@ -66,10 +139,10 @@ PluginEditor::PluginEditor(PluginProcessor &p)
         for (unsigned i = 0; i < MAX_STEPS / MAX_Y; i++) {
             int pi = i * MAX_X;
             addParamPage(
-                std::make_shared<pcontrol_type>(l->steps_[pi + 0]->cv, 0.25),
-                std::make_shared<pcontrol_type>(l->steps_[pi + 1]->cv, 0.25),
-                std::make_shared<pcontrol_type>(l->steps_[pi + 2]->cv, 0.25),
-                std::make_shared<pcontrol_type>(l->steps_[pi + 3]->cv, 0.25),
+                std::make_shared<scontrol_type>(*this, layer, l->steps_[pi + 0]->cv),
+                std::make_shared<scontrol_type>(*this, layer, l->steps_[pi + 1]->cv),
+                std::make_shared<scontrol_type>(*this, layer, l->steps_[pi + 2]->cv),
+                std::make_shared<scontrol_type>(*this, layer, l->steps_[pi + 3]->cv),
                 encView,
                 clr
             );

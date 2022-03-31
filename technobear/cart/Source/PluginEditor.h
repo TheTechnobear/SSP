@@ -10,6 +10,7 @@ public:
     explicit PluginEditor(PluginProcessor &);
     ~PluginEditor() override = default;
 
+    bool useNotesForSteps(unsigned layer);
 protected:
     using base_type = ssp::MultiBarEditor;
 
