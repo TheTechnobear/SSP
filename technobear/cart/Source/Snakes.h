@@ -13,6 +13,7 @@ public:
 
     virtual const std::string &name() = 0;
     virtual unsigned findNext(unsigned cpos) = 0;
+    virtual unsigned findPrev(unsigned cpos) = 0;
 
     static constexpr unsigned NSTEPS=16;
 };
@@ -34,6 +35,14 @@ public:
         auto & s = snakes_[snake];
         if(s) {
             return s->findNext(cpos);
+        }
+        return 0;
+    }
+
+    unsigned findPrev(unsigned snake, unsigned cpos) {
+        auto & s = snakes_[snake];
+        if(s) {
+            return s->findPrev(cpos);
         }
         return 0;
     }

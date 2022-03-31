@@ -11,9 +11,9 @@ inline float constrain(float v, float vMin, float vMax) {
 #define GET_P_VAL(x) x.convertFrom0to1(x.getValue())
 
 
-//TODO: parameter?
-static constexpr unsigned gateTime = 64; // samples
-static constexpr float clockLevel = 0.2f; // 1v
+static constexpr unsigned gateTime = 64; // samples //TODO: parameter?
+static constexpr float trigLevel = 0.2f; // 1v
+static constexpr float clockLevel = trigLevel; // 1v
 
 
 Snakes PluginProcessor::snakes_;
@@ -185,95 +185,101 @@ inline float normValue(RangedAudioParameter &p) {
 }
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
-
     unsigned sz = buffer.getNumSamples();
 
-    bool xEnabled = outputEnabled[O_X_CV] || outputEnabled[O_X_GATE];
-    bool yEnabled = outputEnabled[O_Y_CV] || outputEnabled[O_Y_GATE];
-    bool cEnabled = outputEnabled[O_C_CV] || outputEnabled[O_C_GATE];
+    static constexpr unsigned O_L_OFFSET = O_Y_CV - O_X_CV;
+    static constexpr unsigned I_L_OFFSET = I_Y_CLK - I_X_CLK;
+
+    unsigned xyLastPos[2], xyNewPos[2];
 
     for (int smp = 0; smp < sz; smp++) {
-        bool xTrig = false, yTrig = false;
+        for (int layer = 0; layer < PluginParams::MAX_LAYER; layer++) {
+            bool enabled = outputEnabled[(layer * O_L_OFFSET) + O_X_CV] || outputEnabled[(layer * O_L_OFFSET) + O_X_GATE];
+
+            auto &ld = layerData_[layer];
+            auto &layerParam = params_.layers_[layer];
+
+            bool op_trig = layerParam->fun_op_trig.getValue() > 0.5f;
+            bool op_sleep = layerParam->fun_op_sleep.getValue() > 0.5f;
+            unsigned modMode = normValue(layerParam->fun_mod_mode);
+            unsigned cvMode = normValue(layerParam->fun_cv_mode);
+            unsigned scale = normValue(layerParam->scale);
+            unsigned root = normValue(layerParam->root);
+
+            bool o_gate = false;
+            float o_cv =0.0f;
 
 
-        //TODO... looks like most of this can be done as per layers as similar logic
-        //though, likely C will need to override many things
-        float xClk = buffer.getSample(I_X_CLK, smp);
-        float yClk = buffer.getSample(I_Y_CLK, smp);
+            if (layer < PluginParams::C) {
+                float clkIn = buffer.getSample((layer * I_L_OFFSET) + I_X_CLK, smp);
+                float modIn = buffer.getSample((layer * I_L_OFFSET) + I_X_MOD, smp);
+                float cvIn = buffer.getSample((layer * I_L_OFFSET) + I_X_CV, smp);
 
-        xTrig = xClk > clockLevel && (x_.lastClk_ <= clockLevel);
-        x_.lastClk_ = xClk;
-        yTrig = yClk > clockLevel && (y_.lastClk_ <= clockLevel);
-        y_.lastClk_ = yClk;
+                ld.clkTrig_ = clkIn > clockLevel && (ld.lastClkIn_ <= clockLevel);
+                ld.lastClkIn_ = clkIn;
+                xyLastPos[layer] = ld.pos_;
 
-        bool trigX = params_.layers_[PluginParams::X]->fun_op_trig.getValue() > 0.5f;
-        bool sleepX = params_.layers_[PluginParams::X]->fun_op_sleep.getValue() > 0.5f;
-        unsigned modModeX = normValue(params_.layers_[PluginParams::X]->fun_mod_mode);
-        unsigned cvModeX = normValue(params_.layers_[PluginParams::X]->fun_cv_mode);
-        unsigned scaleX = normValue(params_.layers_[PluginParams::X]->scale);
-        unsigned rootX = normValue(params_.layers_[PluginParams::X]->root);
+                bool reset = modMode == MOD_MODE_RESET && (modIn >= trigLevel && ld.lastModIn_ < trigLevel);
+                bool reverse = modMode == MOD_MODE_DIR && modIn < trigLevel;
+                bool run = modMode != MOD_MODE_RUNSTP || modIn > trigLevel;
+                bool modClkTrig = modMode == MOD_MODE_CLK
+                                  && (modIn >= trigLevel && ld.lastModIn_ < trigLevel)
+                                  && clkIn < clockLevel;
+                ld.clkTrig_ = ld.clkTrig_ || modClkTrig;
 
-        bool trigY = params_.layers_[PluginParams::Y]->fun_op_trig.getValue() > 0.5f;
-        bool sleepY = params_.layers_[PluginParams::Y]->fun_op_sleep.getValue() > 0.5f;
-        unsigned modModeY = normValue(params_.layers_[PluginParams::Y]->fun_mod_mode);
-        unsigned cvModeY = normValue(params_.layers_[PluginParams::Y]->fun_cv_mode);
-        unsigned scaleY = normValue(params_.layers_[PluginParams::Y]->scale);
-        unsigned rootY = normValue(params_.layers_[PluginParams::Y]->root);
+                if (reset) {
+                    setLayerStep(0, ld, *layerParam, op_sleep);
+                } else if (run && ld.clkTrig_) {
+                    advanceLayer(ld, *layerParam, op_sleep, reverse);
+                }
 
-        bool trigC = params_.layers_[PluginParams::C]->fun_op_trig.getValue() > 0.5f;
-        bool sleepC = params_.layers_[PluginParams::C]->fun_op_sleep.getValue() > 0.5f;
-        unsigned modModeC = normValue(params_.layers_[PluginParams::C]->fun_mod_mode);
-        unsigned cvModeC = normValue(params_.layers_[PluginParams::C]->fun_cv_mode);
-        unsigned scaleC = normValue(params_.layers_[PluginParams::C]->scale);
-        unsigned rootC = normValue(params_.layers_[PluginParams::C]->root);
+                xyNewPos[layer] = ld.pos_;
 
-        if (xTrig) {
-            advanceLayer(x_, *params_.layers_[PluginParams::X], sleepX);
+                if (modClkTrig && clkIn < clockLevel) {
+                    o_gate = ld.gateTime_ > 0;
+                } else {
+                    o_gate = op_trig ? ld.gateTime_ > 0 : ld.gate_ && (clkIn >= clockLevel);
+                }
+                o_cv = ld.cv_;
+
+                ld.lastCvIn_ = cvIn;
+                ld.lastModIn_ = modIn;
+            } else {
+
+                // TODO : mod_reset, reset layer to start
+                // TODO : mod_dir, run forwards or backward ?
+                // TODO : mod_clk, another clk trig
+
+                // "C moves horizontally every time X moves horizontally, vertically everytime Y moves vertically"
+                // not clear, if C will reverse direction or not... that I need to check
+                bool xTrig = (xyLastPos[PluginParams::X] % 4) != (xyNewPos[PluginParams::X] % 4);
+                bool yTrig = unsigned (xyLastPos[PluginParams::Y] / 4) != unsigned(xyNewPos[PluginParams::Y] / 4);
+
+                ld.clkTrig_ = xTrig || yTrig; // not used ;
+                if (xTrig || yTrig) {
+                    advanceCartLayer(ld, *layerParam, xTrig, yTrig);
+                }
+
+                o_gate = op_trig ? ld.gateTime_ > 0 : ld.gate_;
+                o_cv = ld.cv_;
+            }
+
+            //TODO : glide, use lastCV , and glide towards it - time?
+            //TODO : scale,root  - quantise or not (scale=0)
+
+            //TODO : cv_add , add CV value
+            //TODO : cv_loc, add to layers position value
+            //TODO : cv_snake, add to snake value
+            //TODO : cv_sh, same as add, but only on mod trig
+
+            buffer.setSample((layer * O_L_OFFSET) + O_X_CV, smp, o_cv);
+            buffer.setSample((layer * O_L_OFFSET) + O_X_GATE, smp, o_gate);
+            if (ld.gateTime_ > 0) ld.gateTime_--;
         }
-        if (yTrig) {
-            advanceLayer(y_, *params_.layers_[PluginParams::Y], sleepY);
-        }
-        if (xTrig || yTrig) {
-            advanceCartLayer(c_, *params_.layers_[PluginParams::C], xTrig, yTrig);
-        }
-
-        float xMod = buffer.getSample(I_X_MOD, smp);
-        float yMod = buffer.getSample(I_Y_MOD, smp);
-        float xCV = buffer.getSample(I_X_CV, smp);
-        float yCV = buffer.getSample(I_Y_CV, smp);
-
-
-
-        //TODO : glide, use lastCV , and glide towards it
-
-        //TODO : scale,root  - quantise or not (scale=0)
-
-        //TODO : mod_reset, reset layer to start (0)
-        //TODO : mod_clk, another clk trig
-        //TODO : mod_runstop, ignore clock?
-        //TODO : mod_dir, run forwards or backward (hmm, next pattern !?)
-
-        //TODO : cv_add , add CV value
-        //TODO : cv_loc, add to layers position value
-        //TODO : cv_snake, add to snake value
-        //TODO : cv_sh, same as add, but only on mod trig
-
-
-        buffer.setSample(O_X_CV, smp, x_.cv_);
-        buffer.setSample(O_X_GATE, smp, trigX ? x_.gateTime_ > 0 : x_.gate_ && (xClk > clockLevel));
-        buffer.setSample(O_Y_CV, smp, y_.cv_);
-        buffer.setSample(O_Y_GATE, smp, trigY ? y_.gateTime_ > 0 : y_.gate_ && (yClk > clockLevel));
-        buffer.setSample(O_C_CV, smp, c_.cv_);
-        buffer.setSample(O_C_GATE, smp, trigC ? c_.gateTime_ > 0 : c_.gate_);
-
-        if (x_.gateTime_ > 0) x_.gateTime_--;
-        if (y_.gateTime_ > 0) y_.gateTime_--;
-        if (c_.gateTime_ > 0) c_.gateTime_--;
     }
 }
 
-void PluginProcessor::advanceLayer(LayerData &ld, Layer &params, bool sleep) {
-    unsigned pos = findNextStep(ld.pos_, params, sleep);
+void PluginProcessor::setLayerStep(unsigned pos, LayerData &ld, Layer &params, bool sleep) {
     ld.pos_ = pos;
     jassert(ld.pos_ < MAX_STEPS);
 
@@ -287,6 +293,12 @@ void PluginProcessor::advanceLayer(LayerData &ld, Layer &params, bool sleep) {
         }
     }
 }
+
+void PluginProcessor::advanceLayer(LayerData &ld, Layer &params, bool sleep, bool rev) {
+    unsigned pos = findNextStep(ld.pos_, params, sleep, rev);
+    setLayerStep(pos, ld, params, sleep);
+}
+
 
 void PluginProcessor::advanceCartLayer(LayerData &ld, Layer &params, bool xTrig, bool yTrig) {
     unsigned cPos = ld.pos_;
@@ -318,7 +330,7 @@ void PluginProcessor::advanceCartLayer(LayerData &ld, Layer &params, bool xTrig,
 }
 
 
-unsigned PluginProcessor::findNextStep(unsigned cpos, Layer &params, bool sleep) {
+unsigned PluginProcessor::findNextStep(unsigned cpos, Layer &params, bool sleep, bool reverse) {
     unsigned snake = GET_P_VAL(params.snake);
     jassert(snakes_.size() > 0);
     if (snake >= snakes_.size()) snake = 0;
@@ -327,7 +339,12 @@ unsigned PluginProcessor::findNextStep(unsigned cpos, Layer &params, bool sleep)
 
     unsigned tryCount = 16;
     while (tryCount > 0) {
-        pos = snakes_.findNext(snake, pos);
+        if (!reverse) {
+            pos = snakes_.findNext(snake, pos);
+        } else {
+            pos = snakes_.findPrev(snake, pos);
+        }
+
 //        jassert(pos < MAX_STEPS);
 
         bool access = params.steps_[pos]->access.getValue() > 0.5f;
@@ -339,19 +356,20 @@ unsigned PluginProcessor::findNextStep(unsigned cpos, Layer &params, bool sleep)
     return cpos;
 }
 
-
 void PluginProcessor::getActiveData(unsigned &xp, unsigned &yp, unsigned &cp,
                                     float &xCv, float &yCv, float &cCv,
                                     bool &xGate, bool &yGate, bool &cGate) const {
-    xp = x_.pos_;
-    yp = y_.pos_;
-    cp = c_.pos_;
-    xCv = x_.cv_;
-    yCv = y_.cv_;
-    cCv = c_.cv_;
-    xGate = x_.gate_;
-    yGate = y_.gate_;
-    cGate = c_.gate_;
+    xp = layerData_[PluginParams::X].pos_;
+    xGate = layerData_[PluginParams::X].gate_;
+    xCv = layerData_[PluginParams::X].cv_;
+
+    yp = layerData_[PluginParams::Y].pos_;
+    yCv = layerData_[PluginParams::Y].cv_;
+    yGate = layerData_[PluginParams::Y].gate_;
+
+    cp = layerData_[PluginParams::C].pos_;
+    cCv = layerData_[PluginParams::C].cv_;
+    cGate = layerData_[PluginParams::C].gate_;
 }
 
 

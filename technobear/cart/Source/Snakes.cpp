@@ -12,6 +12,13 @@ public:
             unsigned ns = pattern_[i];
             nxtPattern_[ni] = ns;
         }
+
+        // prvPattern_ - for a cpos find prev
+        for (int i = 0; i < NSTEPS; i++) {
+            unsigned ni = (NSTEPS - 1 - i) % NSTEPS;
+            unsigned ns = pattern_[i];
+            prvPattern_[ni] = ns;
+        }
     }
 
     const std::string &name() { return name_; }
@@ -20,10 +27,15 @@ public:
         return nxtPattern_[cpos];
     }
 
+    unsigned findPrev(unsigned cpos) {
+        return prvPattern_[cpos];
+    }
+
 protected:
     std::string name_;
     const unsigned *pattern_;
-    unsigned nxtPattern_[16];
+    unsigned nxtPattern_[NSTEPS];
+    unsigned prvPattern_[NSTEPS];
 };
 
 
@@ -34,7 +46,11 @@ public:
     const std::string &name() { return name_; }
 
     unsigned findNext(unsigned cpos) {
-        return (cpos + 1) % 16;
+        return (cpos + 1) % NSTEPS;
+    }
+
+    unsigned findPrev(unsigned cpos) {
+        return (NSTEPS - 1 - cpos) % NSTEPS;
     }
 
     std::string name_ = "Linear";

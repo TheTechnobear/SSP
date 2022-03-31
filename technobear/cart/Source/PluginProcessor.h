@@ -184,13 +184,18 @@ private:
         bool gate_ = false;
         float glide_ = 0.0f;
 
-        float lastClk_ = 0;
-        float lastCV_ = 0;
-        unsigned gateTime_ = 0; // smps of gate left
-    } x_, y_, c_;
+        bool  clkTrig_ =false; // did last smp trick this clock?
+        float lastCV_ = 0.0f;
 
-    unsigned findNextStep(unsigned cpos, Layer &params, bool sleep);
-    void advanceLayer(LayerData &ld, Layer &params, bool sleep);
+        float lastClkIn_ = 0.0f;
+        float lastModIn_ = 0.0f;
+        float lastCvIn_ = 0.0f;
+        unsigned gateTime_ = 0; // smps of gate left
+    } layerData_[MAX_LAYERS];
+
+    unsigned findNextStep(unsigned cpos, Layer &params, bool sleep, bool rev);
+    void setLayerStep(unsigned pos,LayerData &ld, Layer &params, bool sleep);
+    void advanceLayer(LayerData &ld, Layer &params, bool sleep, bool rev);
     void advanceCartLayer(LayerData &ld, Layer &params, bool xTrig, bool yTrig);
 
     static Snakes snakes_;
