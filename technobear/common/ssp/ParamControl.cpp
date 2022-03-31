@@ -13,6 +13,15 @@ void BaseParamControl::paramChanged(float) {
     repaint();
 }
 
+String BaseParamControl::getTextValue() {
+    auto &p = param_;
+    String val = p.getCurrentValueAsText();
+    if (p.getLabel().length()) { val = val + " " + p.getLabel(); }
+    return val;
+}
+
+
+/// SimpleParamControl
 
 SimpleParamControl::SimpleParamControl(Parameter &p, float coarse, float fine)
     : BaseParamControl(p) {
@@ -21,15 +30,13 @@ SimpleParamControl::SimpleParamControl(Parameter &p, float coarse, float fine)
 }
 
 
-/// SimpleParamControl
-
 void SimpleParamControl::inc(bool fine) {
     auto &p = param_;
     p.beginChangeGesture();
     float inc = fine ? fineInc_ : coarseInc_;
     float v = p.getValue();
     float nv = v + (inc != 0 ? inc : 0.01f);
-    nv = std::min(nv,1.0f);
+    nv = std::min(nv, 1.0f);
     p.setValueNotifyingHost(nv);
     p.endChangeGesture();
 }
@@ -40,7 +47,7 @@ void SimpleParamControl::dec(bool fine) {
     float inc = fine ? fineInc_ : coarseInc_;
     float v = p.getValue();
     float nv = v - (inc != 0 ? inc : 0.01f);
-    nv = std::max(nv,0.0f);
+    nv = std::max(nv, 0.0f);
     p.setValueNotifyingHost(nv);
     p.endChangeGesture();
 }
@@ -65,9 +72,8 @@ void SimpleParamControl::paint(Graphics &g) {
     g.setColour(fg_);
     g.drawText(p.getName(32), 0, 0, w, fh, Justification::centred);
 
-    String val = p.getCurrentValueAsText();
-    if (p.getLabel().length()) { val = val + " " + p.getLabel(); }
     g.setColour(Colours::white);
+    String val = getTextValue();
     g.drawText(val, 0, h / 2, w, fh, Justification::centred);
 }
 
@@ -88,9 +94,8 @@ void LineParamControl::paint(Graphics &g) {
     g.setColour(active() ? fg_ : Colours::grey);
     g.drawText(p.getName(32), 0, 0, w, fh, Justification::centred);
 
-    String val = p.getCurrentValueAsText();
-    if (p.getLabel().length()) { val = val + " " + p.getLabel(); }
     g.setColour(active() ? Colours::white : Colours::grey);
+    String val = getTextValue();
     g.drawText(val, 0, h / 2, w, fh, Justification::centred);
 }
 
@@ -128,7 +133,7 @@ void BarParamControl::paint(Graphics &g) {
             float v = p.getValue() - 0.5f;
             int bl = (w - 4) * v;
             int bs = (bl > 0.0f ? 0.5f : 0.5 + v) * (w - 4);
-            g.fillRect(bs, int(h / 2) + 2, (bl > 0  ? bl : -bl), fh - 4);
+            g.fillRect(bs, int(h / 2) + 2, (bl > 0 ? bl : -bl), fh - 4);
         }
         g.setColour(Colours::white);
         g.drawVerticalLine(be + 2, int(h / 2) + 2, int(h / 2) + 2 + fh - 4);
@@ -142,9 +147,8 @@ void BarParamControl::paint(Graphics &g) {
 
     if (active()) {
         g.setColour(active() ? Colours::white : Colours::lightgrey);
-        String val = p.getCurrentValueAsText();
-        if (p.getLabel().length()) { val = val + " " + p.getLabel(); }
-        g.drawText(val, 1, (h / 2) + 1, w - 2, fh - 2,Justification::centred);
+        String val = getTextValue();
+        g.drawText(val, 1, (h / 2) + 1, w - 2, fh - 2, Justification::centred);
     }
 }
 
