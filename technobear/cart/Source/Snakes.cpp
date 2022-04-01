@@ -5,37 +5,17 @@ class ReneEnumSnake : public SnakeAlgo {
 public:
     explicit ReneEnumSnake(const std::string &name, const unsigned *pattern) :
         name_(name), pattern_(pattern) {
-
-        // nxtPattern - for a cpos find next
-        for (int i = 0; i < NSTEPS; i++) {
-            unsigned ni = (NSTEPS - 1 + i) % NSTEPS;
-            unsigned ns = pattern_[i];
-            nxtPattern_[ni] = ns;
-        }
-
-        // prvPattern_ - for a cpos find prev
-        for (int i = 0; i < NSTEPS; i++) {
-            unsigned ni = (NSTEPS - 1 - i) % NSTEPS;
-            unsigned ns = pattern_[i];
-            prvPattern_[ni] = ns;
-        }
     }
 
     const std::string &name() { return name_; }
 
-    unsigned findNext(unsigned cpos) {
-        return nxtPattern_[cpos];
-    }
-
-    unsigned findPrev(unsigned cpos) {
-        return prvPattern_[cpos];
+    unsigned getPosition(unsigned seq_step) {
+        return pattern_[seq_step];
     }
 
 protected:
     std::string name_;
     const unsigned *pattern_;
-    unsigned nxtPattern_[NSTEPS];
-    unsigned prvPattern_[NSTEPS];
 };
 
 
@@ -45,12 +25,8 @@ public:
 
     const std::string &name() { return name_; }
 
-    unsigned findNext(unsigned cpos) {
-        return (cpos + 1) % NSTEPS;
-    }
-
-    unsigned findPrev(unsigned cpos) {
-        return (NSTEPS - 1 - cpos) % NSTEPS;
+    unsigned getPosition(unsigned seq_step) {
+        return seq_step;
     }
 
     std::string name_ = "Linear";

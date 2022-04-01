@@ -82,6 +82,8 @@ target_sources(CART
         PRIVATE
         Source/PluginEditor.cpp
         Source/PluginProcessor.cpp
+        Source/PluginProcessorXY.cpp
+        Source/PluginProcessorCart.cpp
         Source/Snakes.cpp
         Source/Quantizer.cpp
         ${COMMON_SRC}

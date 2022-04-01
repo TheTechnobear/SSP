@@ -131,8 +131,14 @@ PluginEditor::PluginEditor(PluginProcessor &p)
       currentLayer_(0),
       cvButtonMode_(B_GATEACCESS), encoderMode_(E_CV) {
 
-    unsigned encView = 0;
+    leftShiftBtn_.label("GT/GL");
+    addAndMakeVisible(leftShiftBtn_);
+    rightShiftBtn_.label("FUN");
+    addAndMakeVisible(rightShiftBtn_);
+    leftBtn_.label("LYR-");
+    rightBtn_.label("LYR+");
 
+    unsigned encView = 0;
     for (unsigned layer = 0; layer < MAX_LAYERS; layer++) {
         auto &l = processor_.params_.layers_[layer % MAX_LAYERS];
         Colour clr = LAYER_COLOURS[layer % MAX_LAYERS];
@@ -341,19 +347,17 @@ void PluginEditor::drawView(Graphics &g) {
                 g.setColour(Colours::red);
                 g.fillRect(startX, y + 10, int(bw * v * -1), sp - 20);
             }
-            g.setColour(LAYER_COLOURS[i]);
-            if (gate) {
-                g.fillRect(startX + bw + 10, y + 10, gw - 1, sp - 20);
-            } else {
-                g.drawRect(startX + bw + 10, y + 10, gw - 1, sp - 20);
-            }
         } else {
             g.setColour(LAYER_COLOURS[i]);
             g.drawText(getNoteValue(v), startX, y, bw, sp, Justification::centredLeft);
 
         }
-
-
+        g.setColour(LAYER_COLOURS[i]);
+        if (gate) {
+            g.fillRect(startX + bw + 10, y + 10, gw - 1, sp - 20);
+        } else {
+            g.drawRect(startX + bw + 10, y + 10, gw - 1, sp - 20);
+        }
     }
 }
 

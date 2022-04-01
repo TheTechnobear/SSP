@@ -41,19 +41,6 @@ PARAMETER_ID (glide)
 #undef PARAMETER_ID
 }
 
-
-//layer
-//x
-//y
-//c
-//cv
-//access
-//gate
-//glide
-//snake
-//fun
-//quant
-
 #include "Snakes.h"
 
 class PluginProcessor : public ssp::BaseProcessor {
@@ -93,7 +80,8 @@ public:
         O_MAX
     };
 
-    enum {
+    enum ModMode {
+        MOD_MODE_NONE,
         MOD_MODE_RESET,
         MOD_MODE_CLK,
         MOD_MODE_RUNSTP,
@@ -101,7 +89,8 @@ public:
         MOD_MODE_MAX
     };
 
-    enum {
+    enum CvMode {
+        CV_MODE_NONE,
         CV_MODE_ADD,
         CV_MODE_LOC,
         CV_MODE_SNAKE,
@@ -118,11 +107,12 @@ public:
         Parameter &glide;
     };
 
+    typedef std::vector<std::unique_ptr<LayerStep>> Steps;
 
     struct Layer {
         using Parameter = juce::RangedAudioParameter;
         explicit Layer(AudioProcessorValueTreeState &apvt, unsigned ln);
-        std::vector<std::unique_ptr<LayerStep>> steps_;
+        Steps steps_;
         Parameter &snake;
         Parameter &scale;
         Parameter &root;
@@ -179,44 +169,78 @@ private:
     static const String getOutputBusName(int channelIndex);
 
     struct LayerData {
+        // state
+        unsigned seqStep_ = 0;
+
+        // params
+        struct {
+            // snake
+            unsigned snake_ = 0;
+
+            // fun
+            bool fun_op_trig_ = false;
+            bool fun_op_sleep_ = false;
+            ModMode fun_mod_mode_ = MOD_MODE_NONE;
+            CvMode fun_cv_mode_ = CV_MODE_NONE;
+
+            // quant
+            unsigned scale_ = 0;
+            unsigned root_ = 0;
+        } p_;
+
+        // current values
         unsigned pos_ = 0;
         float cv_ = 0.0f;
         bool gate_ = false;
-        float glide_ = 0.0f;
 
-        bool  clkTrig_ =false; // did last smp trick this clock?
-        float cvOffset_=0.0f; // mod_cv_add/sh
-        float snakeOffset_=0.0f; // mod_cv_snake
-        float posOffset_=0.0f; // mod_cv_loc
+        bool clkTrig_ = false; // did last smp trick this clock?
+        float targetCv_ = 0.0f;
+        bool reset_ = false;
+        bool run_ = true;
+        bool reverse_ = false;
 
-        bool reset_=false;
-        bool run_=true;
-        bool reverse_=false;
+        unsigned snakeOffset_ = 0; // mod_cv_snake
+        unsigned seqOffset_ = 0; // mod_cv_loc
+        float cvOffset_ = 0.0f; // mod_cv_add/sh
 
-        float lastCV_ = 0.0f;
-
+        // last values
         float lastClkIn_ = 0.0f;
         float lastModIn_ = 0.0f;
         float lastCvIn_ = 0.0f;
 
-        // use for glide on x/y
-        int lastClkSmpCnt_= 0;
-        int lastClkSmp_= 0;
-        int glideTime_=0;
+        //glide
+        int lastClkSmpCnt_ = 0;
+        float lastClkSmp_ = 0;
 
         unsigned gateTime_ = 0; // smps of gate left
     } layerData_[MAX_LAYERS];
 
-    unsigned findNextStep(unsigned cpos, Layer &params, bool sleep, bool rev);
-    void setLayerStep(unsigned pos,LayerData &ld, Layer &params, bool sleep);
-    void advanceLayer(LayerData &ld, Layer &params, bool sleep, bool rev);
+    inline float normValue(RangedAudioParameter &p) { return p.convertFrom0to1(p.getValue()); }
 
-    void setCartLayerX(LayerData &ld, Layer &params,unsigned pos);
-    void setCartLayerY(LayerData &ld, Layer &params,unsigned pos);
-    void advanceCartLayer(LayerData &ld, Layer &params, bool xTrig, bool yTrig);
+    // control rate prep
+    void prepLayer(Layer &layerParam, LayerData &ld);
+    void prepCartLayer(Layer &layerParam, LayerData &ld);
+
+    // sample rate
+    void processLayer(float clkIn, float modIn, float cvIn, Steps &steps, LayerData &ld, float &cv, bool &gate);
+    void processCartLayer(Steps &steps, LayerData &ld, LayerData &xld, LayerData &yld, float &cv, bool &gate);
+    float quantizeCv(unsigned scale, unsigned root, float voctIn);
+
+    unsigned advanceLayer(Steps &steps, unsigned seqstep, LayerData &ld);
+    unsigned setLayerStep(Steps &steps, unsigned seqstep, LayerData &ld);
+
+
+    unsigned setCartLayerX(Steps &steps, unsigned x, unsigned xOffset, LayerData &ld);
+    unsigned setCartLayerY(Steps &steps, unsigned y, unsigned yOffset, LayerData &ld);
+    void advanceCartLayer(Steps &steps, LayerData &ld, bool xTrig, bool yTrig);
 
     static Snakes snakes_;
     Quantizer quantizer_;
+
+    static constexpr unsigned trigGateTime = 64; // samples
+    static constexpr float trigLevel = 0.2f; // 1v
+    static constexpr float clockLevel = trigLevel; // 1v
+    static constexpr float glideRatio = 10.0f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };

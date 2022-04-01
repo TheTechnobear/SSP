@@ -12,9 +12,7 @@ public:
     virtual ~SnakeAlgo() { ; }
 
     virtual const std::string &name() = 0;
-    virtual unsigned findNext(unsigned cpos) = 0;
-    virtual unsigned findPrev(unsigned cpos) = 0;
-
+    virtual unsigned getPosition(unsigned seq_step) = 0;
     static constexpr unsigned NSTEPS=16;
 };
 
@@ -31,18 +29,10 @@ public:
         return "Invalid";
     }
 
-    unsigned findNext(unsigned snake, unsigned cpos) {
+    unsigned getPosition(unsigned snake, unsigned seq_step) {
         auto & s = snakes_[snake];
         if(s) {
-            return s->findNext(cpos);
-        }
-        return 0;
-    }
-
-    unsigned findPrev(unsigned snake, unsigned cpos) {
-        auto & s = snakes_[snake];
-        if(s) {
-            return s->findPrev(cpos);
+            return s->getPosition(seq_step);
         }
         return 0;
     }
