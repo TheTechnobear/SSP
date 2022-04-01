@@ -29,6 +29,7 @@ message("using VSTSDK  :  ${VSTSDK}")
 juce_set_vst2_sdk_path(${VSTSDK})
 
 
+add_subdirectory(daisySP))
 add_subdirectory(technobear)
 
 # set(CMAKE_FOLDER .)
