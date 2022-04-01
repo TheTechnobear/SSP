@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 project(sspdev)
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     message("apple config")
@@ -29,7 +32,7 @@ message("using VSTSDK  :  ${VSTSDK}")
 juce_set_vst2_sdk_path(${VSTSDK})
 
 
-add_subdirectory(daisySP))
+add_subdirectory(daisySP)
 add_subdirectory(technobear)
 
 # set(CMAKE_FOLDER .)

@@ -18,4 +18,4 @@
 	url = https://github.com/lua/lua.git
 [submodule "DaisySP"]
 	path = DaisySP
-	url = https://github.com/electro-smith/DaisySP.git
+	url = https://github.com/TheTechnobear/DaisySP.git
