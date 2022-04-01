@@ -70,7 +70,7 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     );
     addParamPage(
         std::make_shared<pcontrol_type>(processor_.getHarmonic(12).amp, 0.25),
-        std::make_shared<pcontrol_type>(processor_.getHarmonic(12).amp, 0.25),
+        std::make_shared<pcontrol_type>(processor_.getHarmonic(13).amp, 0.25),
         std::make_shared<pcontrol_type>(processor_.getHarmonic(14).amp, 0.25),
         std::make_shared<pcontrol_type>(processor_.getHarmonic(15).amp, 0.25),
         view,
