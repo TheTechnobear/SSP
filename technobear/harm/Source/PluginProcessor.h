@@ -19,6 +19,7 @@ PARAMETER_ID (pitch)
 PARAMETER_ID (first)
 PARAMETER_ID (centre)
 PARAMETER_ID (spread)
+PARAMETER_ID (amount)
 
 PARAMETER_ID(harmonics)
 // harmonics 1-16
@@ -48,6 +49,7 @@ public:
         I_AMP,
         I_CENTRE,
         I_SPREAD,
+        I_AMOUNT,
         I_MAX
     };
     enum {
@@ -73,6 +75,7 @@ public:
         Parameter &first;
         Parameter &centre;
         Parameter &spread;
+        Parameter &amount;
         std::vector<std::unique_ptr<Harmonic>> harmonics_;
     } params_;
 

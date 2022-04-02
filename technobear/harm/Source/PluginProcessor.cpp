@@ -37,7 +37,8 @@ PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) 
     pitch(*apvt.getParameter(ID::pitch)),
     first(*apvt.getParameter(ID::first)),
     centre(*apvt.getParameter(ID::centre)),
-    spread(*apvt.getParameter(ID::spread)) {
+    spread(*apvt.getParameter(ID::spread)),
+    amount(*apvt.getParameter(ID::amount)) {
     for (unsigned hid = 0; hid < MAX_HARMONICS; hid++) {
         auto harmonic = std::make_unique<Harmonic>(apvt, hid);
         harmonics_.push_back(std::move(harmonic));
@@ -53,6 +54,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::first, "H.First", 1.0f, 16.0f, 1.0f, 1.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::centre, "T.Centre", 1.0f, 16.0f, 1.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::spread, "T.Spread", 0.5f, 16.0f, 0.5f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::amount, "T.Amount", 0.0f, 1.0f, 0.0f));
 
     auto harmonics = std::make_unique<AudioProcessorParameterGroup>(ID::harmonics,
                                                                     String(ID::harmonics),
@@ -70,8 +72,9 @@ const String PluginProcessor::getInputBusName(int channelIndex) {
     static String inBusName[I_MAX] = {
         "VOct",
         "Amp",
-        "Centre",
-        "Spread",
+        "TCentre",
+        "TSpread",
+        "TAmount"
     };
     if (channelIndex < I_MAX) { return inBusName[channelIndex]; }
     return "ZZIn-" + String(channelIndex);
@@ -106,10 +109,12 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     oscillator_.SetFirstHarmIdx(normValue(params_.first));
 
     // control rate
-    float cvCentre = (buffer.getSample(I_CENTRE,0)  * 8.0f) +  8.0f; // 0..16
-    float cvSpread = (buffer.getSample(I_SPREAD,0)  * 8.0f) +  8.0f; // 0..16
-    float centre = daisysp::fclamp((normValue(params_.centre) - 1.0f) + cvCentre , 0.0f, 16.0f)  * -1.0f;
-    float spread = daisysp::fclamp(normValue(params_.spread) + cvSpread, 0.1,16.0f);
+    float cvCentre = (buffer.getSample(I_CENTRE, 0) * 8.0f) + 8.0f; // 0..16
+    float cvSpread = (buffer.getSample(I_SPREAD, 0) * 8.0f) + 8.0f; // 0..16
+    float cvAmount = buffer.getSample(I_AMOUNT, 0);
+    float centre = daisysp::fclamp((normValue(params_.centre) - 1.0f) + cvCentre, 0.0f, 16.0f) * -1.0f;
+    float spread = daisysp::fclamp(normValue(params_.spread) + cvSpread, 0.1, 16.0f);
+    float amount = daisysp::fclamp(params_.amount.getValue() + cvAmount, 0.0f, 1.0f);
 
     float amps[MAX_HARMONICS];
     float sum = 0.0f;
@@ -121,7 +126,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         float sph = (ph / hspread);
         float tph = daisysp::fclamp(sph, -1.0f, 1.0f);
         float tilt = daisysp::fmax(cosf(tph * PI_F), 0);
-        amps[h] = tilt;
+        amps[h] = tilt * amount;
         amps[h] += harmonic.amp.getValue(); // 0..1 is fine
         sum += amps[h];
     }
