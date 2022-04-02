@@ -16,6 +16,9 @@ constexpr const char *separator{":"};
 
 
 PARAMETER_ID (pitch)
+PARAMETER_ID (first)
+PARAMETER_ID (centre)
+PARAMETER_ID (spread)
 
 PARAMETER_ID(harmonics)
 // harmonics 1-16
@@ -43,6 +46,8 @@ public:
     enum {
         I_VOCT,
         I_AMP,
+        I_CENTRE,
+        I_SPREAD,
         I_MAX
     };
     enum {
@@ -65,6 +70,9 @@ public:
         using Parameter = juce::RangedAudioParameter;
         explicit PluginParams(juce::AudioProcessorValueTreeState &);
         Parameter &pitch;
+        Parameter &first;
+        Parameter &centre;
+        Parameter &spread;
         std::vector<std::unique_ptr<Harmonic>> harmonics_;
     } params_;
 
@@ -89,6 +97,10 @@ protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
 private:
+    static inline float normValue(RangedAudioParameter &p) {
+        return p.convertFrom0to1(p.getValue());
+    }
+
 
     daisysp::HarmonicOscillator<MAX_HARMONICS> oscillator_;
 

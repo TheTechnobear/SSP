@@ -22,9 +22,9 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 
     addParamPage(
         std::make_shared<pcontrol_type>(processor_.params_.pitch, 1.0f, 0.01),
-        nullptr,
-        nullptr,
-        nullptr,
+        std::make_shared<pcontrol_type>(processor_.params_.first, 1.0f, 1.0f),
+        std::make_shared<pcontrol_type>(processor_.params_.centre, 1.0f, 0.1f),
+        std::make_shared<pcontrol_type>(processor_.params_.spread, 1.0f, 0.1f),
         view,
         Colours::orange
     );
