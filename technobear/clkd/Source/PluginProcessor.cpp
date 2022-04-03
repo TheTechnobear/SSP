@@ -50,6 +50,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     source.add("Internal");
     source.add("Clk In");
     source.add("Midi");
+    jassert(source.size() == SRC_MAX);
 
     StringArray clkInDivs;
     clkInDivs.add("1");
@@ -133,13 +134,150 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
     return "ZZOut-" + String(channelIndex);
 }
 
+void PluginProcessor::updateClkOut(float clk) {
+    for (unsigned i = 0; i < CO_MAX; i++) {
+        if (i < CO_X1)
+            clkOutDiv_[i] = clk * powf(2.0f, i - CO_X1);
+        else if (i > CO_X1)
+            clkOutDiv_[i] = clk / powf(2.0f, CO_X1 - i);
+        else
+            clkOutDiv_[i] = clk;
+    }
+}
+
+void PluginProcessor::updateClockRates(bool force) {
+    bool updatebpm = force;
+    bool updatecvin = force;
+    bool updateppqn = force;
+
+    auto src = Source(normValue(PluginProcessor::params_.source));
+
+    if (src != PluginProcessor::source_) {
+        source_ = src;
+        switch (source_) {
+            case SRC_INTERNAL :
+                updatebpm = true;
+                break;
+            case SRC_CLKIN :
+                updatecvin = true;
+                break;
+            case SRC_MIDI :
+                updateppqn = true;
+                break;
+            default:
+                break;
+        }
+    }
+
+    unsigned clk = sampleRate_;
+    switch (source_) {
+        case SRC_INTERNAL : {
+            auto n = normValue(params_.bpm);
+            if (updatebpm || bpm_ != n) {
+                bpm_ = n;
+                float clk = ((sampleRate_ * 60.0f) / bpm_) * 4.0f; // bar = x1
+                updateClkOut(clk);
+            }
+            break;
+        }
+        case SRC_CLKIN : {
+            auto n = ClkInDiv(normValue(params_.clkindiv));
+            if (updatecvin || clkin_ != n) {
+                clkin_ = n;
+            }
+            break;
+        }
+        case SRC_MIDI : {
+            auto n = MidiPPQN(normValue(params_.midippqn));
+            if (updateppqn || ppqn_ != n) {
+                ppqn_ = n;
+            }
+            break;
+        }
+        default:
+//            clkInDiv_[CO_MAX];
+//            unsigned clkOutDiv_[CO_MAX];
+            break;
+    }
+}
+
+
 void PluginProcessor::prepareToPlay(double newSampleRate, int estimatedSamplesPerBlock) {
     BaseProcessor::prepareToPlay(newSampleRate, estimatedSamplesPerBlock);
+    sampleRate_ = newSampleRate;
+    updateClockRates(true);
 }
 
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
+    static constexpr float trigLevel = 0.5f;
     unsigned sz = buffer.getNumSamples();
+
+    auto src = Source(normValue(PluginProcessor::params_.source));
+    auto ppqn = unsigned(normValue(params_.midippqn));
+
+    bool src_cv = src == SRC_CLKIN;
+    bool src_midi = src == SRC_MIDI;
+    bool src_internal = src == SRC_INTERNAL;
+
+    for(unsigned s=0;s<sz;s++) {
+        float clkIn = buffer.getSample(I_CLK);
+        float resetIn = buffer.getSample(I_RESET);
+        float midiIn = buffer.getSample(I_MIDICLK);
+
+        bool clkTrig = clkIn > trigLevel && lastClkIn_ < trigLevel;
+        bool resetTrig = resetIn > trigLevel && lastResetIn_ < trigLevel;
+        bool midiTrig = resetIn > trigLevel && lastMidiIn_ < trigLevel;
+
+        sampleCount_ = (sampleCount_ + 1 ) % MAX_SAMPLE_COUNT;
+
+        // TODO : need to think about this more !
+        // need to be clear on definitions
+        // X4 is 4 times speed of incoming clock ... i.e. give it a 1/4 input , you get a 1/16
+        // D4 is a 1/4  incoming clock ... i.e. give it a 1/4 input , you get a 1/1 = a bar!
+        // .. so 1/16 does not mean a 1/16 notes ;)
+
+        // by definition multiples have to be done with samples, since we have to 'predict' clock
+        // it therefore makes sense to use a sample count.
+
+        // reset sample count.. at highest division... hmm, but ive no idea when that is ;)
+        // will have to make a decision on this and handle 'wrap around'
+
+
+
+
+        if(src_cv && clkTrig) {
+            cvSampleCount_ = sampleCount_;
+        }
+
+        if(src_midi && midiTrig) {
+            midiSampleCount_ = sampleCount_;
+
+            subClockCount_++;
+            if(midiPPQNRate_[ppqn]==subClockCount_) {
+                subClockCount_ = 0;
+                clockCount_++;
+            }
+        }
+
+        if(src_internal) {
+            subClockCount_++;
+            if(subClockCount_ == sampleRate_) {
+                clockCount_++;
+            }
+        }
+
+
+        if(resetTrig) {
+            clockCount_ = 0;
+        }
+
+
+        lastClkIn_ = clkIn;
+        lastResetIn_= resetIn;
+        lastMidiIn_ = midiIn;
+
+    }
 }
 
 

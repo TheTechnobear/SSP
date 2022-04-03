@@ -78,7 +78,7 @@ public:
 
         std::vector<std::unique_ptr<DivParam>> divisions_;
     } params_;
-    
+
     static BusesProperties getBusesProperties() {
         BusesProperties props;
         for (auto i = 0; i < I_MAX; i++) {
@@ -94,6 +94,13 @@ protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
 private:
+    enum Source {
+        SRC_INTERNAL,
+        SRC_CLKIN,
+        SRC_MIDI,
+        SRC_MAX
+    };
+
     enum MidiPPQN {
         MPPQN_24,
         MPPQN_48,
@@ -134,6 +141,38 @@ private:
 
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
         return true;
+    }
+
+    void updateClockRates(bool force=false);
+
+    unsigned clkInDiv_[CO_MAX];
+    unsigned clkOutDiv_[CO_MAX];
+
+    Source source_ = SRC_MAX;
+    float bpm_ = 10000.0f;
+    ClkInDiv clkin_ = CI_MAX;
+    MidiPPQN ppqn_ = MPPQN_MAX;
+
+
+//    static constexpr unsigned  MAX_SAMPLE_COUNT = UINT_MAX;
+    static constexpr unsigned  MAX_SAMPLE_COUNT = 48000 * 10; // for testing only
+
+    unsigned sampleRate_=0;
+
+    unsigned sampleCount_=0;
+    unsigned cvSampleCount_ = 0;
+    unsigned midiSampleCount_ = 0;
+    unsigned intSampleCount_= 0;
+
+    float lastClkIn_ = 0.0f;
+    float lastResetIn_ = 0.0f;
+    float lastMidiIn_ = 0.0f;
+
+    unsigned subClockCount_ = 0;
+    unsigned midiPPQNRate_ [MPPQN_MAX] = { 24, 48,96,192};
+
+    inline float normValue(RangedAudioParameter &p) {
+        return p.convertFrom0to1(p.getValue());
     }
 
     static const String getInputBusName(int channelIndex);
