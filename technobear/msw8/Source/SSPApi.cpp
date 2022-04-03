@@ -235,6 +235,7 @@ extern "C" __attribute__ ((visibility("default")))
 Percussa::SSP::PluginDescriptor *createDescriptor() {
     std::vector<std::string> inNames;
     std::vector<std::string> outNames;
+    auto colour = PluginProcessor::getIconColour();
     auto busProps = PluginProcessor::getBusesProperties();
 
     for (auto layout: busProps.inputLayouts) {
@@ -253,6 +254,7 @@ Percussa::SSP::PluginDescriptor *createDescriptor() {
     desc->uid = (int) JucePlugin_VSTUniqueID;
     desc->inputChannelNames = inNames;
     desc->outputChannelNames = outNames;
+    desc->colour = colour.getARGB();
 
     return desc;
 }
