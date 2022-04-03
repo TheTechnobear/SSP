@@ -10,12 +10,12 @@
 [submodule "external/readerwriterqueue"]
 	path = external/readerwriterqueue
 	url = https://github.com/cameron314/readerwriterqueue
-[submodule "ssp-sdk"]
-	path = ssp-sdk
-	url = https://github.com/thetechnobear/ssp-sdk
 [submodule "lualib/lua"]
 	path = lualib/lua
 	url = https://github.com/lua/lua.git
 [submodule "DaisySP"]
 	path = DaisySP
 	url = https://github.com/TheTechnobear/DaisySP.git
+[submodule "ssp-sdk"]
+	path = ssp-sdk
+	url = https://github.com/TheTechnobear/ssp-sdk

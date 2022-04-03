@@ -143,6 +143,9 @@ public:
         }
         return props;
     }
+
+    static Colour getIconColour() { return juce::Colours::yellow;}
+
 private:
 
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {

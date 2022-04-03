@@ -93,6 +93,7 @@ protected:
         O_MAX
     };
 
+
 public:
     static constexpr unsigned MAX_SIG_IN = (I_SIG_4L - I_SIG_1L) / 2 + 1;
     static constexpr unsigned MAX_SIG_OUT = (O_SIG_DL - O_SIG_AL) / 2 + 1;
@@ -121,6 +122,8 @@ public:
         }
         return props;
     }
+
+    static Colour getIconColour() { return juce::Colours::lightblue;}
 
 private:
     std::atomic<float> lastVcaCV_[MAX_SIG_IN][MAX_SIG_OUT];
