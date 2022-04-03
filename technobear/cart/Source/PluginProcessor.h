@@ -151,6 +151,8 @@ public:
         return props;
     }
 
+    static Colour getIconColour() { return juce::Colours::lightblue;}
+
     void getActiveData(unsigned &xp, unsigned &yp, unsigned &cp,
                        float &xCv, float &yCv, float &cCv,
                        bool &xGate, bool &yGate, bool &cGate) const;
