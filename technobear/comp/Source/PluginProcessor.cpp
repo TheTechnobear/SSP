@@ -95,8 +95,13 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     compressor_.SetThreshold(threshold);
     compressor_.SetAttack(attack);
     compressor_.SetRelease(release);
-    compressor_.SetMakeup(makeup);
-    compressor_.AutoMakeup(automakeup);
+    if(automakeup) {
+//        compressor_.SetMakeup(makeup);
+        compressor_.AutoMakeup(automakeup);
+    } else {
+        compressor_.AutoMakeup(automakeup);
+        compressor_.SetMakeup(makeup);
+    }
 
     inRms_[I_LEFT].process(buffer, I_LEFT);
     if (stereoIn) inRms_[I_RIGHT].process(buffer, I_RIGHT);
