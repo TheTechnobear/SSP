@@ -127,7 +127,8 @@ void BarParamControl::paint(Graphics &g) {
 
     if (!p.isDiscrete()) {
         int be = (w - 4) * p.getValue();
-        if (p.getNormalisableRange().start >= 0.0f) {
+        bool bipolar = p.getNormalisableRange().start < 0.0f && p.getNormalisableRange().end > 0.0f;
+        if (!bipolar) {
             g.fillRect(2, h / 2 + 2, be, fh - 4);
         } else {
             float v = p.getValue() - 0.5f;
