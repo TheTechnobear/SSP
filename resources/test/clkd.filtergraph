@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<FILTERGRAPH>
+  <FILTER uid="1" x="0.5" y="0.1">
+    <PLUGIN name="Audio Input" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="JUCE" version="1.0" file="" uid="246006c0" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="0" numOutputs="2"
+            isShell="0"/>
+    <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="disabled"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="L R"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="2" x="0.25" y="0.1">
+    <PLUGIN name="MIDI Input" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="JUCE" version="1.0" file="" uid="a9e4f9eb" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="0" numOutputs="0"
+            isShell="0"/>
+    <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="disabled"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="disabled"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="3" x="0.5" y="0.9">
+    <PLUGIN name="Audio Output" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="JUCE" version="1.0" file="" uid="724248cb" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="2" numOutputs="0"
+            isShell="0"/>
+    <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="L R"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="disabled"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="4" x="0.25" y="0.9">
+    <PLUGIN name="MIDI Output" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="JUCE" version="1.0" file="" uid="9d5bbb00" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="0" numOutputs="0"
+            isShell="0"/>
+    <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="disabled"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="disabled"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="5" x="0.3529937444146559" y="0.3262135922330097" uiLastX_Normal="311"
+          uiLastY_Normal="135" uiopen_Normal="1">
+    <PLUGIN name="clkd" format="VST3" category="Fx" manufacturer="Technobear"
+            version="1.0.1" file="/Users/kodiak/Library/Audio/Plug-Ins/VST3/clkd.vst3"
+            uid="aea1fd66" isInstrument="0" fileTime="17ff03ed3a9" infoUpdateTime="17ff054aecd"
+            numInputs="2" numOutputs="9" isShell="0"/>
+    <STATE>1805.VMjLgPvA...O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9DiL1jiKV0jZLclKKEjKt3xSqX1UgIWPnM1ZIIiXugCaggCRRwDctjFRlQEagkFNFk0azDSV3fjTUQUVTszLHg2S43hPOYUSEUUN1MTUE0TQUYlZpMETUUTUkEzTOgFQogjYpo1TPUUQUUVQS8DZDkFRlolZSAUUEUUYIM0SnQTZHYlZpMETUUTUk0zTOgFQogjYpo1TPUUQUUVTS8DZDkFRlolZSAUUEUUYUM0SnQTZHYlZpMETUUTUkk0TOgFQogjYpo1TPUUQUU1XS8DZDkFRlolZSAUUEUUYmM0SnQTZHYlZpMETUUTUks1TOgFQogjYpo1TPUUQUUVQCwDNHIESn4hTR4TPUUEU3TES2oWZHcGRBgTRzPDUUEELWcGRS8DZDkFRlolZSAUUEUUYEkGS3fjTLglKRIkSAUUUTgSULomdogzcHIDRIQCQTUUTvb0cTM0SnQTZHYlZpMETUUTUkUTZMgCRRwDZtHkTNETUUQENUwjL5kFR2gjPHkDMDQUUQAyU2Y1TOgFQogjYpo1TPUUQUUVQS4DNHIESn4hTR4TPUUEU3rFS1oWZHcGRBgTRzPDUUEELWgGQS8DZDkFRlolZSAUUEUUYIkFS3fjTLglKRIkSAUUUTgyZLkmdogzcHIDROUUQUAUUEUUYAM0SnQTZHY1MTUEUAUUUTgSULgCRRwDZtf2TUEUQTUUTvbEd5kFR2gjPH8TUEUETUUTUk0zTOgFQogjY2PUUTETUUQENE0DNHIESn4BdSUUTEQUUQAyUvnWZHcGRBgzSUUTUPUUQUUVVS8DZDkFRlcCUUQUPUUEU3.SS3fjTLglK3MUUQUDUUEELWMidogzcHIDROUUQUAUUEUUYqM0SnQTZHY1MTUEUAUUUTgSULYmdogzcHIDROUUQUAUUEUUYEMES3fjTLglK3MUUQUDUUEELWcGRS8DZDkFRlcCUUQUPUUEU3TES4oWZHcGRBgzSUUTUPUUQUUVQC0DNHIESn4BdSUUTEQUUQAyU2Q0TOgFQogjY2PUUTETUUQENUwTL5kFR2gjPH8TUEUETUUTUkUTdMgCRRwDZtf2TUEUQTUUTvb0clM0SnQTZHY1MTUEUAUUUTgSULQidogzcHIDROUUQUAUUEUUYIMDS3fjTLglK3MUUQUDUUEELWgGQS8DZDkFRlcCUUQUPUUEU3rFS3oWZHcGRBgzSUUTUPUUQUUVR4wDNHIESncCZOcCSGM1YQcUV4X2PTETRUAUSAIkVpASZHgVPWEFZtf1XmcmUisFLogzcyHDSncCZOciKUAkTEQ0TlolQYgCR3gkbyYkVzEkUZESRBgTLEYTXvTkUOgFRosjcHg2R4X2PTETRUAUSAIkVpASZHo1ZrMVMtjlSwTjQgglKnM1Y2Y0XqASZHEyLBwDZ2f1S23RUPIUQTMkYpYTV3fjPY8VVs4zctk1XmcGaHYFVWgkbUcUV3fDdMQmKogTcyLzSPUjZTEDLDgzaQY0SnAkUZEyaowTMXcEVxkjPHESQFEFLUY0SnYVZKYGR3sTN1MDUAkTUP0TPRokZvjFRpsFaiUCSo4TLEYTXn4BZic1cVM1ZvjFRzLiPLg1Mn8zMtTETRUDUSYlZFkENHITVukUaNomaoM1Y2wFRlg0UXIWUWkENHIES1MiPLg1Mn8zMtTETRUDUSYlZFkENHITVukUaNAiaoM1Y2wFRlg0UXIWUWkENHIES2MiPLg1Mn8zMtTETRUDUSYlZFkENHITVukUaNEiaoM1Y2wFRlg0UXIWUWkENHIES3MiPLg1Mn8zMtTETRUDUSYlZFkENHITVukUaNIiaoM1Y2wFRlg0UXIWUWkENHIES4MiPLg1Mn8zMtTETRUDUSYlZFkENHIUXuEkUZYWPWIFcIIDRwTjQgASUV8DZtj1R1gDdKkicCQUPIUETMEjTZoFLogTd3X0X30jUYglKnM1Y2Y0XqASZHY2LBwDZ2f1S2bCdhoWQFM1ZzLzSMsFQQkTPRMURQQkTkslZSgCRngjY5QkTDsldW8TUEUENHgFRloGURQzZ5c0PmQ0Sn4RZHYldTIEQqo2UNgCQUUDNUIkSvjFR1gDZOcCQTMld3XUXmE0UZUGMwrTN1k2RMsFQQkDMC8zPUACUTgCUSU2LC8TcXACUTQyPt3hKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYjKAQjYPQSPWgUdMcjKAQjct3hdA4hKt3hKt3hKtnTUv.UQAslXuk0UXoWUFE0YQcEV77RRC8Vav8lak4Fc9vyKVMEUy.Ea0cVZtMEcgQWY9..</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+        <BUS index="2" layout="C"/>
+        <BUS index="3" layout="C"/>
+        <BUS index="4" layout="C"/>
+        <BUS index="5" layout="C"/>
+        <BUS index="6" layout="C"/>
+        <BUS index="7" layout="C"/>
+        <BUS index="8" layout="C"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="6" x="0.3655049151027703" y="0.5650485436893203">
+    <PLUGIN name="data" format="VST3" category="Fx" manufacturer="Technobear"
+            version="1.0.2" file="/Users/kodiak/Library/Audio/Plug-Ins/VST3/data.vst3"
+            uid="aea2498e" isInstrument="0" fileTime="17fcbe4c2fb" infoUpdateTime="17ff054aece"
+            numInputs="5" numOutputs="4" isShell="0"/>
+    <STATE>2128.VMjLgbDB...O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9DSMwDiKV0jZLcFRZEjKt3xSqX1UgIWPnM1ZIIiXugCaggCRRwDctjFRlQEagkFNFk0azDSV3fjTUQUVTszLHg2S43hPOYUSEUUN1MTUE0TQUYlZpMETUUTUkEzTOgFQogjYpo1TPUUQUUVQS8DZDkFRlolZSAUUEUUYIM0SnQTZHYlZpMETUUTUk0zTOgFQogjYpo1TPUUQUUVTS8DZDkFRlolZSAUUEUUYUM0SnQTZHYlZpMETUUTUkk0TOgFQogjYpo1TPUUQUU1XS8DZDkFRlolZSAUUEUUYmM0SnQTZHYlZpMETUUTUks1TOgFQogjYpo1TPUUQUUVQCwDNHIESn4hTR4TPUUEU3TES2oWZHcGRBgTRzPDUUEELWcGRS8DZDkFRlolZSAUUEUUYEkGS3fjTLglKRIkSAUUUTgSULomdogzcHIDRIQCQTUUTvb0cTM0SnQTZHYlZpMETUUTUkUTZMgCRRwDZtHkTNETUUQENUwjL5kFR2gjPHkDMDQUUQAyU2Y1TOgFQogjYpo1TPUUQUUVQS4DNHIESn4hTR4TPUUEU3rFS1oWZHcGRBgTRzPDUUEELWgGQS8DZDkFRlolZSAUUEUUYIkFS3fjTLglKRIkSAUUUTgyZLkmdogzcHIDROUUQUAUUEUUYAM0SnQTZHY1MTUEUAUUUTgSULgCRRwDZtf2TUEUQTUUTvbEd5kFR2gjPH8TUEUETUUTUk0zTOgFQogjY2PUUTETUUQENE0DNHIESn4BdSUUTEQUUQAyUvnWZHcGRBgzSUUTUPUUQUUVVS8DZDkFRlcCUUQUPUUEU3.SS3fjTLglK3MUUQUDUUEELWMidogzcHIDROUUQUAUUEUUYqM0SnQTZHY1MTUEUAUUUTgSULYmdogzcHIDROUUQUAUUEUUYEMES3fjTLglK3MUUQUDUUEELWcGRS8DZDkFRlcCUUQUPUUEU3TES4oWZHcGRBgzSUUTUPUUQUUVQC0DNHIESn4BdSUUTEQUUQAyU2Q0TOgFQogjY2PUUTETUUQENUwTL5kFR2gjPH8TUEUETUUTUkUTdMgCRRwDZtf2TUEUQTUUTvb0clM0SnQTZHY1MTUEUAUUUTgSULQidogzcHIDROUUQUAUUEUUYIMDS3fjTLglK3MUUQUDUUEELWgGQS8DZDkFRlcCUUQUPUUEU3rFS3oWZHcGRBgzSUUTUPUUQUUVR4wDNHIESncCZOcCSGM1YQcUV4X2PTETRUAUSAIkVpASZHcVRwb0Lq0FRlg0UXIWUWkENHIDSz4RZHU2LC8DTEoFUAACQH8VTV8DZLYTVkc1UjglKnM1Y2Y0XqASZHY2LBwDZ2f1S23RUPIUQTMkYpYTV3fDZYgWUVkUMUwFRlg0UXIWUWkENHIDSz4RZHU2LC8DTEoFUAACQH8VTV8DZLckVs81PLUCSGoUci0FRlg0UXIWUWkENHIESz4RZHU2LC8DTEoFUAACQH8VTV8DZLckVs81PLUiZxbUcYwVV4UkQiglKnM1Y2Y0XqASZHY2LBwDZ2f1S23RUPIUQTMkYpYTV3fDdh81Xr4jctMEYk0jLXc1cVkEZtf1XmcmUisFLogzcyHDSncCZOciKUAkTEQ0TlolQYgCR3I1aiwlS24Vdh4FNwLFZtf1XmcmUisFLogzcyHDSncCZOciKUAkTEQ0TlolQYgCR3I1aiwlS241TjUFNrkEaMcUV5kjPHESQFEFLUY0Sn4RZKYGR3sTN1MDUAkTUP0TPRokZvjFR4sVLYUCQo4DM3.iXoUjQgsVRBgTLEYTXvTkUOgFQosjcHg2R4X2PTETRUAUSAIkVpASZHk2ZwjUMHklS4cVLgISRBgTLEYTXvTkUOgFQosjcHg2R4X2PTETRUAUSAIkVpASZHk2ZwjUMHklSzfCLgwVVwH1ZQ0FRlg0UXIWUWkENHIDSz4RZHU2LC8DTEoFUAACQH8VTV8DZLckVs8VZLUiZxbUdMYEVxUEaHYFVWgkbUcUV3fjTLQmKogTcyLzSPUjZTEDLDgzaQY0SnwzUZ01a4wTMLcjV0MVaHYFVWgkbUcUV3fjTLQmKogTcyLzSPUjZTEDLDgzaQY0SnwzUZ01a4wTMpIyU0kEaYkWUFMFZtf1XmcmUisFLogjcyHDSncCZOciKUAkTEQ0TlolQYgCR3I1aiwlS441TjUVSxf0Y2YUVn4BZic1cVM1ZvjFR2MiPLg1Mn8zMtTETRUDUSYlZFkENHIzXk0jLXc1cVkEZtf1XmcmUisFLogDLyHDSncCZOciKUAkTEQ0TlolQYgCRBMFdqESVkcGaiIWRBgTLEYTXvTkUOglKosjcHg2R4X2PTETRUAUSAIkVpASZHoWRWoUa3.iX30DaHYFVWgkbUcUV3fjPLQmKogTcyLzS0wzQicVTWkUN1M0TIEEURYldTIEQqo2UIQCUOgFRBgTSqQTTIgCLSUUTU8DZHIDRMsFQQkDNv.ERvjFR1gjPH0zZDEUR3r1TOEUUQU1ZpMENHIDSnMyPOETUGMVcvXEV5sVLgQGNn8zM2H0TIEEURkic4AUUMUTUOAidKkic4sjUMUTU43hKt3hKt3hKt3hKt3FUUMTUDQEdqw1XmE0UYQTQFM1YAAkKAgDUjYWQwHVdAAkKAwjKtLlKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYDOujzPu0Fbu4VYtQmO77hUSQ0LPwVcmklaSQWXzUlO..</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+        <BUS index="2" layout="C"/>
+        <BUS index="3" layout="C"/>
+        <BUS index="4" layout="C"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+        <BUS index="2" layout="C"/>
+        <BUS index="3" layout="C"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <CONNECTION srcFilter="5" srcChannel="0" dstFilter="6" dstChannel="0"/>
+  <CONNECTION srcFilter="5" srcChannel="1" dstFilter="6" dstChannel="1"/>
+  <CONNECTION srcFilter="5" srcChannel="3" dstFilter="6" dstChannel="2"/>
+  <CONNECTION srcFilter="5" srcChannel="4" dstFilter="6" dstChannel="3"/>
+</FILTERGRAPH>
