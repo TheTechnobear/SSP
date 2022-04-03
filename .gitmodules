@@ -12,7 +12,7 @@
 	url = https://github.com/cameron314/readerwriterqueue
 [submodule "ssp-sdk"]
 	path = ssp-sdk
-	url = https://github.com/percussa/ssp-sdk
+	url = https://github.com/thetechnobear/ssp-sdk
 [submodule "lualib/lua"]
 	path = lualib/lua
 	url = https://github.com/lua/lua.git
