@@ -12,10 +12,8 @@ copy `*.so` to SSP's sdcard `/plugins`
 
 
 ## Documentation 
-this packages contains a docs directory with a file for each plugin which contains details about how to use each plugin
-
-some general notes about my plugins are included in this document
-
+Documentation can be found on my [SSP Wiki](
+https://github.com/TheTechnobear/SSP/wiki/Modules%3ATheTechnobear)
 
 ### Midi 
 My plugins now support midi.
