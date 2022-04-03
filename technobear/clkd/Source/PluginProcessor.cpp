@@ -98,7 +98,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
         ar[0] = 'A' + sn;
         ar[1] = 0;
         String desc = "Div " + String(ar);
-        sg->addChild(std::make_unique<ssp::BaseChoiceParameter>(getPID(ID::div, sn, ID::val), desc, clkOutDivs, (CO_X1 + sn) % clkOutDivs.size() ));
+        sg->addChild(std::make_unique<ssp::BaseChoiceParameter>(getPID(ID::div, sn, ID::val), desc, clkOutDivs, (CO_X1 + sn) % clkOutDivs.size()));
     }
     params.add(std::move(sg));
 
@@ -108,8 +108,9 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 
 const String PluginProcessor::getInputBusName(int channelIndex) {
     static String inBusName[I_MAX] = {
-        "Clk In"
-        "Reset"
+        "Clk In",
+        "Reset",
+        "Midi Clk"
     };
     if (channelIndex < I_MAX) { return inBusName[channelIndex]; }
     return "ZZIn-" + String(channelIndex);
@@ -125,8 +126,7 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
         "Clk E",
         "Clk F",
         "Clk G",
-        "Clk H",
-        "Midi Clk"
+        "Clk H"
     };
 
     if (channelIndex < O_MAX) { return outBusName[channelIndex]; }

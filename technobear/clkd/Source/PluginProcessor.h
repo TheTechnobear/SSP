@@ -45,6 +45,7 @@ public:
     enum {
         I_CLK,
         I_RESET,
+        I_MIDICLK,
         I_MAX
     };
     enum {
@@ -56,7 +57,6 @@ public:
         O_CLK_6,
         O_CLK_7,
         O_CLK_8,
-        O_MIDI_CLK,
         O_MAX
     };
 
