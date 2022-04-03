@@ -134,16 +134,16 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
     return "ZZOut-" + String(channelIndex);
 }
 
-void PluginProcessor::updateClkOut(float clk) {
-    for (unsigned i = 0; i < CO_MAX; i++) {
-        if (i < CO_X1)
-            clkOutDiv_[i] = clk * powf(2.0f, i - CO_X1);
-        else if (i > CO_X1)
-            clkOutDiv_[i] = clk / powf(2.0f, CO_X1 - i);
-        else
-            clkOutDiv_[i] = clk;
-    }
-}
+//void PluginProcessor::updateClkOut(float clk) {
+//    for (unsigned i = 0; i < CO_MAX; i++) {
+//        if (i < CO_X1)
+//            clkOutDiv_[i] = clk * powf(2.0f, i - CO_X1);
+//        else if (i > CO_X1)
+//            clkOutDiv_[i] = clk / powf(2.0f, CO_X1 - i);
+//        else
+//            clkOutDiv_[i] = clk;
+//    }
+//}
 
 void PluginProcessor::updateClockRates(bool force) {
     bool updatebpm = force;
@@ -176,7 +176,7 @@ void PluginProcessor::updateClockRates(bool force) {
             if (updatebpm || bpm_ != n) {
                 bpm_ = n;
                 float clk = ((sampleRate_ * 60.0f) / bpm_) * 4.0f; // bar = x1
-                updateClkOut(clk);
+//                updateClkOut(clk);
             }
             break;
         }
@@ -221,9 +221,9 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     bool src_internal = src == SRC_INTERNAL;
 
     for(unsigned s=0;s<sz;s++) {
-        float clkIn = buffer.getSample(I_CLK);
-        float resetIn = buffer.getSample(I_RESET);
-        float midiIn = buffer.getSample(I_MIDICLK);
+        float clkIn = buffer.getSample(I_CLK,s);
+        float resetIn = buffer.getSample(I_RESET,s);
+        float midiIn = buffer.getSample(I_MIDICLK,s);
 
         bool clkTrig = clkIn > trigLevel && lastClkIn_ < trigLevel;
         bool resetTrig = resetIn > trigLevel && lastResetIn_ < trigLevel;

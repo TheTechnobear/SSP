@@ -90,6 +90,9 @@ public:
         return props;
     }
 
+    static Colour getIconColour() { return juce::Colours::plum;}
+
+
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
@@ -168,6 +171,7 @@ private:
     float lastResetIn_ = 0.0f;
     float lastMidiIn_ = 0.0f;
 
+    unsigned clockCount_=0;
     unsigned subClockCount_ = 0;
     unsigned midiPPQNRate_ [MPPQN_MAX] = { 24, 48,96,192};
 
