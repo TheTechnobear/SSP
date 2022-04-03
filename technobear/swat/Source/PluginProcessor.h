@@ -68,6 +68,10 @@ public:
         }
         return props;
     }
+
+
+    static Colour getIconColour() { return juce::Colours::orange;}
+
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
