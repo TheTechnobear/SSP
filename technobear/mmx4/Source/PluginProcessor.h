@@ -123,8 +123,6 @@ public:
         return props;
     }
 
-    static Colour getIconColour() { return juce::Colours::lightblue;}
-
 private:
     std::atomic<float> lastVcaCV_[MAX_SIG_IN][MAX_SIG_OUT];
 

@@ -1,16 +1,38 @@
 
 #include "../../ssp-sdk/Percussa.h"
-
-#include "PluginProcessor.h"
 #include "ssp/EditorHost.h"
 
-// this is a common file in ALL my plugin projects
-// the 'template' lives in the common directory
-// however, it needs to be in project folder because it needs to create PluginProcessor
-// so it gets copied with:
-// find . -name Source -exec cp common/SSPApi.cpp {} \;
-// if a project needs a 'special' verison of this, then rename (so it does not get overwritten)
-// and setup in the project CMakeFile
+// you will need to create a SSPApi.cpp in your project file,
+// this will allows specifc to be overriden, though usually most of the default as ok
+
+/* 
+// example: SSPApi.cpp
+// you'll want to override colour at least, you might want to overide name
+// usually createInstance is fine (and uses implementation in this file), 
+// but specialised cases can override 
+
+------
+
+#include "PluginProcessor.h"
+#include "SSPApi.h"
+
+extern "C" __attribute__ ((visibility("default")))
+Percussa::SSP::PluginDescriptor *createDescriptor() {
+    auto desc=SSP_createDescriptor();
+    desc->colour = Colours::red.getARGB();
+    return desc;
+}
+
+extern "C" __attribute__ ((visibility("default")))
+Percussa::SSP::PluginInterface *createInstance() {
+    return new SSP_PluginInterface(new PluginProcessor());
+
+}
+
+----
+
+*/
+
 
 enum SSPButtons {
     SSP_Soft_1,
@@ -231,11 +253,10 @@ private:
     PluginProcessor *processor_ = nullptr;
 };
 
-extern "C" __attribute__ ((visibility("default")))
-Percussa::SSP::PluginDescriptor *createDescriptor() {
+
+Percussa::SSP::PluginDescriptor *SSP_createDescriptor() {
     std::vector<std::string> inNames;
     std::vector<std::string> outNames;
-    auto colour = PluginProcessor::getIconColour();
     auto busProps = PluginProcessor::getBusesProperties();
 
     for (auto layout: busProps.inputLayouts) {
@@ -254,15 +275,9 @@ Percussa::SSP::PluginDescriptor *createDescriptor() {
     desc->uid = (int) JucePlugin_VSTUniqueID;
     desc->inputChannelNames = inNames;
     desc->outputChannelNames = outNames;
-    desc->colour = colour.getARGB();
+    desc->colour = Colours::green.getARGB();
 
     return desc;
-}
-
-extern "C" __attribute__ ((visibility("default")))
-Percussa::SSP::PluginInterface *createInstance() {
-    return new SSP_PluginInterface(new PluginProcessor());
-
 }
 
 extern "C" __attribute__ ((visibility("default")))
@@ -270,3 +285,4 @@ void getApiVersion(unsigned &major, unsigned &minor) {
     major = Percussa::SSP::API_MAJOR_VERSION;
     minor = Percussa::SSP::API_MINOR_VERSION;
 }
+
