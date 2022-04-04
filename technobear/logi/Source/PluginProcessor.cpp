@@ -48,9 +48,10 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 
     auto sg = std::make_unique<AudioProcessorParameterGroup>(ID::gates, "gates", ID::separator);
     for (unsigned sn = 0; sn < I_MAX; sn++) {
-        char ar[2];
+        char ar[3];
         ar[0] = 'A' + (sn % 2);
         ar[1] = '1' + (sn / 2);
+        ar[2] = 0;
         String desc = "Inv " + String(ar);
         sg->addChild(std::make_unique<ssp::BaseBoolParameter>(getPID(ID::gates, sn, ID::inv), desc, false));
     }
