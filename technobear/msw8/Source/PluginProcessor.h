@@ -53,9 +53,6 @@ public:
     void onInputChanged(unsigned i, bool b) override;
     void onOutputChanged(unsigned i, bool b) override;
 
-
-    static Colour getIconColour() { return juce::Colours::lightblue;}
-
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
