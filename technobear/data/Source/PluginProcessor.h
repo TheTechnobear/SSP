@@ -114,8 +114,6 @@ public:
         return props;
     }
 
-    static Colour getIconColour() { return juce::Colours::green;}
-
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 

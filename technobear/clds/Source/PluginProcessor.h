@@ -82,8 +82,6 @@ public:
         return props;
     }
 
-    static Colour getIconColour() { return juce::Colours::aqua;}
-
 protected:
     void midiNoteInput(unsigned note, unsigned velocity) override { if (velocity > 0) noteInputTranspose_ = float(note) - 60.f; }
 
