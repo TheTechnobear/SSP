@@ -145,69 +145,32 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 //    }
 //}
 
-void PluginProcessor::updateClockRates(bool force) {
-    bool updatebpm = force;
-    bool updatecvin = force;
-    bool updateppqn = force;
-
-    auto src = Source(normValue(PluginProcessor::params_.source));
-
-    if (src != PluginProcessor::source_) {
-        source_ = src;
-        switch (source_) {
-            case SRC_INTERNAL :
-                updatebpm = true;
-                break;
-            case SRC_CLKIN :
-                updatecvin = true;
-                break;
-            case SRC_MIDI :
-                updateppqn = true;
-                break;
-            default:
-                break;
-        }
-    }
-
-    unsigned clk = sampleRate_;
-    switch (source_) {
-        case SRC_INTERNAL : {
-            auto n = normValue(params_.bpm);
-            if (updatebpm || bpm_ != n) {
-                bpm_ = n;
-                float clk = ((sampleRate_ * 60.0f) / bpm_) * 4.0f; // bar = x1
-//                updateClkOut(clk);
-            }
-            break;
-        }
-        case SRC_CLKIN : {
-            auto n = ClkInDiv(normValue(params_.clkindiv));
-            if (updatecvin || clkin_ != n) {
-                clkin_ = n;
-            }
-            break;
-        }
-        case SRC_MIDI : {
-            auto n = MidiPPQN(normValue(params_.midippqn));
-            if (updateppqn || ppqn_ != n) {
-                ppqn_ = n;
-            }
-            break;
-        }
-        default:
-//            clkInDiv_[CO_MAX];
-//            unsigned clkOutDiv_[CO_MAX];
-            break;
-    }
-}
 
 
 void PluginProcessor::prepareToPlay(double newSampleRate, int estimatedSamplesPerBlock) {
     BaseProcessor::prepareToPlay(newSampleRate, estimatedSamplesPerBlock);
     sampleRate_ = newSampleRate;
-    updateClockRates(true);
 }
 
+void PluginProcessor::setClockSampleTargets(unsigned samples) {
+    for (Clock &clk: clocks_) {
+        clk.targetSamples(samples);
+    }
+}
+void PluginProcessor::resetClocks() {
+    for (Clock &clk: clocks_) {
+        clk.reset();
+    }
+}
+
+float PluginProcessor::calcMultiplier(ClkInDiv& cid, ClkOutDiv& cod) {
+    //TODO
+    return 0.0f;
+}
+float  PluginProcessor::calcMultiplier(Clock& clk, ClkInDiv& cid) {
+    // TODO
+    return 0.0f;
+}
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     static constexpr float trigLevel = 0.5f;
@@ -219,64 +182,116 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     bool src_cv = src == SRC_CLKIN;
     bool src_midi = src == SRC_MIDI;
     bool src_internal = src == SRC_INTERNAL;
-
-    for(unsigned s=0;s<sz;s++) {
-        float clkIn = buffer.getSample(I_CLK,s);
-        float resetIn = buffer.getSample(I_RESET,s);
-        float midiIn = buffer.getSample(I_MIDICLK,s);
-
-        bool clkTrig = clkIn > trigLevel && lastClkIn_ < trigLevel;
-        bool resetTrig = resetIn > trigLevel && lastResetIn_ < trigLevel;
-        bool midiTrig = resetIn > trigLevel && lastMidiIn_ < trigLevel;
-
-        sampleCount_ = (sampleCount_ + 1 ) % MAX_SAMPLE_COUNT;
-
-        // TODO : need to think about this more !
-        // need to be clear on definitions
-        // X4 is 4 times speed of incoming clock ... i.e. give it a 1/4 input , you get a 1/16
-        // D4 is a 1/4  incoming clock ... i.e. give it a 1/4 input , you get a 1/1 = a bar!
-        // .. so 1/16 does not mean a 1/16 notes ;)
-
-        // by definition multiples have to be done with samples, since we have to 'predict' clock
-        // it therefore makes sense to use a sample count.
-
-        // reset sample count.. at highest division... hmm, but ive no idea when that is ;)
-        // will have to make a decision on this and handle 'wrap around'
+    bool forceUpdate = false;
 
 
-
-
-        if(src_cv && clkTrig) {
-            cvSampleCount_ = sampleCount_;
-        }
-
-        if(src_midi && midiTrig) {
-            midiSampleCount_ = sampleCount_;
-
-            subClockCount_++;
-            if(midiPPQNRate_[ppqn]==subClockCount_) {
-                subClockCount_ = 0;
-                clockCount_++;
+    // first see if anything has changed from most significant.
+    if(src!= source_) {
+        source_ = src;
+        for (Clock &clk: clocks_) {
+            switch(src) {
+                case SRC_CLKIN : {
+                    // TODO use trigs multiple > clock div
+                    clk.useTrigs(false);
+                    forceUpdate = true;
+                    break;
+                }
+                case SRC_INTERNAL : {
+                    // never use trigs ..  we dont get them ;)
+                    clk.useTrigs(false);
+                    forceUpdate = true;
+                    break;
+                }
+                case SRC_MIDI : {
+                    // TODO use trigs if PPQN / clock div allows
+                    clk.useTrigs(false);
+                    forceUpdate = true;
+                    break;
+                }
+                default: break;
             }
         }
+        resetClocks(); // the previous counters don't make any sense!
+    }
 
-        if(src_internal) {
-            subClockCount_++;
-            if(subClockCount_ == sampleRate_) {
-                clockCount_++;
+    auto clkDivIn = ClkInDiv(normValue(params_.clkindiv));
+    if (clkDivIn!= clockInDiv_) {
+        clockInDiv_ = clkDivIn;
+        for(auto& clk : clocks_) {
+            calcMultiplier(clk, clockInDiv_);
+        }
+        resetClocks(); // everything has changed ;)
+    }
+
+    if (src_internal) {
+        if (forceUpdate || normValue(params_.bpm) != bpm_) {
+            //TODO recalc sample
+            float samples = (sampleRate_ * 60.0f) / bpm_; // TODO use clock div.... this is quarters notes
+            setClockSampleTargets(samples);
+            // ? resetClocks();
+        }
+
+    }
+    if(src_midi) {
+        auto ppqn = MidiPPQN(normValue(params_.midippqn));
+        if(forceUpdate || ppqn!=ppqn_) {
+            // TODO : what need updating for midi when ppqn changes!
+
+
+            resetClocks(); // unlikely anything makes sense any more
+        }
+    }
+
+//    if(src_internal)  {
+//        // I dont think we really need to do anything here...
+//    }
+
+    unsigned clkN = 0;
+    for(auto& clk : clocks_) {
+        auto clkDiv = ClkOutDiv(normValue(params_.divisions_[clkN]->val));
+        float mult = calcMultiplier(clkDivIn,  clkDiv);
+        if(mult != clk.multiplier()) clk.multiplier(mult);
+        clkN++;
+    }
+
+    // ok, now we can do the work!
+    for (unsigned s = 0; s < sz; s++) {
+        float cv[I_MAX];
+        float trig[I_MAX];
+        for (unsigned i = 0; i < I_MAX; i++) {
+            cv[i] = buffer.getSample(i, s);
+            trig[i] = cv[i] > trigLevel && lastCv_[i] < trigLevel;
+            lastCv_[i] = cv[i];
+        }
+        sampleCount_++;
+
+        if(src_cv && trig[I_CLK]) {
+            sampleCount_ = 0;
+            lastSampleCount_ = sampleCount_;
+            setClockSampleTargets(lastSampleCount_);
+        }
+
+        if(src_midi && trig[I_MIDICLK]) {
+            sampleCount_ = 0;
+            lastSampleCount_ = sampleCount_;
+            setClockSampleTargets(lastSampleCount_);
+        }
+
+        unsigned clkN = 0;
+        for (Clock &clk: clocks_) {
+            bool trigFired = false, smpFired = false;
+            if (trig[I_RESET]) {
+                clk.reset();
+                buffer.setSample(O_CLK_1 + clkN, s, 0);
+            } else {
+                if (src_cv && trig[I_CLK]) trigFired = clk.trigTick();
+                if (src_midi && trig[I_MIDICLK]) trigFired = clk.trigTick();
+                smpFired = clk.sampleTick();
+                bool fired = clk.useTrigs() ? trigFired : smpFired;
+                buffer.setSample(O_CLK_1 + clkN, s, fired);
             }
+            clkN++;
         }
-
-
-        if(resetTrig) {
-            clockCount_ = 0;
-        }
-
-
-        lastClkIn_ = clkIn;
-        lastResetIn_= resetIn;
-        lastMidiIn_ = midiIn;
-
     }
 }
 

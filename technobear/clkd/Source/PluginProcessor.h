@@ -7,6 +7,7 @@
 #include <atomic>
 #include <algorithm>
 
+#include "Clock.h"
 
 namespace ID {
 #define PARAMETER_ID(str) constexpr const char* str { #str };
@@ -143,34 +144,30 @@ private:
         return true;
     }
 
-    void updateClockRates(bool force=false);
+    void updateClockRates(bool force = false);
+    void setClockSampleTargets(unsigned samples);
+    void resetClocks();
+    float  calcMultiplier(ClkInDiv& cid, ClkOutDiv& cod);
+    float calcMultiplier(Clock& clk, ClkInDiv& cid);
 
-    unsigned clkInDiv_[CO_MAX];
-    unsigned clkOutDiv_[CO_MAX];
+    float sampleRate_=0.0f;
 
+    // track to see if they change!
     Source source_ = SRC_MAX;
     float bpm_ = 10000.0f;
-    ClkInDiv clkin_ = CI_MAX;
+    ClkInDiv clockInDiv_ = CI_MAX;
     MidiPPQN ppqn_ = MPPQN_MAX;
 
-
-//    static constexpr unsigned  MAX_SAMPLE_COUNT = UINT_MAX;
-    static constexpr unsigned  MAX_SAMPLE_COUNT = 48000 * 10; // for testing only
-
-    unsigned sampleRate_=0;
-
     unsigned sampleCount_=0;
-    unsigned cvSampleCount_ = 0;
-    unsigned midiSampleCount_ = 0;
-    unsigned intSampleCount_= 0;
+    unsigned lastSampleCount_=0;
 
-    float lastClkIn_ = 0.0f;
-    float lastResetIn_ = 0.0f;
-    float lastMidiIn_ = 0.0f;
 
-    unsigned clockCount_=0;
-    unsigned subClockCount_ = 0;
-    unsigned midiPPQNRate_ [MPPQN_MAX] = { 24, 48,96,192};
+    Clock clocks_[O_MAX];
+
+    // track cv
+    float lastCv_[I_MAX] = {0.0f, 0.0f, 0.0f};
+
+    unsigned midiPPQNRate_[MPPQN_MAX] = {24, 48, 96, 192};
 
     inline float normValue(RangedAudioParameter &p) {
         return p.convertFrom0to1(p.getValue());
