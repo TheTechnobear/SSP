@@ -90,9 +90,6 @@ public:
         return props;
     }
 
-    static Colour getIconColour() { return juce::Colours::plum;}
-
-
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
