@@ -41,6 +41,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     op_types.add("OR");
     op_types.add("XOR");
     op_types.add("NAND");
+    op_types.add("NOR");
     op_types.add("NOT A");
     op_types.add("NOT B");
     jassert(op_types.size() == OT_MAX);
@@ -138,6 +139,9 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
                 case OT_NAND :
                     res = !(a && b);
                     break;
+                case OT_NOR :
+                    res = !(a || b);
+                    break;
                 case OT_NOT_A :
                     res = !a;
                     break;
@@ -179,7 +183,10 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
                 res = (a != b) != (c != d);
                 break;
             case OT_NAND :
-                res = !(a && b && b && c);
+                res = !(a && b && c && d);
+                break;
+            case OT_NOR :
+                res = !(a || b || c || d);
                 break;
             case OT_NOT_A :
             case OT_NOT_B :

@@ -90,6 +90,7 @@ private:
         OT_OR,
         OT_XOR,
         OT_NAND,
+        OT_NOR,
         OT_NOT_A,
         OT_NOT_B,
         OT_MAX
