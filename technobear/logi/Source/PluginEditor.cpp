@@ -17,7 +17,7 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 
     addParamPage(
         std::make_shared<pcontrol_type>(processor_.params_.oper, 1.0f, 1.0f),
-        nullptr,
+        std::make_shared<pcontrol_type>(processor_.params_.triglevel, 0.1, 0.01f),
         nullptr,
         nullptr
     );
@@ -40,13 +40,13 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 void PluginEditor::drawView(Graphics &g) {
     base_type::drawView(g);
 
-    bool inputs[PluginProcessor::I_MAX];
+    float inputs[PluginProcessor::I_MAX];
     bool outputs[PluginProcessor::O_MAX];
     processor_.getValues(inputs, outputs);
 
     const int tstartX = 1225, startX = tstartX + 30, startY = 50;
     const int sp = 40;
-    const int gw = 25;
+    const int gw = 25, bw = 100;
 
     g.setFont(20);
 
@@ -57,36 +57,44 @@ void PluginEditor::drawView(Graphics &g) {
         {
             int xb = startX + 10;
             int yb = y + 10;
-            if (gate) {
-                g.fillRect(xb, yb, gw - 1, sp - 20);
+
+            float v = inputs[i];
+            int w;
+            g.setColour(Colours::grey);
+            g.drawRect(xb, yb, bw, sp - 20);
+            if (v >= 0) {
+                w = std::min(bw, int(v * (bw - 2)));
+                g.setColour(Colours::green);
             } else {
-                g.drawRect(xb, yb, gw - 1, sp - 20);
+                w = std::min(bw, int(v * -1.0f * (bw - 2)));
+                g.setColour(Colours::red);
             }
-        }
+            g.fillRect(xb + 1, yb + 1, w, sp - 20 - 2);
+        } // inputs
+
 
         if (i + 1 < PluginProcessor::O_MAX) {
             g.setColour(Colours::green);
             gate = outputs[i + 1];
-            int xb = startX + 10 + gw + sp;
+            int xb = startX + 10 + bw + sp;
             int yb = y + 10 + (sp / 2) + (i * sp);
             if (gate) {
                 g.fillRect(xb, yb, gw - 1, sp - 20);
             } else {
                 g.drawRect(xb, yb, gw - 1, sp - 20);
             }
-        }
+        } // outputs
     }
 
     {
         g.setColour(Colours::yellow);
         bool gate = outputs[PluginProcessor::O_OUT_ALL];
-        int xb = startX + 10 + (gw + sp) * 2;
+        int xb = startX + 10 + bw + sp + gw + sp;
         int yb = startY + (sp * 4) - (sp / 2) + 10;
         if (gate) {
             g.fillRect(xb, yb, gw - 1, sp - 20);
         } else {
             g.drawRect(xb, yb, gw - 1, sp - 20);
         }
-    }
-
+    } // main out
 }

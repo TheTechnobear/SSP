@@ -13,6 +13,7 @@ namespace ID {
 constexpr const char *separator{":"};
 
 PARAMETER_ID (oper)
+PARAMETER_ID (triglevel)
 
 PARAMETER_ID (gates)
 PARAMETER_ID (inv)
@@ -34,7 +35,7 @@ public:
 
     bool hasEditor() const override { return true; }
 
-    void getValues(bool* inputs, bool* outputs);
+    void getValues(float* inputs, bool* outputs);
 
     struct GateParam {
         using Parameter = juce::RangedAudioParameter;
@@ -46,6 +47,7 @@ public:
         explicit PluginParams(juce::AudioProcessorValueTreeState &);
 
         Parameter &oper;
+        Parameter &triglevel;
         std::vector<std::unique_ptr<GateParam>> gateparams_;
     } params_;
 
@@ -93,6 +95,8 @@ private:
         OT_NOR,
         OT_NOT_A,
         OT_NOT_B,
+        OT_GT,
+        OT_LT,
         OT_MAX
     };
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
@@ -102,11 +106,11 @@ private:
     inline float normValue(RangedAudioParameter &p) {
         return p.convertFrom0to1(p.getValue());
     }
-    bool defValue_[OT_MAX] = { 1, 0 , 0, 0, 0 };
+    float  defValue_[OT_MAX] = { 1.0f , 0.0f , 0.0f, 0.0f, 0.0f, 0.0f, 0.0f ,0.0f, 0.0f };
 
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
-    bool lastIn_[I_MAX] = {
+    float lastIn_[I_MAX] = {
         false, false, false, false,
         false, false, false, false
     };

@@ -26,7 +26,8 @@ PluginProcessor::GateParam::GateParam(AudioProcessorValueTreeState &apvt, String
 
 
 PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) :
-    oper(*apvt.getParameter(ID::oper)) {
+    oper(*apvt.getParameter(ID::oper)),
+    triglevel(*apvt.getParameter(ID::triglevel)) {
     for (unsigned i = 0; i < I_MAX; i++) {
         gateparams_.push_back(std::make_unique<GateParam>(apvt, ID::gates, i));
     }
@@ -44,8 +45,11 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     op_types.add("NOR");
     op_types.add("NOT A");
     op_types.add("NOT B");
+    op_types.add(">");
+    op_types.add("<");
     jassert(op_types.size() == OT_MAX);
-    params.add(std::make_unique<ssp::BaseChoiceParameter>(ID::oper, "op", op_types, 0));
+    params.add(std::make_unique<ssp::BaseChoiceParameter>(ID::oper, "Operator", op_types, 0));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::triglevel, "Trig Level", -1.0f, 1.0f, 0.5f));
 
     auto sg = std::make_unique<AudioProcessorParameterGroup>(ID::gates, "gates", ID::separator);
     for (unsigned sn = 0; sn < I_MAX; sn++) {
@@ -108,24 +112,32 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     static constexpr unsigned N_PAIRS = I_MAX / 2;
-    static constexpr float trigLevel = 0.5f;
+    float trigLevel = normValue(params_.triglevel);
     const unsigned sz = buffer.getNumSamples();
     const OperType op = OperType(normValue(params_.oper));
-    const bool def = defValue_[op];
+    const float def = defValue_[op];
 
     for (unsigned i = 0; i < N_PAIRS; i++) {
         auto ain = i * 2, bin = ain + 1;
         auto abuf = buffer.getReadPointer(ain);
         auto bbuf = buffer.getReadPointer(bin);
-        auto ainv = params_.gateparams_[ain]->inv.getValue() > trigLevel;
-        auto binv = params_.gateparams_[bin]->inv.getValue() > trigLevel;
+        auto ainv = params_.gateparams_[ain]->inv.getValue() > 0.5f;
+        auto binv = params_.gateparams_[bin]->inv.getValue() > 0.5f;
         unsigned gout = i + 1;
         for (int smp = 0; smp < sz; smp++) {
             bool res;
-            bool a = inputEnabled[ain] ? abuf[smp] > trigLevel : def;
-            bool b = inputEnabled[bin] ? bbuf[smp] > trigLevel : def;
-            if (ainv) a = !a;
-            if (binv) b = !b;
+            float af = inputEnabled[ain] ? abuf[smp] : def;
+            float bf = inputEnabled[bin] ? bbuf[smp] : def;
+            bool a = af > trigLevel;
+            bool b = bf > trigLevel;
+            if (ainv) {
+                a = !a;
+                af = af * -1.0f;
+            }
+            if (binv) {
+                b = !b;
+                bf = bf * -1.0f;
+            }
             switch (op) {
                 case OT_AND :
                     res = a && b;
@@ -140,7 +152,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
                     res = !(a && b);
                     break;
                 case OT_NOR :
-                    res = !(a || b);
+                    res = a == b;
                     break;
                 case OT_NOT_A :
                     res = !a;
@@ -148,13 +160,19 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
                 case OT_NOT_B :
                     res = !b;
                     break;
+                case OT_GT :
+                    res = af > bf;
+                    break;
+                case OT_LT :
+                    res = af < bf;
+                    break;
                 default:
                     break;
             }
             buffer.setSample(gout, smp, res);
             if (smp == 0) {
-                lastIn_[ain] = a;
-                lastIn_[bin] = b;
+                lastIn_[ain] = af;
+                lastIn_[bin] = bf;
                 lastOut_[gout] = res;
             }
         }
@@ -186,11 +204,17 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
                 res = !(a && b && c && d);
                 break;
             case OT_NOR :
-                res = !(a || b || c || d);
+                res = (a == b) == (c == d);
                 break;
             case OT_NOT_A :
             case OT_NOT_B :
                 res = a && b && c && d;
+                break;
+            case OT_GT:
+                res = (a + b) > (c + d);
+                break;
+            case OT_LT:
+                res = (a + b) < (c + d);
                 break;
             default:
                 break;
@@ -200,7 +224,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     }
 }
 
-void PluginProcessor::getValues(bool *inputs, bool *outputs) {
+void PluginProcessor::getValues(float *inputs, bool *outputs) {
     for (unsigned i = 0; i < I_MAX; i++) {
         inputs[i] = lastIn_[i];
     }
