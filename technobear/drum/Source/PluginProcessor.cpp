@@ -209,7 +209,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     unsigned sz = buffer.getNumSamples();
     static constexpr float trigLevel = 0.2f;
     for (unsigned s = 0; s < sz; s++) {
-        if (isInputEnabled(I_AB_TRIG && isOutputEnabled(O_AB))) {
+        if (isInputEnabled(I_AB_TRIG) && isOutputEnabled(O_AB)) {
             bool trigCv = buffer.getSample(I_AB_TRIG, s) > trigLevel;
             bool trig = trigCv && !trig_[O_AB];
             float gain = normValue(params_.ab_.Gain);
@@ -239,7 +239,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
             buffer.setSample(O_AB, s, 0.0f);
         }
 
-        if (isInputEnabled(I_SB_TRIG && isOutputEnabled(O_SB))) {
+        if (isInputEnabled(I_SB_TRIG) && isOutputEnabled(O_SB)) {
             bool trigCv = buffer.getSample(I_SB_TRIG, s) > trigLevel;
             bool trig = trigCv && !trig_[O_SB];
             float gain = normValue(params_.sb_.Gain);
@@ -272,7 +272,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
             buffer.setSample(O_SB, s, 0.0f);
         }
 
-        if (isInputEnabled(I_AS_TRIG && isOutputEnabled(O_AS))) {
+        if (isInputEnabled(I_AS_TRIG) && isOutputEnabled(O_AS)) {
             bool trigCv = buffer.getSample(I_AS_TRIG, s) > trigLevel;
             bool trig = trigCv && !trig_[O_AS];
             float gain = normValue(params_.as_.Gain);
@@ -300,7 +300,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
             buffer.setSample(O_AS, s, 0.0f);
         }
 
-        if (isInputEnabled(I_SS_TRIG && isOutputEnabled(O_SS))) {
+        if (isInputEnabled(I_SS_TRIG) && isOutputEnabled(O_SS)) {
             bool trigCv = buffer.getSample(I_SS_TRIG, s) > trigLevel;
             bool trig = trigCv && !trig_[O_SS];
             float gain = normValue(params_.ss_.Gain);
@@ -330,7 +330,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
             buffer.setSample(O_SS, s, 0.0f);
         }
 
-        if (isInputEnabled(I_HH1_TRIG && isOutputEnabled(O_HH1))) {
+        if (isInputEnabled(I_HH1_TRIG) && isOutputEnabled(O_HH1)) {
             bool trigCv = buffer.getSample(I_HH1_TRIG, s) > trigLevel;
             bool trig = trigCv && !trig_[O_HH1];
             float gain = normValue(params_.hh1_.Gain);
@@ -358,7 +358,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
             buffer.setSample(O_HH1, s, 0.0f);
         }
 
-        if (isInputEnabled(I_HH2_TRIG && isOutputEnabled(O_HH2))) {
+        if (isInputEnabled(I_HH2_TRIG) && isOutputEnabled(O_HH2)) {
             bool trigCv = buffer.getSample(I_HH2_TRIG, s) > trigLevel;
             bool trig = trigCv && !trig_[O_HH2];
             float gain = normValue(params_.hh2_.Gain);

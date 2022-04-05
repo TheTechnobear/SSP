@@ -190,7 +190,8 @@ private:
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
 
-    float trig_[O_MAX];
+    bool trig_[O_MAX] = { false, false, false,
+                          false, false, false };
 
     daisysp::AnalogBassDrum analogBassDrum_;
     daisysp::SyntheticBassDrum syntheticBassDrum_;
