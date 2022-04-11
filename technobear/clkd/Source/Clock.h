@@ -2,22 +2,24 @@
 
 class Clock {
 public:
+
     bool trigTick() {
         currentTrig_++;
-        bool res = currentTrig_ > targetTrig;
-        if (res) reset();
+        bool res = currentTrig_ >= targetTrig;
+        if (res) resetTrig();
         return res;
     }
 
+
     void reset() {
-        currentSmp_ = 0.0f;
-        currentTrig_ = 0.0f;
+        resetTrig();
+        resetSample();
     }
 
     bool sampleTick() {
         currentSmp_++;
-        bool res = currentSmp_ > targetSmp_;
-        if (res) reset();
+        bool res = currentSmp_ >= targetSmp_;
+        if (res) resetSample();
         return res;
     }
 
@@ -35,15 +37,23 @@ public:
         multiplier(multiplier_);
     }
 
-    float multiplier() { return multiplier_;}
-    void  multiplier(float m) {
+    float multiplier() { return multiplier_; }
+
+    void multiplier(float m) {
         multiplier_ = m;
         targetSmp_ = baseSmp_ * multiplier_;
-        targetSmp_ = baseTrig_ * multiplier_;
+        targetTrig = baseTrig_ * multiplier_;
     }
 
 
 private:
+    void resetSample() {
+        currentSmp_ = 0.0f;
+    }
+    void resetTrig() {
+        currentTrig_ = 0.0f;
+    }
+
     float multiplier_ = 1.0f;
     bool useTrigs_ = false;
 

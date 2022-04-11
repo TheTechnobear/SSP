@@ -46,6 +46,7 @@ public:
     enum {
         I_CLK,
         I_RESET,
+        I_RUN,
         I_MIDICLK,
         I_MAX
     };
@@ -58,6 +59,8 @@ public:
         O_CLK_6,
         O_CLK_7,
         O_CLK_8,
+        O_RESET,
+        O_RUN,
         O_MAX
     };
 
@@ -91,6 +94,12 @@ public:
         return props;
     }
 
+    void requestRun() { runRequest_ = true; }
+
+    void requestStop() { runRequest_ = true; }
+
+    void requestReset() { resetRequest_ = true; }
+
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
@@ -110,17 +119,19 @@ private:
         MPPQN_MAX
     };
 
+    // these are NOTE values !
     enum ClkInDiv {
         CI_X1,
-        CI_D2,
-        CI_D4,
-        CI_D8,
-        CI_D16,
-        CI_D32,
-        CI_D64,
+        CI_1d2,
+        CI_1d4,
+        CI_1d8,
+        CI_1d16,
+        CI_1d32,
+        CI_1d64,
         CI_MAX
     };
 
+    // there are mult/divisions of clock
     enum ClkOutDiv {
         CO_M64,
         CO_M32,
@@ -135,7 +146,6 @@ private:
         CO_D16,
         CO_D32,
         CO_D64,
-        CO_D128,
         CO_MAX
     };
 
@@ -144,13 +154,16 @@ private:
         return true;
     }
 
-    void updateClockRates(bool force = false);
+
     void setClockSampleTargets(unsigned samples);
     void resetClocks();
-    float  calcMultiplier(ClkInDiv& cid, ClkOutDiv& cod);
-    float calcMultiplier(Clock& clk, ClkInDiv& cid);
+    void setClockMultipliers(float m);
 
-    float sampleRate_=0.0f;
+    void calcInternalSampleTarget(const float &sampleRate, const ClkInDiv &div, const float &bpm, float &samples);
+    void calcMidiSampleTarget(const float &lastClock, const ClkInDiv &div, const MidiPPQN &ppqn, float &samples);
+    void calcClkInSampleTarget(const float &lastClock, const ClkInDiv &div, float &samples);
+
+    float sampleRate_ = 0.0f;
 
     // track to see if they change!
     Source source_ = SRC_MAX;
@@ -158,14 +171,23 @@ private:
     ClkInDiv clockInDiv_ = CI_MAX;
     MidiPPQN ppqn_ = MPPQN_MAX;
 
-    unsigned sampleCount_=0;
-    unsigned lastSampleCount_=0;
+    unsigned sampleCount_ = 0;
+    unsigned lastSampleCount_ = 0;
+
+    bool runRequest_ = false;
+    bool stopRequest_ = false;
+    bool resetRequest_ = false;
+
+    bool runState_ = true;
 
 
-    Clock clocks_[O_MAX];
+    Clock clocks_[MAX_CLK_OUT];
 
-    // track cv
+    // track cvs
+    static const unsigned clockTrigTime = 256;
+//    static const unsigned clockTrigTime = 64;
     float lastCv_[I_MAX] = {0.0f, 0.0f, 0.0f};
+    unsigned clkTrigTime_[O_MAX] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     unsigned midiPPQNRate_[MPPQN_MAX] = {24, 48, 96, 192};
 
@@ -173,6 +195,8 @@ private:
         return p.convertFrom0to1(p.getValue());
     }
 
+    std::vector<float> clockInDivMults_;
+    std::vector<float> clockOutDivMults_;
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
 
