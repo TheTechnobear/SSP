@@ -33,7 +33,7 @@ public:
     }
 
     void targetTrigs(float trigs) {
-        baseSmp_ = trigs;
+        baseTrig_ = trigs;
         multiplier(multiplier_);
     }
 

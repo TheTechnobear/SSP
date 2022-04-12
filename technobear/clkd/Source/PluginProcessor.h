@@ -94,9 +94,10 @@ public:
         return props;
     }
 
-    void requestRun() { runRequest_ = true; }
+    void toggleRunRequest() { toggleRunRequest_ = true; }
 
-    void requestStop() { runRequest_ = true; }
+    bool isRunning() { return runState_; }
+    void getClockStates(bool* states);
 
     void requestReset() { resetRequest_ = true; }
 
@@ -155,9 +156,9 @@ private:
     }
 
 
-    void setClockSampleTargets(unsigned samples);
+    void setClockTargets(unsigned samples, unsigned trigs, bool useTrigs);
+    void updateClockSampleTargets(unsigned samples);
     void resetClocks();
-    void setClockMultipliers(float m);
 
     void calcInternalSampleTarget(const float &sampleRate, const ClkInDiv &div, const float &bpm, float &samples);
     void calcMidiSampleTarget(const float &lastClock, const ClkInDiv &div, const MidiPPQN &ppqn, float &samples);
@@ -174,8 +175,7 @@ private:
     unsigned sampleCount_ = 0;
     unsigned lastSampleCount_ = 0;
 
-    bool runRequest_ = false;
-    bool stopRequest_ = false;
+    bool toggleRunRequest_ = false;
     bool resetRequest_ = false;
 
     bool runState_ = true;
@@ -184,10 +184,12 @@ private:
     Clock clocks_[MAX_CLK_OUT];
 
     // track cvs
-    static const unsigned clockTrigTime = 256;
+    static const unsigned clockTrigTime = 512;
 //    static const unsigned clockTrigTime = 64;
+    static const unsigned uiTrigTime = 4000; // need a slower trig for UI
     float lastCv_[I_MAX] = {0.0f, 0.0f, 0.0f};
     unsigned clkTrigTime_[O_MAX] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    unsigned uiTrigTime_[O_MAX] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     unsigned midiPPQNRate_[MPPQN_MAX] = {24, 48, 96, 192};
 
