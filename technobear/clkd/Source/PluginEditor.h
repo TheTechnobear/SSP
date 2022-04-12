@@ -17,13 +17,14 @@ protected:
     using base_type = ssp::BarParamEditor;
 
     enum ButtonNum {
-        BN_RUN=0,
-        BN_RESET=4
+        BN_RUN = 0,
+        BN_RESET = 1,
+        BN_USETRIGS = 4
     };
     void drawView(Graphics &) override;
 
 private:
-    ValueButton runButton_, resetButton_;
+    ValueButton runButton_, resetButton_, useTrigsButton_;
     PluginProcessor &processor_;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)
 };

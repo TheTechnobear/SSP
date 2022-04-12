@@ -18,6 +18,7 @@ PARAMETER_ID (source)
 PARAMETER_ID (clkindiv)
 PARAMETER_ID (bpm)
 PARAMETER_ID (midippqn)
+PARAMETER_ID (usetrigs)
 
 // tree div:val
 PARAMETER_ID (div)
@@ -79,6 +80,7 @@ public:
         Parameter &clkindiv;
         Parameter &bpm;
         Parameter &midippqn;
+        Parameter &usetrigs;
 
         std::vector<std::unique_ptr<DivParam>> divisions_;
     } params_;
@@ -96,8 +98,13 @@ public:
 
     void toggleRunRequest() { toggleRunRequest_ = true; }
 
+    bool isUsingTrigs();
+
+    void toggleUseTrigs() { toggleUseTrigs_ = true; }
+
     bool isRunning() { return runState_; }
-    void getClockStates(bool* states);
+
+    void getClockStates(bool *states);
 
     void requestReset() { resetRequest_ = true; }
 
@@ -158,13 +165,13 @@ private:
 
     void setClockTargets(unsigned samples, unsigned trigs, bool useTrigs);
     void updateClockSampleTargets(unsigned samples);
-    void resetClocks();
 
     void calcInternalSampleTarget(const float &sampleRate, const ClkInDiv &div, const float &bpm, float &samples);
     void calcMidiSampleTarget(const float &lastClock, const ClkInDiv &div, const MidiPPQN &ppqn, float &samples);
     void calcClkInSampleTarget(const float &lastClock, const ClkInDiv &div, float &samples);
 
     float sampleRate_ = 0.0f;
+    bool useTrigs_ = false;
 
     // track to see if they change!
     Source source_ = SRC_MAX;
@@ -177,6 +184,7 @@ private:
 
     bool toggleRunRequest_ = false;
     bool resetRequest_ = false;
+    bool toggleUseTrigs_ = false;
 
     bool runState_ = true;
 
@@ -184,7 +192,7 @@ private:
     Clock clocks_[MAX_CLK_OUT];
 
     // track cvs
-    static const unsigned clockTrigTime = 512;
+    static const unsigned clockTrigTime = 512; //TODO: remove after testing
 //    static const unsigned clockTrigTime = 64;
     static const unsigned uiTrigTime = 4000; // need a slower trig for UI
     float lastCv_[I_MAX] = {0.0f, 0.0f, 0.0f};

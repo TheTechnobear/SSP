@@ -25,7 +25,9 @@ public:
 
     void useTrigs(bool b) { useTrigs_ = b; }
 
-    bool useTrigs() { return useTrigs_; }
+    bool useTrigs() {
+        return useTrigs_ && targetTrig >= 1.0f;
+    }
 
     void targetSamples(float samples) {
         baseSmp_ = samples;
@@ -50,6 +52,7 @@ private:
     void resetSample() {
         currentSmp_ = 0.0f;
     }
+
     void resetTrig() {
         currentTrig_ = 0.0f;
     }

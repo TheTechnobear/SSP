@@ -12,7 +12,8 @@ using bcontrol_type = ssp::ParamButton;
 PluginEditor::PluginEditor(PluginProcessor &p)
     : base_type(&p), processor_(p),
       runButton_("Run", nullptr, 32, Colours::green),
-      resetButton_("Reset", nullptr, 32, Colours::yellow) {
+      resetButton_("Reset", nullptr, 32, Colours::yellow),
+      useTrigsButton_("TrigSync", nullptr, 20, Colours::cyan) {
 
     addParamPage(
         std::make_shared<pcontrol_type>(processor_.params_.source, 1.0f, 1.0f),
@@ -38,10 +39,12 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 
     // add some buttons
     setButtonBounds(runButton_, 0, 0);
-    setButtonBounds(resetButton_, 1, 0);
+    setButtonBounds(resetButton_, 0, 1);
+    setButtonBounds(useTrigsButton_, 1, 0);
 
     addAndMakeVisible(runButton_);
     addAndMakeVisible(resetButton_);
+    addAndMakeVisible(useTrigsButton_);
 
     setSize(1600, 480);
 }
@@ -53,7 +56,10 @@ void PluginEditor::drawView(Graphics &g) {
     static String stopLabel = "Stop";
     bool runState = processor_.isRunning();
     bool clockStates[PluginProcessor::MAX_CLK_OUT];
+    bool useTrigs = processor_.isUsingTrigs();
     processor_.getClockStates(clockStates);
+
+    useTrigsButton_.value(useTrigs);
 
     if (runState) {
         runButton_.label(stopLabel);
@@ -67,9 +73,9 @@ void PluginEditor::drawView(Graphics &g) {
     const int gw = 25;
 
     g.setFont(30);
-    static const char* running= "Running";
-    static const char* stopped= "Stopped";
-    const char* runTxt;
+    static const char *running = "Running";
+    static const char *stopped = "Stopped";
+    const char *runTxt;
     if (runState) {
         runTxt = running;
         g.setColour(Colours::green);
@@ -77,7 +83,7 @@ void PluginEditor::drawView(Graphics &g) {
         runTxt = stopped;
         g.setColour(Colours::red);
     }
-    g.drawText(runTxt, tstartX, startY - (sp/2), 150, gw + sp, Justification::centredLeft);
+    g.drawText(runTxt, tstartX, startY - (sp / 2), 150, gw + sp, Justification::centredLeft);
 
     g.setFont(20);
     // draw current values
@@ -94,8 +100,6 @@ void PluginEditor::drawView(Graphics &g) {
             g.drawRect(startX + 10, y, gw, gw);
         }
     }
-
-
 }
 
 void PluginEditor::onButton(unsigned btn, bool v) {
@@ -108,6 +112,10 @@ void PluginEditor::onButton(unsigned btn, bool v) {
             }
             case BN_RESET: {
                 processor_.requestReset();
+                break;
+            }
+            case BN_USETRIGS: {
+                processor_.toggleUseTrigs();
                 break;
             }
         }

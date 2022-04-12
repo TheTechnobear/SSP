@@ -47,7 +47,8 @@ PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) 
     source(*apvt.getParameter(ID::source)),
     clkindiv(*apvt.getParameter(ID::clkindiv)),
     bpm(*apvt.getParameter(ID::bpm)),
-    midippqn(*apvt.getParameter(ID::midippqn)) {
+    midippqn(*apvt.getParameter(ID::midippqn)),
+    usetrigs(*apvt.getParameter(ID::usetrigs)) {
     for (unsigned i = 0; i < MAX_CLK_OUT; i++) {
         divisions_.push_back(std::make_unique<DivParam>(apvt, ID::div, i));
     }
@@ -103,6 +104,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     params.add(std::make_unique<ssp::BaseChoiceParameter>(ID::clkindiv, "Clk Div", clkInDivs, CI_1d4));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::bpm, "Int BPM", 1.0f, 360, 120.0f));
     params.add(std::make_unique<ssp::BaseChoiceParameter>(ID::midippqn, "Midi PPQN", midippqn, MPPQN_24));
+    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::usetrigs, "UseTrigs", false));
 
     auto sg = std::make_unique<AudioProcessorParameterGroup>(ID::div, "Divisions", ID::separator);
     for (unsigned sn = 0; sn < MAX_CLK_OUT; sn++) {
@@ -183,32 +185,51 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
     if (src_cv) {
         if (forceUpdate) {
+            useTrigs_ = params_.usetrigs.getValue() > 0.5f;
             float samples = 0.0f;
             calcClkInSampleTarget(lastSampleCount_, clockInDiv_, samples);
-            setClockTargets(samples, 1, false);
+            unsigned trigs = clockInDivMults_[clockInDiv_] * 4.0f;
+            setClockTargets(samples, trigs, useTrigs_);
             reset = true;
         }
     } else if (src_internal) {
         auto bpm = normValue(params_.bpm);
         if (forceUpdate || bpm != bpm_) {
+            useTrigs_ = false;
+            unsigned trigs = 1;
             float samples = 0.0f;
             bpm_ = bpm;
             calcInternalSampleTarget(sampleRate_, clockInDiv_, bpm_, samples);
-            setClockTargets(samples, 1, false);
+            setClockTargets(samples, trigs, useTrigs_);
             reset = true;
         }
 
     } else if (src_midi) {
         auto ppqn = MidiPPQN(normValue(params_.midippqn));
         if (forceUpdate || ppqn != ppqn_) {
+            // todo: midi testing!
+            useTrigs_ = params_.usetrigs.getValue() > 0.5f;
             ppqn_ = ppqn;
             float samples = 0.0f;
             calcMidiSampleTarget(lastSampleCount_, clockInDiv_, ppqn_, samples);
-            setClockTargets(samples, ppqn_, false);
+            unsigned trigs = midiPPQNRate_[ppqn] * clockInDivMults_[clockInDiv_] * 4.0f;
+            setClockTargets(samples, trigs, useTrigs_);
             reset = true;
         }
     }
 
+    if (toggleUseTrigs_) {
+        toggleUseTrigs_ = false;
+        auto src = Source(normValue(PluginProcessor::params_.source));
+        bool nut = !useTrigs_ && (src == SRC_CLKIN || src == SRC_MIDI);
+        if (nut != useTrigs_) {
+            useTrigs_ = nut;
+            for (auto &clk: clocks_) {
+                clk.useTrigs(useTrigs_);
+            }
+        }
+        params_.usetrigs.setValueNotifyingHost(useTrigs_);
+    }
 
     clkN = 0;
     // set clock multipliers
@@ -232,6 +253,8 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     }
 
     if (reset) {
+        // TODO: ? should reset be sync'd to trigger, since this would keep useTrigs in sync
+        // need to consider how this is done...
         auto &clkTrig = clkTrigTime_[O_RESET];
         clkTrig = clockTrigTime;
         for (Clock &clk: clocks_) {
@@ -279,7 +302,6 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
                 if (src_midi && trig[I_MIDICLK]) trigFired = clk.trigTick();
                 smpFired = clk.sampleTick();
                 bool fired = clk.useTrigs() ? trigFired : smpFired;
-
                 if (fired) {
                     clkTrig = clockTrigTime;
                     uiTrig = uiTrigTime;
@@ -332,10 +354,14 @@ AudioProcessor *JUCE_CALLTYPE createPluginFilter() {
 
 
 /// Clock helpers - just setting values etc
-void PluginProcessor::getClockStates(bool* states) {
-   for(unsigned i=0;i<MAX_CLK_OUT;i++) {
-       states[i] = uiTrigTime_[O_CLK_1+i] > 0;
-   }
+bool PluginProcessor::isUsingTrigs() {
+    return useTrigs_;
+}
+
+void PluginProcessor::getClockStates(bool *states) {
+    for (unsigned i = 0; i < MAX_CLK_OUT; i++) {
+        states[i] = uiTrigTime_[O_CLK_1 + i] > 0;
+    }
 }
 
 
@@ -353,16 +379,6 @@ void PluginProcessor::updateClockSampleTargets(unsigned samples) {
         clk.targetSamples(samples);
     }
 }
-
-void PluginProcessor::resetClocks() {
-    // todo: potentially, this can be moved into other methods when things change
-    // to stop us continually looping over the clocks
-    for (Clock &clk: clocks_) {
-        clk.reset();
-    }
-}
-
-
 /// CLOCK calculations etc
 
 void PluginProcessor::calcInternalSampleTarget(const float &sampleRate,
@@ -377,7 +393,6 @@ void PluginProcessor::calcInternalSampleTarget(const float &sampleRate,
     // sample rate = samples per second
     // bpm = quarter notes per minute.
     // so SR*60 = samples per minute, div bpm = samplers per beat (=1/4 note)
-
     samples = ((sampleRate * 60.0f) / bpm) * clockInDivMults_[div] * 4.0f;
 }
 
@@ -392,7 +407,6 @@ void PluginProcessor::calcMidiSampleTarget(const float &lastClock,
     // how:
     // ppqn = number of pulses per quarter note
     // samples per quarter note = lastClock * ppqn
-
     samples = (lastClock * midiPPQNRate_[ppqn]) * clockInDivMults_[div] * 4.0f;
 }
 
