@@ -47,16 +47,16 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 
         addParamPage(
             std::make_shared<pcontrol_type>(t.time, defCoarse, defFine),
-            std::make_shared<pcontrol_type>(t.pan, defCoarse, defFine),
             std::make_shared<pcontrol_type>(t.level, defCoarse, defFine),
             std::make_shared<pcontrol_type>(t.feedback, defCoarse, defFine),
+            std::make_shared<pcontrol_type>(t.pan, 0.1, 0.01),
             view,
             clrs[view % L_CLRS]
         );
         addParamPage(
-            std::make_shared<pcontrol_type>(t.repeats, defCoarse, defFine),
-            nullptr,
-            nullptr,
+            std::make_shared<pcontrol_type>(t.lpf, 100, 5),
+            std::make_shared<pcontrol_type>(t.hpf, 100, 5),
+            std::make_shared<pcontrol_type>(t.noise, 1, 0.01),
             nullptr,
             view,
             clrs[view % L_CLRS]

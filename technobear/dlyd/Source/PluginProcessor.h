@@ -25,10 +25,13 @@ PARAMETER_ID (out_level)
 PARAMETER_ID (taps)
 
 PARAMETER_ID (time)
-PARAMETER_ID (repeats)
 PARAMETER_ID (pan)
 PARAMETER_ID (level)
 PARAMETER_ID (feedback)
+PARAMETER_ID (lpf)
+PARAMETER_ID (hpf)
+PARAMETER_ID (noise)
+
 
 #undef PARAMETER_ID
 }
@@ -53,19 +56,27 @@ public:
     enum {
         I_IN_1,
         I_IN_2,
+        I_TIME_1_TA,
+        I_TIME_1_TB,
+        I_TIME_1_TC,
+        I_TIME_1_TD,
+        I_TIME_2_TA,
+        I_TIME_2_TB,
+        I_TIME_2_TC,
+        I_TIME_2_TD,
         I_MAX
     };
     enum {
         O_OUT_1,
         O_OUT_2,
-        O_OUT_TA_1,
-        O_OUT_TB_1,
-        O_OUT_TC_1,
-        O_OUT_TD_1,
-        O_OUT_TA_2,
-        O_OUT_TB_2,
-        O_OUT_TC_2,
-        O_OUT_TD_2,
+        O_OUT_1_TA,
+        O_OUT_1_TB,
+        O_OUT_1_TC,
+        O_OUT_1_TD,
+        O_OUT_2_TA,
+        O_OUT_2_TB,
+        O_OUT_2_TC,
+        O_OUT_2_TD,
         O_MAX
     };
 
@@ -78,10 +89,12 @@ public:
         unsigned id_;
         String pid_; // e.g taps:1
         Parameter &time;
-        Parameter &repeats;
-        Parameter &pan;
         Parameter &level;
         Parameter &feedback;
+        Parameter &pan;
+        Parameter &lpf;
+        Parameter &hpf;
+        Parameter &noise;
     };
 
     struct PluginParams {
@@ -128,9 +141,16 @@ private:
 
 
     // initial time with delay line from daisysp
-    static constexpr unsigned MAX_DELAY = 48000 * 15; // 15 seconds
-    static constexpr unsigned N_DLY_LINES = I_MAX;
-    daisysp::DelayLine<float, MAX_DELAY> delayLine_[N_DLY_LINES];
+    static constexpr unsigned MAX_DELAY = 48000 * 60; // 60 seconds
+    static constexpr unsigned N_DLY_LINES = 2;
+    struct DelayLine {
+        daisysp::DelayLine<float, MAX_DELAY> line_;
+        struct Taps {
+            daisysp::Tone lpf_;
+            daisysp::ATone hpf_;
+            daisysp::Dust noise_;
+        } taps_[MAX_TAPS];
+    } delayLines_[N_DLY_LINES];
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
 

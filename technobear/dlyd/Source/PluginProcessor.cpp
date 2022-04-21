@@ -27,11 +27,23 @@ String getTapParamId(unsigned tid, StringRef id) {
     return getTapPid(tid) + String(ID::separator) + id;
 }
 
+inline float panGain(bool left, float p) {
+    static constexpr float PIdiv2 = M_PI / 2.0f;
+    float pan = (p + 1.0f) / 2.0f;
+    if (left) {
+        return cosf(pan * PIdiv2);
+        //return std::cosf(pan * PIdiv2);
+    }
+    return sinf(pan * PIdiv2);
+    //return std::sinf(pan * PIdiv2);
+}
 
 PluginProcessor::Tap::Tap(AudioProcessorValueTreeState &apvt, unsigned id) :
     id_(id), pid_(getTapPid(id)),
     time(*apvt.getParameter(getTapParamId(id, ID::time))),
-    repeats(*apvt.getParameter(getTapParamId(id, ID::repeats))),
+    hpf(*apvt.getParameter(getTapParamId(id, ID::hpf))),
+    lpf(*apvt.getParameter(getTapParamId(id, ID::lpf))),
+    noise(*apvt.getParameter(getTapParamId(id, ID::noise))),
     pan(*apvt.getParameter(getTapParamId(id, ID::pan))),
     level(*apvt.getParameter(getTapParamId(id, ID::level))),
     feedback(*apvt.getParameter(getTapParamId(id, ID::feedback))) {
@@ -67,8 +79,10 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
         String desc = "Tap " + String(la) + " ";
         auto tap = std::make_unique<AudioProcessorParameterGroup>(getTapPid(tid), getTapPid(tid), ID::separator);
         tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getTapParamId(tid, ID::time), desc + "Time", 0.0f, 100.0f, (tid + 1) * 5.0f));
-        tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getTapParamId(tid, ID::repeats), desc + "Repeats", 0.0f, 100.0f, 5.0f));
-        tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getTapParamId(tid, ID::pan), desc + "Pan", -100.0f, 100.0f, 0.0f));
+        tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getTapParamId(tid, ID::hpf), desc + "HPF", 0.0f, 20000.0f, 10.0f));
+        tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getTapParamId(tid, ID::lpf), desc + "LPF", 0.0f, 20000.0f, 20000.0f));
+        tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getTapParamId(tid, ID::noise), desc + "Dirt", 0.0f, 100.0f, 0.0f));
+        tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getTapParamId(tid, ID::pan), desc + "Pan", -1.0f, 1.0f, 0.0f));
         tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getTapParamId(tid, ID::level), desc + "Level", 0.0f, 100.0f, 50.0f));
         tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getTapParamId(tid, ID::feedback), desc + "Feedback", 0, 100.0f, 0.0f));
         taps->addChild(std::move(tap));
@@ -83,7 +97,15 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 const String PluginProcessor::getInputBusName(int channelIndex) {
     static String inBusName[I_MAX] = {
         "In 1",
-        "In 2"
+        "In 2",
+        "Time 1 A",
+        "Time 1 B",
+        "Time 1 C",
+        "Time 1 D",
+        "Time 2 A",
+        "Time 2 B",
+        "Time 2 C",
+        "Time 2 D"
     };
     if (channelIndex < I_MAX) { return inBusName[channelIndex]; }
     return "ZZIn-" + String(channelIndex);
@@ -94,14 +116,14 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
     static String outBusName[O_MAX] = {
         "Out 1",
         "Out 2",
-        "Tap A 1",
-        "Tap B 1",
-        "Tap C 1",
-        "Tap D 1",
-        "Tap A 2",
-        "Tap B 2",
-        "Tap C 2",
-        "Tap D 2"
+        "Tap 1 A",
+        "Tap 1 B",
+        "Tap 1 C",
+        "Tap 1 D",
+        "Tap 2 A",
+        "Tap 2 B",
+        "Tap 2 C",
+        "Tap 2 D"
     };
     if (channelIndex < O_MAX) { return outBusName[channelIndex]; }
     return "ZZOut-" + String(channelIndex);
@@ -111,17 +133,19 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 void PluginProcessor::prepareToPlay(double newSampleRate, int estimatedSamplesPerBlock) {
     BaseProcessor::prepareToPlay(newSampleRate, estimatedSamplesPerBlock);
     for (int line = 0; line < N_DLY_LINES; line++) {
-        auto &dlyline = delayLine_[line];
-        dlyline.Init();
+        auto &dline = delayLines_[line];
+        dline.line_.Init();
+        for (int t = 0; t < MAX_TAPS; t++) {
+            dline.taps_[t].hpf_.Init(newSampleRate);
+            dline.taps_[t].lpf_.Init(newSampleRate);
+            dline.taps_[t].noise_.Init();
+        }
     }
 }
 
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     unsigned sz = buffer.getNumSamples();
-
-    // for testing
-    jassert(N_DLY_LINES == I_MAX);
 
     float size = params_.size.getValue();
     float mix = params_.mix.getValue();
@@ -134,33 +158,38 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         for (int line = 0; line < N_DLY_LINES; line++) {
             if (!isOutputEnabled(line)) continue; //?
 
-            auto &dlyline = delayLine_[line];
-//            dlyline.SetDelay(size * float(MAX_DELAY));
+            auto &dlyline = delayLines_[line];
 
             float in = buffer.getSample(line, s);
             in *= inlvl;
             float wet = 0.0f;
             float fbk = 0.0f;
             for (int t = 0; t < MAX_TAPS; t++) {
-                auto &tap = params_.taps_[t];
-                float time = tap->time.getValue();
+                auto &tap_params = params_.taps_[t];
+                auto &tap = dlyline.taps_[t];
+                float time = tap_params->time.getValue();
 
-                float level = tap->level.getValue(); // out level?
-                float feedback = tap->feedback.getValue(); // feedback level
-                float repeats = tap->repeats.getValue();
-                float pan = tap->pan.getValue(); // pan on main out?
+                float level = tap_params->level.getValue(); // out level?
+                float feedback = tap_params->feedback.getValue(); // feedback level
+                float hpf = normValue(tap_params->hpf);
+                float lpf = normValue(tap_params->lpf);
+                float noiseamt = tap_params->noise.getValue();
+                float pan = normValue(tap_params->pan);
 
-                float v = dlyline.Read(maxtime * time);
-                wet += v * level;
+                float noisesig = tap.noise_.Process() * noiseamt;
+                float v = dlyline.line_.Read(maxtime * time) + noisesig;
+                if (tap.lpf_.GetFreq() != lpf) tap.lpf_.SetFreq(lpf);
+                if (tap.hpf_.GetFreq() != hpf) tap.hpf_.SetFreq(hpf);
+                v = tap.lpf_.Process(v);
+                v = tap.hpf_.Process(v);
+                float panamt = panGain(line == 0, pan);
+                wet += v * level * panamt;
                 fbk += v * feedback;
                 // todo : pan (we can use line to determine if left or right)
-                // todo : repeats?
                 unsigned tsig = (line * MAX_TAPS) + t;
-                buffer.setSample(O_OUT_TA_1 + tsig, s, v);
+                buffer.setSample(O_OUT_1_TA + tsig, s, v);
             }
-
-            dlyline.Write(in + fbk);
-
+            dlyline.line_.Write(in + fbk);
             float out = (in * (1.0f - mix) + wet) * outlvl;
             buffer.setSample(line, s, out);
         }
