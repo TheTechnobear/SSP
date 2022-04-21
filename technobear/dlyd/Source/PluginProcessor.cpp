@@ -55,7 +55,8 @@ PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) 
     size(*apvt.getParameter(ID::size)),
     mix(*apvt.getParameter(ID::mix)),
     in_level(*apvt.getParameter(ID::in_level)),
-    out_level(*apvt.getParameter(ID::out_level)) {
+    out_level(*apvt.getParameter(ID::out_level)),
+    freeze(*apvt.getParameter(ID::freeze)) {
     for (unsigned tid = 0; tid < MAX_TAPS; tid++) {
         auto tap = std::make_unique<Tap>(apvt, tid);
         taps_.push_back(std::move(tap));
@@ -70,6 +71,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::mix, "Mix", 0.0f, 100.0f, 50.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::in_level, "In Lvl", 0.0f, 200.0f, 100.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::out_level, "Out Lvl", 0.0f, 200.0f, 100.0f));
+    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::freeze, "Freeze", false));
 
     auto taps = std::make_unique<AudioProcessorParameterGroup>(ID::taps, String(ID::taps), ID::separator);
     for (unsigned tid = 0; tid < MAX_TAPS; tid++) {
@@ -149,51 +151,73 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
     float size = params_.size.getValue();
     float mix = params_.mix.getValue();
-    float inlvl = normValue(params_.in_level) / 100.0f; // lvl can be > 100
+    bool freeze = params_.freeze.getValue() > 0.5f;
+    float inlvl = freeze ? 0.0f : normValue(params_.in_level) / 100.0f; // lvl can be > 100
     float outlvl = normValue(params_.out_level) / 100.0f;
-
     float maxtime = size * float(MAX_DELAY);
 
+    inRms_[0].process(buffer, I_IN_1);
+    inRms_[1].process(buffer, I_IN_2);
+
+    struct {
+        float time_;
+        float level_;
+        float feedback_;
+        float noiseamt_;
+        float panamt_;
+    } tapvalues[N_DLY_LINES][MAX_TAPS];
+
+    // control rate handling
+    for (int line = 0; line < N_DLY_LINES; line++) {
+        for (int t = 0; t < MAX_TAPS; t++) {
+            auto &v = tapvalues[line][t];
+            auto &tap = delayLines_[line].taps_[t];
+            auto &tap_params = params_.taps_[t];
+
+            v.time_ = tap_params->time.getValue();
+            v.level_ = tap_params->level.getValue();
+            v.feedback_ = tap_params->feedback.getValue();
+            v.noiseamt_ = tap_params->noise.getValue();
+            float pan = normValue(tap_params->pan);
+            v.panamt_ = panGain(line == 0, pan);
+
+            float hpf = normValue(tap_params->hpf);
+            float lpf = normValue(tap_params->lpf);
+            if (tap.lpf_.GetFreq() != lpf) tap.lpf_.SetFreq(lpf);
+            if (tap.hpf_.GetFreq() != hpf) tap.hpf_.SetFreq(hpf);
+        }
+    }
+
+    // sample rate processing
     for (int s = 0; s < sz; s++) {
         for (int line = 0; line < N_DLY_LINES; line++) {
-            if (!isOutputEnabled(line)) continue; //?
 
             auto &dlyline = delayLines_[line];
-
-            float in = buffer.getSample(line, s);
-            in *= inlvl;
+            float in = buffer.getSample(line, s) * inlvl;
             float wet = 0.0f;
             float fbk = 0.0f;
             for (int t = 0; t < MAX_TAPS; t++) {
-                auto &tap_params = params_.taps_[t];
-                auto &tap = dlyline.taps_[t];
-                float time = tap_params->time.getValue();
-
-                float level = tap_params->level.getValue(); // out level?
-                float feedback = tap_params->feedback.getValue(); // feedback level
-                float hpf = normValue(tap_params->hpf);
-                float lpf = normValue(tap_params->lpf);
-                float noiseamt = tap_params->noise.getValue();
-                float pan = normValue(tap_params->pan);
-
-                float noisesig = tap.noise_.Process() * noiseamt;
-                float v = dlyline.line_.Read(maxtime * time) + noisesig;
-                if (tap.lpf_.GetFreq() != lpf) tap.lpf_.SetFreq(lpf);
-                if (tap.hpf_.GetFreq() != hpf) tap.hpf_.SetFreq(hpf);
+                auto &tv = tapvalues[line][t];
+                unsigned sigoffset = (line * MAX_TAPS) + t;
+                float cvtime = buffer.getSample(I_TIME_1_TA + sigoffset, s);
+                auto &tap = delayLines_[line].taps_[t];
+                float noisesig = tap.noise_.Process() * tv.noiseamt_;
+                float time = constrain(tv.time_ + cvtime, 0.0f, 1.0f) * maxtime;
+                float v = dlyline.line_.Read(time) + noisesig;
                 v = tap.lpf_.Process(v);
                 v = tap.hpf_.Process(v);
-                float panamt = panGain(line == 0, pan);
-                wet += v * level * panamt;
-                fbk += v * feedback;
-                // todo : pan (we can use line to determine if left or right)
-                unsigned tsig = (line * MAX_TAPS) + t;
-                buffer.setSample(O_OUT_1_TA + tsig, s, v);
+                wet += v * tv.level_ * tv.panamt_;
+                fbk += v * tv.feedback_;
+                buffer.setSample(O_OUT_1_TA + sigoffset, s, v);
             }
             dlyline.line_.Write(in + fbk);
             float out = (in * (1.0f - mix) + wet) * outlvl;
             buffer.setSample(line, s, out);
         }
     }
+
+    outRms_[0].process(buffer, O_OUT_1);
+    outRms_[1].process(buffer, O_OUT_2);
 }
 
 

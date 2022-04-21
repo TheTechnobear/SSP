@@ -8,6 +8,7 @@
 
 #include <atomic>
 #include <algorithm>
+#include "ssp/RmsTrack.h"
 
 
 namespace ID {
@@ -19,6 +20,7 @@ PARAMETER_ID (size)
 PARAMETER_ID (mix)
 PARAMETER_ID (in_level)
 PARAMETER_ID (out_level)
+PARAMETER_ID (freeze)
 
 
 // tree taps:1-4:params
@@ -105,6 +107,7 @@ public:
         Parameter &mix;
         Parameter &in_level;
         Parameter &out_level;
+        Parameter &freeze;
 
         std::vector<std::unique_ptr<Tap>> taps_;
     } params_;
@@ -125,6 +128,14 @@ public:
         }
         return props;
     }
+
+    void getRMS(float &lIn, float &rIn, float &lOut, float &rOut) {
+        lIn = inRms_[0].lvl();
+        rIn = inRms_[1].lvl();
+        lOut = outRms_[0].lvl();
+        rOut = outRms_[1].lvl();
+    }
+
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -151,6 +162,10 @@ private:
             daisysp::Dust noise_;
         } taps_[MAX_TAPS];
     } delayLines_[N_DLY_LINES];
+
+    ssp::RmsTrack inRms_[2];
+    ssp::RmsTrack outRms_[2];
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
 

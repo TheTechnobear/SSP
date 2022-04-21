@@ -30,7 +30,7 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     );
 
     addButtonPage(
-        nullptr,
+        std::make_shared<bcontrol_type>(processor_.params_.freeze, 24, Colours::lightskyblue),
         nullptr,
         nullptr,
         nullptr,
@@ -76,7 +76,40 @@ PluginEditor::PluginEditor(PluginProcessor &p)
         view++;
     }
 
+    inVu_.init("In");
+    outVu_.init("Out");
+
+    float inL, inR, outL, outR;
+    processor_.getRMS(inL, inR, outL, outR);
+    inVu_.level(inL, inR);
+    outVu_.level(outL, outR);
+
+    addAndMakeVisible(inVu_);
+    addAndMakeVisible(outVu_);
+
     setSize(1600, 480);
 
 }
 
+void PluginEditor::drawView(Graphics &g) {
+    float inL, inR, outL, outR;
+    processor_.getRMS(inL, inR, outL, outR);
+    inVu_.level(inL, inR);
+    outVu_.level(outL, outR);
+
+    base_type::drawView(g);
+}
+
+
+void PluginEditor::resized() {
+    base_type::resized();
+    const unsigned h = 130;
+    const unsigned sp = 10;
+    const unsigned vuStart = 1500;
+    const unsigned vuW = 45;
+    unsigned y = 50;
+    unsigned x = vuStart;
+    inVu_.setBounds(x, y, vuW, h);
+    x += vuW + sp;
+    outVu_.setBounds(x, y, vuW, h);
+}
