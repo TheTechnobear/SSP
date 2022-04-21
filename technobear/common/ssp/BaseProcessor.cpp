@@ -110,8 +110,8 @@ void BaseProcessor::midiFromXml(juce::XmlElement *xml) {
 }
 
 void BaseProcessor::midiToXml(juce::XmlElement *xml) {
-    xml->setAttribute(MIDI_TAG_IN_DEV, midiInDeviceId_);
-    xml->setAttribute(MIDI_TAG_OUT_DEV, midiOutDeviceId_);
+    xml->setAttribute(MIDI_TAG_IN_DEV, midiInDeviceName_);
+    xml->setAttribute(MIDI_TAG_OUT_DEV, midiOutDeviceName_);
     xml->setAttribute(MIDI_TAG_CHANNEL, midiChannel_);
     xml->setAttribute(MIDI_TAG_NOTE_INPUT, noteInput_);
 
@@ -152,8 +152,8 @@ void BaseProcessor::testToXml(juce::XmlElement *xml) {
         xml->setAttribute((std::string(TEST_TAG_OUTPUT) + std::to_string(i)).c_str(), (int) isOutputEnabled(i));
     }
 }
-#endif
 
+#endif
 
 
 void BaseProcessor::customFromXml(juce::XmlElement *xml) {
@@ -237,48 +237,83 @@ void BaseProcessor::onOutputChanged(unsigned i, bool b) {
     if (i < numOut) outputEnabled[i] = b;
 }
 
-void BaseProcessor::setMidiIn(std::string id) {
-    if (id == midiInDeviceId_) return;
+inline bool isInternalMidi(const String &name) {
+    return name.contains("Juce") || name.contains("Midi Through Port");
+}
 
-    if (!id.empty()) {
+std::string BaseProcessor::getMidiInputDeviceId(const std::string &name) {
+    auto devs = MidiInput::getAvailableDevices();
+    for (int i = 0; i < devs.size(); i++) {
+        if (devs[i].name.toStdString() == name) {
+            return devs[i].identifier.toStdString();
+        }
+    }
+    return "";
+}
+
+std::string BaseProcessor::getMidiOutputDeviceId(const std::string &name) {
+    auto devs = MidiOutput::getAvailableDevices();
+    for (int i = 0; i < devs.size(); i++) {
+        if (devs[i].name.toStdString() == name) {
+            return devs[i].identifier.toStdString();
+        }
+    }
+    return "";
+}
+
+
+void BaseProcessor::setMidiIn(const std::string &name) {
+    if (name == midiInDeviceName_) return;
+
+    if (!name.empty()) {
         if (midiInDevice_) {
             midiInDevice_->stop();
             midiInDevice_ = nullptr;
         }
 
-        midiInDevice_ = MidiInput::openDevice(id, this);
-        if (midiInDevice_ && midiInDevice_->getIdentifier().toStdString() == id) {
-            midiInDevice_->start();
-            Logger::writeToLog(getName() + ": MIDI IN OPEN -> " + id);
-            midiInDeviceId_ = id;
-        } else {
-            Logger::writeToLog(getName() + ": MIDI IN FAILED -> " + id);
+        if (!isInternalMidi(name)) {
+            std::string id = getMidiOutputDeviceId(name);
+            if (!id.empty()) {
+                midiInDevice_ = MidiInput::openDevice(id, this);
+                if (midiInDevice_ && midiInDevice_->getIdentifier().toStdString() == id) {
+                    midiInDevice_->start();
+                    Logger::writeToLog(getName() + ": MIDI IN OPEN -> " + id);
+                    midiInDeviceName_ = name;
+                    return;
+                } else {
+                    Logger::writeToLog(getName() + ": MIDI IN FAILED -> " + id);
+                }
+            }
         }
-    } else {
-        midiInDevice_ = nullptr;
     }
+    midiInDevice_ = nullptr;
 }
 
-void BaseProcessor::setMidiOut(std::string id) {
-    if (id == midiOutDeviceId_) return;
+void BaseProcessor::setMidiOut(const std::string &name) {
+    if (name == midiOutDeviceName_) return;
 
-    if (!id.empty()) {
+    if (!name.empty()) {
         if (midiOutDevice_) {
             midiOutDevice_->stopBackgroundThread();
             midiOutDevice_ = nullptr;
         }
 
-        midiOutDevice_ = MidiOutput::openDevice(id);
-        if (midiOutDevice_ && midiOutDevice_->getIdentifier().toStdString() == id) {
-            midiOutDevice_->startBackgroundThread();
-            Logger::writeToLog(getName() + ": MIDI OUT OPEN -> " + id);
-            midiOutDeviceId_ = id;
-        } else {
-            Logger::writeToLog(getName() + ": MIDI OUT FAILED -> " + id);
+        if (!isInternalMidi(name)) {
+            std::string id = getMidiOutputDeviceId(name);
+            if (!id.empty()) {
+                midiOutDevice_ = MidiOutput::openDevice(id);
+                if (midiOutDevice_ && midiOutDevice_->getIdentifier().toStdString() == id) {
+                    midiOutDevice_->startBackgroundThread();
+                    Logger::writeToLog(getName() + ": MIDI OUT OPEN -> " + id);
+                    midiOutDeviceName_ = name;
+                    return;
+                }
+            } else {
+                Logger::writeToLog(getName() + ": MIDI OUT FAILED -> " + id);
+            }
         }
-    } else {
-        midiOutDevice_ = nullptr;
     }
+    midiOutDevice_ = nullptr;
 }
 
 void BaseProcessor::automateParam(int idx, const MidiAutomation &a, const MidiMessage &msg) {

@@ -50,6 +50,7 @@ protected:
     void onDownButton(bool v) override;
     void onLeftShiftButton(bool v) override;
     void onRightShiftButton(bool v) override;
+
     void onSSPTimer() override {}
 
     void setButtonBounds(ValueButton &btn, unsigned r, unsigned c);
@@ -67,9 +68,7 @@ protected:
     void midiOutCallback(float idx, const std::string &dev);
     void midiChannelCallback(float idx, const std::string &ch);
 private:
-    void paint(Graphics &) override;
-
-    void drawLabel(Graphics&, const std::string& str,unsigned idx);
+    void drawLabel(Graphics &, const std::string &str, unsigned idx);
 
     std::vector<std::string> midiInStr_;
     std::vector<std::string> midiOutStr_;
@@ -81,7 +80,6 @@ private:
     static constexpr unsigned MAX_SHOWN = 12;
     int idxOffset_ = 0;
     int selIdx_ = -1;
-
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SystemEditor)
 };
