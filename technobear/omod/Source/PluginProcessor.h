@@ -54,6 +54,7 @@ public:
         I_FREQ,
         I_RESET,
         I_CLOCK,
+        I_VOCT,
         I_MAX
     };
     enum {

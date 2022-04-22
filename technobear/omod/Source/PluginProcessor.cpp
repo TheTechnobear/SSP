@@ -89,7 +89,8 @@ const String PluginProcessor::getInputBusName(int channelIndex) {
     static String inBusName[I_MAX] = {
         "Freq",
         "Reset",
-        "Clock"
+        "Clock",
+        "VOct"
     };
     if (channelIndex < I_MAX) { return inBusName[channelIndex]; }
     return "ZZIn-" + String(channelIndex);
@@ -199,6 +200,18 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         lastReset_ = resetSmp;
 
         float mainoscfreq = mainfreq;
+
+        if (isInputEnabled(I_VOCT)) {
+            float voct = buffer.getSample(I_VOCT, s);
+            float pitch = cv2Pitch(voct);
+            mainoscfreq += daisysp::mtof(pitch + 60.0f);
+        }
+
+        if (isInputEnabled(I_FREQ)) {
+            static constexpr float freqRange = 10000.0f;
+            mainoscfreq += fin * freqRange;
+        }
+
         if (usingClock) {
             if (clockSmp > trigLevel && lastClock_ <= trigLevel) {
                 clockFreq_ = getSampleRate() / clockSampleCnt_;
