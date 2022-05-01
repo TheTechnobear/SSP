@@ -234,7 +234,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         buffer.setSample(O_OUT_MAIN, s, mainOsc_.Process());
         buffer.setSample(O_EOC_MAIN, s, mainOsc_.IsEOC());
         for (int oid = 0; oid < MAX_S_OSC; oid++) {
-            if (! ( isOutputEnabled(O_OUT_A + oid) || ( isOutputEnabled(O_EOC_A + oid))) ) { continue; };
+            if (!(isOutputEnabled(O_OUT_A + oid) || (isOutputEnabled(O_EOC_A + oid)))) { continue; };
 
             auto &sosc = slaveOscs_[oid];
             auto &soscparam = slavevalues[oid];
@@ -253,7 +253,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     }
 
     for (int oid = 0; oid < MAX_S_OSC; oid++) {
-        if (!isOutputEnabled(O_OUT_A + oid)) {
+        if (!(isOutputEnabled(O_OUT_A + oid) || (isOutputEnabled(O_EOC_A + oid)))) {
             // clear disabled outputs
             buffer.applyGain(O_OUT_A + oid, 0, sz, 0.0f);
             buffer.applyGain(O_EOC_A + oid, 0, sz, 0.0f);
