@@ -6,6 +6,10 @@ inline float constrain(float v, float vMin, float vMax) {
     return std::max<float>(vMin, std::min<float>(vMax, v));
 }
 
+#define MAX_FREQ 24000.0f
+#define MIN_FREQ (1.0f / 600.0f)
+// min freq only used for cv freq
+
 PluginProcessor::PluginProcessor()
     : PluginProcessor(getBusesProperties(), createParameterLayout()) {}
 
@@ -40,7 +44,8 @@ PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) 
     wave(*apvt.getParameter(ID::wave)),
     freq(*apvt.getParameter(ID::freq)),
     amp(*apvt.getParameter(ID::amp)),
-    phase(*apvt.getParameter(ID::phase)) {
+    phase(*apvt.getParameter(ID::phase)),
+    lfo(*apvt.getParameter(ID::lfo)) {
     for (unsigned oid = 0; oid < MAX_S_OSC; oid++) {
         auto sosc = std::make_unique<SlaveOscParams>(apvt, oid);
         slaveOscsParams_.push_back(std::move(sosc));
@@ -61,9 +66,10 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     waves.add("Blep Saw");
     waves.add("Blep Sqr");
     params.add(std::make_unique<ssp::BaseChoiceParameter>(ID::wave, "Wave", waves, 0));
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::freq, "Freq", 0.0f, 24000.0f, 1.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::freq, "Freq", 0.0f, MAX_FREQ, 100.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::amp, "Amp", 0.0f, 4.0f, 1.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::phase, "Phase", 0.0f, 360.0f, 0.0f));
+    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::lfo, "Lfo", true));
 
     auto taps = std::make_unique<AudioProcessorParameterGroup>(ID::slaveosc, String(ID::slaveosc), ID::separator);
     for (unsigned oid = 0; oid < MAX_S_OSC; oid++) {
@@ -131,9 +137,12 @@ void PluginProcessor::prepareToPlay(double newSampleRate, int estimatedSamplesPe
 
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
-    unsigned sz = buffer.getNumSamples();
 
-    float mainfreq = normValue(params_.freq);
+    unsigned sz = buffer.getNumSamples();
+    float freqmult = (params_.lfo.getValue() > 0.5f) ? 0.01f : 1.0f;
+
+    float mainfreq = normValue(params_.freq) * freqmult;
+    float freqRange = mainfreq;
     float mainwave = normValue(params_.wave);
     float mainamp = normValue(params_.amp);
     float mainphase = params_.phase.getValue();
@@ -205,13 +214,12 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
             float voct = buffer.getSample(I_VOCT, s);
             float pitch = cv2Pitch(voct);
             mainoscfreq += daisysp::mtof(pitch + 60.0f);
-            mainoscfreq = constrain(mainoscfreq, 0.0f, 24000.0f);
+            mainoscfreq = constrain(mainoscfreq, 0.0f, MAX_FREQ);
         }
 
         if (isInputEnabled(I_FREQ)) {
-            static constexpr float freqRange = 10000.0f;
-            mainoscfreq += fin * freqRange;
-            mainoscfreq = constrain(mainoscfreq, 0.0f, 24000.0f);
+            mainoscfreq += (fin * freqRange);
+            mainoscfreq = constrain(mainoscfreq, MIN_FREQ, MAX_FREQ);
         }
 
         if (usingClock) {

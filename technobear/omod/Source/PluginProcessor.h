@@ -18,6 +18,7 @@ PARAMETER_ID (wave)
 PARAMETER_ID (freq)
 PARAMETER_ID (amp)
 PARAMETER_ID (phase)
+PARAMETER_ID (lfo)
 
 
 // slaveosc : 1-7
@@ -99,6 +100,7 @@ public:
         Parameter &freq;
         Parameter &amp;
         Parameter &phase;
+        Parameter &lfo;
 
         std::vector<std::unique_ptr<SlaveOscParams>> slaveOscsParams_;
     } params_;

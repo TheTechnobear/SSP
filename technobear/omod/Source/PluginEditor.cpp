@@ -28,6 +28,19 @@ PluginEditor::PluginEditor(PluginProcessor &p)
         view,
         Colours::orange
     );
+
+    addButtonPage(
+        nullptr,
+        std::make_shared<bcontrol_type>(processor_.params_.lfo, 32, Colours::lightskyblue),
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        view
+    );
+
     page++;
 
     for (unsigned oid = 0; oid < MAX_S_OSC; oid++) {
