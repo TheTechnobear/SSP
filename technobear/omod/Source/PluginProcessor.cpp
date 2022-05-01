@@ -205,11 +205,13 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
             float voct = buffer.getSample(I_VOCT, s);
             float pitch = cv2Pitch(voct);
             mainoscfreq += daisysp::mtof(pitch + 60.0f);
+            mainoscfreq = constrain(mainoscfreq, 0.0f, 24000.0f);
         }
 
         if (isInputEnabled(I_FREQ)) {
             static constexpr float freqRange = 10000.0f;
             mainoscfreq += fin * freqRange;
+            mainoscfreq = constrain(mainoscfreq, 0.0f, 24000.0f);
         }
 
         if (usingClock) {
@@ -232,7 +234,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         buffer.setSample(O_OUT_MAIN, s, mainOsc_.Process());
         buffer.setSample(O_EOC_MAIN, s, mainOsc_.IsEOC());
         for (int oid = 0; oid < MAX_S_OSC; oid++) {
-            if (!isOutputEnabled(O_OUT_A + oid)) { continue; };
+            if (! ( isOutputEnabled(O_OUT_A + oid) || ( isOutputEnabled(O_EOC_A + oid))) ) { continue; };
 
             auto &sosc = slaveOscs_[oid];
             auto &soscparam = slavevalues[oid];

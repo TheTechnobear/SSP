@@ -21,7 +21,7 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     unsigned view = 0;
     unsigned page = 0;
     addParamPage(
-        std::make_shared<pcontrol_type>(processor_.params_.freq, 100.0f, 1.0f),
+        std::make_shared<pcontrol_type>(processor_.params_.freq, 50.0f, 0.01f),
         std::make_shared<pcontrol_type>(processor_.params_.wave, 1.0, 1.0f),
         std::make_shared<pcontrol_type>(processor_.params_.amp, 0.1, 0.01),
         std::make_shared<pcontrol_type>(processor_.params_.phase,10.0f, 0.1),
