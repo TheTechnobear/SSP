@@ -1,5 +1,3 @@
 cp ./technobear/README.txt ./releases
-cp ./build/technobear/*/*/Release/VST/*.so ./releases/plugins
-cp ./technobear/*/*.txt ./releases/docs
-rm ./releases/docs/CMakeLists.txt
+cp ./build/technobear/*/*/Release/VST3/*.vst3/Contents/armv7l-linux/*.so ./releases/plugins
 /opt/homebrew/bin/arm-linux-gnueabihf-strip --strip-unneeded ./releases/plugins/*
