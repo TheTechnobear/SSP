@@ -15,6 +15,8 @@ copy `*.so` to SSP's sdcard `/plugins`
 Documentation can be found on my [SSP Wiki](
 https://github.com/TheTechnobear/SSP/wiki/Modules%3ATheTechnobear)
 
+
+
 ### Midi 
 My plugins now support midi.
 to configure you must go to the 'general' panel of the VST.
@@ -52,16 +54,7 @@ all these use the same 'general' panel for their midi input and output needs.
 
 
 
-#### Midi Output 
-currently there is an issue in the SSP firmware which means it will connect to the 'virtual' output device that is created.
-this will mean the MIDI objects stops working, and cause issues when you switch patches.
-
-workaround: re-connect a physical midi device so that the SSP picks that up 
-
-
-
-
-note: these text files are using markdown format, this allows extra formatting in some editors/browsers
+note: this text file uses markdown format, this allows extra formatting in some editors/browsers
 
 
 
