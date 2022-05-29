@@ -36,6 +36,7 @@ public:
 protected:
 //    using base_type = juce::AudioProcessorEditor;
 
+    void paint(Graphics &g) override;
     virtual void drawView(Graphics &g);
 
     // ssp actions
