@@ -10,6 +10,9 @@ namespace ssp {
 static constexpr unsigned btnTopY = 380 - 1;
 static constexpr unsigned btnSpaceY = 50;
 
+inline bool isInternalMidi(const String &name) {
+    return name.contains("Juce") || name.contains("Midi Through Port");
+}
 
 SystemEditor::SystemEditor(BaseProcessor *p) :
     baseProcessor_(p),
@@ -46,21 +49,30 @@ SystemEditor::SystemEditor(BaseProcessor *p) :
     auto in = MidiInput::getAvailableDevices();
     int selIdx = -1;
     midiInStr_.push_back("NONE");
+    int idx = 0;
     for (int i = 0; i < in.size(); i++) {
-        inDevices_.push_back(in[i]);
-        midiInStr_.push_back(std::to_string(i)+":"+in[i].name.toStdString());
-        if (baseProcessor_->isActiveMidiIn(in[i].identifier.toStdString())) selIdx = i + 1; // none
+        if (!isInternalMidi(in[i].name)) {
+            inDevices_.push_back(in[i]);
+            midiInStr_.push_back(std::to_string(idx) + ":" + in[i].name.toStdString());
+            if (baseProcessor_->isActiveMidiIn(in[i].name.toStdString())) selIdx = idx + 1; // none
+            idx++;
+        }
     }
     midiInCtrl_.setValues(midiInStr_, selIdx);
 
     selIdx = -1;
+    idx = 0;
     auto out = MidiOutput::getAvailableDevices();
     midiOutStr_.push_back("NONE");
     for (int i = 0; i < out.size(); i++) {
-        outDevices_.push_back(out[i]);
-        midiOutStr_.push_back(std::to_string(i)+":"+out[i].name.toStdString());
-        if (baseProcessor_->isActiveMidiOut(out[i].identifier.toStdString())) selIdx = i + 1; //none
+        if (!isInternalMidi(out[i].name)) {
+            outDevices_.push_back(out[i]);
+            midiOutStr_.push_back(std::to_string(idx) + ":" + out[i].name.toStdString());
+            if (baseProcessor_->isActiveMidiOut(out[i].name.toStdString())) selIdx = idx + 1; //none
+            idx++;
+        }
     }
+
     midiOutCtrl_.setValues(midiOutStr_, selIdx);
 
 
@@ -85,22 +97,26 @@ void SystemEditor::midiInCallback(float idx, const std::string &dev) {
 //    Logger::writeToLog("midiInCallback -> " + String(idx) + " : " + dev);
     unsigned i = idx;
     if (i > 0) { // 0 ==  NONE
-        auto dev = inDevices_[i - 1];
-        baseProcessor_->setMidiIn(dev.identifier.toStdString());
-    } else {
-        baseProcessor_->setMidiIn("");
+        auto device = inDevices_[i - 1];
+        if (!isInternalMidi(device.name)) {
+            baseProcessor_->setMidiIn(device.name.toStdString());
+            return;
+        }
     }
+    baseProcessor_->setMidiIn("");
 }
 
 void SystemEditor::midiOutCallback(float idx, const std::string &dev) {
 //    Logger::writeToLog("midiOutCallback -> " + String(idx) + " : " + dev);
     unsigned i = idx;
     if (i > 0) { // 0 ==  NONE
-        auto dev = outDevices_[i - 1];
-        baseProcessor_->setMidiOut(dev.identifier.toStdString());
-    } else {
-        baseProcessor_->setMidiOut("");
+        auto device = outDevices_[i - 1];
+        if (!isInternalMidi(device.name)) {
+            baseProcessor_->setMidiOut(device.name.toStdString());
+            return;
+        }
     }
+    baseProcessor_->setMidiOut("");
 }
 
 void SystemEditor::midiChannelCallback(float idx, const std::string &ch) {
@@ -118,13 +134,10 @@ void SystemEditor::timerCallback() {
 }
 
 void SystemEditor::paint(Graphics &g) {
-    const int fh = 24;
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
-    g.setColour(Colours::yellow);
-    g.drawSingleLineText(String(JucePlugin_Name) + " : " + String(JucePlugin_Desc), 20, 30);
-
     drawView(g);
 }
+
+
 
 void SystemEditor::drawView(Graphics &g) {
     // display 1600x 480
