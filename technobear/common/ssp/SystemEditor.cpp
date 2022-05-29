@@ -133,6 +133,12 @@ void SystemEditor::timerCallback() {
     repaint();
 }
 
+void SystemEditor::paint(Graphics &g) {
+    drawView(g);
+}
+
+
+
 void SystemEditor::drawView(Graphics &g) {
     // display 1600x 480
     // x= left/right (0..1599)
