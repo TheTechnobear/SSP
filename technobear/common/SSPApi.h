@@ -78,7 +78,7 @@ public:
     void renderToImage(unsigned char *buffer, int width, int height) override {
         Image img = ImageCache::getFromHashCode(SSP_IMAGECACHE_HASHCODE);
         if (!img.isValid()) {
-            std::cerr << "new render image created" << std::endl;
+            // std::cerr << "new render image created" << std::endl;
             Image newimg(Image::ARGB, width, height, true);
             ImageCache::addImageToCache(newimg, SSP_IMAGECACHE_HASHCODE);
             img = newimg;
@@ -166,7 +166,7 @@ static MsgThead msgThread_;
 
 void startMessageManager() {
     if (MessageManager::getInstanceWithoutCreating() == nullptr) {
-        std::cerr << "create Message manager in " << JucePlugin_Name << std::endl;
+        // std::cerr << "create Message manager in " << JucePlugin_Name << std::endl;
         MessageManager::getInstance();
     }
     msgThread_.startThread();
