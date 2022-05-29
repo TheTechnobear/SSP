@@ -14,14 +14,22 @@ void PluginEditor::timerCallback() {
 //        Logger::writeToLog("timerCallback -> " + msg.getDescription());
         auto &data = dataBuf_[wrPos_];
 
-        if (msg.isNoteOnOrOff()) {
+        if (msg.isNoteOn(false)) {
             data.channel_ = String(msg.getChannel());
             data.active_ = true;
-            data.type_ = "Note";
+            data.type_ = "NoteOn";
             data.num_ = String(msg.getNoteNumber());
             data.value_ = String(msg.getVelocity());
             data.dispNum_ = true;
             wrPos_ = (wrPos_ + 1) % MAX_DATA;
+        } else if (msg.isNoteOff(true)) {
+                data.channel_ = String(msg.getChannel());
+                data.active_ = true;
+                data.type_ = "NoteOff";
+                data.num_ = String(msg.getNoteNumber());
+                data.value_ = String(msg.getVelocity());
+                data.dispNum_ = true;
+                wrPos_ = (wrPos_ + 1) % MAX_DATA;
         } else if (msg.isController()) {
             data.channel_ = String(msg.getChannel());
             data.active_ = true;
@@ -76,8 +84,8 @@ void PluginEditor::drawView(Graphics &g) {
     g.setColour(Colours::green);
     g.drawSingleLineText("Ch", 20, y);
     g.drawSingleLineText("Msg", 80, y);
-    g.drawSingleLineText("Num", 140, y);
-    g.drawSingleLineText("Value", 200, y);
+    g.drawSingleLineText("Num", 180, y);
+    g.drawSingleLineText("Value", 240, y);
 
     int x = 1400;
     g.drawSingleLineText("Clock", x, y);
@@ -98,8 +106,8 @@ void PluginEditor::drawView(Graphics &g) {
         if (data.active_) {
             g.drawSingleLineText(data.channel_, 20, y);
             g.drawSingleLineText(data.type_, 80, y);
-            if (data.dispNum_) g.drawSingleLineText(data.num_, 140, y);
-            g.drawSingleLineText(data.value_, 200, y);
+            if (data.dispNum_) g.drawSingleLineText(data.num_, 180, y);
+            g.drawSingleLineText(data.value_, 240, y);
             y += fh;
         }
     }
