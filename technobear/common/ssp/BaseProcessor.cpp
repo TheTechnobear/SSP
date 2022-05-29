@@ -277,11 +277,11 @@ void BaseProcessor::setMidiIn(const std::string &name) {
                 midiInDevice_ = MidiInput::openDevice(id, this);
                 if (midiInDevice_ && midiInDevice_->getIdentifier().toStdString() == id) {
                     midiInDevice_->start();
-                    Logger::writeToLog(getName() + ": MIDI IN OPEN -> " + id);
+                    // Logger::writeToLog(getName() + ": MIDI IN OPEN -> " + id);
                     midiInDeviceName_ = name;
                     return;
                 } else {
-                    Logger::writeToLog(getName() + ": MIDI IN FAILED -> " + id);
+                    // Logger::writeToLog(getName() + ": MIDI IN FAILED -> " + id);
                 }
             }
         }
@@ -304,12 +304,12 @@ void BaseProcessor::setMidiOut(const std::string &name) {
                 midiOutDevice_ = MidiOutput::openDevice(id);
                 if (midiOutDevice_ && midiOutDevice_->getIdentifier().toStdString() == id) {
                     midiOutDevice_->startBackgroundThread();
-                    Logger::writeToLog(getName() + ": MIDI OUT OPEN -> " + id);
+                    // Logger::writeToLog(getName() + ": MIDI OUT OPEN -> " + id);
                     midiOutDeviceName_ = name;
                     return;
                 }
             } else {
-                Logger::writeToLog(getName() + ": MIDI OUT FAILED -> " + id);
+                // Logger::writeToLog(getName() + ": MIDI OUT FAILED -> " + id);
             }
         }
     }
