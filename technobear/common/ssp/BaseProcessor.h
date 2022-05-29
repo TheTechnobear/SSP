@@ -60,13 +60,13 @@ public:
 
     bool isInputEnabled(unsigned i) { return i < numIn && inputEnabled[i]; }
 
-    void setMidiIn(std::string id);
-    void setMidiOut(std::string id);
+    void setMidiIn(const std::string& name);
+    void setMidiOut(const std::string& name);
 
 
-    bool isActiveMidiIn(const std::string &id) { return midiInDeviceId_ == id; }
+    bool isActiveMidiIn(const std::string &name) { return midiInDeviceName_ == name; }
 
-    bool isActiveMidiOut(const std::string &id) { return midiOutDeviceId_ == id; }
+    bool isActiveMidiOut(const std::string &name) { return midiOutDeviceName_ == name; }
 
     void midiLearn(bool b);
 
@@ -150,8 +150,8 @@ protected:
 
     std::map<int, MidiAutomation> midiAutomation_;
 
-    std::string midiInDeviceId_;
-    std::string midiOutDeviceId_;
+    std::string midiInDeviceName_;
+    std::string midiOutDeviceName_;
     std::unique_ptr<MidiInput> midiInDevice_;
     std::unique_ptr<MidiOutput> midiOutDevice_;
     int midiChannel_ = 0;
@@ -164,6 +164,8 @@ public:
     std::map<int, MidiAutomation> &midiAutomation() { return midiAutomation_; }
 
 private:
+    std::string getMidiInputDeviceId(const std::string& name);
+    std::string getMidiOutputDeviceId(const std::string& name);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BaseProcessor)
 };
