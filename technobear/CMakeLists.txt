@@ -17,4 +17,5 @@ add_subdirectory(shq)
 add_subdirectory(swat)
 add_subdirectory(vost)
 add_subdirectory(logi)
+add_subdirectory(clkd)
 
