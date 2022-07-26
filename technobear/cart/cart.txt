@@ -1,0 +1,155 @@
+# Cart : cartesian sequencer 
+
+cartesian sequencer
+
+
+## Status 
+Dev - see dev notes, remove before release ;)
+
+## Change Log
+1.0.0 none
+
+## Developer: TheTechnobear
+I develop these plugins for free, please consider supporting my efforts with a donation.
+https://ko-fi.com/thetechnobear
+
+
+## General Usage
+This module is inspired by Rene from Make Noise.
+
+
+
+# Future Ideas
+
+Rene 2 introduced the Z plane, which is 64 stores states or x/y/c
+with ability to copy between them, and also move thru by cv.
+I have to figure out parameter control for this, since it would introduce too many parameters
+to have all planes as vst parameters
+I guess, I'll make the parameters represent the 'current plane' - then persist these to others layers
+
+
+
+## Tips
+
+
+## Credits: 
+
+Percussa SSP - https://www.percussa.com/ 
+
+
+-----------------------------------
+
+
+# dev notes
+
+## milestones/stages
+
+- get fundamental sequencing with generic params
+really basic ui, with simple seq functionality incl, diff snakes/ x/y/c, access (done?)
+
+- basic UI
+needs to shows X / Y / C position
+... perhaps might be good to reflect CV/gate values?
+
+
+
+
+- start consider final ui
+how would it extend to fuller functionality
+more advanced sequencing functionality
+decide scope of v1, and what can slip
+
+
+
+
+- quant/glide?
+quantizer - free quantizer
+also has range of output - 1, 2, 3, or 4 octave
+no-octave = unquantised
+
+glide is fixed, and proportional to clk speed
+
+- mod functionality
+see fun.mod
+
+- check rene functionality
+look to see whats missing, and what we might want
+- not going to implement Z for now
+
+
+fun.op
+- none?
+- sleep - allow movement, but dont change CV on non-accessible
+- trig - off = trig length = clk length, on= short trig
+- scan - scans all knobs, copy to current channel
+
+fun.mod - how to use mod signal
+reset - reset to first position, that is access ON
+clk - combines clk + mod, allows retrig
+runstp - runs on high mod
+dir  - fwd/reverse
+
+fun.cv - how to use cv signal
+add - add to cv values (pre quant), not c
+loc - location
+snake - use for snake
+s&h - same as cv/add but only change on rising edge of mod
+
+
+
+---------
+
+# dev todo / reminders
+
+## editor - layer params
+glide, quant, snake, fun
+
+## editor - general display?
+use param bar, or move to something more unique?
+
+## x/y/z mod and cv
+
+check functionality
+        I_X_CLK,
+        I_X_MOD,
+        I_X_CV,
+        I_Y_CLK,
+        I_Y_MOD,
+        I_Y_CV,
+        I_Z_MOD,
+        I_Z_CV,
+
+some of these are 'fun' modes?
+
+
+things to implement/check...
+
+## layer :: glide
+glide is on all layers, for CV only
+do we need glide time?
+
+## layer :: snake
+determines routing (findnextstep)
+
+## layer :: fun
+check functionality !
+
+## layer :: quant
+how do we want this , fixed scales, or like Rene?
+
+## step cv
+affected by glide, quant
+
+## step access
+changes find next pos
+... is this always skip?
+I think there is a function to just suppress gate
+and so keep time? double check!
+TODO : looks like SLEEP , says ACCESS works for gate, but CV is not updated
+
+
+## step gate
+do we need gate time?
+
+
+
