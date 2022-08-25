@@ -68,7 +68,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 
     params.add(std::make_unique<ssp::BaseBoolParameter>(ID::slew, "Slew", false));
     params.add(std::make_unique<ssp::BaseBoolParameter>(ID::morph, "Morph", false));
-    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::select, "Select", 0, float(MAX_LAYERS), 0.0f));
+    params.add(std::make_unique<ssp::BaseFloatParameter>(ID::select, "Select", 0, float(MAX_LAYERS - 1), 0.0f));
 
 
     auto layers = std::make_unique<AudioProcessorParameterGroup>(ID::layers, String(ID::layers), ID::separator);
@@ -186,7 +186,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     bool slew = params_.slew.getValue() > 0.5f;
 
     float selectOffset = buffer.getSample(I_SELECT,0);
-    float select = std::min(std::max(((params_.select.getValue() + selectOffset ) * MAX_LAYERS), 0.0f), float(MAX_LAYERS));
+    float select = std::min(std::max(((params_.select.getValue() + selectOffset ) * float(MAX_LAYERS - 1)), 0.0f), float(MAX_LAYERS - 1));
 
     for (int i = 0; i < O_MAX; i++) {
         if (!isOutputEnabled(O_SIG_A + i)) continue;
