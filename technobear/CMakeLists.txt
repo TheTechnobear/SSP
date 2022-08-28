@@ -23,3 +23,5 @@ add_subdirectory(comp)
 add_subdirectory(cart)
 add_subdirectory(srvb)
 add_subdirectory(harm)
+add_subdirectory(omod)
+
