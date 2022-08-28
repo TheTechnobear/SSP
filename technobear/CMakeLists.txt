@@ -24,4 +24,5 @@ add_subdirectory(cart)
 add_subdirectory(srvb)
 add_subdirectory(harm)
 add_subdirectory(omod)
+add_subdirectory(dlyd)
 
