@@ -6,7 +6,8 @@
 void AgDisplay::process(
     const float *x, const float *y, const float *z,
     float *a, float *b,
-    unsigned n) {
+    unsigned ns) {
+    int n=ns;
 
     if (x != nullptr) lastX_ = x[0];
     if (y != nullptr) lastY_ = y[0];

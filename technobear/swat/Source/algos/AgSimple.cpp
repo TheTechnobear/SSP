@@ -13,7 +13,8 @@
 void AgConstant::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
-    unsigned n) {
+    unsigned ns) {
+    int n=ns;
     A_ = params_[0]->floatVal();
     B_ = params_[1]->floatVal();
 
@@ -42,7 +43,8 @@ void AgConstant::process(
 void AgPrecAdder::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
-    unsigned n) {
+    unsigned ns) {
+    int n=ns;
 
     if (a != nullptr) {
         if (x) FloatVectorOperations::copy(a, x, n);
@@ -86,7 +88,8 @@ void AgPrecAdder::process(
 void AgMinMax::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
-    unsigned n) {
+    unsigned ns) {
+    int n=ns;
 
     bool gate = true;
     for (auto i = 0; i < n; i++) {
@@ -139,7 +142,8 @@ void AgMinMax::process(
 void AgSwitch::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
-    unsigned n) {
+    unsigned ns) {
+    int n=ns;
 
     bool gate = true;
     if (z != nullptr) gate = z[0];
@@ -181,7 +185,8 @@ template<typename T> bool comparator(bool TS, T S1, T Th, T Hy ) {
 void AgComparator::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
-    unsigned n) {
+    unsigned ns) {
+    int n=ns;
 
     if (a != nullptr) {
         for (auto i = 0; i < n; i++) {
@@ -219,7 +224,8 @@ void AgComparator::process(
 void AgComparatorW::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
-    unsigned n) {
+    unsigned ns) {
+    int n=ns;
 
     LOW_  = params_[0]->floatVal();
     HIGH_  = params_[1]->floatVal();
@@ -286,7 +292,8 @@ void AgComparatorW::paint (Graphics& g) {
 void AgMapVV::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
-    unsigned n) {
+    unsigned ns) {
+    int n=ns;
 
     minIn_  = params_[0]->floatVal();
     maxIn_  = params_[1]->floatVal();
@@ -355,7 +362,8 @@ void AgMapVV::paint (Graphics& g) {
 void AgCounter::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
-    unsigned n) {
+    unsigned ns) {
+    int n=ns;
 
     min_  = params_[0]->floatVal();
     max_  = params_[1]->floatVal();

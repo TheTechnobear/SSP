@@ -11,8 +11,9 @@
 void AgDelay::process(
     const float *x, const float *y, const float *z,
     float *a, float *b,
-    unsigned n) {
+    unsigned ns) {
 
+    int n = ns;
     size_ = params_[0]->floatVal();
 
     unsigned dlSz = getSampleRate() * (size_ / 1000.0f);
@@ -57,11 +58,11 @@ void AgDelay::process(
             FloatVectorOperations::copy(delayLine_ + writePos_, x, n);
             writePos_ += n;
         } else {
-            unsigned n0 = delayLineSz_ - writePos_;
+            int n0 = delayLineSz_ - writePos_;
             if (n0 > 0) {
                 FloatVectorOperations::copy(delayLine_ + writePos_, x, n0);
             }
-            unsigned n1 = n - n0;
+            int n1 = n - n0;
             if (n1 > 0) {
                 FloatVectorOperations::copy(delayLine_, x + n0, n1);
             }
@@ -75,11 +76,11 @@ void AgDelay::process(
             // straight copy into buffer
             FloatVectorOperations::copy(a, delayLine_ + readPos, n);
         } else {
-            unsigned n0 = delayLineSz_ - readPos;
+            int n0 = delayLineSz_ - readPos;
             if (n0 > 0) {
                 FloatVectorOperations::copy(a, delayLine_ + readPos, n0);
             }
-            unsigned n1 = n - n0;
+            int n1 = n - n0;
             if (n1 > 0) {
                 FloatVectorOperations::copy(a + n0, delayLine_, n1);
             }
@@ -92,11 +93,11 @@ void AgDelay::process(
             // straight copy into buffer
             FloatVectorOperations::copy(b, delayLine_ + readPos, n);
         } else {
-            unsigned n0 = delayLineSz_ - readPos;
+            int n0 = delayLineSz_ - readPos;
             if (n0 > 0) {
                 FloatVectorOperations::copy(b, delayLine_ + readPos, n0);
             }
-            unsigned n1 = n - n0;
+            int n1 = n - n0;
             if (n1 > 0) {
                 FloatVectorOperations::copy(b, delayLine_, n1);
             }
@@ -136,11 +137,11 @@ void AgDelay::paint(Graphics &g) {
 void AgSDelay::process(
     const float *x, const float *y, const float *z,
     float *a, float *b,
-    unsigned n) {
+    unsigned ns) {
 
     size_ = params_[0]->floatVal();
-
-    unsigned dlSz = size_;
+    int n=ns;
+    int dlSz = size_;
 
     if (delayLineSz_ != dlSz) {
 
@@ -181,11 +182,11 @@ void AgSDelay::process(
             FloatVectorOperations::copy(delayLine_ + writePos_, x, n);
             writePos_ += n;
         } else {
-            unsigned n0 = delayLineSz_ - writePos_;
+            int n0 = delayLineSz_ - writePos_;
             if (n0 > 0) {
                 FloatVectorOperations::copy(delayLine_ + writePos_, x, n0);
             }
-            unsigned n1 = n - n0;
+            int n1 = n - n0;
             if (n1 > 0) {
                 FloatVectorOperations::copy(delayLine_, x + n0, n1);
             }
@@ -199,11 +200,11 @@ void AgSDelay::process(
             // straight copy into buffer
             FloatVectorOperations::copy(a, delayLine_ + readPos, n);
         } else {
-            unsigned n0 = delayLineSz_ - readPos;
+            int n0 = delayLineSz_ - readPos;
             if (n0 > 0) {
                 FloatVectorOperations::copy(a, delayLine_ + readPos, n0);
             }
-            unsigned n1 = n - n0;
+            int n1 = n - n0;
             if (n1 > 0) {
                 FloatVectorOperations::copy(a + n0, delayLine_, n1);
             }
@@ -216,11 +217,11 @@ void AgSDelay::process(
             // straight copy into buffer
             FloatVectorOperations::copy(b, delayLine_ + readPos, n);
         } else {
-            unsigned n0 = delayLineSz_ - readPos;
+            int n0 = delayLineSz_ - readPos;
             if (n0 > 0) {
                 FloatVectorOperations::copy(b, delayLine_ + readPos, n0);
             }
-            unsigned n1 = n - n0;
+            int n1 = n - n0;
             if (n1 > 0) {
                 FloatVectorOperations::copy(b, delayLine_, n1);
             }

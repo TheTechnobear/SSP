@@ -39,7 +39,8 @@ String noteString(int f) {
 void AgTranspose::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
-    unsigned n) {
+    unsigned ns) {
+    int n=ns;
 
     NA_ = params_[0]->floatVal();
     NB_ = params_[1]->floatVal();
@@ -93,7 +94,8 @@ template<typename T> bool comparator(bool TS, T S1, T Th, T Hy ) {
 void AgComparatorN::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
-    unsigned n) {
+    unsigned ns) {
+    int n=ns;
 
     NL_ = params_[0]->floatVal();
     NH_ = params_[1]->floatVal();
@@ -165,7 +167,8 @@ void AgComparatorN::paint (Graphics& g) {
 void AgMapNV::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
-    unsigned n) {
+    unsigned ns) {
+    int n=ns;
 
     minIn_  = params_[0]->floatVal();
     maxIn_  = params_[1]->floatVal();
@@ -239,7 +242,8 @@ void AgMapNV::paint (Graphics& g) {
 void AgMapNN::process(
     const float* x, const float* y, const float* z,
     float* a, float* b,
-    unsigned n) {
+    unsigned ns) {
+    int n=ns;
 
     minIn_  = params_[0]->floatVal();
     maxIn_  = params_[1]->floatVal();
