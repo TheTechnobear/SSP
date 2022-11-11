@@ -37,9 +37,9 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     }
 
 
-    for (int i = 0; i < MAX_LAYER; i++) {
+    for (int i = 0; i < MAX_LAYERS; i++) {
         std::string title = std::string("Layer ") + std::to_string(i);
-        scopes_[i].initSignal(0, title, dataBuf_[i], MAX_DATA, MAX_DATA, clrs_[i]);
+        scopes_[i].initSignal(0, title, dataBuf_[i], MAX_DATA, MAX_VIEWPOINTS, clrs_[i]);
         addAndMakeVisible(scopes_[i]);
     }
 
@@ -49,6 +49,9 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 
 
 void PluginEditor::drawView(Graphics &g) {
+    for (int i = 0; i < MAX_LAYERS; i++) {
+        processor_.fillLayerData(i, dataBuf_[i], MAX_DATA);
+    }
     base_type::drawView(g);
 }
 
@@ -56,13 +59,13 @@ void PluginEditor::drawView(Graphics &g) {
 void PluginEditor::resized() {
     base_type::resized();
     const unsigned h = 75;
-    const unsigned w = 600;
+    const unsigned w = MAX_VIEWPOINTS;
     const unsigned sp = 5;
     unsigned y = 50;
     unsigned x = 900;
 
-    for (int i = 0; i < MAX_LAYER; i++) {
-        scopes_[i].setBounds(x,y,w,h);
-        y+= h + sp;
+    for (int i = 0; i < MAX_LAYERS; i++) {
+        scopes_[i].setBounds(x, y, w, h);
+        y += h + sp;
     }
 }

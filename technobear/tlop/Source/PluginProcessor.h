@@ -70,11 +70,21 @@ public:
     }
 
     unsigned getLayerNumberSamples(unsigned layer);
-    void fillLayerData(unsigned layer, float* data, unsigned sz);
+    void fillLayerData(unsigned layer, float *data, unsigned sz);
+
+    unsigned numLayers() { return MAX_LAYERS; }
+
+    unsigned layerSampleSize() { return MAX_BUF_SIZE; }
+
+    static unsigned constexpr MAX_LAYERS = 4;
+    static unsigned constexpr MAX_BUF_SIZE = (48000 * 10);
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+
+    static void freeLayer(RNBO::ExternalDataId id, char *data);
 private:
+
     int bufferSize_ = 128;
     RNBO::CoreObject rnboObj_;
     int nInputs_ = 0;
@@ -84,6 +94,8 @@ private:
     int nParams_ = 0;
 
     float *lastParamVals_;
+
+    float *loopLayers_[4];
 
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
         return true;

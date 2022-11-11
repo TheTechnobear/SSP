@@ -35,9 +35,11 @@ PluginProcessor::PluginProcessor(
 
     nParams_ = params_.rnboParams_.size();
     lastParamVals_ = new float[nParams_];
-    for(int i=0;i<0;i++) {
+    for (int i = 0; i < 0; i++) {
         lastParamVals_[i] = -1.0;
     }
+
+
 }
 
 PluginProcessor::~PluginProcessor() {
@@ -67,8 +69,8 @@ PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) 
     for (unsigned i = 0; i < nParams; i++) {
         RNBO::ParameterInfo info;
         String id = rnboObj_.getParameterId(i);
-        rnboObj_.getParameterInfo(i,&info);
-        if(info.visible) {
+        rnboObj_.getParameterInfo(i, &info);
+        if (info.visible) {
             rnboParams_.push_back(std::make_unique<RnboParam>(apvt, id, i));
         }
     }
@@ -85,7 +87,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
         String id = rnboObj_.getParameterId(pn);
         RNBO::ParameterInfo info;
         rnboObj_.getParameterInfo(pn, &info);
-        if(info.visible) {
+        if (info.visible) {
             String desc = info.displayName;
             if (desc.length() == 0) desc = rnboObj_.getParameterName(pn);
 
@@ -127,19 +129,28 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 
 unsigned PluginProcessor::getLayerNumberSamples(unsigned layer) {
     unsigned maxD = rnboObj_.getNumExternalDataRefs();
-    if(layer >= maxD) return 0;
+    if (layer >= maxD || layer >= MAX_LAYERS) return 0;
+    if (loopLayers_[layer] == nullptr) return 0;
     auto info = rnboObj_.getExternalDataInfo(layer);
     auto id = rnboObj_.getExternalDataId(layer);
-
+    return MAX_BUF_SIZE;
 }
 
-void PluginProcessor::fillLayerData(unsigned layer, float* data, unsigned sz) {
+void PluginProcessor::fillLayerData(unsigned layer, float *data, unsigned sz) {
     unsigned maxD = rnboObj_.getNumExternalDataRefs();
-    if(layer >= maxD) return;
+    if (layer >= maxD || layer >= MAX_LAYERS) return;
 
-    RNBO::ExternalDataInfo info = rnboObj_.getExternalDataInfo(layer);
+    if (loopLayers_[layer] == nullptr) return;
+    for (int i = 0; i < MAX_BUF_SIZE && i < sz; i++) {
+        data[i] = loopLayers_[layer][i];
+    }
+
+//    RNBO::ExternalDataInfo info = rnboObj_.getExternalDataInfo(layer);
 }
 
+void PluginProcessor::freeLayer(RNBO::ExternalDataId id, char *data) {
+    delete (float *) (data);
+}
 
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
     BaseProcessor::prepareToPlay(sampleRate, samplesPerBlock);
@@ -155,7 +166,24 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
             outputBuffers_[i] = new RNBO::number[bufferSize_];
         }
     }
+
     rnboObj_.prepareToProcess(sampleRate, samplesPerBlock);
+
+    // allocate loop layers
+    for (int i = 0; i < MAX_LAYERS; i++) {
+        loopLayers_[i] = nullptr;
+        for (int l = 0; l < rnboObj_.getNumExternalDataRefs(); l++) {
+            auto id = rnboObj_.getExternalDataId(l);
+            if (id == std::string("layer") + std::to_string(i + 1)) {
+                RNBO::Float32AudioBuffer type(1, sampleRate);
+                loopLayers_[i] = new float[MAX_BUF_SIZE];
+                for (int x = 0; x < MAX_BUF_SIZE; x++) loopLayers_[i][x] = 0.0f;
+                rnboObj_.setExternalData(id, (char *) loopLayers_[i],
+                                         MAX_BUF_SIZE * sizeof(float) / sizeof(char),
+                                         type, &freeLayer);
+            }
+        }
+    }
 }
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
@@ -163,12 +191,12 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
 
     // set parameters up for patch, only set on change
-    unsigned pi=0;
+    unsigned pi = 0;
     for (auto &p: params_.rnboParams_) {
         float val = p->val_.getValue();
-        if(lastParamVals_[pi]!=val) {
+        if (lastParamVals_[pi] != val) {
             rnboObj_.setParameterValue(p->idx_, normValue(p->val_));
-            lastParamVals_[pi]=val;
+            lastParamVals_[pi] = val;
         }
         pi++;
     }
