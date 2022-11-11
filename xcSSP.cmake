@@ -1,3 +1,4 @@
+
 if(APPLE)
     set(CMAKE_SYSTEM_NAME Darwin)
 endif()
@@ -7,8 +8,8 @@ if (DEFINED ENV{BUILDROOT})
     set(BUILDROOT $ENV{BUILDROOT})
     set(CMAKE_SYSROOT ${BUILDROOT}/arm-rockchip-linux-gnueabihf/sysroot)
 else ()
-    message("warning: BUILDROOT environment variable assuming in current directory")
-    set(BUILDROOT "./arm-rockchip-linux-gnueabihf_sdk-buildroot")
+    message("warning: BUILDROOT environment variable assuming in $ENV{HOME}/buildroot")
+    set(BUILDROOT "$ENV{HOME}/buildroot/arm-rockchip-linux-gnueabihf_sdk-buildroot")
     set(CMAKE_SYSROOT ${BUILDROOT}/arm-rockchip-linux-gnueabihf/sysroot)
 endif ()
 
@@ -18,10 +19,11 @@ else ()
     # sensible defaults
     if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         # assume we are using homebrew
-        set(TOOLSROOT /opt/homebrew/opt/llvm/bin)
-        # non m1 macs need this instead, but you could also set TOOLS_ROOT
-        # set(TOOLSROOT /usr/local/opt/llvm/bin)
-
+        if (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "arm64")        
+            set(TOOLSROOT /opt/homebrew/opt/llvm/bin)
+        else ()
+            set(TOOLSROOT /usr/local/opt/llvm/bin)
+        endif()
     elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         set(TOOLSROOT "/usr/bin")
     endif ()
