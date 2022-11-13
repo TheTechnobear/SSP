@@ -1,0 +1,38 @@
+[
+  {
+    "name": "tlop",
+    "preset": {
+      "__sps": {
+        "layer1": {
+          "mode": {
+            "value": 0
+          }
+        },
+        "layer2": {
+          "mode": {
+            "value": 0
+          }
+        },
+        "layer3": {
+          "mode": {
+            "value": 1
+          }
+        },
+        "layer4": {
+          "mode": {
+            "value": 1
+          }
+        }
+      },
+      "layer": {
+        "value": 1
+      },
+      "rec_mon": {
+        "value": 100
+      },
+      "record-mode": {
+        "value": 0
+      }
+    }
+  }
+]
