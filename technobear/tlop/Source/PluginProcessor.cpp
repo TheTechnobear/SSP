@@ -127,23 +127,30 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
     return "ZZOut-" + String(channelIndex);
 }
 
-unsigned PluginProcessor::getLayerNumberSamples(unsigned layer) {
+unsigned PluginProcessor::getLayerNumberSamples(unsigned lidx) {
     unsigned maxD = rnboObj_.getNumExternalDataRefs();
-    if (layer >= maxD || layer >= MAX_LAYERS) return 0;
-    if (loopLayers_[layer] == nullptr) return 0;
-    auto info = rnboObj_.getExternalDataInfo(layer);
-    auto id = rnboObj_.getExternalDataId(layer);
+    if (lidx >= maxD || lidx >= MAX_LAYERS) return 0;
+
+    auto &layer = layers_[lidx];
+    if (layer.loopLayers_ == nullptr) return 0;
+
+    auto info = rnboObj_.getExternalDataInfo(lidx);
+    auto id = rnboObj_.getExternalDataId(lidx);
     return MAX_BUF_SIZE;
 }
 
-void PluginProcessor::fillLayerData(unsigned layer, float *data, unsigned sz) {
+void PluginProcessor::fillLayerData(unsigned lidx, float *data, unsigned sz, float &cur, float &begin, float &end) {
     unsigned maxD = rnboObj_.getNumExternalDataRefs();
-    if (layer >= maxD || layer >= MAX_LAYERS) return;
+    if (lidx >= maxD || lidx >= MAX_LAYERS) return;
+    auto &layer = layers_[lidx];
 
-    if (loopLayers_[layer] == nullptr) return;
+    if (layer.loopLayers_ == nullptr) return;
     for (int i = 0; i < MAX_BUF_SIZE && i < sz; i++) {
-        data[i] = loopLayers_[layer][i];
+        data[i] = layer.loopLayers_[i];
     }
+    cur = layer.cur_;
+    begin = layer.begin_;
+    end = layer.end_;
 
 //    RNBO::ExternalDataInfo info = rnboObj_.getExternalDataInfo(layer);
 }
@@ -171,14 +178,15 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
 
     // allocate loop layers
     for (int i = 0; i < MAX_LAYERS; i++) {
-        loopLayers_[i] = nullptr;
+        auto &layer = layers_[i];
+        layer.loopLayers_ = nullptr;
         for (int l = 0; l < rnboObj_.getNumExternalDataRefs(); l++) {
             auto id = rnboObj_.getExternalDataId(l);
             if (id == std::string("layer") + std::to_string(i + 1)) {
                 RNBO::Float32AudioBuffer type(1, sampleRate);
-                loopLayers_[i] = new float[MAX_BUF_SIZE];
-                for (int x = 0; x < MAX_BUF_SIZE; x++) loopLayers_[i][x] = 0.0f;
-                rnboObj_.setExternalData(id, (char *) loopLayers_[i],
+                layer.loopLayers_ = new float[MAX_BUF_SIZE];
+                for (int x = 0; x < MAX_BUF_SIZE; x++) layer.loopLayers_[x] = 0.0f;
+                rnboObj_.setExternalData(id, (char *) layer.loopLayers_,
                                          MAX_BUF_SIZE * sizeof(float) / sizeof(char),
                                          type, &freeLayer);
             }
@@ -189,10 +197,24 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     size_t n = buffer.getNumSamples();
 
-
     // set parameters up for patch, only set on change
     unsigned pi = 0;
     for (auto &p: params_.rnboParams_) {
+        //fixme - optimise by grouping rnboParams_ into layers
+        for (int lidx = 0; lidx < MAX_LAYERS; lidx++) {
+            auto &layer = layers_[lidx];
+            std::string lstr = std::string("layer") + std::to_string(lidx + 1);
+            if (p->id_.find(lstr, 0) != std::string::npos) {
+                if (p->id_.find("begin") != std::string::npos) {
+                    layer.begin_ = normValue(p->val_);
+                }
+                if (p->id_.find("end") != std::string::npos) {
+                    layer.end_ = normValue(p->val_);
+                }
+            }
+        }
+
+        // normal handling to RNBO
         float val = p->val_.getValue();
         if (lastParamVals_[pi] != val) {
             rnboObj_.setParameterValue(p->idx_, normValue(p->val_));
@@ -200,6 +222,17 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         }
         pi++;
     }
+
+
+    for (int lidx = 0; lidx < MAX_LAYERS; lidx++) {
+        auto &layer = layers_[lidx];
+        // OUTPUT layer from RNBO  : SUM ,out 4 Layer Out , Rec Pos, 4 Play Pos
+        layer.cur_ = buffer.getSample(1 + MAX_LAYERS + 1 + lidx, n - 1);
+    }
+
+
+
+
     // later can perhaps use vector copies?
     {
         // process input
@@ -223,7 +256,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 }
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
-    return new ssp::EditorHost(this, new PluginEditor(*this));
+    return new ssp::EditorHost(this, new PluginEditor(*this, params_.rnboParams_.size() / 16));
 }
 
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {

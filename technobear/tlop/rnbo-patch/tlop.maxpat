@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 438.0, 173.0, 1300.0, 1077.0 ],
+		"rect" : [ 83.0, 197.0, 1136.0, 1068.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,12 +40,77 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"bufsize" : 256,
+					"calccount" : 2,
+					"id" : "obj-34",
+					"maxclass" : "scope~",
+					"numinlets" : 2,
+					"numoutlets" : 0,
+					"patching_rect" : [ 944.0, 706.0, 163.0, 77.0 ],
+					"range" : [ 0.0, 1.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"bufsize" : 256,
+					"calccount" : 2,
+					"id" : "obj-33",
+					"maxclass" : "scope~",
+					"numinlets" : 2,
+					"numoutlets" : 0,
+					"patching_rect" : [ 755.0, 706.0, 163.0, 77.0 ],
+					"range" : [ 0.0, 1.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"bufsize" : 256,
+					"calccount" : 2,
+					"id" : "obj-32",
+					"maxclass" : "scope~",
+					"numinlets" : 2,
+					"numoutlets" : 0,
+					"patching_rect" : [ 566.0, 706.0, 163.0, 77.0 ],
+					"range" : [ 0.0, 1.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"bufsize" : 256,
+					"calccount" : 2,
+					"id" : "obj-30",
+					"maxclass" : "scope~",
+					"numinlets" : 2,
+					"numoutlets" : 0,
+					"patching_rect" : [ 377.0, 706.0, 163.0, 77.0 ],
+					"range" : [ 0.0, 1.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"bufsize" : 256,
+					"calccount" : 2,
+					"id" : "obj-29",
+					"maxclass" : "scope~",
+					"numinlets" : 2,
+					"numoutlets" : 0,
+					"patching_rect" : [ 198.0, 706.0, 163.0, 77.0 ],
+					"range" : [ 0.0, 1.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-38",
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 335.25, 147.0, 29.5, 22.0 ],
+					"patching_rect" : [ 335.25, 141.0, 29.5, 22.0 ],
 					"text" : "2"
 				}
 
@@ -69,7 +134,7 @@
 					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 351.0, 233.0, 68.0, 22.0 ],
+					"patching_rect" : [ 319.0, 235.0, 68.0, 22.0 ],
 					"text" : "selector~ 2"
 				}
 
@@ -80,7 +145,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 2,
 					"numoutlets" : 0,
-					"patching_rect" : [ 232.0, 960.0, 35.0, 22.0 ],
+					"patching_rect" : [ 191.5, 1025.0, 35.0, 22.0 ],
 					"text" : "dac~"
 				}
 
@@ -94,7 +159,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 238.5, 788.0, 22.0, 140.0 ]
+					"patching_rect" : [ 198.0, 841.0, 22.0, 140.0 ]
 				}
 
 			}
@@ -114,7 +179,7 @@
 ,
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 6,
+					"numoutlets" : 11,
 					"outletInfo" : 					{
 						"IOInfo" : [ 							{
 								"type" : "signal",
@@ -146,20 +211,176 @@
 								"tag" : "out5",
 								"comment" : "layer4"
 							}
+, 							{
+								"type" : "signal",
+								"index" : 6,
+								"tag" : "out6",
+								"comment" : "record head"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 7,
+								"tag" : "out7",
+								"comment" : "layer1-play"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 8,
+								"tag" : "out8",
+								"comment" : "layer2-play"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 9,
+								"tag" : "out9",
+								"comment" : "layer3-play"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 100,
+								"tag" : "out100",
+								"comment" : "layer4-play"
+							}
  ]
 					}
 ,
-					"outlettype" : [ "signal", "signal", "signal", "signal", "signal", "list" ],
-					"patching_rect" : [ 319.0, 365.0, 62.0, 22.0 ],
+					"outlettype" : [ "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "list" ],
+					"patching_rect" : [ 319.0, 365.0, 213.0, 22.0 ],
 					"rnboattrcache" : 					{
-						"rec_mon" : 						{
-							"label" : "rec_mon",
+						"layer1/rate" : 						{
+							"label" : "rate",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer4/crossfade" : 						{
+							"label" : "crossfade",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer1/crossfade" : 						{
+							"label" : "crossfade",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"rec-gain" : 						{
+							"label" : "rec-gain",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer2/end" : 						{
+							"label" : "end",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer4/end" : 						{
+							"label" : "end",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer3/gain" : 						{
+							"label" : "gain",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer4/rate" : 						{
+							"label" : "rate",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer1/begin" : 						{
+							"label" : "begin",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer1/end" : 						{
+							"label" : "end",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer2/rate" : 						{
+							"label" : "rate",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer3/rate" : 						{
+							"label" : "rate",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer2/begin" : 						{
+							"label" : "begin",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer3/crossfade" : 						{
+							"label" : "crossfade",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer2/gain" : 						{
+							"label" : "gain",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
 ,
 						"layer" : 						{
 							"label" : "layer",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer1/gain" : 						{
+							"label" : "gain",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"rec_mon" : 						{
+							"label" : "rec_mon",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer3/begin" : 						{
+							"label" : "begin",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer2/crossfade" : 						{
+							"label" : "crossfade",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer4/begin" : 						{
+							"label" : "begin",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer3/end" : 						{
+							"label" : "end",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer4/gain" : 						{
+							"label" : "gain",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
@@ -176,10 +397,22 @@
 							"parsestring" : "Play Stop"
 						}
 ,
+						"layer1/loop" : 						{
+							"label" : "loop",
+							"isEnum" : 1,
+							"parsestring" : "false true"
+						}
+,
 						"layer2/mode" : 						{
 							"label" : "mode",
 							"isEnum" : 1,
 							"parsestring" : "Play Stop"
+						}
+,
+						"layer2/loop" : 						{
+							"label" : "loop",
+							"isEnum" : 1,
+							"parsestring" : "false true"
 						}
 ,
 						"layer3/mode" : 						{
@@ -188,10 +421,22 @@
 							"parsestring" : "Play Stop"
 						}
 ,
+						"layer3/loop" : 						{
+							"label" : "loop",
+							"isEnum" : 1,
+							"parsestring" : "false true"
+						}
+,
 						"layer4/mode" : 						{
 							"label" : "mode",
 							"isEnum" : 1,
 							"parsestring" : "Play Stop"
+						}
+,
+						"layer4/loop" : 						{
+							"label" : "loop",
+							"isEnum" : 1,
+							"parsestring" : "false true"
 						}
 
 					}
@@ -227,35 +472,135 @@
 								"value" : 0.0
 							}
 ,
+							"rec-gain" : 							{
+								"value" : 1.0
+							}
+,
 							"layer" : 							{
 								"value" : 0.0
 							}
 ,
 							"__sps" : 							{
 								"layer4" : 								{
+									"gain" : 									{
+										"value" : 1.0
+									}
+,
+									"loop" : 									{
+										"value" : 1.0
+									}
+,
+									"begin" : 									{
+										"value" : 0.0
+									}
+,
 									"mode" : 									{
+										"value" : 1.0
+									}
+,
+									"crossfade" : 									{
+										"value" : 1.0
+									}
+,
+									"end" : 									{
+										"value" : 1.0
+									}
+,
+									"rate" : 									{
 										"value" : 1.0
 									}
 
 								}
 ,
 								"layer3" : 								{
+									"gain" : 									{
+										"value" : 1.0
+									}
+,
+									"loop" : 									{
+										"value" : 1.0
+									}
+,
+									"begin" : 									{
+										"value" : 0.0
+									}
+,
 									"mode" : 									{
+										"value" : 1.0
+									}
+,
+									"crossfade" : 									{
+										"value" : 1.0
+									}
+,
+									"end" : 									{
+										"value" : 1.0
+									}
+,
+									"rate" : 									{
 										"value" : 1.0
 									}
 
 								}
 ,
 								"layer2" : 								{
+									"gain" : 									{
+										"value" : 1.0
+									}
+,
+									"loop" : 									{
+										"value" : 1.0
+									}
+,
+									"begin" : 									{
+										"value" : 0.0
+									}
+,
 									"mode" : 									{
+										"value" : 1.0
+									}
+,
+									"crossfade" : 									{
+										"value" : 1.0
+									}
+,
+									"end" : 									{
+										"value" : 1.0
+									}
+,
+									"rate" : 									{
 										"value" : 1.0
 									}
 
 								}
 ,
 								"layer1" : 								{
+									"gain" : 									{
+										"value" : 1.0
+									}
+,
+									"loop" : 									{
+										"value" : 1.0
+									}
+,
+									"begin" : 									{
+										"value" : 0.0
+									}
+,
 									"mode" : 									{
 										"value" : 0.0
+									}
+,
+									"crossfade" : 									{
+										"value" : 1.0
+									}
+,
+									"end" : 									{
+										"value" : 0.0
+									}
+,
+									"rate" : 									{
+										"value" : 1.0
 									}
 
 								}
@@ -285,35 +630,135 @@
 											"value" : 0.0
 										}
 ,
+										"rec-gain" : 										{
+											"value" : 1.0
+										}
+,
 										"layer" : 										{
 											"value" : 0.0
 										}
 ,
 										"__sps" : 										{
 											"layer4" : 											{
+												"gain" : 												{
+													"value" : 1.0
+												}
+,
+												"loop" : 												{
+													"value" : 1.0
+												}
+,
+												"begin" : 												{
+													"value" : 0.0
+												}
+,
 												"mode" : 												{
+													"value" : 1.0
+												}
+,
+												"crossfade" : 												{
+													"value" : 1.0
+												}
+,
+												"end" : 												{
+													"value" : 1.0
+												}
+,
+												"rate" : 												{
 													"value" : 1.0
 												}
 
 											}
 ,
 											"layer3" : 											{
+												"gain" : 												{
+													"value" : 1.0
+												}
+,
+												"loop" : 												{
+													"value" : 1.0
+												}
+,
+												"begin" : 												{
+													"value" : 0.0
+												}
+,
 												"mode" : 												{
+													"value" : 1.0
+												}
+,
+												"crossfade" : 												{
+													"value" : 1.0
+												}
+,
+												"end" : 												{
+													"value" : 1.0
+												}
+,
+												"rate" : 												{
 													"value" : 1.0
 												}
 
 											}
 ,
 											"layer2" : 											{
+												"gain" : 												{
+													"value" : 1.0
+												}
+,
+												"loop" : 												{
+													"value" : 1.0
+												}
+,
+												"begin" : 												{
+													"value" : 0.0
+												}
+,
 												"mode" : 												{
+													"value" : 1.0
+												}
+,
+												"crossfade" : 												{
+													"value" : 1.0
+												}
+,
+												"end" : 												{
+													"value" : 1.0
+												}
+,
+												"rate" : 												{
 													"value" : 1.0
 												}
 
 											}
 ,
 											"layer1" : 											{
+												"gain" : 												{
+													"value" : 1.0
+												}
+,
+												"loop" : 												{
+													"value" : 1.0
+												}
+,
+												"begin" : 												{
+													"value" : 0.0
+												}
+,
 												"mode" : 												{
 													"value" : 0.0
+												}
+,
+												"crossfade" : 												{
+													"value" : 1.0
+												}
+,
+												"end" : 												{
+													"value" : 0.0
+												}
+,
+												"rate" : 												{
+													"value" : 1.0
 												}
 
 											}
@@ -531,7 +976,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 60.0, 309.0, 150.0, 22.0 ]
+					"patching_rect" : [ 620.0, 124.0, 150.0, 22.0 ]
 				}
 
 			}
@@ -544,7 +989,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 60.0, 348.0, 150.0, 22.0 ]
+					"patching_rect" : [ 620.0, 286.0, 150.0, 22.0 ]
 				}
 
 			}
@@ -557,7 +1002,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 60.0, 384.0, 150.0, 22.0 ]
+					"patching_rect" : [ 620.0, 322.0, 150.0, 22.0 ]
 				}
 
 			}
@@ -570,7 +1015,98 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 60.0, 421.0, 150.0, 22.0 ]
+					"patching_rect" : [ 620.0, 359.0, 150.0, 22.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"attr" : "rec-gain",
+					"id" : "obj-16",
+					"maxclass" : "attrui",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 60.0, 254.0, 150.0, 22.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"attr" : "layer1/crossfade",
+					"id" : "obj-21",
+					"maxclass" : "attrui",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 620.0, 197.0, 150.0, 22.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"attr" : "layer1/begin",
+					"id" : "obj-24",
+					"maxclass" : "attrui",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 620.0, 166.0, 150.0, 22.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"attr" : "layer1/end",
+					"id" : "obj-25",
+					"maxclass" : "attrui",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 772.0, 166.0, 150.0, 22.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"attr" : "layer1/rate",
+					"id" : "obj-26",
+					"maxclass" : "attrui",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 772.0, 124.0, 150.0, 22.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"attr" : "layer1/gain",
+					"id" : "obj-27",
+					"maxclass" : "attrui",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 772.0, 197.0, 150.0, 22.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"attr" : "layer1/loop",
+					"id" : "obj-28",
+					"maxclass" : "attrui",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 944.0, 124.0, 150.0, 22.0 ]
 				}
 
 			}
@@ -598,6 +1134,13 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-17", 0 ],
+					"source" : [ "obj-16", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-20", 0 ],
 					"order" : 0,
 					"source" : [ "obj-17", 0 ]
@@ -606,9 +1149,44 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-29", 0 ],
+					"source" : [ "obj-17", 5 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-3", 0 ],
 					"order" : 1,
 					"source" : [ "obj-17", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-30", 0 ],
+					"source" : [ "obj-17", 6 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-32", 0 ],
+					"source" : [ "obj-17", 7 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-33", 0 ],
+					"source" : [ "obj-17", 8 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-34", 0 ],
+					"source" : [ "obj-17", 9 ]
 				}
 
 			}
@@ -680,7 +1258,49 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-17", 0 ],
+					"source" : [ "obj-21", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-17", 0 ],
 					"source" : [ "obj-22", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-17", 0 ],
+					"source" : [ "obj-24", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-17", 0 ],
+					"source" : [ "obj-25", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-17", 0 ],
+					"source" : [ "obj-26", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-17", 0 ],
+					"source" : [ "obj-27", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-17", 0 ],
+					"source" : [ "obj-28", 0 ]
 				}
 
 			}

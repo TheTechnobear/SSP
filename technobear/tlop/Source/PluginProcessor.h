@@ -70,7 +70,7 @@ public:
     }
 
     unsigned getLayerNumberSamples(unsigned layer);
-    void fillLayerData(unsigned layer, float *data, unsigned sz);
+    void fillLayerData(unsigned layer, float *data, unsigned sz, float &cur, float &begin, float &end);
 
     unsigned numLayers() { return MAX_LAYERS; }
 
@@ -95,7 +95,12 @@ private:
 
     float *lastParamVals_;
 
-    float *loopLayers_[4];
+    struct { ;
+        float begin_;
+        float end_;
+        float cur_;
+        float *loopLayers_;
+    } layers_[MAX_LAYERS];
 
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
         return true;

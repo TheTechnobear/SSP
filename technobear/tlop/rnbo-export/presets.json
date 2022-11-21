@@ -4,27 +4,102 @@
     "preset": {
       "__sps": {
         "layer1": {
+          "begin": {
+            "value": 0
+          },
+          "crossfade": {
+            "value": 1
+          },
+          "end": {
+            "value": 0
+          },
+          "gain": {
+            "value": 1
+          },
+          "loop": {
+            "value": 1
+          },
           "mode": {
             "value": 0
+          },
+          "rate": {
+            "value": 1
           }
         },
         "layer2": {
-          "mode": {
+          "begin": {
             "value": 0
+          },
+          "crossfade": {
+            "value": 1
+          },
+          "end": {
+            "value": 1
+          },
+          "gain": {
+            "value": 1
+          },
+          "loop": {
+            "value": 1
+          },
+          "mode": {
+            "value": 1
+          },
+          "rate": {
+            "value": 1
           }
         },
         "layer3": {
+          "begin": {
+            "value": 0
+          },
+          "crossfade": {
+            "value": 1
+          },
+          "end": {
+            "value": 1
+          },
+          "gain": {
+            "value": 1
+          },
+          "loop": {
+            "value": 1
+          },
           "mode": {
+            "value": 1
+          },
+          "rate": {
             "value": 1
           }
         },
         "layer4": {
+          "begin": {
+            "value": 0
+          },
+          "crossfade": {
+            "value": 1
+          },
+          "end": {
+            "value": 1
+          },
+          "gain": {
+            "value": 1
+          },
+          "loop": {
+            "value": 1
+          },
           "mode": {
+            "value": 1
+          },
+          "rate": {
             "value": 1
           }
         }
       },
       "layer": {
+        "value": 0
+      },
+      "rec-gain": {
         "value": 1
       },
       "rec_mon": {
