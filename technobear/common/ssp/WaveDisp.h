@@ -18,8 +18,6 @@ public:
             layer.colour_ = clrs[i % 4];
             layer.buffer_ = nullptr;
         }
-
-        setOpaque(true);
     }
 
     void initSignal(unsigned sigN, const std::string &label, float *buf, unsigned bufn, unsigned n, Colour c = juce::Colours::red) {
@@ -54,10 +52,13 @@ public:
         layer.end_ = end;
     }
 
-    void paint(Graphics &g) {
-        g.setColour(Colours::black);
-        g.fillRect(0, 0, getWidth(), getHeight());
+    void setRecPosition(unsigned sigN, bool isRec, float recPos) {
+        auto &layer = layer_[sigN];
+        layer.isRec_ = isRec;
+        layer.recPos_ = recPos;
+    }
 
+    void paint(Graphics &g) {
         if (grid_) drawGrid(g);
 
         for (int sigN = 0; sigN < N; sigN++) {
@@ -87,6 +88,8 @@ private:
         float begin_ = 0.0f;
         float cur_ = 0.0f;
         float end_ = 1.0f;
+        bool isRec_ = false;
+        float recPos_ = 0.0f;
     } layer_[N];
 
 ///// implementations
@@ -113,18 +116,24 @@ private:
         if (!layer.buffer_) return;
 
         float val = 0.00f, y = 0.0f, x = 0.0f;
+        static constexpr float sp = 2.0f;
         g.setColour(Colours::green);
-        x = layer.begin_ * w;
-        g.drawLine(x, 0, x, h);
+        x = layer.begin_ * (w - sp);
+        g.fillRect(x, sp, sp, h - 2.0f * sp);
 
-        g.setColour(Colours::red);
-        x = layer.end_ * w;
-        g.drawLine(x, 0, x, h);
+        g.setColour(Colours::blue);
+        x = layer.end_ * (w - sp);
+        g.fillRect(x, sp, sp, h - 2.0f * sp);
 
-        g.setColour(Colours::yellow);
-        x = layer.cur_ * w;
-        //        g.drawLine(x, 5,x, h-5);
-        g.fillRect(x, 2.0f, 2.0f, h - 4.0f);
+        g.setColour(Colours::white);
+        x = layer.cur_ * (w - sp);
+        g.fillRect(x, sp, sp, h - 2.0f * sp);
+
+        if (layer.isRec_) {
+            g.setColour(Colours::red);
+            x = layer.recPos_ * (w - sp);
+            g.fillRect(x, sp, sp, h - 2.0f * sp);
+        }
 
         // draw scope
         g.setColour(layer.colour_);

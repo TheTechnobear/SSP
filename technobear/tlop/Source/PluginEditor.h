@@ -24,10 +24,12 @@ private:
     static constexpr unsigned MAX_VIEWPOINTS = 600;
 
     struct {
-        float beginPos = 0.0f;
-        float endPos = 1.0f;
-        float curPos = 0.0;
         float dataBuf_[MAX_DATA];
+        float beginPos_ = 0.0f;
+        float endPos_ = 1.0f;
+        float curPos_ = 0.0;
+        bool isRec_ = false;
+        float recPos_ =0.0;
     } layer_[MAX_LAYERS];
 
     ssp::WaveDisp<1> scopes_[MAX_LAYERS] = {false, false, false, false};

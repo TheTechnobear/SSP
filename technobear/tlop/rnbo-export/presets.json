@@ -96,17 +96,17 @@
           }
         }
       },
-      "layer": {
-        "value": 0
-      },
       "rec-gain": {
         "value": 1
       },
-      "rec_mon": {
-        "value": 100
-      },
-      "record-mode": {
+      "rec-layer": {
         "value": 0
+      },
+      "rec-mode": {
+        "value": 0
+      },
+      "rec-mon": {
+        "value": 100
       }
     }
   }

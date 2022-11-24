@@ -174,11 +174,101 @@
 								"tag" : "in1",
 								"comment" : ""
 							}
+, 							{
+								"type" : "signal",
+								"index" : 2,
+								"tag" : "in2",
+								"comment" : "rec-mode"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 3,
+								"tag" : "in3",
+								"comment" : "rec-begin"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 4,
+								"tag" : "in4",
+								"comment" : "rec-end"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 5,
+								"tag" : "in5",
+								"comment" : "layer1/rate"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 6,
+								"tag" : "in6",
+								"comment" : "layer1/begin"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 7,
+								"tag" : "in7",
+								"comment" : "layer1/end"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 8,
+								"tag" : "in8",
+								"comment" : "layer2/rate"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 9,
+								"tag" : "in9",
+								"comment" : "layer2/begin"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 10,
+								"tag" : "in10",
+								"comment" : "layer2/end"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 11,
+								"tag" : "in11",
+								"comment" : "layer3/rate"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 12,
+								"tag" : "in12",
+								"comment" : "layer3/begin"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 13,
+								"tag" : "in13",
+								"comment" : "layer3/end"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 14,
+								"tag" : "in14",
+								"comment" : "layer4/rate"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 15,
+								"tag" : "in15",
+								"comment" : "layer4/begin"
+							}
+, 							{
+								"type" : "signal",
+								"index" : 16,
+								"tag" : "in16",
+								"comment" : "layer4/end"
+							}
  ]
 					}
 ,
 					"maxclass" : "newobj",
-					"numinlets" : 1,
+					"numinlets" : 16,
 					"numoutlets" : 11,
 					"outletInfo" : 					{
 						"IOInfo" : [ 							{
@@ -215,31 +305,31 @@
 								"type" : "signal",
 								"index" : 6,
 								"tag" : "out6",
-								"comment" : "record head"
+								"comment" : "record-pos"
 							}
 , 							{
 								"type" : "signal",
 								"index" : 7,
 								"tag" : "out7",
-								"comment" : "layer1-play"
+								"comment" : "layer1-pos"
 							}
 , 							{
 								"type" : "signal",
 								"index" : 8,
 								"tag" : "out8",
-								"comment" : "layer2-play"
+								"comment" : "layer2-pos"
 							}
 , 							{
 								"type" : "signal",
 								"index" : 9,
 								"tag" : "out9",
-								"comment" : "layer3-play"
+								"comment" : "layer3-pos"
 							}
 , 							{
 								"type" : "signal",
 								"index" : 100,
 								"tag" : "out100",
-								"comment" : "layer4-play"
+								"comment" : "layer4-pos"
 							}
  ]
 					}
@@ -247,13 +337,43 @@
 					"outlettype" : [ "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "list" ],
 					"patching_rect" : [ 319.0, 365.0, 213.0, 22.0 ],
 					"rnboattrcache" : 					{
+						"layer3/end" : 						{
+							"label" : "end",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"rec-layer" : 						{
+							"label" : "rec-layer",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
 						"layer1/rate" : 						{
 							"label" : "rate",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
 ,
-						"layer4/crossfade" : 						{
+						"layer2/end" : 						{
+							"label" : "end",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer1/end" : 						{
+							"label" : "end",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer2/gain" : 						{
+							"label" : "gain",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer2/crossfade" : 						{
 							"label" : "crossfade",
 							"isEnum" : 0,
 							"parsestring" : ""
@@ -265,55 +385,13 @@
 							"parsestring" : ""
 						}
 ,
-						"rec-gain" : 						{
-							"label" : "rec-gain",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer2/end" : 						{
-							"label" : "end",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer4/end" : 						{
-							"label" : "end",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer3/gain" : 						{
-							"label" : "gain",
+						"rec-mon" : 						{
+							"label" : "rec-mon",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
 ,
 						"layer4/rate" : 						{
-							"label" : "rate",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer1/begin" : 						{
-							"label" : "begin",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer1/end" : 						{
-							"label" : "end",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer2/rate" : 						{
-							"label" : "rate",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer3/rate" : 						{
 							"label" : "rate",
 							"isEnum" : 0,
 							"parsestring" : ""
@@ -325,44 +403,20 @@
 							"parsestring" : ""
 						}
 ,
-						"layer3/crossfade" : 						{
-							"label" : "crossfade",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer2/gain" : 						{
+						"layer4/gain" : 						{
 							"label" : "gain",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
 ,
-						"layer" : 						{
-							"label" : "layer",
+						"layer4/end" : 						{
+							"label" : "end",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
 ,
-						"layer1/gain" : 						{
-							"label" : "gain",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"rec_mon" : 						{
-							"label" : "rec_mon",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer3/begin" : 						{
-							"label" : "begin",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer2/crossfade" : 						{
-							"label" : "crossfade",
+						"layer2/rate" : 						{
+							"label" : "rate",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
@@ -373,28 +427,70 @@
 							"parsestring" : ""
 						}
 ,
-						"layer3/end" : 						{
-							"label" : "end",
+						"rec-gain" : 						{
+							"label" : "rec-gain",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
 ,
-						"layer4/gain" : 						{
+						"layer1/begin" : 						{
+							"label" : "begin",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer3/crossfade" : 						{
+							"label" : "crossfade",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer3/begin" : 						{
+							"label" : "begin",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer4/crossfade" : 						{
+							"label" : "crossfade",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer3/gain" : 						{
 							"label" : "gain",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
 ,
-						"record-mode" : 						{
-							"label" : "record-mode",
+						"layer3/rate" : 						{
+							"label" : "rate",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer1/gain" : 						{
+							"label" : "gain",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"rec-mode" : 						{
+							"label" : "rec-mode",
 							"isEnum" : 1,
 							"parsestring" : "Stop Record"
+						}
+,
+						"rec-loop" : 						{
+							"label" : "rec-loop",
+							"isEnum" : 1,
+							"parsestring" : "false true"
 						}
 ,
 						"layer1/mode" : 						{
 							"label" : "mode",
 							"isEnum" : 1,
-							"parsestring" : "Play Stop"
+							"parsestring" : "Stop Play"
 						}
 ,
 						"layer1/loop" : 						{
@@ -406,7 +502,7 @@
 						"layer2/mode" : 						{
 							"label" : "mode",
 							"isEnum" : 1,
-							"parsestring" : "Play Stop"
+							"parsestring" : "Stop Play"
 						}
 ,
 						"layer2/loop" : 						{
@@ -418,7 +514,7 @@
 						"layer3/mode" : 						{
 							"label" : "mode",
 							"isEnum" : 1,
-							"parsestring" : "Play Stop"
+							"parsestring" : "Stop Play"
 						}
 ,
 						"layer3/loop" : 						{
@@ -430,7 +526,7 @@
 						"layer4/mode" : 						{
 							"label" : "mode",
 							"isEnum" : 1,
-							"parsestring" : "Play Stop"
+							"parsestring" : "Stop Play"
 						}
 ,
 						"layer4/loop" : 						{
@@ -468,18 +564,6 @@
 						"subtype" : "Undefined",
 						"embed" : 1,
 						"snapshot" : 						{
-							"record-mode" : 							{
-								"value" : 0.0
-							}
-,
-							"rec-gain" : 							{
-								"value" : 1.0
-							}
-,
-							"layer" : 							{
-								"value" : 0.0
-							}
-,
 							"__sps" : 							{
 								"layer4" : 								{
 									"gain" : 									{
@@ -495,7 +579,7 @@
 									}
 ,
 									"mode" : 									{
-										"value" : 1.0
+										"value" : 0.0
 									}
 ,
 									"crossfade" : 									{
@@ -526,7 +610,7 @@
 									}
 ,
 									"mode" : 									{
-										"value" : 1.0
+										"value" : 0.0
 									}
 ,
 									"crossfade" : 									{
@@ -557,7 +641,7 @@
 									}
 ,
 									"mode" : 									{
-										"value" : 1.0
+										"value" : 0.0
 									}
 ,
 									"crossfade" : 									{
@@ -607,8 +691,24 @@
 
 							}
 ,
-							"rec_mon" : 							{
+							"rec-mode" : 							{
+								"value" : 0.0
+							}
+,
+							"rec-loop" : 							{
+								"value" : 1.0
+							}
+,
+							"rec-gain" : 							{
+								"value" : 1.0
+							}
+,
+							"rec-mon" : 							{
 								"value" : 100.0
+							}
+,
+							"rec-layer" : 							{
+								"value" : 0.0
 							}
 ,
 							"__presetid" : "tlop"
@@ -626,18 +726,6 @@
 									"subtype" : "",
 									"embed" : 0,
 									"snapshot" : 									{
-										"record-mode" : 										{
-											"value" : 0.0
-										}
-,
-										"rec-gain" : 										{
-											"value" : 1.0
-										}
-,
-										"layer" : 										{
-											"value" : 0.0
-										}
-,
 										"__sps" : 										{
 											"layer4" : 											{
 												"gain" : 												{
@@ -653,7 +741,7 @@
 												}
 ,
 												"mode" : 												{
-													"value" : 1.0
+													"value" : 0.0
 												}
 ,
 												"crossfade" : 												{
@@ -684,7 +772,7 @@
 												}
 ,
 												"mode" : 												{
-													"value" : 1.0
+													"value" : 0.0
 												}
 ,
 												"crossfade" : 												{
@@ -715,7 +803,7 @@
 												}
 ,
 												"mode" : 												{
-													"value" : 1.0
+													"value" : 0.0
 												}
 ,
 												"crossfade" : 												{
@@ -765,8 +853,24 @@
 
 										}
 ,
-										"rec_mon" : 										{
+										"rec-mode" : 										{
+											"value" : 0.0
+										}
+,
+										"rec-loop" : 										{
+											"value" : 1.0
+										}
+,
+										"rec-gain" : 										{
+											"value" : 1.0
+										}
+,
+										"rec-mon" : 										{
 											"value" : 100.0
+										}
+,
+										"rec-layer" : 										{
+											"value" : 0.0
 										}
 ,
 										"__presetid" : "tlop"
@@ -930,7 +1034,7 @@
 			}
 , 			{
 				"box" : 				{
-					"attr" : "rec_mon",
+					"attr" : "rec-mon",
 					"id" : "obj-14",
 					"maxclass" : "attrui",
 					"numinlets" : 1,
@@ -943,7 +1047,7 @@
 			}
 , 			{
 				"box" : 				{
-					"attr" : "layer",
+					"attr" : "rec-layer",
 					"id" : "obj-2",
 					"maxclass" : "attrui",
 					"numinlets" : 1,
@@ -956,7 +1060,7 @@
 			}
 , 			{
 				"box" : 				{
-					"attr" : "record-mode",
+					"attr" : "rec-mode",
 					"id" : "obj-22",
 					"maxclass" : "attrui",
 					"numinlets" : 1,
