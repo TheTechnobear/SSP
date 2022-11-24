@@ -7,11 +7,8 @@
           "begin": {
             "value": 0
           },
-          "crossfade": {
-            "value": 1
-          },
           "end": {
-            "value": 0
+            "value": 1
           },
           "gain": {
             "value": 1
@@ -23,6 +20,9 @@
             "value": 0
           },
           "rate": {
+            "value": 1
+          },
+          "xfade": {
             "value": 1
           }
         },
@@ -30,11 +30,8 @@
           "begin": {
             "value": 0
           },
-          "crossfade": {
-            "value": 1
-          },
           "end": {
-            "value": 1
+            "value": 0
           },
           "gain": {
             "value": 1
@@ -46,6 +43,9 @@
             "value": 1
           },
           "rate": {
+            "value": 1
+          },
+          "xfade": {
             "value": 1
           }
         },
@@ -53,9 +53,6 @@
           "begin": {
             "value": 0
           },
-          "crossfade": {
-            "value": 1
-          },
           "end": {
             "value": 1
           },
@@ -66,9 +63,12 @@
             "value": 1
           },
           "mode": {
-            "value": 1
+            "value": 0
           },
           "rate": {
+            "value": 1
+          },
+          "xfade": {
             "value": 1
           }
         },
@@ -76,9 +76,6 @@
           "begin": {
             "value": 0
           },
-          "crossfade": {
-            "value": 1
-          },
           "end": {
             "value": 1
           },
@@ -89,18 +86,30 @@
             "value": 1
           },
           "mode": {
-            "value": 1
+            "value": 0
           },
           "rate": {
             "value": 1
+          },
+          "xfade": {
+            "value": 1
           }
         }
+      },
+      "rec-begin": {
+        "value": 0
+      },
+      "rec-end": {
+        "value": 0
       },
       "rec-gain": {
         "value": 1
       },
       "rec-layer": {
         "value": 0
+      },
+      "rec-loop": {
+        "value": 1
       },
       "rec-mode": {
         "value": 0

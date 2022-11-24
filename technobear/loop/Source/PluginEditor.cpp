@@ -7,6 +7,11 @@
 using pcontrol_type = ssp::BarParamControl;
 using bcontrol_type = ssp::ParamButton;
 
+
+inline float normValue(RangedAudioParameter &p) {
+    return p.convertFrom0to1(p.getValue());
+}
+
 PluginEditor::PluginEditor(PluginProcessor &p, unsigned maxviews)
     : base_type(&p, maxviews),
       processor_(p),
@@ -18,49 +23,31 @@ PluginEditor::PluginEditor(PluginProcessor &p, unsigned maxviews)
 
     leftBtn_.label("LYR-");
     rightBtn_.label("LYR+");
+    rightShiftBtn_.label("REC");
+    addAndMakeVisible(rightShiftBtn_);
 
 
     auto &reclayer = processor_.params_.recParams_;
-    addParamPage(
-        std::make_shared<pcontrol_type>(reclayer->layer_, 1.0f, 1.0f),
-        std::make_shared<pcontrol_type>(reclayer->gain_, inc, finc),
-        std::make_shared<pcontrol_type>(reclayer->mon_, inc, finc),
-        nullptr,
-        view,
-        Colours::cyan
-    );
 
 
-    addButtonPage(
-        std::make_shared<bcontrol_type>(reclayer->mode_, 24, Colours::red),
-        std::make_shared<bcontrol_type>(reclayer->loop_, 24, Colours::yellow),
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        view
-    );
-
-    view++;
-
+    // layer pages
     for (int l = 0; l < PluginProcessor::MAX_LAYERS; l++) {
         auto &layer = processor_.params_.layers_[l];
         addParamPage(
             std::make_shared<pcontrol_type>(layer->rate_, inc, finc),
+            std::make_shared<pcontrol_type>(layer->gain_, inc, finc),
             std::make_shared<pcontrol_type>(layer->begin_, inc, finc),
             std::make_shared<pcontrol_type>(layer->end_, inc, finc),
-            std::make_shared<pcontrol_type>(layer->gain_, inc, finc),
             view,
             clrs_[l]
         );
         addParamPage(
-            std::make_shared<pcontrol_type>(layer->crossfade_, inc, finc),
+            std::make_shared<pcontrol_type>(layer->xfade_, inc, finc),
             nullptr,
             nullptr,
             nullptr,
-            view
+            view,
+            clrs_[l]
         );
         addButtonPage(
             std::make_shared<bcontrol_type>(layer->mode_, 24, Colours::red),
@@ -77,35 +64,36 @@ PluginEditor::PluginEditor(PluginProcessor &p, unsigned maxviews)
         view++;
     }
 
+    // recording page
+    addParamPage(
+        std::make_shared<pcontrol_type>(reclayer->gain_, inc, finc),
+        std::make_shared<pcontrol_type>(reclayer->mon_, inc, finc),
+        nullptr,
+        nullptr,
+        view,
+        Colours::cyan
+    );
+    addParamPage(
+        nullptr, //std::make_shared<pcontrol_type>(reclayer->begin_, inc, finc),
+        nullptr, // std::make_shared<pcontrol_type>(reclayer->end_, inc, finc),
+        nullptr,
+        nullptr,
+        view,
+        Colours::cyan
+    );
 
-
-//    unsigned nParams = processor_.getNumRnboParameters();
-//
-//    int paramS = 0;
-//    for (unsigned view = 0; view < maxviews; view++) {
-//        for (unsigned row = 0; (row < 4) && (paramS < nParams); row++) {
-//
-//            std::shared_ptr<ssp::BaseParamControl> p[4];
-//            for (unsigned i = 0; i < 4; i++) {
-//                float inc = 1.0f;
-//                float finc = 0.01f;
-//                if (paramS < nParams) {
-//                    const auto &param = processor_.params_.rnboParams_[paramS];
-//                    if (param->info_.enumValues != nullptr) {
-//                        finc = inc;
-//                    } else if (param->info_.steps > 2) {
-//                        inc = (param->info_.max - param->info_.min) / (param->info_.steps - 1);
-//                        finc = inc;
-//                    }
-//                    p[i] = std::make_shared<pcontrol_type>(param->val_, inc, finc);
-//                } else {
-//                    p[i] = nullptr;
-//                }
-//                paramS++;
-//            }
-//            addParamPage(p[0], p[1], p[2], p[3], view, clrs_[view % 4]);
-//        }
-//    }
+    addButtonPage(
+        std::make_shared<bcontrol_type>(reclayer->mode_, 24, Colours::red),
+        std::make_shared<bcontrol_type>(reclayer->loop_, 24, Colours::yellow),
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        view
+    );
+    view++;
 
 
     for (int i = 0; i < MAX_LAYERS; i++) {
@@ -115,6 +103,9 @@ PluginEditor::PluginEditor(PluginProcessor &p, unsigned maxviews)
         addAndMakeVisible(scopes_[i]);
     }
 
+    unsigned layer = normValue(*processor_.getParameter("rec-layer"));
+    setView(layer);
+    viewMode_ = M_LAYER;
 
     setSize(1600, 480);
 }
@@ -157,3 +148,56 @@ void PluginEditor::resized() {
         y += h + sp;
     }
 }
+
+
+void PluginEditor::onRightShiftButton(bool v) {
+    rightShiftBtn_.value(v);
+    if (!v) {
+        viewMode_ = (viewMode_ + 1) % M_MAX;
+        switch (viewMode_) {
+            case M_LAYER : {
+                unsigned layer = normValue(*processor_.getParameter("rec-layer"));
+                setView(layer);
+                return;
+            }
+            case M_REC : {
+                setView(MAX_LAYERS);
+                return;
+            }
+        }
+    }
+}
+
+
+void PluginEditor::onLeftButton(bool v) {
+    leftBtn_.value(v);
+    if (!v) {
+        if (viewMode_ == M_LAYER) {
+            int newView = int(view_) - 1;
+            if (newView >= 0) {
+                setView(newView);
+                auto p = processor_.getParameter("rec-layer");
+                p->beginChangeGesture();
+                p->setValueNotifyingHost(p->convertTo0to1(newView));
+                p->endChangeGesture();
+            }
+        }
+    }
+}
+
+void PluginEditor::onRightButton(bool v) {
+    rightBtn_.value(v);
+    if (!v) {
+        if (viewMode_ == M_LAYER) {
+            int newView = int(view_) + 1;
+            if (newView < MAX_LAYERS) {
+                setView(newView);
+                auto p = processor_.getParameter("rec-layer");
+                p->beginChangeGesture();
+                p->setValueNotifyingHost(p->convertTo0to1(newView));
+                p->endChangeGesture();
+            }
+        }
+    }
+}
+

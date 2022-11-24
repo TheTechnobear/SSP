@@ -33,7 +33,7 @@ PluginProcessor::PluginProcessor(
         rnbo_.outputBuffers_[i] = new RNBO::number[bufferSize_];
     }
 
-    rnbo_.nParams_ = params_.rnboParams_.size();
+    rnbo_.nParams_ = rnbo_.patch_.getNumParameters();
 
 
     // we need to be able to reliably for from id->idx
@@ -49,7 +49,7 @@ PluginProcessor::PluginProcessor(
     //fixme: move to parameter notification to set parameters
     rnbo_.lastParamVals_ = new float[rnbo_.nParams_];
     for (int i = 0; i < rnbo_.nParams_; i++) {
-        rnbo_.lastParamVals_[i] = -1.0;
+        rnbo_.lastParamVals_[i] = -100.0;
     }
 
 #if DEBUG
@@ -70,19 +70,8 @@ PluginProcessor::~PluginProcessor() {
     delete rnbo_.outputBuffers_;
 }
 
-PluginProcessor::RnboParam::RnboParam(AudioProcessorValueTreeState &apvt, StringRef id, unsigned idx) :
-    id_(id), idx_(idx), val_(*apvt.getParameter(id)) {
-
-    RNBO::CoreObject rnboObj_;
-//    unsigned idx = rnboObj_.getParameterIndexForID(id_.c_str());
-    desc_ = rnboObj_.getParameterName(idx_);
-    rnboObj_.getParameterInfo(idx_, &info_);
-}
-
-
-
 std::string getLayerPid(unsigned ln, const char *pid) {
-    return std::string("layer") + std::to_string(ln+1) + "/" + std::string(pid);
+    return std::string("layer") + std::to_string(ln + 1) + "/" + std::string(pid);
 }
 
 PluginProcessor::LayerParams::LayerParams(AudioProcessorValueTreeState &apvt, unsigned ln) :
@@ -91,7 +80,7 @@ PluginProcessor::LayerParams::LayerParams(AudioProcessorValueTreeState &apvt, un
     begin_(*apvt.getParameter(getLayerPid(ln, "begin"))),
     end_(*apvt.getParameter(getLayerPid(ln, "end"))),
     loop_(*apvt.getParameter(getLayerPid(ln, "loop"))),
-    crossfade_(*apvt.getParameter(getLayerPid(ln, "crossfade"))),
+    xfade_(*apvt.getParameter(getLayerPid(ln, "xfade"))),
     gain_(*apvt.getParameter(getLayerPid(ln, "gain"))) {
 
 }
@@ -100,6 +89,8 @@ PluginProcessor::LayerParams::LayerParams(AudioProcessorValueTreeState &apvt, un
 PluginProcessor::RecParams::RecParams(AudioProcessorValueTreeState &apvt) :
     layer_(*apvt.getParameter("rec-layer")),
     mode_(*apvt.getParameter("rec-mode")),
+    begin_(*apvt.getParameter("rec-begin")),
+    end_(*apvt.getParameter("rec-end")),
     loop_(*apvt.getParameter("rec-loop")),
     gain_(*apvt.getParameter("rec-gain")),
     mon_(*apvt.getParameter("rec-mon")) {
@@ -107,44 +98,24 @@ PluginProcessor::RecParams::RecParams(AudioProcessorValueTreeState &apvt) :
 }
 
 PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) :
-    recParams_(std::make_unique<RecParams>(apvt))
-{
-    {
-        RNBO::CoreObject patch_;
-        std::map<std::string, unsigned> nameToRnboIdMap_;
+    recParams_(std::make_unique<RecParams>(apvt)) {
+    RNBO::CoreObject patch_;
+    std::map<std::string, unsigned> nameToRnboIdMap_;
 
-        RNBO::ParameterInfo info;
-        for (int i = 0; i < patch_.getNumParameters(); i++) {
-            std::string pid = patch_.getParameterId(i);
-            patch_.getParameterInfo(i, &info);
-            if (info.visible) {
-                nameToRnboIdMap_.insert(std::make_pair(pid, i));
-            }
+    RNBO::ParameterInfo info;
+    for (int i = 0; i < patch_.getNumParameters(); i++) {
+        std::string pid = patch_.getParameterId(i);
+        patch_.getParameterInfo(i, &info);
+        if (info.visible) {
+            nameToRnboIdMap_.insert(std::make_pair(pid, i));
         }
-
-
-
-        for (unsigned i = 0; i < MAX_LAYERS; i++) {
-            auto layer = std::make_unique<LayerParams>(apvt, i);
-            layers_.push_back(std::move(layer));
-        }
-
     }
 
-    {
-        RNBO::CoreObject rnboObj_;
-        unsigned nParams = rnboObj_.getNumParameters();
-        for (unsigned i = 0; i < nParams; i++) {
-            RNBO::ParameterInfo info;
-            String id = rnboObj_.getParameterId(i);
-            rnboObj_.getParameterInfo(i, &info);
-            if (info.visible) {
-                rnboParams_.push_back(std::make_unique<RnboParam>(apvt, id, i));
-            }
-        }
+    for (unsigned i = 0; i < MAX_LAYERS; i++) {
+        auto layer = std::make_unique<LayerParams>(apvt, i);
+        layers_.push_back(std::move(layer));
     }
 }
-
 
 
 //** this is static **//
@@ -153,7 +124,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     BaseProcessor::addBaseParameters(params);
 
     RNBO::CoreObject patch_;
-    std::map<std::string,unsigned> nameToRnboIdMap_;
+    std::map<std::string, unsigned> nameToRnboIdMap_;
 
     RNBO::ParameterInfo info;
     for (int i = 0; i < patch_.getNumParameters(); i++) {
@@ -260,9 +231,6 @@ unsigned PluginProcessor::layerSampleSize(unsigned lidx) {
 
     auto &layer = layers_[lidx];
     if (layer.loopLayers_ == nullptr) return 0;
-
-//    auto info = rnboObj_.getExternalDataInfo(lidx);
-//    auto id = rnboObj_.getExternalDataId(lidx);
     return MAX_BUF_SIZE;
 }
 
@@ -328,42 +296,18 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     size_t n = buffer.getNumSamples();
 
-    // set parameters up for patch, only set on change
-    unsigned pi = 0;
-    for (auto &p: params_.rnboParams_) {
-        //fixme - optimise by grouping rnboParams_ into layers
-        for (int lidx = 0; lidx < MAX_LAYERS; lidx++) {
-            auto &layer = layers_[lidx];
-            std::string lstr = std::string("layer") + std::to_string(lidx + 1);
-            if (p->id_.find(lstr, 0) == 0) {
-                if (p->id_.find("begin") != std::string::npos) {
-                    layer.begin_ = normValue(p->val_);
-                }
-                if (p->id_.find("end") != std::string::npos) {
-                    layer.end_ = normValue(p->val_);
-                }
-            }
+    int recLayer = rnbo_.patch_.getParameterValue(nameToRnboIdMap_["rec-layer"]);
+
+    for (auto &iter: nameToRnboIdMap_) {
+        auto &pid = iter.first;
+        int pidx = iter.second;
+
+        auto p = getParameter(pid);
+        float val = p->getValue();
+        if (rnbo_.lastParamVals_[pidx] != val) {
+            rnbo_.patch_.setParameterValue(pidx, normValue(*p));
+            rnbo_.lastParamVals_[pidx] = val;
         }
-
-        // normal handling to RNBO
-        float val = p->val_.getValue();
-        if (rnbo_.lastParamVals_[pi] != val) {
-            rnbo_.patch_.setParameterValue(p->idx_, normValue(p->val_));
-            rnbo_.lastParamVals_[pi] = val;
-        }
-        pi++;
-    }
-
-    int recLayerIdx = rnbo_.patch_.getParameterIndexForID("rec-layer");
-    int recLayer = rnbo_.patch_.getParameterValue(recLayerIdx);
-    // get positions
-    for (int lidx = 0; lidx < MAX_LAYERS; lidx++) {
-        auto &layer = layers_[lidx];
-        // OUTPUT layer from RNBO  : SUM ,out 4 Layer Out , Rec Pos, 4 Play Pos
-        layer.cur_ = buffer.getSample(1 + MAX_LAYERS + 1 + lidx, n - 1);
-
-        layer.isRec_ = lidx == recLayer;
-        layer.recCur_ = layer.isRec_ ? buffer.getSample(1 + MAX_LAYERS, n - 1) : 0;
     }
 
     // later can perhaps use vector copies?
@@ -380,6 +324,17 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
                          rnbo_.outputBuffers_, rnbo_.nOutputs_,
                          bufferSize_);
 
+    // get positions
+    for (int lidx = 0; lidx < MAX_LAYERS; lidx++) {
+        auto &layer = layers_[lidx];
+
+        layer.cur_ = rnbo_.outputBuffers_[1 + MAX_LAYERS + 1 + lidx][n - 1];
+        layer.isRec_ = lidx == recLayer;
+        layer.recCur_ = layer.isRec_ ? rnbo_.outputBuffers_[1 + MAX_LAYERS][n - 1] : 0.0f;
+        layer.begin_ = normValue(*getParameter(getLayerPid(lidx, "begin")));
+        layer.end_ = normValue(*getParameter(getLayerPid(lidx, "end")));
+    }
+
     {
         // copy output
         for (unsigned c = 0; c < O_MAX; c++) {
@@ -392,7 +347,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 }
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
-    return new ssp::EditorHost(this, new PluginEditor(*this, (params_.rnboParams_.size() / 16) + 1));
+    return new ssp::EditorHost(this, new PluginEditor(*this, MAX_LAYERS + 1));
 }
 
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {

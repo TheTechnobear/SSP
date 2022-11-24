@@ -17,6 +17,9 @@ public:
 protected:
     using base_type = ssp::MultiBarEditor;
 
+    void onRightShiftButton(bool v) override;
+    void onLeftButton(bool v) override;
+    void onRightButton(bool v) override;
 private:
     static const int MAX_LAYERS = PluginProcessor::MAX_LAYERS;
     juce::Colour clrs_[MAX_LAYERS];
@@ -29,8 +32,16 @@ private:
         float endPos_ = 1.0f;
         float curPos_ = 0.0;
         bool isRec_ = false;
-        float recPos_ =0.0;
+        float recPos_ = 0.0;
     } layer_[MAX_LAYERS];
+
+    enum E_ViewMode {
+        M_LAYER,
+        M_REC,
+        M_MAX
+    };
+
+    unsigned viewMode_ = M_LAYER;
 
     ssp::WaveDisp<1> scopes_[MAX_LAYERS] = {false, false, false, false};
 

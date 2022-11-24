@@ -16,6 +16,8 @@ constexpr const char *separator{":"};
 
 
 PARAMETER_ID (mode)
+PARAMETER_ID (begin)
+PARAMETER_ID (end)
 PARAMETER_ID (loop)
 PARAMETER_ID (gain)
 
@@ -27,8 +29,6 @@ PARAMETER_ID (mon)
 PARAMETER_ID (layer)
 PARAMETER_ID (rate)
 PARAMETER_ID (crossfade)
-PARAMETER_ID (begin)
-PARAMETER_ID (end)
 
 
 #undef PARAMETER_ID
@@ -55,34 +55,25 @@ public:
     struct LayerParams {
         using Parameter = juce::RangedAudioParameter;
         explicit LayerParams(AudioProcessorValueTreeState &apvt, unsigned ln);
-        Parameter& mode_;
-        Parameter& rate_;
-        Parameter& begin_;
-        Parameter& end_;
-        Parameter& loop_;
-        Parameter& crossfade_;
-        Parameter& gain_;
+        Parameter &mode_;
+        Parameter &rate_;
+        Parameter &begin_;
+        Parameter &end_;
+        Parameter &loop_;
+        Parameter &xfade_;
+        Parameter &gain_;
     };
 
     struct RecParams {
         using Parameter = juce::RangedAudioParameter;
         explicit RecParams(AudioProcessorValueTreeState &apvt);
-        Parameter& layer_;
-        Parameter& mode_;
-        Parameter& loop_;
-        Parameter& gain_;
-        Parameter& mon_;
-    };
-
-    struct RnboParam {
-        using Parameter = juce::RangedAudioParameter;
-        RnboParam(AudioProcessorValueTreeState &apvt, StringRef id, unsigned idx);
-
-        unsigned idx_;
-        std::string id_;
-        std::string desc_;
-        RNBO::ParameterInfo info_;
-        Parameter &val_;
+        Parameter &layer_;
+        Parameter &mode_;
+        Parameter &begin_;
+        Parameter &end_;
+        Parameter &loop_;
+        Parameter &gain_;
+        Parameter &mon_;
     };
 
     struct PluginParams {
@@ -91,12 +82,7 @@ public:
 
         std::unique_ptr<RecParams> recParams_;
         std::vector<std::unique_ptr<LayerParams>> layers_;
-
-        // will be removed!
-        std::vector<std::unique_ptr<RnboParam>> rnboParams_;
     } params_;
-
-    unsigned getNumRnboParameters() { return rnbo_.nParams_; }
 
     static BusesProperties getBusesProperties() {
         BusesProperties props;
@@ -111,7 +97,7 @@ public:
 
     void fillLayerData(unsigned layer, float *data, unsigned sz,
                        float &cur, float &begin, float &end,
-                       bool& isRec, float& recCur);
+                       bool &isRec, float &recCur);
 
     unsigned numLayers() { return MAX_LAYERS; }
 
@@ -172,12 +158,11 @@ private:
     } rnbo_;
 
 
-
     struct { ;
         float begin_;
         float end_;
         float cur_;
-        bool  isRec_;
+        bool isRec_;
         float recCur_;
         float *loopLayers_;
     } layers_[MAX_LAYERS];
@@ -186,7 +171,7 @@ private:
         return true;
     }
 
-    std::map<std::string,unsigned> nameToRnboIdMap_;
+    std::map<std::string, unsigned> nameToRnboIdMap_;
 
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
