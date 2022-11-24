@@ -18,6 +18,7 @@ PluginEditor::PluginEditor(PluginProcessor &p, unsigned maxviews)
       clrs_{Colours::green, Colours::blue, Colours::red, Colours::yellow} {
 
     unsigned view = 0;
+    //fixme: sort out course and fine tune
     float inc = 1.0f;
     float finc = 0.01f;
 
@@ -103,7 +104,7 @@ PluginEditor::PluginEditor(PluginProcessor &p, unsigned maxviews)
         addAndMakeVisible(scopes_[i]);
     }
 
-    unsigned layer = normValue(*processor_.getParameter("rec-layer"));
+    unsigned layer = normValue(processor_.params_.recParams_->layer_);
     setView(layer);
     viewMode_ = M_LAYER;
 
@@ -156,7 +157,7 @@ void PluginEditor::onRightShiftButton(bool v) {
         viewMode_ = (viewMode_ + 1) % M_MAX;
         switch (viewMode_) {
             case M_LAYER : {
-                unsigned layer = normValue(*processor_.getParameter("rec-layer"));
+                unsigned layer = normValue(processor_.params_.recParams_->layer_);
                 setView(layer);
                 return;
             }
@@ -176,10 +177,10 @@ void PluginEditor::onLeftButton(bool v) {
             int newView = int(view_) - 1;
             if (newView >= 0) {
                 setView(newView);
-                auto p = processor_.getParameter("rec-layer");
-                p->beginChangeGesture();
-                p->setValueNotifyingHost(p->convertTo0to1(newView));
-                p->endChangeGesture();
+                auto& p = processor_.params_.recParams_->layer_;
+                p.beginChangeGesture();
+                p.setValueNotifyingHost(p.convertTo0to1(newView));
+                p.endChangeGesture();
             }
         }
     }
@@ -192,10 +193,10 @@ void PluginEditor::onRightButton(bool v) {
             int newView = int(view_) + 1;
             if (newView < MAX_LAYERS) {
                 setView(newView);
-                auto p = processor_.getParameter("rec-layer");
-                p->beginChangeGesture();
-                p->setValueNotifyingHost(p->convertTo0to1(newView));
-                p->endChangeGesture();
+                auto& p = processor_.params_.recParams_->layer_;
+                p.beginChangeGesture();
+                p.setValueNotifyingHost(p.convertTo0to1(newView));
+                p.endChangeGesture();
             }
         }
     }
