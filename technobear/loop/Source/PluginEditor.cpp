@@ -151,16 +151,17 @@ void PluginEditor::resized() {
 
 
 void PluginEditor::onRightShiftButton(bool v) {
-    rightShiftBtn_.value(v);
     if (!v) {
         viewMode_ = (viewMode_ + 1) % M_MAX;
         switch (viewMode_) {
             case M_LAYER : {
+                rightShiftBtn_.value(false);
                 unsigned layer = normValue(processor_.params_.recParams_->layer_);
                 setView(layer);
                 return;
             }
             case M_REC : {
+                rightShiftBtn_.value(true);
                 setView(MAX_LAYERS);
                 return;
             }
