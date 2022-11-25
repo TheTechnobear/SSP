@@ -18,7 +18,6 @@ PluginEditor::PluginEditor(PluginProcessor &p, unsigned maxviews)
       clrs_{Colours::green, Colours::blue, Colours::red, Colours::yellow} {
 
     unsigned view = 0;
-    //fixme: sort out course and fine tune
     float inc = 1.0f;
     float finc = 0.01f;
 
@@ -37,14 +36,14 @@ PluginEditor::PluginEditor(PluginProcessor &p, unsigned maxviews)
         addParamPage(
             std::make_shared<pcontrol_type>(layer->rate_, inc, finc),
             std::make_shared<pcontrol_type>(layer->gain_, inc, finc),
-            std::make_shared<pcontrol_type>(layer->begin_, inc, finc),
-            std::make_shared<pcontrol_type>(layer->end_, inc, finc),
+            std::make_shared<pcontrol_type>(layer->begin_, 0.1f, 0.01),
+            std::make_shared<pcontrol_type>(layer->end_, 0.1, 0.01),
             view,
             clrs_[l]
         );
         addParamPage(
             std::make_shared<pcontrol_type>(layer->xfade_, inc, finc),
-            nullptr,
+            std::make_shared<pcontrol_type>(layer->size_, 1.0, 1.0),
             nullptr,
             nullptr,
             view,
@@ -74,14 +73,14 @@ PluginEditor::PluginEditor(PluginProcessor &p, unsigned maxviews)
         view,
         Colours::cyan
     );
-    addParamPage(
-        nullptr, //std::make_shared<pcontrol_type>(reclayer->begin_, inc, finc),
-        nullptr, // std::make_shared<pcontrol_type>(reclayer->end_, inc, finc),
-        nullptr,
-        nullptr,
-        view,
-        Colours::cyan
-    );
+//    addParamPage(
+//        std::make_shared<pcontrol_type>(reclayer->begin_, 0.1, 0.01),
+//        std::make_shared<pcontrol_type>(reclayer->end_, 0.1, 0.01),
+//        nullptr,
+//        nullptr,
+//        view,
+//        Colours::cyan
+//    );
 
     addButtonPage(
         std::make_shared<bcontrol_type>(reclayer->mode_, 24, Colours::red),
@@ -100,7 +99,7 @@ PluginEditor::PluginEditor(PluginProcessor &p, unsigned maxviews)
     for (int i = 0; i < MAX_LAYERS; i++) {
         auto &layer = layer_[i];
         std::string title = std::string("Layer ") + std::to_string(i);
-        scopes_[i].initSignal(0, title, layer.dataBuf_, MAX_DATA, MAX_VIEWPOINTS, clrs_[i]);
+        scopes_[i].initSignal(0, title, layer.dataBuf_, DATA_POINTS, DATA_POINTS, clrs_[i]);
         addAndMakeVisible(scopes_[i]);
     }
 
@@ -115,7 +114,7 @@ PluginEditor::PluginEditor(PluginProcessor &p, unsigned maxviews)
 void PluginEditor::drawView(Graphics &g) {
     for (int i = 0; i < MAX_LAYERS; i++) {
         auto &layer = layer_[i];
-        processor_.fillLayerData(i, layer.dataBuf_, MAX_DATA,
+        processor_.fillLayerData(i, layer.dataBuf_, DATA_POINTS,
                                  layer.curPos_, layer.beginPos_, layer.endPos_,
                                  layer.isRec_, layer.recPos_);
         scopes_[i].setPosition(0, layer.curPos_, layer.beginPos_, layer.endPos_);
@@ -125,7 +124,7 @@ void PluginEditor::drawView(Graphics &g) {
 
         if (layer.isRec_) {
             const unsigned h = 75;
-            const unsigned w = MAX_VIEWPOINTS;
+            const unsigned w = DATA_POINTS;
             const unsigned sp = 5;
             unsigned y = 50;
             unsigned x = 910;
@@ -139,7 +138,7 @@ void PluginEditor::drawView(Graphics &g) {
 void PluginEditor::resized() {
     base_type::resized();
     const unsigned h = 75;
-    const unsigned w = MAX_VIEWPOINTS;
+    const unsigned w = DATA_POINTS;
     const unsigned sp = 5;
     unsigned y = 50;
     unsigned x = 910;
@@ -173,14 +172,14 @@ void PluginEditor::onRightShiftButton(bool v) {
 void PluginEditor::onLeftButton(bool v) {
     leftBtn_.value(v);
     if (!v) {
-        if (viewMode_ == M_LAYER) {
-            int newView = int(view_) - 1;
-            if (newView >= 0) {
-                setView(newView);
-                auto& p = processor_.params_.recParams_->layer_;
-                p.beginChangeGesture();
-                p.setValueNotifyingHost(p.convertTo0to1(newView));
-                p.endChangeGesture();
+        auto& p = processor_.params_.recParams_->layer_;
+        int nLayer = normValue(p) - 1.0f ;
+        if (nLayer >= 0) {
+            p.beginChangeGesture();
+            p.setValueNotifyingHost(p.convertTo0to1(nLayer));
+            p.endChangeGesture();
+            if (viewMode_ == M_LAYER) {
+                setView(nLayer);
             }
         }
     }
@@ -189,14 +188,14 @@ void PluginEditor::onLeftButton(bool v) {
 void PluginEditor::onRightButton(bool v) {
     rightBtn_.value(v);
     if (!v) {
-        if (viewMode_ == M_LAYER) {
-            int newView = int(view_) + 1;
-            if (newView < MAX_LAYERS) {
-                setView(newView);
-                auto& p = processor_.params_.recParams_->layer_;
-                p.beginChangeGesture();
-                p.setValueNotifyingHost(p.convertTo0to1(newView));
-                p.endChangeGesture();
+        auto& p = processor_.params_.recParams_->layer_;
+        int nLayer = normValue(p) + 1.0f ;
+        if (nLayer  < MAX_LAYERS) {
+            p.beginChangeGesture();
+            p.setValueNotifyingHost(p.convertTo0to1(nLayer));
+            p.endChangeGesture();
+            if (viewMode_ == M_LAYER && nLayer) {
+                setView(nLayer);
             }
         }
     }

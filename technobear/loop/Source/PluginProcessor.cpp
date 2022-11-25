@@ -24,18 +24,16 @@ PluginProcessor::PluginProcessor(
 
     rnbo_.nInputs_ = rnbo_.patch_.getNumInputChannels();
     rnbo_.inputBuffers_ = new RNBO::number *[rnbo_.nInputs_];
-    for (int i = 0; i < rnbo_.nInputs_; i++) {
-        rnbo_.inputBuffers_[i] = new RNBO::number[bufferSize_];
-    }
     rnbo_.nOutputs_ = rnbo_.patch_.getNumOutputChannels();
-    rnbo_.outputBuffers_ = new RNBO::number *[rnbo_.nInputs_];
+    rnbo_.outputBuffers_ = new RNBO::number *[rnbo_.nOutputs_];
+    for (int i = 0; i < rnbo_.nInputs_; i++) {
+        rnbo_.inputBuffers_[i] = nullptr;
+    }
     for (int i = 0; i < rnbo_.nOutputs_; i++) {
-        rnbo_.outputBuffers_[i] = new RNBO::number[bufferSize_];
+        rnbo_.outputBuffers_[i] = nullptr;
     }
 
     rnbo_.nParams_ = rnbo_.patch_.getNumParameters();
-
-
     // we need to be able to reliably for from id->idx
     RNBO::ParameterInfo info;
     for (int i = 0; i < rnbo_.nParams_; i++) {
@@ -46,14 +44,24 @@ PluginProcessor::PluginProcessor(
         }
     }
 
-    //fixme: move to parameter notification to set parameters
+    for (int i = 0; i < MAX_LAYERS; i++) {
+        for (int ext_idx = 0; ext_idx < rnbo_.patch_.getNumExternalDataRefs(); ext_idx++) {
+            auto id = rnbo_.patch_.getExternalDataId(ext_idx);
+            if (id == std::string("layer") + std::to_string(i + 1)) {
+                layerBufMap_[i] = ext_idx;
+            }
+        }
+    }
+
     rnbo_.lastParamVals_ = new float[rnbo_.nParams_];
     for (int i = 0; i < rnbo_.nParams_; i++) {
         rnbo_.lastParamVals_[i] = -100.0;
     }
 
+    allocateAllLayersData();
+
 #if DEBUG
-    assert(rnbo_.nInputs_ == I_MAX); // no internal buffers
+    assert(rnbo_.nInputs_ == I_MAX + 2); // not using rec begin,end
     assert(rnbo_.nOutputs_ == O_MAX + 5); // don't output positions
 #endif
 
@@ -81,8 +89,8 @@ PluginProcessor::LayerParams::LayerParams(AudioProcessorValueTreeState &apvt, un
     end_(*apvt.getParameter(getLayerPid(ln, "end"))),
     loop_(*apvt.getParameter(getLayerPid(ln, "loop"))),
     xfade_(*apvt.getParameter(getLayerPid(ln, "xfade"))),
-    gain_(*apvt.getParameter(getLayerPid(ln, "gain"))) {
-
+    gain_(*apvt.getParameter(getLayerPid(ln, "gain"))),
+    size_(*apvt.getParameter(getLayerPid(ln, "size"))) {
 }
 
 
@@ -167,32 +175,33 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 }
 
 const String PluginProcessor::getInputBusName(int channelIndex) {
+    if (channelIndex >= I_LAYER1_RATE && channelIndex <= I_LAYER4_END) {
+        unsigned nLayerSigs = I_LAYER2_RATE - I_LAYER1_RATE;
+        unsigned layer = (channelIndex - I_LAYER1_RATE) / nLayerSigs;
+        unsigned sig = ((channelIndex - I_LAYER1_RATE) - layer * nLayerSigs) % nLayerSigs;
+        std::string lstr = std::string("Layer ") + std::to_string(layer + 1);
+        switch (sig) {
+            case 0:
+                return lstr + std::string(" Rate");
+            case 1:
+                return lstr + std::string(" Begin");
+            case 2:
+                return lstr + std::string(" End");
+            default :
+                return lstr + std::string("ZZ ") + std::to_string(sig);
+        }
+    }
+
     switch (channelIndex) {
         case I_IN :
             return String("IN");
         case I_REC_MODE :
             return String("Rec Mode");
-        case I_REC_BEGIN :
-            return String("Rec Begin");
-        case I_REC_END :
-            return String("Rec End");
+//        case I_REC_BEGIN :
+//            return String("Rec Begin");
+//        case I_REC_END :
+//            return String("Rec End");
         default: {
-            if (channelIndex < I_MAX) {
-                unsigned nLayerSigs = I_LAYER2_RATE - I_LAYER1_RATE;
-                unsigned layer = (channelIndex - I_LAYER1_RATE) / nLayerSigs;
-                unsigned sig = ((channelIndex - I_LAYER1_RATE) - layer * nLayerSigs) % nLayerSigs;
-                std::string lstr = std::string("Layer ") + std::to_string(layer + 1);
-                switch (sig) {
-                    case 0:
-                        return lstr + std::string(" Rate");
-                    case 1:
-                        return lstr + std::string(" Begin");
-                    case 2:
-                        return lstr + std::string(" End");
-                    default :
-                        return lstr + std::string("ZZ ") + std::to_string(sig);
-                }
-            }
         }
     }
 
@@ -225,28 +234,21 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
     return "ZZOut-" + String(channelIndex);
 }
 
-unsigned PluginProcessor::layerSampleSize(unsigned lidx) {
-    unsigned maxD = rnbo_.patch_.getNumExternalDataRefs();
-    if (lidx >= maxD || lidx >= MAX_LAYERS) return 0;
-
-    auto &layer = layers_[lidx];
-    if (layer.loopLayers_ == nullptr) return 0;
-    return MAX_BUF_SIZE;
-}
-
 void PluginProcessor::fillLayerData(unsigned lidx,
                                     float *data, unsigned sz,
                                     float &cur, float &begin, float &end,
                                     bool &isRec, float &recCur
 ) {
-    unsigned maxD = rnbo_.patch_.getNumExternalDataRefs();
-    if (lidx >= maxD || lidx >= MAX_LAYERS) return;
+    if ( lidx >= MAX_LAYERS) return;
     auto &layer = layers_[lidx];
 
-    if (layer.loopLayers_ == nullptr) return;
-    for (int i = 0; i < MAX_BUF_SIZE && i < sz; i++) {
-        data[i] = layer.loopLayers_[i];
+    if (layer.data_ == nullptr) return;
+
+    unsigned dinc = layer.size_ / sz;
+    for (int i = 0; i < layer.size_ && i < sz; i++) {
+        data[i] = layer.data_[i * dinc];
     }
+
     cur = layer.cur_;
     begin = layer.begin_;
     end = layer.end_;
@@ -261,42 +263,72 @@ void PluginProcessor::freeLayer(RNBO::ExternalDataId id, char *data) {
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
     BaseProcessor::prepareToPlay(sampleRate, samplesPerBlock);
 
-    if (samplesPerBlock != bufferSize_) {
-        bufferSize_ = samplesPerBlock;
-        for (int i = 0; i < rnbo_.nInputs_; i++) {
-            delete rnbo_.inputBuffers_[i];
-            rnbo_.inputBuffers_[i] = new RNBO::number[bufferSize_];
-        }
-        for (int i = 0; i < rnbo_.nOutputs_; i++) {
-            delete rnbo_.outputBuffers_[i];
-            rnbo_.outputBuffers_[i] = new RNBO::number[bufferSize_];
+    if (sampleRate_ != sampleRate) {
+        // force layer data to be reallocated
+        sampleRate_ = sampleRate;
+        for (int i = 0; i < MAX_LAYERS; i++) {
+            auto &layer = layers_[i];
+            layer.data_ = nullptr;
+            layer.size_ = 0;
         }
     }
 
+
+    allocateRnboIO(samplesPerBlock);
+
     rnbo_.patch_.prepareToProcess(sampleRate, samplesPerBlock);
 
-    // allocate loop layers
-    for (int i = 0; i < MAX_LAYERS; i++) {
-        auto &layer = layers_[i];
-        layer.loopLayers_ = nullptr;
-        for (int l = 0; l < rnbo_.patch_.getNumExternalDataRefs(); l++) {
-            auto id = rnbo_.patch_.getExternalDataId(l);
-            if (id == std::string("layer") + std::to_string(i + 1)) {
-                RNBO::Float32AudioBuffer type(1, sampleRate);
-                layer.loopLayers_ = new float[MAX_BUF_SIZE];
-                for (int x = 0; x < MAX_BUF_SIZE; x++) layer.loopLayers_[x] = 0.0f;
-                rnbo_.patch_.setExternalData(id, (char *) layer.loopLayers_,
-                                             MAX_BUF_SIZE * sizeof(float) / sizeof(char),
-                                             type, &freeLayer);
-            }
+    allocateAllLayersData();
+}
+
+void PluginProcessor::allocateRnboIO(unsigned samplesPerBlock) {
+    if (samplesPerBlock != rnbo_.rnboIOSize_) {
+        rnbo_.rnboIOSize_ = samplesPerBlock;
+        for (int i = 0; i < rnbo_.nInputs_; i++) {
+            delete rnbo_.inputBuffers_[i];
+            rnbo_.inputBuffers_[i] = new RNBO::number[rnbo_.rnboIOSize_];
+        }
+        for (int i = 0; i < rnbo_.nOutputs_; i++) {
+            delete rnbo_.outputBuffers_[i];
+            rnbo_.outputBuffers_[i] = new RNBO::number[rnbo_.rnboIOSize_];
         }
     }
 }
 
+
+void PluginProcessor::allocateAllLayersData() {
+    for (unsigned i = 0; i < MAX_LAYERS; i++) {
+        unsigned newSize = normValue(params_.layers_[i]->size_);
+        float bufSize = newSize * sampleRate_;
+        allocateLayerData(i, bufSize);
+    }
+}
+
+void PluginProcessor::allocateLayerData(unsigned lidx, unsigned newSize) {
+    auto &layer = layers_[lidx];
+    if (layer.size_ != newSize) {
+        if (layer.data_ != nullptr) {
+            // dont delete, rnbo will do this with freLayer
+        }
+        RNBO::Float32AudioBuffer type(1, sampleRate_);
+        layer.size_ = newSize;
+        layer.data_ = new float[layer.size_];
+        for (int x = 0; x < layer.size_; x++) {
+            layer.data_[x] = 0.0f;
+        }
+
+        std::string id = std::string("layer") + std::to_string(lidx + 1);
+        rnbo_.patch_.setExternalData(id.c_str(), (char *) layer.data_,
+                                     layer.size_ * sizeof(float) / sizeof(char),
+                                     type, &freeLayer);
+    }
+}
+
+
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     size_t n = buffer.getNumSamples();
 
-    int recLayer = rnbo_.patch_.getParameterValue(nameToRnboIdMap_["rec-layer"]);
+    allocateAllLayersData();
 
     for (auto &iter: nameToRnboIdMap_) {
         auto &pid = iter.first;
@@ -310,7 +342,8 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         }
     }
 
-    // later can perhaps use vector copies?
+    int recLayer = rnbo_.patch_.getParameterValue(nameToRnboIdMap_["rec-layer"]);
+
     {
         // process input
         for (unsigned c = 0; c < I_MAX; c++) {
@@ -322,7 +355,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
     rnbo_.patch_.process(rnbo_.inputBuffers_, rnbo_.nInputs_,
                          rnbo_.outputBuffers_, rnbo_.nOutputs_,
-                         bufferSize_);
+                         rnbo_.rnboIOSize_);
 
     // get positions
     for (int lidx = 0; lidx < MAX_LAYERS; lidx++) {

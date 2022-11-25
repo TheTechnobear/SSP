@@ -29,6 +29,7 @@ PARAMETER_ID (mon)
 PARAMETER_ID (layer)
 PARAMETER_ID (rate)
 PARAMETER_ID (crossfade)
+PARAMETER_ID (size)
 
 
 #undef PARAMETER_ID
@@ -62,6 +63,7 @@ public:
         Parameter &loop_;
         Parameter &xfade_;
         Parameter &gain_;
+        Parameter &size_;
     };
 
     struct RecParams {
@@ -99,18 +101,9 @@ public:
                        float &cur, float &begin, float &end,
                        bool &isRec, float &recCur);
 
-    unsigned numLayers() { return MAX_LAYERS; }
-
-    unsigned layerSampleSize(unsigned layer);
-
     static unsigned constexpr MAX_LAYERS = 4;
-    static unsigned constexpr MAX_BUF_SIZE = (48000 * 10);
-
     enum {
         I_IN,
-        I_REC_MODE,
-        I_REC_BEGIN,
-        I_REC_END,
         I_LAYER1_RATE,
         I_LAYER1_BEGIN,
         I_LAYER1_END,
@@ -123,6 +116,9 @@ public:
         I_LAYER4_RATE,
         I_LAYER4_BEGIN,
         I_LAYER4_END,
+        I_REC_MODE,
+//        I_REC_BEGIN,
+//        I_REC_END,
         I_MAX
     };
 
@@ -146,7 +142,10 @@ protected:
     static void freeLayer(RNBO::ExternalDataId id, char *data);
 private:
 
-    int bufferSize_ = 128;
+    void allocateAllLayersData();
+    void allocateLayerData(unsigned layer, unsigned newSize);
+    void allocateRnboIO(unsigned blocksize);
+
     struct {
         RNBO::CoreObject patch_;
         RNBO::number **inputBuffers_;
@@ -154,24 +153,30 @@ private:
         int nInputs_ = 0;
         int nOutputs_ = 0;
         int nParams_ = 0;
+        int rnboIOSize_ = 0;
         float *lastParamVals_;
     } rnbo_;
 
 
     struct { ;
-        float begin_;
-        float end_;
-        float cur_;
-        bool isRec_;
-        float recCur_;
-        float *loopLayers_;
+        float begin_ = 0.0f;
+        float end_ = 1.0f;
+        float cur_ = 0.0f;
+        bool isRec_ = false;
+        float recCur_ = 0.0f;
+        float *data_ = nullptr;
+        unsigned size_ = 0;
     } layers_[MAX_LAYERS];
+
+    unsigned layerSize_ = 0;
+    unsigned sampleRate_ = 48000;
 
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
         return true;
     }
 
     std::map<std::string, unsigned> nameToRnboIdMap_;
+    unsigned layerBufMap_[MAX_LAYERS];
 
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);

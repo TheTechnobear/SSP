@@ -23,11 +23,10 @@ protected:
 private:
     static const int MAX_LAYERS = PluginProcessor::MAX_LAYERS;
     juce::Colour clrs_[MAX_LAYERS];
-    static constexpr unsigned MAX_DATA = PluginProcessor::MAX_BUF_SIZE;
-    static constexpr unsigned MAX_VIEWPOINTS = 600;
+    static constexpr unsigned DATA_POINTS = 600;
 
     struct {
-        float dataBuf_[MAX_DATA];
+        float dataBuf_[DATA_POINTS];
         float beginPos_ = 0.0f;
         float endPos_ = 1.0f;
         float curPos_ = 0.0;

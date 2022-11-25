@@ -117,23 +117,6 @@ private:
 
         float val = 0.00f, y = 0.0f, x = 0.0f;
         static constexpr float sp = 2.0f;
-        g.setColour(Colours::green);
-        x = layer.begin_ * (w - sp);
-        g.fillRect(x, sp, sp, h - 2.0f * sp);
-
-        g.setColour(Colours::blue);
-        x = layer.end_ * (w - sp);
-        g.fillRect(x, sp, sp, h - 2.0f * sp);
-
-        g.setColour(Colours::white);
-        x = layer.cur_ * (w - sp);
-        g.fillRect(x, sp, sp, h - 2.0f * sp);
-
-        if (layer.isRec_) {
-            g.setColour(Colours::red);
-            x = layer.recPos_ * (w - sp);
-            g.fillRect(x, sp, sp, h - 2.0f * sp);
-        }
 
         // draw scope
         g.setColour(layer.colour_);
@@ -152,6 +135,25 @@ private:
             lastX = x;
             lastY = y;
         }
+
+        g.setColour(Colours::green);
+        x = layer.begin_ * (w - sp);
+        g.fillRect(x, sp, sp, h - 2.0f * sp);
+
+        g.setColour(Colours::blue);
+        x = layer.end_ * (w - sp);
+        g.fillRect(x, sp, sp, h - 2.0f * sp);
+
+        g.setColour(Colours::white);
+        x = layer.cur_ * (w - sp);
+        g.fillRect(x, sp, sp, h - 2.0f * sp);
+
+        if (layer.isRec_) {
+            g.setColour(Colours::red);
+            x = layer.recPos_ * (w - sp);
+            g.fillRect(x, sp, sp, h - 2.0f * sp);
+        }
+
     }
 
 

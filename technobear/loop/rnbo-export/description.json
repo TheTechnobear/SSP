@@ -24,7 +24,7 @@
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
       "serialId": "param_s06",
-      "constrainFunc": "param_29_value_constrain"
+      "constrainFunc": "param_33_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
@@ -50,7 +50,7 @@
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
       "serialId": "param_s07",
-      "constrainFunc": "param_30_value_constrain"
+      "constrainFunc": "param_34_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
@@ -79,7 +79,7 @@
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
       "serialId": "param_s05",
-      "constrainFunc": "param_31_value_constrain"
+      "constrainFunc": "param_35_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
@@ -105,7 +105,7 @@
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
       "serialId": "param_s04",
-      "constrainFunc": "param_32_value_constrain"
+      "constrainFunc": "param_36_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
@@ -134,7 +134,7 @@
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
       "serialId": "param_s03",
-      "constrainFunc": "param_33_value_constrain"
+      "constrainFunc": "param_37_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
@@ -160,7 +160,7 @@
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
       "serialId": "param_s02",
-      "constrainFunc": "param_34_value_constrain"
+      "constrainFunc": "param_38_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
@@ -186,7 +186,7 @@
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
       "serialId": "param_s01",
-      "constrainFunc": "param_35_value_constrain"
+      "constrainFunc": "param_39_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
@@ -261,7 +261,7 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s05",
+      "serialId": "param_s06",
       "constrainFunc": "param_01_value_constrain"
     },
     {
@@ -290,7 +290,7 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s07",
+      "serialId": "param_s08",
       "constrainFunc": "param_02_value_constrain"
     },
     {
@@ -319,7 +319,7 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s03",
+      "serialId": "param_s04",
       "constrainFunc": "param_03_value_constrain"
     },
     {
@@ -345,7 +345,7 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s06",
+      "serialId": "param_s07",
       "constrainFunc": "param_04_value_constrain"
     },
     {
@@ -371,7 +371,7 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s04",
+      "serialId": "param_s05",
       "constrainFunc": "param_05_value_constrain"
     },
     {
@@ -397,12 +397,38 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s02",
+      "serialId": "param_s03",
       "constrainFunc": "param_06_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
       "index": 15,
+      "name": "size",
+      "paramId": "layer1/size",
+      "minimum": 1,
+      "maximum": 180,
+      "exponent": 1,
+      "steps": 0,
+      "initialValue": 10,
+      "isEnum": false,
+      "enumValues": [],
+      "displayName": "Size",
+      "unit": "",
+      "order": 0,
+      "sendinit": true,
+      "initialized": true,
+      "debug": false,
+      "saveable": true,
+      "transmittable": true,
+      "visible": true,
+      "signalIndex": null,
+      "ioType": "IOTypeUndefined",
+      "serialId": "param_s01",
+      "constrainFunc": "param_07_value_constrain"
+    },
+    {
+      "type": "ParameterTypeNumber",
+      "index": 16,
       "name": "gain",
       "paramId": "layer1/gain",
       "minimum": 0,
@@ -423,12 +449,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s01",
-      "constrainFunc": "param_07_value_constrain"
+      "serialId": "param_s02",
+      "constrainFunc": "param_08_value_constrain"
     },
     {
       "type": "ParameterTypeBang",
-      "index": 16,
+      "index": 17,
       "name": "button_01_bangval",
       "paramId": "layer1/button_obj-43/bangval",
       "minimum": 0,
@@ -453,7 +479,7 @@
     },
     {
       "type": "ParameterTypeBang",
-      "index": 17,
+      "index": 18,
       "name": "button_02_bangval",
       "paramId": "layer1/button_obj-46/bangval",
       "minimum": 0,
@@ -478,7 +504,7 @@
     },
     {
       "type": "ParameterTypeBang",
-      "index": 18,
+      "index": 19,
       "name": "button_03_bangval",
       "paramId": "layer1/button_obj-22/bangval",
       "minimum": 0,
@@ -503,7 +529,7 @@
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 19,
+      "index": 20,
       "name": "rate",
       "paramId": "layer2/rate",
       "minimum": -4,
@@ -524,12 +550,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s05",
-      "constrainFunc": "param_08_value_constrain"
+      "serialId": "param_s22",
+      "constrainFunc": "param_09_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 20,
+      "index": 21,
       "name": "mode",
       "paramId": "layer2/mode",
       "minimum": 0,
@@ -553,12 +579,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s07",
-      "constrainFunc": "param_09_value_constrain"
+      "serialId": "param_s24",
+      "constrainFunc": "param_10_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 21,
+      "index": 22,
       "name": "loop",
       "paramId": "layer2/loop",
       "minimum": 0,
@@ -582,12 +608,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s03",
-      "constrainFunc": "param_10_value_constrain"
+      "serialId": "param_s20",
+      "constrainFunc": "param_11_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 22,
+      "index": 23,
       "name": "begin",
       "paramId": "layer2/begin",
       "minimum": 0,
@@ -608,12 +634,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s06",
-      "constrainFunc": "param_11_value_constrain"
+      "serialId": "param_s23",
+      "constrainFunc": "param_12_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 23,
+      "index": 24,
       "name": "xfade",
       "paramId": "layer2/xfade",
       "minimum": 0,
@@ -634,12 +660,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s04",
-      "constrainFunc": "param_12_value_constrain"
+      "serialId": "param_s21",
+      "constrainFunc": "param_13_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 24,
+      "index": 25,
       "name": "end",
       "paramId": "layer2/end",
       "minimum": 0,
@@ -660,12 +686,38 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s02",
-      "constrainFunc": "param_13_value_constrain"
+      "serialId": "param_s19",
+      "constrainFunc": "param_14_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 25,
+      "index": 26,
+      "name": "size",
+      "paramId": "layer2/size",
+      "minimum": 1,
+      "maximum": 180,
+      "exponent": 1,
+      "steps": 0,
+      "initialValue": 10,
+      "isEnum": false,
+      "enumValues": [],
+      "displayName": "Size",
+      "unit": "",
+      "order": 0,
+      "sendinit": true,
+      "initialized": true,
+      "debug": false,
+      "saveable": true,
+      "transmittable": true,
+      "visible": true,
+      "signalIndex": null,
+      "ioType": "IOTypeUndefined",
+      "serialId": "param_s17",
+      "constrainFunc": "param_15_value_constrain"
+    },
+    {
+      "type": "ParameterTypeNumber",
+      "index": 27,
       "name": "gain",
       "paramId": "layer2/gain",
       "minimum": 0,
@@ -686,12 +738,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s01",
-      "constrainFunc": "param_14_value_constrain"
+      "serialId": "param_s18",
+      "constrainFunc": "param_16_value_constrain"
     },
     {
       "type": "ParameterTypeBang",
-      "index": 26,
+      "index": 28,
       "name": "button_04_bangval",
       "paramId": "layer2/button_obj-43/bangval",
       "minimum": 0,
@@ -712,11 +764,11 @@
       "visible": false,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "button_s03"
+      "serialId": "button_s09"
     },
     {
       "type": "ParameterTypeBang",
-      "index": 27,
+      "index": 29,
       "name": "button_05_bangval",
       "paramId": "layer2/button_obj-46/bangval",
       "minimum": 0,
@@ -737,11 +789,11 @@
       "visible": false,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "button_s02"
+      "serialId": "button_s08"
     },
     {
       "type": "ParameterTypeBang",
-      "index": 28,
+      "index": 30,
       "name": "button_06_bangval",
       "paramId": "layer2/button_obj-22/bangval",
       "minimum": 0,
@@ -762,11 +814,11 @@
       "visible": false,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "button_s01"
+      "serialId": "button_s07"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 29,
+      "index": 31,
       "name": "rate",
       "paramId": "layer3/rate",
       "minimum": -4,
@@ -787,12 +839,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s05",
-      "constrainFunc": "param_15_value_constrain"
+      "serialId": "param_s22",
+      "constrainFunc": "param_17_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 30,
+      "index": 32,
       "name": "mode",
       "paramId": "layer3/mode",
       "minimum": 0,
@@ -816,12 +868,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s07",
-      "constrainFunc": "param_16_value_constrain"
+      "serialId": "param_s24",
+      "constrainFunc": "param_18_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 31,
+      "index": 33,
       "name": "loop",
       "paramId": "layer3/loop",
       "minimum": 0,
@@ -845,12 +897,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s03",
-      "constrainFunc": "param_17_value_constrain"
+      "serialId": "param_s20",
+      "constrainFunc": "param_19_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 32,
+      "index": 34,
       "name": "begin",
       "paramId": "layer3/begin",
       "minimum": 0,
@@ -871,12 +923,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s06",
-      "constrainFunc": "param_18_value_constrain"
+      "serialId": "param_s23",
+      "constrainFunc": "param_20_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 33,
+      "index": 35,
       "name": "xfade",
       "paramId": "layer3/xfade",
       "minimum": 0,
@@ -897,12 +949,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s04",
-      "constrainFunc": "param_19_value_constrain"
+      "serialId": "param_s21",
+      "constrainFunc": "param_21_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 34,
+      "index": 36,
       "name": "end",
       "paramId": "layer3/end",
       "minimum": 0,
@@ -923,12 +975,38 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s02",
-      "constrainFunc": "param_20_value_constrain"
+      "serialId": "param_s19",
+      "constrainFunc": "param_22_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 35,
+      "index": 37,
+      "name": "size",
+      "paramId": "layer3/size",
+      "minimum": 1,
+      "maximum": 180,
+      "exponent": 1,
+      "steps": 0,
+      "initialValue": 10,
+      "isEnum": false,
+      "enumValues": [],
+      "displayName": "Size",
+      "unit": "",
+      "order": 0,
+      "sendinit": true,
+      "initialized": true,
+      "debug": false,
+      "saveable": true,
+      "transmittable": true,
+      "visible": true,
+      "signalIndex": null,
+      "ioType": "IOTypeUndefined",
+      "serialId": "param_s17",
+      "constrainFunc": "param_23_value_constrain"
+    },
+    {
+      "type": "ParameterTypeNumber",
+      "index": 38,
       "name": "gain",
       "paramId": "layer3/gain",
       "minimum": 0,
@@ -949,12 +1027,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s01",
-      "constrainFunc": "param_21_value_constrain"
+      "serialId": "param_s18",
+      "constrainFunc": "param_24_value_constrain"
     },
     {
       "type": "ParameterTypeBang",
-      "index": 36,
+      "index": 39,
       "name": "button_07_bangval",
       "paramId": "layer3/button_obj-43/bangval",
       "minimum": 0,
@@ -975,11 +1053,11 @@
       "visible": false,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "button_s03"
+      "serialId": "button_s09"
     },
     {
       "type": "ParameterTypeBang",
-      "index": 37,
+      "index": 40,
       "name": "button_08_bangval",
       "paramId": "layer3/button_obj-46/bangval",
       "minimum": 0,
@@ -1000,11 +1078,11 @@
       "visible": false,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "button_s02"
+      "serialId": "button_s08"
     },
     {
       "type": "ParameterTypeBang",
-      "index": 38,
+      "index": 41,
       "name": "button_09_bangval",
       "paramId": "layer3/button_obj-22/bangval",
       "minimum": 0,
@@ -1025,11 +1103,11 @@
       "visible": false,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "button_s01"
+      "serialId": "button_s07"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 39,
+      "index": 42,
       "name": "rate",
       "paramId": "layer4/rate",
       "minimum": -4,
@@ -1050,12 +1128,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s05",
-      "constrainFunc": "param_22_value_constrain"
+      "serialId": "param_s22",
+      "constrainFunc": "param_25_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 40,
+      "index": 43,
       "name": "mode",
       "paramId": "layer4/mode",
       "minimum": 0,
@@ -1079,12 +1157,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s07",
-      "constrainFunc": "param_23_value_constrain"
+      "serialId": "param_s24",
+      "constrainFunc": "param_26_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 41,
+      "index": 44,
       "name": "loop",
       "paramId": "layer4/loop",
       "minimum": 0,
@@ -1108,12 +1186,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s03",
-      "constrainFunc": "param_24_value_constrain"
+      "serialId": "param_s20",
+      "constrainFunc": "param_27_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 42,
+      "index": 45,
       "name": "begin",
       "paramId": "layer4/begin",
       "minimum": 0,
@@ -1134,12 +1212,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s06",
-      "constrainFunc": "param_25_value_constrain"
+      "serialId": "param_s23",
+      "constrainFunc": "param_28_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 43,
+      "index": 46,
       "name": "xfade",
       "paramId": "layer4/xfade",
       "minimum": 0,
@@ -1160,12 +1238,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s04",
-      "constrainFunc": "param_26_value_constrain"
+      "serialId": "param_s21",
+      "constrainFunc": "param_29_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 44,
+      "index": 47,
       "name": "end",
       "paramId": "layer4/end",
       "minimum": 0,
@@ -1186,12 +1264,38 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s02",
-      "constrainFunc": "param_27_value_constrain"
+      "serialId": "param_s19",
+      "constrainFunc": "param_30_value_constrain"
     },
     {
       "type": "ParameterTypeNumber",
-      "index": 45,
+      "index": 48,
+      "name": "size",
+      "paramId": "layer4/size",
+      "minimum": 1,
+      "maximum": 180,
+      "exponent": 1,
+      "steps": 0,
+      "initialValue": 10,
+      "isEnum": false,
+      "enumValues": [],
+      "displayName": "Size",
+      "unit": "",
+      "order": 0,
+      "sendinit": true,
+      "initialized": true,
+      "debug": false,
+      "saveable": true,
+      "transmittable": true,
+      "visible": true,
+      "signalIndex": null,
+      "ioType": "IOTypeUndefined",
+      "serialId": "param_s17",
+      "constrainFunc": "param_31_value_constrain"
+    },
+    {
+      "type": "ParameterTypeNumber",
+      "index": 49,
       "name": "gain",
       "paramId": "layer4/gain",
       "minimum": 0,
@@ -1212,12 +1316,12 @@
       "visible": true,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "param_s01",
-      "constrainFunc": "param_28_value_constrain"
+      "serialId": "param_s18",
+      "constrainFunc": "param_32_value_constrain"
     },
     {
       "type": "ParameterTypeBang",
-      "index": 46,
+      "index": 50,
       "name": "button_10_bangval",
       "paramId": "layer4/button_obj-43/bangval",
       "minimum": 0,
@@ -1238,11 +1342,11 @@
       "visible": false,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "button_s03"
+      "serialId": "button_s09"
     },
     {
       "type": "ParameterTypeBang",
-      "index": 47,
+      "index": 51,
       "name": "button_11_bangval",
       "paramId": "layer4/button_obj-46/bangval",
       "minimum": 0,
@@ -1263,11 +1367,11 @@
       "visible": false,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "button_s02"
+      "serialId": "button_s08"
     },
     {
       "type": "ParameterTypeBang",
-      "index": 48,
+      "index": 52,
       "name": "button_12_bangval",
       "paramId": "layer4/button_obj-22/bangval",
       "minimum": 0,
@@ -1288,10 +1392,10 @@
       "visible": false,
       "signalIndex": null,
       "ioType": "IOTypeUndefined",
-      "serialId": "button_s01"
+      "serialId": "button_s07"
     }
   ],
-  "numParameters": 49,
+  "numParameters": 53,
   "numSignalInParameters": 0,
   "numSignalOutParameters": 0,
   "numInputChannels": 16,
@@ -1331,105 +1435,105 @@
       "index": 2,
       "tag": "in2",
       "meta": "",
-      "comment": "rec-mode"
+      "comment": "layer1/rate"
     },
     {
       "type": "signal",
       "index": 3,
       "tag": "in3",
       "meta": "",
-      "comment": "rec-begin"
+      "comment": "layer1/begin"
     },
     {
       "type": "signal",
       "index": 4,
       "tag": "in4",
       "meta": "",
-      "comment": "rec-end"
+      "comment": "layer1/end"
     },
     {
       "type": "signal",
       "index": 5,
       "tag": "in5",
       "meta": "",
-      "comment": "layer1/rate"
+      "comment": "layer2/rate"
     },
     {
       "type": "signal",
       "index": 6,
       "tag": "in6",
       "meta": "",
-      "comment": "layer1/begin"
+      "comment": "layer2/begin"
     },
     {
       "type": "signal",
       "index": 7,
       "tag": "in7",
       "meta": "",
-      "comment": "layer1/end"
+      "comment": "layer2/end"
     },
     {
       "type": "signal",
       "index": 8,
       "tag": "in8",
       "meta": "",
-      "comment": "layer2/rate"
+      "comment": "layer3/rate"
     },
     {
       "type": "signal",
       "index": 9,
       "tag": "in9",
       "meta": "",
-      "comment": "layer2/begin"
+      "comment": "layer3/begin"
     },
     {
       "type": "signal",
       "index": 10,
       "tag": "in10",
       "meta": "",
-      "comment": "layer2/end"
+      "comment": "layer3/end"
     },
     {
       "type": "signal",
       "index": 11,
       "tag": "in11",
       "meta": "",
-      "comment": "layer3/rate"
+      "comment": "layer4/rate"
     },
     {
       "type": "signal",
       "index": 12,
       "tag": "in12",
       "meta": "",
-      "comment": "layer3/begin"
+      "comment": "layer4/begin"
     },
     {
       "type": "signal",
       "index": 13,
       "tag": "in13",
       "meta": "",
-      "comment": "layer3/end"
+      "comment": "layer4/end"
     },
     {
       "type": "signal",
       "index": 14,
       "tag": "in14",
       "meta": "",
-      "comment": "layer4/rate"
+      "comment": "rec-mode"
     },
     {
       "type": "signal",
       "index": 15,
       "tag": "in15",
       "meta": "",
-      "comment": "layer4/begin"
+      "comment": "rec-begin"
     },
     {
       "type": "signal",
       "index": 16,
       "tag": "in16",
       "meta": "",
-      "comment": "layer4/end"
+      "comment": "rec-end"
     }
   ],
   "outlets": [
@@ -1513,37 +1617,37 @@
     "subpatches": {
       "p_01": {
         "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
-        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    case 1:\n    case 2:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n            let normalizedValue = (value - 0) / (1 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 2);\n            }\n\n            return normalizedValue;\n        }\n    case 3:\n    case 5:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n            let normalizedValue = (value - 0) / (1 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 6:\n        {\n            value = (value < 0 ? 0 : (value > 10 ? 10 : value));\n            let normalizedValue = (value - 0) / (10 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 4:\n        {\n            value = (value < 0 ? 0 : (value > 100 ? 100 : value));\n            let normalizedValue = (value - 0) / (100 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 0:\n        {\n            value = (value < -4 ? -4 : (value > 4 ? 4 : value));\n            let normalizedValue = (value - -4) / (4 - -4);\n            return normalizedValue;\n        }\n    default:\n        return value;\n    }\n}",
-        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    case 1:\n    case 2:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 2);\n            }\n\n            {\n                return 0 + value * (1 - 0);\n            }\n        }\n    case 3:\n    case 5:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (1 - 0);\n            }\n        }\n    case 6:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (10 - 0);\n            }\n        }\n    case 4:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (100 - 0);\n            }\n        }\n    case 0:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                return -4 + value * (4 - -4);\n            }\n        }\n    default:\n        return value;\n    }\n}",
-        "getNumParameters": "function getNumParameters() {\n    return 10;\n}",
-        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    case 0:\n        {\n            v = (v > 4 ? 4 : (v < -4 ? -4 : v));\n            return v;\n        }\n    case 1:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 1;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 2:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 1;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 3:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 4:\n        {\n            v = (v > 100 ? 100 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 100 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 5:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 6:\n        {\n            v = (v > 10 ? 10 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 10 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    default:\n        return value;\n    }\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    case 1:\n    case 2:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n            let normalizedValue = (value - 0) / (1 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 2);\n            }\n\n            return normalizedValue;\n        }\n    case 3:\n    case 5:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n            let normalizedValue = (value - 0) / (1 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 7:\n        {\n            value = (value < 0 ? 0 : (value > 10 ? 10 : value));\n            let normalizedValue = (value - 0) / (10 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 4:\n        {\n            value = (value < 0 ? 0 : (value > 100 ? 100 : value));\n            let normalizedValue = (value - 0) / (100 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 6:\n        {\n            value = (value < 1 ? 1 : (value > 180 ? 180 : value));\n            let normalizedValue = (value - 1) / (180 - 1);\n            return normalizedValue;\n        }\n    case 0:\n        {\n            value = (value < -4 ? -4 : (value > 4 ? 4 : value));\n            let normalizedValue = (value - -4) / (4 - -4);\n            return normalizedValue;\n        }\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    case 1:\n    case 2:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 2);\n            }\n\n            {\n                return 0 + value * (1 - 0);\n            }\n        }\n    case 3:\n    case 5:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (1 - 0);\n            }\n        }\n    case 7:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (10 - 0);\n            }\n        }\n    case 4:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (100 - 0);\n            }\n        }\n    case 6:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                return 1 + value * (180 - 1);\n            }\n        }\n    case 0:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                return -4 + value * (4 - -4);\n            }\n        }\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 11;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    case 0:\n        {\n            v = (v > 4 ? 4 : (v < -4 ? -4 : v));\n            return v;\n        }\n    case 1:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 1;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 2:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 1;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 3:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 4:\n        {\n            v = (v > 100 ? 100 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 100 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 5:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 6:\n        {\n            v = (v > 180 ? 180 : (v < 1 ? 1 : v));\n            return v;\n        }\n    case 7:\n        {\n            v = (v > 10 ? 10 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 10 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    default:\n        return value;\n    }\n}",
         "subpatches": {},
         "isPolyphonic": false
       },
       "p_02": {
         "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
-        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    case 1:\n    case 2:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n            let normalizedValue = (value - 0) / (1 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 2);\n            }\n\n            return normalizedValue;\n        }\n    case 3:\n    case 5:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n            let normalizedValue = (value - 0) / (1 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 6:\n        {\n            value = (value < 0 ? 0 : (value > 10 ? 10 : value));\n            let normalizedValue = (value - 0) / (10 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 4:\n        {\n            value = (value < 0 ? 0 : (value > 100 ? 100 : value));\n            let normalizedValue = (value - 0) / (100 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 0:\n        {\n            value = (value < -4 ? -4 : (value > 4 ? 4 : value));\n            let normalizedValue = (value - -4) / (4 - -4);\n            return normalizedValue;\n        }\n    default:\n        return value;\n    }\n}",
-        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    case 1:\n    case 2:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 2);\n            }\n\n            {\n                return 0 + value * (1 - 0);\n            }\n        }\n    case 3:\n    case 5:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (1 - 0);\n            }\n        }\n    case 6:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (10 - 0);\n            }\n        }\n    case 4:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (100 - 0);\n            }\n        }\n    case 0:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                return -4 + value * (4 - -4);\n            }\n        }\n    default:\n        return value;\n    }\n}",
-        "getNumParameters": "function getNumParameters() {\n    return 10;\n}",
-        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    case 0:\n        {\n            v = (v > 4 ? 4 : (v < -4 ? -4 : v));\n            return v;\n        }\n    case 1:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 1;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 2:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 1;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 3:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 4:\n        {\n            v = (v > 100 ? 100 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 100 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 5:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 6:\n        {\n            v = (v > 10 ? 10 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 10 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    default:\n        return value;\n    }\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    case 1:\n    case 2:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n            let normalizedValue = (value - 0) / (1 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 2);\n            }\n\n            return normalizedValue;\n        }\n    case 3:\n    case 5:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n            let normalizedValue = (value - 0) / (1 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 7:\n        {\n            value = (value < 0 ? 0 : (value > 10 ? 10 : value));\n            let normalizedValue = (value - 0) / (10 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 4:\n        {\n            value = (value < 0 ? 0 : (value > 100 ? 100 : value));\n            let normalizedValue = (value - 0) / (100 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 6:\n        {\n            value = (value < 1 ? 1 : (value > 180 ? 180 : value));\n            let normalizedValue = (value - 1) / (180 - 1);\n            return normalizedValue;\n        }\n    case 0:\n        {\n            value = (value < -4 ? -4 : (value > 4 ? 4 : value));\n            let normalizedValue = (value - -4) / (4 - -4);\n            return normalizedValue;\n        }\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    case 1:\n    case 2:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 2);\n            }\n\n            {\n                return 0 + value * (1 - 0);\n            }\n        }\n    case 3:\n    case 5:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (1 - 0);\n            }\n        }\n    case 7:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (10 - 0);\n            }\n        }\n    case 4:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (100 - 0);\n            }\n        }\n    case 6:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                return 1 + value * (180 - 1);\n            }\n        }\n    case 0:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                return -4 + value * (4 - -4);\n            }\n        }\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 11;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    case 0:\n        {\n            v = (v > 4 ? 4 : (v < -4 ? -4 : v));\n            return v;\n        }\n    case 1:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 1;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 2:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 1;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 3:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 4:\n        {\n            v = (v > 100 ? 100 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 100 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 5:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 6:\n        {\n            v = (v > 180 ? 180 : (v < 1 ? 1 : v));\n            return v;\n        }\n    case 7:\n        {\n            v = (v > 10 ? 10 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 10 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    default:\n        return value;\n    }\n}",
         "subpatches": {},
         "isPolyphonic": false
       },
       "p_03": {
         "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
-        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    case 1:\n    case 2:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n            let normalizedValue = (value - 0) / (1 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 2);\n            }\n\n            return normalizedValue;\n        }\n    case 3:\n    case 5:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n            let normalizedValue = (value - 0) / (1 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 6:\n        {\n            value = (value < 0 ? 0 : (value > 10 ? 10 : value));\n            let normalizedValue = (value - 0) / (10 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 4:\n        {\n            value = (value < 0 ? 0 : (value > 100 ? 100 : value));\n            let normalizedValue = (value - 0) / (100 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 0:\n        {\n            value = (value < -4 ? -4 : (value > 4 ? 4 : value));\n            let normalizedValue = (value - -4) / (4 - -4);\n            return normalizedValue;\n        }\n    default:\n        return value;\n    }\n}",
-        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    case 1:\n    case 2:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 2);\n            }\n\n            {\n                return 0 + value * (1 - 0);\n            }\n        }\n    case 3:\n    case 5:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (1 - 0);\n            }\n        }\n    case 6:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (10 - 0);\n            }\n        }\n    case 4:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (100 - 0);\n            }\n        }\n    case 0:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                return -4 + value * (4 - -4);\n            }\n        }\n    default:\n        return value;\n    }\n}",
-        "getNumParameters": "function getNumParameters() {\n    return 10;\n}",
-        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    case 0:\n        {\n            v = (v > 4 ? 4 : (v < -4 ? -4 : v));\n            return v;\n        }\n    case 1:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 1;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 2:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 1;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 3:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 4:\n        {\n            v = (v > 100 ? 100 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 100 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 5:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 6:\n        {\n            v = (v > 10 ? 10 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 10 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    default:\n        return value;\n    }\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    case 1:\n    case 2:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n            let normalizedValue = (value - 0) / (1 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 2);\n            }\n\n            return normalizedValue;\n        }\n    case 3:\n    case 5:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n            let normalizedValue = (value - 0) / (1 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 7:\n        {\n            value = (value < 0 ? 0 : (value > 10 ? 10 : value));\n            let normalizedValue = (value - 0) / (10 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 4:\n        {\n            value = (value < 0 ? 0 : (value > 100 ? 100 : value));\n            let normalizedValue = (value - 0) / (100 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 6:\n        {\n            value = (value < 1 ? 1 : (value > 180 ? 180 : value));\n            let normalizedValue = (value - 1) / (180 - 1);\n            return normalizedValue;\n        }\n    case 0:\n        {\n            value = (value < -4 ? -4 : (value > 4 ? 4 : value));\n            let normalizedValue = (value - -4) / (4 - -4);\n            return normalizedValue;\n        }\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    case 1:\n    case 2:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 2);\n            }\n\n            {\n                return 0 + value * (1 - 0);\n            }\n        }\n    case 3:\n    case 5:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (1 - 0);\n            }\n        }\n    case 7:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (10 - 0);\n            }\n        }\n    case 4:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (100 - 0);\n            }\n        }\n    case 6:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                return 1 + value * (180 - 1);\n            }\n        }\n    case 0:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                return -4 + value * (4 - -4);\n            }\n        }\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 11;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    case 0:\n        {\n            v = (v > 4 ? 4 : (v < -4 ? -4 : v));\n            return v;\n        }\n    case 1:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 1;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 2:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 1;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 3:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 4:\n        {\n            v = (v > 100 ? 100 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 100 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 5:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 6:\n        {\n            v = (v > 180 ? 180 : (v < 1 ? 1 : v));\n            return v;\n        }\n    case 7:\n        {\n            v = (v > 10 ? 10 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 10 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    default:\n        return value;\n    }\n}",
         "subpatches": {},
         "isPolyphonic": false
       },
       "p_04": {
         "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
-        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    case 1:\n    case 2:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n            let normalizedValue = (value - 0) / (1 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 2);\n            }\n\n            return normalizedValue;\n        }\n    case 3:\n    case 5:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n            let normalizedValue = (value - 0) / (1 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 6:\n        {\n            value = (value < 0 ? 0 : (value > 10 ? 10 : value));\n            let normalizedValue = (value - 0) / (10 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 4:\n        {\n            value = (value < 0 ? 0 : (value > 100 ? 100 : value));\n            let normalizedValue = (value - 0) / (100 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 0:\n        {\n            value = (value < -4 ? -4 : (value > 4 ? 4 : value));\n            let normalizedValue = (value - -4) / (4 - -4);\n            return normalizedValue;\n        }\n    default:\n        return value;\n    }\n}",
-        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    case 1:\n    case 2:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 2);\n            }\n\n            {\n                return 0 + value * (1 - 0);\n            }\n        }\n    case 3:\n    case 5:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (1 - 0);\n            }\n        }\n    case 6:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (10 - 0);\n            }\n        }\n    case 4:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (100 - 0);\n            }\n        }\n    case 0:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                return -4 + value * (4 - -4);\n            }\n        }\n    default:\n        return value;\n    }\n}",
-        "getNumParameters": "function getNumParameters() {\n    return 10;\n}",
-        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    case 0:\n        {\n            v = (v > 4 ? 4 : (v < -4 ? -4 : v));\n            return v;\n        }\n    case 1:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 1;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 2:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 1;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 3:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 4:\n        {\n            v = (v > 100 ? 100 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 100 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 5:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 6:\n        {\n            v = (v > 10 ? 10 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 10 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    default:\n        return value;\n    }\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    case 1:\n    case 2:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n            let normalizedValue = (value - 0) / (1 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 2);\n            }\n\n            return normalizedValue;\n        }\n    case 3:\n    case 5:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n            let normalizedValue = (value - 0) / (1 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 7:\n        {\n            value = (value < 0 ? 0 : (value > 10 ? 10 : value));\n            let normalizedValue = (value - 0) / (10 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 4:\n        {\n            value = (value < 0 ? 0 : (value > 100 ? 100 : value));\n            let normalizedValue = (value - 0) / (100 - 0);\n\n            {\n                normalizedValue = this.applyStepsToNormalizedParameterValue(normalizedValue, 101);\n            }\n\n            return normalizedValue;\n        }\n    case 6:\n        {\n            value = (value < 1 ? 1 : (value > 180 ? 180 : value));\n            let normalizedValue = (value - 1) / (180 - 1);\n            return normalizedValue;\n        }\n    case 0:\n        {\n            value = (value < -4 ? -4 : (value > 4 ? 4 : value));\n            let normalizedValue = (value - -4) / (4 - -4);\n            return normalizedValue;\n        }\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    case 1:\n    case 2:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 2);\n            }\n\n            {\n                return 0 + value * (1 - 0);\n            }\n        }\n    case 3:\n    case 5:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (1 - 0);\n            }\n        }\n    case 7:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (10 - 0);\n            }\n        }\n    case 4:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                value = this.applyStepsToNormalizedParameterValue(value, 101);\n            }\n\n            {\n                return 0 + value * (100 - 0);\n            }\n        }\n    case 6:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                return 1 + value * (180 - 1);\n            }\n        }\n    case 0:\n        {\n            value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n            {\n                return -4 + value * (4 - -4);\n            }\n        }\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 11;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    case 0:\n        {\n            v = (v > 4 ? 4 : (v < -4 ? -4 : v));\n            return v;\n        }\n    case 1:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 1;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 2:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 1;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 3:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 4:\n        {\n            v = (v > 100 ? 100 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 100 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 5:\n        {\n            v = (v > 1 ? 1 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 1 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    case 6:\n        {\n            v = (v > 180 ? 180 : (v < 1 ? 1 : v));\n            return v;\n        }\n    case 7:\n        {\n            v = (v > 10 ? 10 : (v < 0 ? 0 : v));\n\n            {\n                const oneStep = 10 / 100;\n                const oneStepInv = (oneStep != 0 ? 1 / oneStep : 0);\n                const numberOfSteps = rnbo_fround(v * oneStepInv * 1 / 1) * 1;\n                v = numberOfSteps * oneStep;\n            }\n\n            return v;\n        }\n    default:\n        return value;\n    }\n}",
         "subpatches": {},
         "isPolyphonic": false
       }

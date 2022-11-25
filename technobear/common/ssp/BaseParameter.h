@@ -36,16 +36,16 @@ public:
           valueCallback_(callback) {
     }
 
-
 protected:
     void valueChanged(float newValue) override {
         if (valueCallback_) valueCallback_(paramID, newValue);
     }
 
 private:
-    unsigned PID_;
+//    unsigned PID_;
     ParamCallback valueCallback_;
 };
+
 
 class BaseBoolParameter : public juce::AudioParameterBool {
 public:
@@ -58,6 +58,7 @@ public:
         : juce::AudioParameterBool(parameterID, parameterName, defaultValue),
           valueCallback_(callback) {
     }
+
 
 protected:
     void valueChanged(bool newValue) override {
@@ -79,6 +80,30 @@ public:
                         ParamCallback callback = nullptr)
         : juce::AudioParameterChoice(parameterID, parameterName, choices, defaultItemIndex),
           valueCallback_(callback) {
+    }
+
+protected:
+    void valueChanged(int newValue) override {
+        if (valueCallback_) valueCallback_(paramID, newValue);
+    }
+
+private:
+    ParamCallback valueCallback_;
+};
+
+class BaseIntParameter : public juce::AudioParameterInt {
+public:
+    typedef std::function<void(const String &id, bool b)> ParamCallback;
+
+
+    BaseIntParameter(String parameterID,
+    String parameterName,
+    float minValue,
+    float maxValue,
+    float defaultValue,
+        ParamCallback callback = nullptr)
+    : juce::AudioParameterInt(parameterID, parameterName, minValue, maxValue, defaultValue),
+    valueCallback_(callback) {
     }
 
 protected:
