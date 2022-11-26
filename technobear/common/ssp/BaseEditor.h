@@ -33,10 +33,13 @@ public:
     void resized() override;
 
 
-protected:
 //    using base_type = juce::AudioProcessorEditor;
 
     virtual void drawView(Graphics &g);
+
+    // new foe BaseViewEditor
+    virtual void editorShown() {}
+    virtual void editorHidden() {}
 
     // ssp actions
     friend class EditorHost;
@@ -52,6 +55,7 @@ protected:
     void onRightShiftButton(bool v) override;
     void onSSPTimer() override;
 
+protected:
 
     void setButtonBounds(unsigned idx, std::shared_ptr<ParamButton>);
 

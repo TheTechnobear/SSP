@@ -8,7 +8,7 @@ class BaseParamControl : public juce::Component {
 public:
     using Parameter = juce::RangedAudioParameter;
 
-    BaseParamControl(Parameter &p);
+    BaseParamControl(Parameter &p, juce::Colour fg = juce::Colours::red);
     virtual ~BaseParamControl() = default;
 
     virtual void inc(bool coarse) = 0;
@@ -36,7 +36,7 @@ protected:
 
 class SimpleParamControl : public BaseParamControl {
 public:
-    SimpleParamControl(Parameter &p, float coarse = 1.0f, float fine = 0.01f);
+    SimpleParamControl(Parameter &p, float coarse = 1.0f, float fine = 0.01f,juce::Colour fg = juce::Colours::red);
     void inc(bool coarse) override;
     void dec(bool coarse) override;
     void reset() override;
@@ -52,7 +52,7 @@ private:
 
 class LineParamControl : public SimpleParamControl {
 public:
-    LineParamControl(Parameter &p, float coarse = 1.0f, float fine = 0.01f);
+    LineParamControl(Parameter &p, float coarse = 1.0f, float fine = 0.01f,juce::Colour fg = juce::Colours::red);
 protected:
     void paint(juce::Graphics &g) override;
     juce_UseDebuggingNewOperator
@@ -61,7 +61,7 @@ protected:
 
 class BarParamControl : public SimpleParamControl {
 public:
-    BarParamControl(Parameter &p, float coarse = 1.0f, float fine = 0.01f);
+    BarParamControl(Parameter &p, float coarse = 1.0f, float fine = 0.01f,juce::Colour fg = juce::Colours::red);
 protected:
     void paint(juce::Graphics &g) override;
     juce_UseDebuggingNewOperator

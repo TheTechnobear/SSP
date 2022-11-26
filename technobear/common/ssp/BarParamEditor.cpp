@@ -15,15 +15,17 @@ BarParamEditor::BarParamEditor(BaseProcessor *p,bool autoColour)
 void BarParamEditor::drawView(Graphics &g) {
     base_type::drawView(g);
 
-    static juce::Colour clrs[4] = {Colours::red, Colours::blue, Colours::yellow, Colours::green};
-    g.setColour(clrs[paramPage_ % 4]);
+    if(autoColour_) {
+        static juce::Colour clrs[4] = {Colours::red, Colours::blue, Colours::yellow, Colours::green};
+        g.setColour(clrs[paramPage_ % 4]);
 
-    int x = 0;
-    int w = 900;
-    int h = paramSpaceY / 4;
-    int y = 480 - h;
-    int sp = 2;
-    g.fillRect(x + sp, y, w - (2 * sp), h);
+        int x = 0;
+        int w = 900;
+        int h = paramSpaceY / 4;
+        int y = 480 - h;
+        int sp = 2;
+        g.fillRect(x + sp, y, w - (2 * sp), h);
+    }
 }
 
 

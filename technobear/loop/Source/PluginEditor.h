@@ -3,19 +3,19 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"
-#include "ssp/MultiBarEditor.h"
+#include "ssp/BaseViewEditor.h"
 #include "ssp/WaveDisp.h"
 
 
-class PluginEditor : public ssp::MultiBarEditor {
+class PluginEditor : public ssp::BaseViewEditor {
 public:
-    explicit PluginEditor(PluginProcessor &, unsigned maxviews);
+    explicit PluginEditor(PluginProcessor &);
     ~PluginEditor() override = default;
 
     void drawView(Graphics &) override;
     void resized() override;
 protected:
-    using base_type = ssp::MultiBarEditor;
+    using base_type = ssp::BaseViewEditor;
 
     void onRightShiftButton(bool v) override;
     void onLeftButton(bool v) override;

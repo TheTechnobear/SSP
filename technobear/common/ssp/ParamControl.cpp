@@ -3,10 +3,11 @@
 using namespace juce;
 namespace ssp {
 
-BaseParamControl::BaseParamControl(Parameter &p)
+BaseParamControl::BaseParamControl(Parameter &p,juce::Colour fg)
     : attachment_(p, [this](float f) { paramChanged(f); }),
       param_(p),
-      active_(false) {
+      active_(false),
+      fg_(fg){
 }
 
 void BaseParamControl::paramChanged(float) {
@@ -23,8 +24,10 @@ String BaseParamControl::getTextValue() {
 
 /// SimpleParamControl
 
-SimpleParamControl::SimpleParamControl(Parameter &p, float coarse, float fine)
-    : BaseParamControl(p) {
+SimpleParamControl::SimpleParamControl(Parameter &p,
+                                       float coarse, float fine,
+                                       juce::Colour fg)
+    : BaseParamControl(p,fg) {
     coarseInc_ = p.convertTo0to1(p.getNormalisableRange().start + coarse);
     fineInc_ = p.convertTo0to1(p.getNormalisableRange().start + fine);
 }
@@ -77,8 +80,8 @@ void SimpleParamControl::paint(Graphics &g) {
     g.drawText(val, 0, h / 2, w, fh, Justification::centred);
 }
 
-LineParamControl::LineParamControl(Parameter &p, float coarse, float fine)
-    : SimpleParamControl(p, coarse, fine) {
+LineParamControl::LineParamControl(Parameter &p, float coarse, float fine,juce::Colour fg)
+    : SimpleParamControl(p, coarse, fine,fg) {
 
 };
 
@@ -100,8 +103,8 @@ void LineParamControl::paint(Graphics &g) {
 }
 
 
-BarParamControl::BarParamControl(Parameter &p, float coarse, float fine)
-    : SimpleParamControl(p, coarse, fine) {
+BarParamControl::BarParamControl(Parameter &p, float coarse, float fine,juce::Colour fg)
+    : SimpleParamControl(p, coarse, fine,fg) {
 
 };
 

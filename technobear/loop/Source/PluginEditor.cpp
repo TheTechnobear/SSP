@@ -4,6 +4,11 @@
 #include "ssp/ParamControl.h"
 #include "ssp/ParamButton.h"
 
+
+//#include "ssp/SingleViewEditor.h"
+#include "ssp/BarParamEditor.h"
+
+
 using pcontrol_type = ssp::BarParamControl;
 using bcontrol_type = ssp::ParamButton;
 
@@ -12,12 +17,22 @@ inline float normValue(RangedAudioParameter &p) {
     return p.convertFrom0to1(p.getValue());
 }
 
-PluginEditor::PluginEditor(PluginProcessor &p, unsigned maxviews)
-    : base_type(&p, maxviews),
+class LayerView : public ssp::BarParamEditor {
+public:
+    explicit LayerView(ssp::BaseProcessor *p ) : ssp::BarParamEditor(p, false)  {}
+};
+
+class RecordView : public ssp::BarParamEditor {
+public:
+    explicit RecordView(ssp::BaseProcessor *p ) : ssp::BarParamEditor(p,false)  {}
+};
+
+
+PluginEditor::PluginEditor(PluginProcessor &p)
+    : base_type(&p),
       processor_(p),
       clrs_{Colours::green, Colours::blue, Colours::red, Colours::yellow} {
 
-    unsigned view = 0;
     float inc = 1.0f;
     float finc = 0.01f;
 
@@ -32,24 +47,23 @@ PluginEditor::PluginEditor(PluginProcessor &p, unsigned maxviews)
 
     // layer pages
     for (int l = 0; l < PluginProcessor::MAX_LAYERS; l++) {
+        auto pView = std::make_shared<LayerView>(&p);
         auto &layer = processor_.params_.layers_[l];
-        addParamPage(
-            std::make_shared<pcontrol_type>(layer->rate_, inc, finc),
-            std::make_shared<pcontrol_type>(layer->gain_, inc, finc),
-            std::make_shared<pcontrol_type>(layer->begin_, 0.1f, 0.01),
-            std::make_shared<pcontrol_type>(layer->end_, 0.1, 0.01),
-            view,
-            clrs_[l]
+        auto clr = clrs_[l];
+        pView->addParamPage(
+            std::make_shared<pcontrol_type>(layer->rate_, inc, finc,clr),
+            std::make_shared<pcontrol_type>(layer->gain_, inc, finc,clr),
+            std::make_shared<pcontrol_type>(layer->begin_, 0.1f, 0.01,clr),
+            std::make_shared<pcontrol_type>(layer->end_, 0.1, 0.01,clr)
         );
-        addParamPage(
-            std::make_shared<pcontrol_type>(layer->xfade_, inc, finc),
-            std::make_shared<pcontrol_type>(layer->size_, 1.0, 1.0),
+        pView->addParamPage(
+            std::make_shared<pcontrol_type>(layer->xfade_, inc, finc,clr),
+            std::make_shared<pcontrol_type>(layer->size_, 1.0, 1.0,clr),
             nullptr,
-            nullptr,
-            view,
-            clrs_[l]
+            nullptr
         );
-        addButtonPage(
+
+        pView->addButtonPage(
             std::make_shared<bcontrol_type>(layer->mode_, 24, Colours::red),
             std::make_shared<bcontrol_type>(layer->loop_, 24, Colours::yellow),
             nullptr,
@@ -57,32 +71,29 @@ PluginEditor::PluginEditor(PluginProcessor &p, unsigned maxviews)
             nullptr,
             nullptr,
             nullptr,
-            nullptr,
-            view
+            nullptr
         );
-
-        view++;
+        addView(pView);
     }
 
     // recording page
-    addParamPage(
-        std::make_shared<pcontrol_type>(reclayer->gain_, inc, finc),
-        std::make_shared<pcontrol_type>(reclayer->mon_, inc, finc),
+    auto pView = std::make_shared<RecordView>(&p);
+    auto clr = Colours::cyan;
+
+    pView->addParamPage(
+        std::make_shared<pcontrol_type>(reclayer->gain_, inc, finc,clr),
+        std::make_shared<pcontrol_type>(reclayer->mon_, inc, finc,clr),
         nullptr,
-        nullptr,
-        view,
-        Colours::cyan
+        nullptr
     );
-//    addParamPage(
-//        std::make_shared<pcontrol_type>(reclayer->begin_, 0.1, 0.01),
-//        std::make_shared<pcontrol_type>(reclayer->end_, 0.1, 0.01),
+//    pView->addParamPage(
+//        std::make_shared<pcontrol_type>(reclayer->begin_, 0.1, 0.01,clr),
+//        std::make_shared<pcontrol_type>(reclayer->end_, 0.1, 0.01,clr),
 //        nullptr,
-//        nullptr,
-//        view,
-//        Colours::cyan
+//        nullptr
 //    );
 
-    addButtonPage(
+    pView->addButtonPage(
         std::make_shared<bcontrol_type>(reclayer->mode_, 24, Colours::red),
         std::make_shared<bcontrol_type>(reclayer->loop_, 24, Colours::yellow),
         nullptr,
@@ -90,11 +101,9 @@ PluginEditor::PluginEditor(PluginProcessor &p, unsigned maxviews)
         nullptr,
         nullptr,
         nullptr,
-        nullptr,
-        view
+        nullptr
     );
-    view++;
-
+    addView(pView);
 
     for (int i = 0; i < MAX_LAYERS; i++) {
         auto &layer = layer_[i];
@@ -112,6 +121,7 @@ PluginEditor::PluginEditor(PluginProcessor &p, unsigned maxviews)
 
 
 void PluginEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
     for (int i = 0; i < MAX_LAYERS; i++) {
         auto &layer = layer_[i];
         processor_.fillLayerData(i, layer.dataBuf_, DATA_POINTS,
@@ -119,8 +129,6 @@ void PluginEditor::drawView(Graphics &g) {
                                  layer.isRec_, layer.recPos_);
         scopes_[i].setPosition(0, layer.curPos_, layer.beginPos_, layer.endPos_);
         scopes_[i].setRecPosition(0, layer.isRec_, layer.recPos_);
-
-        base_type::drawView(g);
 
         if (layer.isRec_) {
             const unsigned h = 75;

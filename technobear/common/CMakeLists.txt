@@ -3,6 +3,7 @@ set(COMMON_SRC
         ../common/ssp/EditorHost.cpp
         ../common/ssp/BaseEditor.cpp
         ../common/ssp/SystemEditor.cpp
+        ../common/ssp/BaseViewEditor.cpp
         ../common/ssp/SingleViewEditor.cpp
         ../common/ssp/MultiViewEditor.cpp
         ../common/ssp/MultiBarEditor.cpp
@@ -17,4 +18,4 @@ set(COMMON_SRC
         ../common/ssp/RmsTrack.cpp
         ../common/ssp/VuMeter.cpp
         ../common/ssp/SSPUI.cpp
-        )
+)

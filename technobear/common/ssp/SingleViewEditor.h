@@ -16,16 +16,12 @@ class SingleViewEditor :
     public BaseEditor {
 
 public:
+    using base_type = BaseEditor;
     explicit SingleViewEditor(BaseProcessor *p);
 
     virtual void onEncoder(unsigned enc, float v);
     virtual void onEncoderSwitch(unsigned enc, bool v);
     virtual void onButton(unsigned btn, bool v);
-
-protected:
-    using base_type = BaseEditor;
-    virtual void chgParamPage(int delta, bool changeVis=false);
-    virtual void chgButtonPage(int delta);
 
     virtual ControlPage addParamPage(
         std::shared_ptr<BaseParamControl> c1,
@@ -44,6 +40,10 @@ protected:
         std::shared_ptr<ParamButton> c7,
         std::shared_ptr<ParamButton> c8
     );
+protected:
+    virtual void chgParamPage(int delta, bool changeVis=false);
+    virtual void chgButtonPage(int delta);
+
 
     std::vector<ControlPage> controlPages_;
     std::vector<ButtonPage> buttonPages_;
