@@ -70,11 +70,11 @@ private:
         B_1,
         B_2,
         B_3,
+        B_4,
         B_FILE,
-        B_5,
-        B_6,
-        B_CANCEL,
         B_SAVE,
+        B_7,
+        B_CANCEL,
         B_MAX
     };
 

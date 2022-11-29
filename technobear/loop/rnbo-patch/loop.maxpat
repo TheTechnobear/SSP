@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 131.0, 142.0, 1853.0, 1151.0 ],
+		"rect" : [ 635.0, 228.0, 1968.0, 1151.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -39,6 +39,19 @@
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
+				"box" : 				{
+					"fontsize" : 48.0,
+					"id" : "obj-55",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 664.0, 2.0, 670.0, 60.0 ],
+					"text" : "LOOP MODULE FOR SSP ",
+					"textcolor" : [ 0.890196078431372, 0.031372549019608, 0.031372549019608, 1.0 ]
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-48",
 					"maxclass" : "message",
@@ -644,92 +657,8 @@
 					"outlettype" : [ "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "list" ],
 					"patching_rect" : [ 319.0, 365.0, 213.0, 22.0 ],
 					"rnboattrcache" : 					{
-						"layer1/size" : 						{
-							"label" : "size",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer3/xfade" : 						{
-							"label" : "xfade",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
 						"layer3/gain" : 						{
 							"label" : "gain",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer1/gain" : 						{
-							"label" : "gain",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer3/rate" : 						{
-							"label" : "rate",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer1/rate" : 						{
-							"label" : "rate",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"rec-end" : 						{
-							"label" : "rec-end",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer2/rate" : 						{
-							"label" : "rate",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer4/gain" : 						{
-							"label" : "gain",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer4/xfade" : 						{
-							"label" : "xfade",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer4/size" : 						{
-							"label" : "size",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer4/rate" : 						{
-							"label" : "rate",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer1/begin" : 						{
-							"label" : "begin",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"rec-layer" : 						{
-							"label" : "rec-layer",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer4/begin" : 						{
-							"label" : "begin",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
@@ -740,32 +669,8 @@
 							"parsestring" : ""
 						}
 ,
-						"layer2/size" : 						{
-							"label" : "size",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"rec-begin" : 						{
-							"label" : "rec-begin",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer2/xfade" : 						{
+						"layer1/xfade" : 						{
 							"label" : "xfade",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer1/end" : 						{
-							"label" : "end",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"layer2/end" : 						{
-							"label" : "end",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
@@ -776,20 +681,32 @@
 							"parsestring" : ""
 						}
 ,
-						"rec-mon" : 						{
-							"label" : "rec-mon",
+						"layer1/end" : 						{
+							"label" : "end",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
 ,
-						"layer1/xfade" : 						{
-							"label" : "xfade",
+						"rec-begin" : 						{
+							"label" : "rec-begin",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
 ,
-						"rec-gain" : 						{
-							"label" : "rec-gain",
+						"layer1/size" : 						{
+							"label" : "size",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer1/rate" : 						{
+							"label" : "rate",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"rec-layer" : 						{
+							"label" : "rec-layer",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
@@ -800,8 +717,44 @@
 							"parsestring" : ""
 						}
 ,
-						"layer4/end" : 						{
+						"layer4/rate" : 						{
+							"label" : "rate",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer4/xfade" : 						{
+							"label" : "xfade",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer2/rate" : 						{
+							"label" : "rate",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"rec-mon" : 						{
+							"label" : "rec-mon",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer1/gain" : 						{
+							"label" : "gain",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer2/end" : 						{
 							"label" : "end",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer3/xfade" : 						{
+							"label" : "xfade",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
@@ -812,8 +765,68 @@
 							"parsestring" : ""
 						}
 ,
+						"rec-gain" : 						{
+							"label" : "rec-gain",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer4/size" : 						{
+							"label" : "size",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer2/xfade" : 						{
+							"label" : "xfade",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer2/size" : 						{
+							"label" : "size",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer4/begin" : 						{
+							"label" : "begin",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer1/begin" : 						{
+							"label" : "begin",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
 						"layer3/begin" : 						{
 							"label" : "begin",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer4/gain" : 						{
+							"label" : "gain",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer4/end" : 						{
+							"label" : "end",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"rec-end" : 						{
+							"label" : "rec-end",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"layer3/rate" : 						{
+							"label" : "rate",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
@@ -1078,7 +1091,7 @@
 								"value" : 0.0
 							}
 ,
-							"__presetid" : "tlop"
+							"__presetid" : "loop"
 						}
 ,
 						"snapshotlist" : 						{
@@ -1087,8 +1100,8 @@
 									"filetype" : "C74Snapshot",
 									"version" : 2,
 									"minorversion" : 0,
-									"name" : "tlop",
-									"origin" : "tlop",
+									"name" : "loop",
+									"origin" : "loop",
 									"type" : "rnbo",
 									"subtype" : "",
 									"embed" : 0,
@@ -1264,15 +1277,15 @@
 											"value" : 0.0
 										}
 ,
-										"__presetid" : "tlop"
+										"__presetid" : "loop"
 									}
 ,
 									"fileref" : 									{
-										"name" : "tlop",
-										"filename" : "tlop.maxsnap",
+										"name" : "loop",
+										"filename" : "loop.maxsnap",
 										"filepath" : "~/Documents/Max 8/Snapshots",
 										"filepos" : -1,
-										"snapshotfileid" : "58e8805571548faa66a3891b3db5e4fb"
+										"snapshotfileid" : "e723a0a6eeb612af5d362c01f5d6330d"
 									}
 
 								}
@@ -1281,7 +1294,7 @@
 
 					}
 ,
-					"text" : "rnbo~ tlop",
+					"text" : "rnbo~ loop",
 					"varname" : "rnbo~"
 				}
 
@@ -2231,14 +2244,14 @@
 		}
 ,
 		"dependency_cache" : [ 			{
-				"name" : "tlop.maxsnap",
+				"name" : "loop.maxsnap",
 				"bootpath" : "~/Documents/Max 8/Snapshots",
 				"patcherrelativepath" : "../../../../../Documents/Max 8/Snapshots",
 				"type" : "mx@s",
 				"implicit" : 1
 			}
 , 			{
-				"name" : "tlop.rnbopat",
+				"name" : "loop.rnbopat",
 				"bootpath" : "~/projects/SSP.private/technobear/loop/rnbo-patch",
 				"patcherrelativepath" : ".",
 				"type" : "RBOP",

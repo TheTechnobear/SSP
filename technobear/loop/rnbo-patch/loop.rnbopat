@@ -38,7 +38,7 @@
 		"style" : "",
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
-		"title" : "tlop",
+		"title" : "loop",
 		"boxes" : [ 			{
 				"box" : 				{
 					"fontface" : 0,
@@ -9644,7 +9644,7 @@
 						"changesPatcherIO" : 0
 					}
 ,
-					"text" : "p @title layer4 @file tlop-layer @args layer4",
+					"text" : "p @title layer4 @file loop-layer @args layer4",
 					"varname" : "layer4"
 				}
 
@@ -14992,7 +14992,7 @@
 						"changesPatcherIO" : 0
 					}
 ,
-					"text" : "p @title layer3 @file tlop-layer @args layer3",
+					"text" : "p @title layer3 @file loop-layer @args layer3",
 					"varname" : "layer3"
 				}
 
@@ -20340,7 +20340,7 @@
 						"changesPatcherIO" : 0
 					}
 ,
-					"text" : "p @title layer2 @file tlop-layer @args layer2",
+					"text" : "p @title layer2 @file loop-layer @args layer2",
 					"varname" : "layer2"
 				}
 
@@ -25688,7 +25688,7 @@
 						"changesPatcherIO" : 0
 					}
 ,
-					"text" : "p @title layer1 @file tlop-layer @args layer1",
+					"text" : "p @title layer1 @file loop-layer @args layer1",
 					"varname" : "layer1"
 				}
 
