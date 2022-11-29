@@ -50,8 +50,8 @@ void BaseViewEditor::previousView() {
 
 void BaseViewEditor::addView(std::shared_ptr<base_type> view) {
     views_.push_back(view);
-    addChildComponent(view.get());
     view->setBounds(0, 0, 1600, 480);
+    addChildComponent(view.get());
 }
 
 // default right/left buttons to view switch

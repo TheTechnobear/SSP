@@ -42,17 +42,17 @@ namespace RNBO {
 class rnbomatic : public PatcherInterfaceImpl {
 public:
 
-class RNBOSubpatcher_75 : public PatcherInterfaceImpl {
+class RNBOSubpatcher_28 : public PatcherInterfaceImpl {
     
     friend class rnbomatic;
     
     public:
     
-    RNBOSubpatcher_75()
+    RNBOSubpatcher_28()
     {
     }
     
-    ~RNBOSubpatcher_75()
+    ~RNBOSubpatcher_28()
     {
     }
     
@@ -517,7 +517,7 @@ class RNBOSubpatcher_75 : public PatcherInterfaceImpl {
             case 6:
                 info->type = ParameterTypeNumber;
                 info->initialValue = 10;
-                info->min = 1;
+                info->min = 0;
                 info->max = 180;
                 info->exponent = 1;
                 info->steps = 0;
@@ -675,8 +675,8 @@ class RNBOSubpatcher_75 : public PatcherInterfaceImpl {
             }
         case 6:
             {
-                value = (value < 1 ? 1 : (value > 180 ? 180 : value));
-                ParameterValue normalizedValue = (value - 1) / (180 - 1);
+                value = (value < 0 ? 0 : (value > 180 ? 180 : value));
+                ParameterValue normalizedValue = (value - 0) / (180 - 0);
                 return normalizedValue;
             }
         case 0:
@@ -749,7 +749,7 @@ class RNBOSubpatcher_75 : public PatcherInterfaceImpl {
                 value = (value < 0 ? 0 : (value > 1 ? 1 : value));
     
                 {
-                    return 1 + value * (180 - 1);
+                    return 0 + value * (180 - 0);
                 }
             }
         case 0:
@@ -1234,7 +1234,7 @@ class RNBOSubpatcher_75 : public PatcherInterfaceImpl {
     }
     
     static number param_07_value_constrain(number v) {
-        v = (v > 180 ? 180 : (v < 1 ? 1 : v));
+        v = (v > 180 ? 180 : (v < 0 ? 0 : v));
         return v;
     }
     
@@ -1991,17 +1991,17 @@ class RNBOSubpatcher_75 : public PatcherInterfaceImpl {
     
 };
 
-class RNBOSubpatcher_76 : public PatcherInterfaceImpl {
+class RNBOSubpatcher_29 : public PatcherInterfaceImpl {
     
     friend class rnbomatic;
     
     public:
     
-    RNBOSubpatcher_76()
+    RNBOSubpatcher_29()
     {
     }
     
-    ~RNBOSubpatcher_76()
+    ~RNBOSubpatcher_29()
     {
     }
     
@@ -2015,7 +2015,7 @@ class RNBOSubpatcher_76 : public PatcherInterfaceImpl {
     
     void cancelClockEvents()
     {
-        getEngine()->flushClockEvents(this, 1696335371, false);
+        getEngine()->flushClockEvents(this, -871642103, false);
     }
     
     number mstosamps(MillisecondTime ms) {
@@ -2466,7 +2466,7 @@ class RNBOSubpatcher_76 : public PatcherInterfaceImpl {
             case 6:
                 info->type = ParameterTypeNumber;
                 info->initialValue = 10;
-                info->min = 1;
+                info->min = 0;
                 info->max = 180;
                 info->exponent = 1;
                 info->steps = 0;
@@ -2624,8 +2624,8 @@ class RNBOSubpatcher_76 : public PatcherInterfaceImpl {
             }
         case 6:
             {
-                value = (value < 1 ? 1 : (value > 180 ? 180 : value));
-                ParameterValue normalizedValue = (value - 1) / (180 - 1);
+                value = (value < 0 ? 0 : (value > 180 ? 180 : value));
+                ParameterValue normalizedValue = (value - 0) / (180 - 0);
                 return normalizedValue;
             }
         case 0:
@@ -2698,7 +2698,7 @@ class RNBOSubpatcher_76 : public PatcherInterfaceImpl {
                 value = (value < 0 ? 0 : (value > 1 ? 1 : value));
     
                 {
-                    return 1 + value * (180 - 1);
+                    return 0 + value * (180 - 0);
                 }
             }
         case 0:
@@ -2747,7 +2747,7 @@ class RNBOSubpatcher_76 : public PatcherInterfaceImpl {
         this->updateTime(time);
     
         switch (index) {
-        case 1696335371:
+        case -871642103:
             this->loadbang_02_startupbang_bang();
             break;
         }
@@ -2975,7 +2975,7 @@ class RNBOSubpatcher_76 : public PatcherInterfaceImpl {
     
     void startup() {
         this->updateTime(this->getEngine()->getCurrentTime());
-        this->getEngine()->scheduleClockEvent(this, 1696335371, 0 + this->_currentTime);;
+        this->getEngine()->scheduleClockEvent(this, -871642103, 0 + this->_currentTime);;
     
         {
             this->scheduleParamInit(0, 0);
@@ -3183,7 +3183,7 @@ class RNBOSubpatcher_76 : public PatcherInterfaceImpl {
     }
     
     static number param_15_value_constrain(number v) {
-        v = (v > 180 ? 180 : (v < 1 ? 1 : v));
+        v = (v > 180 ? 180 : (v < 0 ? 0 : v));
         return v;
     }
     
@@ -3940,17 +3940,17 @@ class RNBOSubpatcher_76 : public PatcherInterfaceImpl {
     
 };
 
-class RNBOSubpatcher_77 : public PatcherInterfaceImpl {
+class RNBOSubpatcher_30 : public PatcherInterfaceImpl {
     
     friend class rnbomatic;
     
     public:
     
-    RNBOSubpatcher_77()
+    RNBOSubpatcher_30()
     {
     }
     
-    ~RNBOSubpatcher_77()
+    ~RNBOSubpatcher_30()
     {
     }
     
@@ -3964,7 +3964,7 @@ class RNBOSubpatcher_77 : public PatcherInterfaceImpl {
     
     void cancelClockEvents()
     {
-        getEngine()->flushClockEvents(this, 1696335371, false);
+        getEngine()->flushClockEvents(this, -871642103, false);
     }
     
     number mstosamps(MillisecondTime ms) {
@@ -4415,7 +4415,7 @@ class RNBOSubpatcher_77 : public PatcherInterfaceImpl {
             case 6:
                 info->type = ParameterTypeNumber;
                 info->initialValue = 10;
-                info->min = 1;
+                info->min = 0;
                 info->max = 180;
                 info->exponent = 1;
                 info->steps = 0;
@@ -4573,8 +4573,8 @@ class RNBOSubpatcher_77 : public PatcherInterfaceImpl {
             }
         case 6:
             {
-                value = (value < 1 ? 1 : (value > 180 ? 180 : value));
-                ParameterValue normalizedValue = (value - 1) / (180 - 1);
+                value = (value < 0 ? 0 : (value > 180 ? 180 : value));
+                ParameterValue normalizedValue = (value - 0) / (180 - 0);
                 return normalizedValue;
             }
         case 0:
@@ -4647,7 +4647,7 @@ class RNBOSubpatcher_77 : public PatcherInterfaceImpl {
                 value = (value < 0 ? 0 : (value > 1 ? 1 : value));
     
                 {
-                    return 1 + value * (180 - 1);
+                    return 0 + value * (180 - 0);
                 }
             }
         case 0:
@@ -4696,7 +4696,7 @@ class RNBOSubpatcher_77 : public PatcherInterfaceImpl {
         this->updateTime(time);
     
         switch (index) {
-        case 1696335371:
+        case -871642103:
             this->loadbang_03_startupbang_bang();
             break;
         }
@@ -4924,7 +4924,7 @@ class RNBOSubpatcher_77 : public PatcherInterfaceImpl {
     
     void startup() {
         this->updateTime(this->getEngine()->getCurrentTime());
-        this->getEngine()->scheduleClockEvent(this, 1696335371, 0 + this->_currentTime);;
+        this->getEngine()->scheduleClockEvent(this, -871642103, 0 + this->_currentTime);;
     
         {
             this->scheduleParamInit(0, 0);
@@ -5132,7 +5132,7 @@ class RNBOSubpatcher_77 : public PatcherInterfaceImpl {
     }
     
     static number param_23_value_constrain(number v) {
-        v = (v > 180 ? 180 : (v < 1 ? 1 : v));
+        v = (v > 180 ? 180 : (v < 0 ? 0 : v));
         return v;
     }
     
@@ -5889,17 +5889,17 @@ class RNBOSubpatcher_77 : public PatcherInterfaceImpl {
     
 };
 
-class RNBOSubpatcher_78 : public PatcherInterfaceImpl {
+class RNBOSubpatcher_31 : public PatcherInterfaceImpl {
     
     friend class rnbomatic;
     
     public:
     
-    RNBOSubpatcher_78()
+    RNBOSubpatcher_31()
     {
     }
     
-    ~RNBOSubpatcher_78()
+    ~RNBOSubpatcher_31()
     {
     }
     
@@ -5913,7 +5913,7 @@ class RNBOSubpatcher_78 : public PatcherInterfaceImpl {
     
     void cancelClockEvents()
     {
-        getEngine()->flushClockEvents(this, 1696335371, false);
+        getEngine()->flushClockEvents(this, -871642103, false);
     }
     
     number mstosamps(MillisecondTime ms) {
@@ -6364,7 +6364,7 @@ class RNBOSubpatcher_78 : public PatcherInterfaceImpl {
             case 6:
                 info->type = ParameterTypeNumber;
                 info->initialValue = 10;
-                info->min = 1;
+                info->min = 0;
                 info->max = 180;
                 info->exponent = 1;
                 info->steps = 0;
@@ -6522,8 +6522,8 @@ class RNBOSubpatcher_78 : public PatcherInterfaceImpl {
             }
         case 6:
             {
-                value = (value < 1 ? 1 : (value > 180 ? 180 : value));
-                ParameterValue normalizedValue = (value - 1) / (180 - 1);
+                value = (value < 0 ? 0 : (value > 180 ? 180 : value));
+                ParameterValue normalizedValue = (value - 0) / (180 - 0);
                 return normalizedValue;
             }
         case 0:
@@ -6596,7 +6596,7 @@ class RNBOSubpatcher_78 : public PatcherInterfaceImpl {
                 value = (value < 0 ? 0 : (value > 1 ? 1 : value));
     
                 {
-                    return 1 + value * (180 - 1);
+                    return 0 + value * (180 - 0);
                 }
             }
         case 0:
@@ -6645,7 +6645,7 @@ class RNBOSubpatcher_78 : public PatcherInterfaceImpl {
         this->updateTime(time);
     
         switch (index) {
-        case 1696335371:
+        case -871642103:
             this->loadbang_04_startupbang_bang();
             break;
         }
@@ -6873,7 +6873,7 @@ class RNBOSubpatcher_78 : public PatcherInterfaceImpl {
     
     void startup() {
         this->updateTime(this->getEngine()->getCurrentTime());
-        this->getEngine()->scheduleClockEvent(this, 1696335371, 0 + this->_currentTime);;
+        this->getEngine()->scheduleClockEvent(this, -871642103, 0 + this->_currentTime);;
     
         {
             this->scheduleParamInit(0, 0);
@@ -7081,7 +7081,7 @@ class RNBOSubpatcher_78 : public PatcherInterfaceImpl {
     }
     
     static number param_31_value_constrain(number v) {
-        v = (v > 180 ? 180 : (v < 1 ? 1 : v));
+        v = (v > 180 ? 180 : (v < 0 ? 0 : v));
         return v;
     }
     
@@ -8165,19 +8165,19 @@ Index getPatcherSerial() const {
 void getState(PatcherStateInterface& ) {}
 
 void setState() {
-    this->p_01 = new RNBOSubpatcher_75();
+    this->p_01 = new RNBOSubpatcher_28();
     this->p_01->setEngineAndPatcher(this->getEngine(), this);
     this->p_01->initialize();
     this->p_01->setParameterOffset(this->getParameterOffset(this->p_01));
-    this->p_02 = new RNBOSubpatcher_76();
+    this->p_02 = new RNBOSubpatcher_29();
     this->p_02->setEngineAndPatcher(this->getEngine(), this);
     this->p_02->initialize();
     this->p_02->setParameterOffset(this->getParameterOffset(this->p_02));
-    this->p_03 = new RNBOSubpatcher_77();
+    this->p_03 = new RNBOSubpatcher_30();
     this->p_03->setEngineAndPatcher(this->getEngine(), this);
     this->p_03->initialize();
     this->p_03->setParameterOffset(this->getParameterOffset(this->p_03));
-    this->p_04 = new RNBOSubpatcher_78();
+    this->p_04 = new RNBOSubpatcher_31();
     this->p_04->setEngineAndPatcher(this->getEngine(), this);
     this->p_04->initialize();
     this->p_04->setParameterOffset(this->getParameterOffset(this->p_04));
@@ -10877,10 +10877,10 @@ void assign_defaults()
     Index isMuted;
     indexlist paramInitIndices;
     indexlist paramInitOrder;
-    RNBOSubpatcher_75* p_01;
-    RNBOSubpatcher_76* p_02;
-    RNBOSubpatcher_77* p_03;
-    RNBOSubpatcher_78* p_04;
+    RNBOSubpatcher_28* p_01;
+    RNBOSubpatcher_29* p_02;
+    RNBOSubpatcher_30* p_03;
+    RNBOSubpatcher_31* p_04;
 
 };
 

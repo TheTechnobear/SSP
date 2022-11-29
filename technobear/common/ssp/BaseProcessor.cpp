@@ -216,14 +216,14 @@ void BaseProcessor::setStateInformation(const void *data, int sizeInBytes) {
             auto xmlTest = xml->getChildByName(TEST_XML_TAG);
             if (xmlTest != nullptr) testFromXml(xmlTest);
 #endif
+            auto xmlState = xml->getChildByName(apvts.state.getType()); //STATE
+            if (xmlState != nullptr) apvts.replaceState(juce::ValueTree::fromXml(*xmlState));
+
             auto xmlMidi = xml->getChildByName(MIDI_XML_TAG);
             if (xmlMidi != nullptr) midiFromXml(xmlMidi);
 
             auto xmlCustom = xml->getChildByName(CUSTOM_XML_TAG);
             if (xmlCustom != nullptr) customFromXml(xmlCustom);
-
-            auto xmlState = xml->getChildByName(apvts.state.getType()); //STATE
-            if (xmlState != nullptr) apvts.replaceState(juce::ValueTree::fromXml(*xmlState));
         }
     }
 }

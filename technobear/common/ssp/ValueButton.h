@@ -12,8 +12,13 @@ public:
                 const Colour fg = Colours::white, const Colour bg = Colours::black,
                 bool def = false);
 
-    void label(const String &label) {
-        label_ = label;
+    void label(const String &str) {
+        label(str,fh_);
+    }
+
+    void label(const String &str, int fh) {
+        label_ = str;
+        fh_= fh;
     }
 
     void valueChanged(bool b);

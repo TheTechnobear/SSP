@@ -63,6 +63,9 @@ private:
     BaseEditor *editor_;
     SystemEditor *system_;
 
+    Colour defaultBg_=  Colour(0xff111111);
+
+
     SSPUI *sspui_= nullptr;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EditorHost)

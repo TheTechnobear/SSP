@@ -1,0 +1,86 @@
+#pragma once
+
+#include "BaseEditor.h"
+
+namespace ssp {
+
+class Key;
+
+class TextEdit : public BaseEditor {
+
+public:
+    explicit TextEdit(BaseProcessor *p);
+    virtual ~TextEdit();
+
+    void drawView(Graphics &g) override;
+
+    void editorShown() override {};
+
+    void editorHidden() override {};
+
+    void onEncoder(unsigned enc, float v) override;
+    void onEncoderSwitch(unsigned enc, bool v) override;
+    void onButton(unsigned btn, bool v) override;
+    void onUpButton(bool v) override;
+    void onDownButton(bool v) override;
+    void onLeftButton(bool v) override;
+    void onRightButton(bool v) override;
+    void onLeftShiftButton(bool v) override;
+    void onRightShiftButton(bool v) override;
+
+    std::string getText();
+    void setText(const std::string &txt);
+
+    void onCopyButton(bool v) {
+        copyBtn_.value(v);
+        if (!v) {
+            copyBuffer_ = text_;
+        }
+    }
+
+    void onPasteButton(bool v) {
+        pasteBtn_.value(v);
+        if (!v) {
+            setText(copyBuffer_);
+        }
+    }
+
+    void onDelete();
+    void onSelect();
+
+private:
+    Colour fg_ = Colours::red;
+    Colour bg_ = defaultBg_;
+    std::string text_;
+    int selected_ = 0;
+    int nCols_ = 10;
+    int cursor_ = 0;
+    int cursorFlashCounter = 0;
+
+
+    enum {
+        B_COPY,
+        B_PASTE,
+        B_3,
+        B_4,
+        B_5,
+        B_6,
+        B_7,
+        B_8,
+        B_MAX
+    };
+    std::string copyBuffer_;
+    ValueButton copyBtn_, pasteBtn_;
+
+
+    using base_type = BaseEditor;
+
+    std::vector<std::shared_ptr<Key>> keys_;
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TextEdit)
+};
+
+}
+
+
+
+

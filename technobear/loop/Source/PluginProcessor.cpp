@@ -21,6 +21,7 @@ PluginProcessor::PluginProcessor(
     AudioProcessorValueTreeState::ParameterLayout layout)
     : BaseProcessor(ioLayouts, std::move(layout)), params_(vts()) {
     init();
+    formatManager_.registerBasicFormats();
 
     rnbo_.nInputs_ = rnbo_.patch_.getNumInputChannels();
     rnbo_.inputBuffers_ = new RNBO::number *[rnbo_.nInputs_];
@@ -43,22 +44,10 @@ PluginProcessor::PluginProcessor(
             nameToRnboIdMap_.insert(std::make_pair(pid, i));
         }
     }
-
-    for (int i = 0; i < MAX_LAYERS; i++) {
-        for (int ext_idx = 0; ext_idx < rnbo_.patch_.getNumExternalDataRefs(); ext_idx++) {
-            auto id = rnbo_.patch_.getExternalDataId(ext_idx);
-            if (id == std::string("layer") + std::to_string(i + 1)) {
-                layerBufMap_[i] = ext_idx;
-            }
-        }
-    }
-
     rnbo_.lastParamVals_ = new float[rnbo_.nParams_];
     for (int i = 0; i < rnbo_.nParams_; i++) {
         rnbo_.lastParamVals_[i] = -100.0;
     }
-
-    allocateAllLayersData();
 
 #if DEBUG
     assert(rnbo_.nInputs_ == I_MAX + 2); // not using rec begin,end
@@ -239,7 +228,7 @@ void PluginProcessor::fillLayerData(unsigned lidx,
                                     float &cur, float &begin, float &end,
                                     bool &isRec, float &recCur
 ) {
-    if ( lidx >= MAX_LAYERS) return;
+    if (lidx >= MAX_LAYERS) return;
     auto &layer = layers_[lidx];
 
     if (layer.data_ == nullptr) return;
@@ -298,7 +287,10 @@ void PluginProcessor::allocateRnboIO(unsigned samplesPerBlock) {
 
 void PluginProcessor::allocateAllLayersData() {
     for (unsigned i = 0; i < MAX_LAYERS; i++) {
-        unsigned newSize = normValue(params_.layers_[i]->size_);
+        // dont allocate if we are going to load data into it!
+        if (loadData_.layer_ == i && loadData_.data_ != nullptr) continue;
+
+        float newSize = normValue(params_.layers_[i]->size_);
         float bufSize = newSize * sampleRate_;
         allocateLayerData(i, bufSize);
     }
@@ -307,28 +299,58 @@ void PluginProcessor::allocateAllLayersData() {
 void PluginProcessor::allocateLayerData(unsigned lidx, unsigned newSize) {
     auto &layer = layers_[lidx];
     if (layer.size_ != newSize) {
+        float *newData = new float[newSize];
+
+        if (layer.data_ && layer.size_ > 0) {
+            for (int x = 0; x < newSize; x++) {
+                newData[x] = x < layer.size_ ? layer.data_[x] : 0.0f;
+            }
+        } else {
+            for (int x = 0; x < newSize; x++) {
+                newData[x] = 0.0f;
+            }
+        }
+
         if (layer.data_ != nullptr) {
             // dont delete, rnbo will do this with freLayer
         }
-        RNBO::Float32AudioBuffer type(1, sampleRate_);
-        layer.size_ = newSize;
-        layer.data_ = new float[layer.size_];
-        for (int x = 0; x < layer.size_; x++) {
-            layer.data_[x] = 0.0f;
-        }
-
-        std::string id = std::string("layer") + std::to_string(lidx + 1);
-        rnbo_.patch_.setExternalData(id.c_str(), (char *) layer.data_,
-                                     layer.size_ * sizeof(float) / sizeof(char),
-                                     type, &freeLayer);
+        setExternalData(lidx, newData, newSize);
     }
+}
+
+void PluginProcessor::setExternalData(unsigned lidx, float *newData, float newSize) {
+    auto &layer = layers_[lidx];
+    layer.size_ = newSize;
+    layer.data_ = newData;
+    std::string id = std::string("layer") + std::to_string(lidx + 1);
+    RNBO::Float32AudioBuffer type(1, sampleRate_);
+    rnbo_.patch_.setExternalData(id.c_str(), (char *) layer.data_,
+                                 layer.size_ * sizeof(float) / sizeof(char),
+                                 type, &freeLayer);
 }
 
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     size_t n = buffer.getNumSamples();
 
-    allocateAllLayersData();
+
+    if (loadData_.lock_.test_and_set(std::memory_order_acquire)) {
+        allocateAllLayersData();
+        if (loadData_.data_ != nullptr) {
+            auto &p = params_.layers_[loadData_.layer_]->size_;
+            p.beginChangeGesture();
+            p.setValueNotifyingHost(p.convertTo0to1(loadData_.pSize_));
+            p.endChangeGesture();
+            setExternalData(loadData_.layer_, loadData_.data_, loadData_.size_);
+
+            // free up
+            loadData_.data_ = nullptr;
+            loadData_.layer_ = -1;
+            loadData_.size_ = 0.f;
+            loadData_.pSize_ = 0.f;
+        }
+        loadData_.lock_.clear(std::memory_order_release);
+    }
 
     for (auto &iter: nameToRnboIdMap_) {
         auto &pid = iter.first;
@@ -378,6 +400,94 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     }
 
 }
+
+bool PluginProcessor::loadLayerFile(unsigned lidx, const std::string &fn) {
+    bool ret = false;
+    while (loadData_.lock_.test_and_set(std::memory_order_acquire)) {
+        ;
+    }
+    if (loadData_.data_ == nullptr) { // unlikely ;)
+        File file(fn);
+        if (file.exists() && !file.isDirectory()) {
+
+            std::unique_ptr<juce::AudioFormatReader> reader(formatManager_.createReaderFor(file));
+            if (reader.get() != nullptr) {
+                AudioBuffer<float> fileBuffer;
+                auto fileSampleSize = reader->lengthInSamples;
+                fileBuffer.setSize(reader->numChannels, fileSampleSize);
+                if (reader->read(&fileBuffer, 0, fileSampleSize,
+                                 0,
+                                 true, true)) {
+
+                    auto &p = params_.layers_[lidx]->size_;
+                    auto n = fileBuffer.getNumSamples();
+
+                    float pSize = float(n) / float(sampleRate_);
+                    float layerSize = pSize * sampleRate_;
+
+                    loadData_.size_ = layerSize < n ? layerSize : n;
+                    loadData_.data_ = new float[loadData_.size_];
+                    loadData_.pSize_ = pSize;
+                    loadData_.layer_ = lidx;
+
+                    for (int i = 0; i < loadData_.size_; i++) {
+                        loadData_.data_[i] = fileBuffer.getSample(0, i);
+                    }
+
+                    auto &layer = layers_[lidx];
+                    layer.fileName_ = fn;
+                    loadData_.lock_.clear(std::memory_order_release);
+                    ret = true;
+                }
+            }
+        }
+    }
+    loadData_.lock_.clear(std::memory_order_release);
+    return ret;
+}
+
+bool PluginProcessor::saveLayerFile(unsigned lidx, const std::string &fn) {
+    auto &layer = layers_[lidx];
+    layer.fileName_ = fn;
+    AudioBuffer<float> fileBuffer(1, layer.size_);
+
+    for (int i = 0; i < layer.size_; i++) {
+        fileBuffer.setSample(0, i, layer.data_[i]);
+    }
+
+
+    File wavFile(fn);
+    WavAudioFormat format;
+    std::unique_ptr<AudioFormatWriter> writer;
+    writer.reset(format.createWriterFor(new FileOutputStream(wavFile),
+                                        sampleRate_,
+                                        fileBuffer.getNumChannels(),
+                                        24,
+                                        {},
+                                        0));
+    if (writer != nullptr) {
+        writer->writeFromAudioSampleBuffer(fileBuffer, 0, fileBuffer.getNumSamples());
+        return true;
+    }
+    return false;
+}
+
+static const char *LAYER_TAG = "LAYER_FILE_";
+
+void PluginProcessor::customFromXml(juce::XmlElement *xml) {
+    for (int i = 0; i < MAX_LAYERS; i++) {
+        auto fn = xml->getStringAttribute(std::string(LAYER_TAG) + std::to_string(i), "");
+        loadLayerFile(i, fn.toStdString());
+    }
+}
+
+void PluginProcessor::customToXml(juce::XmlElement *xml) {
+    for (int i = 0; i < MAX_LAYERS; i++) {
+        auto fn = getLayerFile(i);
+        xml->setAttribute((std::string(LAYER_TAG) + std::to_string(i)).c_str(), fn.c_str());
+    }
+}
+
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
     return new ssp::EditorHost(this, new PluginEditor(*this));

@@ -37,7 +37,7 @@ public:
 
     virtual void drawView(Graphics &g);
 
-    // new foe BaseViewEditor
+    // new for BaseViewEditor
     virtual void editorShown() {}
     virtual void editorHidden() {}
 
@@ -80,6 +80,9 @@ protected:
 
     ValueButton leftBtn_, rightBtn_, upBtn_, downBtn_;
     ValueButton leftShiftBtn_, rightShiftBtn_;
+
+    Colour defaultBg_=  Colour(0xff111111);
+
 private:
     void paint(Graphics &) override;
 

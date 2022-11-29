@@ -29,6 +29,11 @@ public:
         layer.colour_ = c;
     }
 
+    void label(unsigned sigN,const std::string &str) {
+        auto &layer = layer_[sigN];
+        layer.label_=str;
+    }
+
     void scaleOffset(unsigned sigN, float s, float o) {
         auto &layer = layer_[sigN];
         layer.scale_ = s;
@@ -105,12 +110,12 @@ private:
 
 
         if (legend_) {
-            static constexpr unsigned fh = 16;
+            static constexpr unsigned fh = 12;
             Font f(Font::getDefaultMonospacedFontName(), fh, Font::plain);
             g.setFont(f);
             g.setColour(layer.colour_);
 
-            if (!layer.label_.empty()) g.drawText(layer.label_, 0, 16 + (sigN * (fh + 10)), w, 24, Justification::left);
+            if (!layer.label_.empty()) g.drawText(layer.label_, 0, (sigN * (fh + 10)), w, fh, Justification::bottomLeft);
         }
 
         if (!layer.buffer_) return;

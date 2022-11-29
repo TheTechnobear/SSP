@@ -53,6 +53,11 @@ public:
     bool hasEditor() const override { return true; }
 
 
+    std::string getLayerFile(unsigned lidx) { return layers_[lidx].fileName_; }
+
+    bool loadLayerFile(unsigned lidx, const std::string &fn);
+    bool saveLayerFile(unsigned lidx, const std::string &fn);
+
     struct LayerParams {
         using Parameter = juce::RangedAudioParameter;
         explicit LayerParams(AudioProcessorValueTreeState &apvt, unsigned ln);
@@ -140,11 +145,14 @@ protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     static void freeLayer(RNBO::ExternalDataId id, char *data);
+    void customFromXml(juce::XmlElement *) override;
+    void customToXml(juce::XmlElement *) override;
 private:
 
     void allocateAllLayersData();
     void allocateLayerData(unsigned layer, unsigned newSize);
     void allocateRnboIO(unsigned blocksize);
+    void setExternalData(unsigned lidx, float* newData, float newSize);
 
     struct {
         RNBO::CoreObject patch_;
@@ -158,6 +166,15 @@ private:
     } rnbo_;
 
 
+    struct {
+        std::atomic_flag lock_ = ATOMIC_FLAG_INIT;
+        float *data_ = nullptr;
+        float size_ = 0;
+        float pSize_ = 0;
+        int layer_ = -1;
+    } loadData_;
+
+
     struct { ;
         float begin_ = 0.0f;
         float end_ = 1.0f;
@@ -166,9 +183,9 @@ private:
         float recCur_ = 0.0f;
         float *data_ = nullptr;
         unsigned size_ = 0;
+        std::string fileName_;
     } layers_[MAX_LAYERS];
 
-    unsigned layerSize_ = 0;
     unsigned sampleRate_ = 48000;
 
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
@@ -176,10 +193,10 @@ private:
     }
 
     std::map<std::string, unsigned> nameToRnboIdMap_;
-    unsigned layerBufMap_[MAX_LAYERS];
 
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
+    AudioFormatManager formatManager_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };

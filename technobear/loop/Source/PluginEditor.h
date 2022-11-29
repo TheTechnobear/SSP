@@ -5,6 +5,8 @@
 #include "PluginProcessor.h"
 #include "ssp/BaseViewEditor.h"
 #include "ssp/WaveDisp.h"
+#include "ssp/FileBrowser.h"
+#include "ssp/TextEdit.h"
 
 
 class PluginEditor : public ssp::BaseViewEditor {
@@ -14,14 +16,34 @@ public:
 
     void drawView(Graphics &) override;
     void resized() override;
+
+
+    void onFileButton(bool v);
+    void onSaveButton(bool v);
+    void onCancelButton(bool v);
 protected:
     using base_type = ssp::BaseViewEditor;
 
     void onRightShiftButton(bool v) override;
     void onLeftButton(bool v) override;
     void onRightButton(bool v) override;
+    void onButton(unsigned int id, bool v) override;
+
+    void setView(unsigned newView) override;
 private:
-    static const int MAX_LAYERS = PluginProcessor::MAX_LAYERS;
+    enum {
+        V_LAYER_1,
+        V_LAYER_2,
+        V_LAYER_3,
+        V_LAYER_4,
+        V_RECORD,
+        V_SAVE,
+        V_FILE,
+        V_MAX,
+    };
+
+    static const constexpr unsigned MAX_LAYERS = V_LAYER_4 + 1;
+
     juce::Colour clrs_[MAX_LAYERS];
     static constexpr unsigned DATA_POINTS = 600;
 
@@ -37,12 +59,38 @@ private:
     enum E_ViewMode {
         M_LAYER,
         M_REC,
+        M_SAVE,
+        M_FILE,
         M_MAX
+    };
+
+
+    // note: this overlap with parameter buttons!
+    enum  {
+        B_1,
+        B_2,
+        B_3,
+        B_FILE,
+        B_5,
+        B_6,
+        B_CANCEL,
+        B_SAVE,
+        B_MAX
     };
 
     unsigned viewMode_ = M_LAYER;
 
-    ssp::WaveDisp<1> scopes_[MAX_LAYERS] = {false, false, false, false};
+    std::shared_ptr<ssp::FileBrowser> fileBrowser_;
+    std::shared_ptr<ssp::TextEdit> saveEditor_;
+    ValueButton fileBtn_, saveBtn_, cancelBtn_;
+
+    ssp::WaveDisp<1> scopes_[MAX_LAYERS] = {
+        ssp::WaveDisp<1>(false, true),
+        ssp::WaveDisp<1>(false, true),
+        ssp::WaveDisp<1>(false, true),
+        ssp::WaveDisp<1>(false, true)
+    };
+
 
     PluginProcessor &processor_;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)

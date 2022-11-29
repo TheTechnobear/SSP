@@ -45,7 +45,7 @@ protected:
     void resized() override;
     void addView(std::shared_ptr<base_view>);
 
-    void setView(unsigned newView);
+    virtual void setView(unsigned newView);
     void nextView();
     void previousView();
 

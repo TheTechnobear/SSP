@@ -17,5 +17,8 @@ set(COMMON_SRC
         ../common/ssp/ValueButton.cpp
         ../common/ssp/RmsTrack.cpp
         ../common/ssp/VuMeter.cpp
+        ../common/ssp/FileBrowser.cpp
+        ../common/ssp/TextEdit.cpp
         ../common/ssp/SSPUI.cpp
+
 )
