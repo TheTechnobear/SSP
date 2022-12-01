@@ -1,0 +1,110 @@
+[
+  {
+    "name": "gra4",
+    "preset": {
+      "__sps": {
+        "layer1": {
+          "gain": {
+            "value": 7
+          },
+          "len": {
+            "value": 0.1
+          },
+          "pan": {
+            "value": 0
+          },
+          "rate": {
+            "value": 1
+          },
+          "size": {
+            "value": 32
+          },
+          "start": {
+            "value": 0
+          }
+        },
+        "layer2": {
+          "gain": {
+            "value": 1
+          },
+          "len": {
+            "value": 1
+          },
+          "pan": {
+            "value": 1
+          },
+          "rate": {
+            "value": 1
+          },
+          "size": {
+            "value": 1
+          },
+          "start": {
+            "value": 0
+          }
+        },
+        "layer3": {
+          "gain": {
+            "value": 1
+          },
+          "len": {
+            "value": 1
+          },
+          "pan": {
+            "value": 1
+          },
+          "rate": {
+            "value": 1
+          },
+          "size": {
+            "value": 1
+          },
+          "start": {
+            "value": 0
+          }
+        },
+        "layer4": {
+          "gain": {
+            "value": 1
+          },
+          "len": {
+            "value": 1
+          },
+          "pan": {
+            "value": 1
+          },
+          "rate": {
+            "value": 1
+          },
+          "size": {
+            "value": 1
+          },
+          "start": {
+            "value": 0
+          }
+        }
+      },
+      "rec-begin": {
+        "value": 0
+      },
+      "rec-end": {
+        "value": 1
+      },
+      "rec-gain": {
+        "value": 1
+      },
+      "rec-layer": {
+        "value": 0
+      },
+      "rec-loop": {
+        "value": 1
+      },
+      "rec-mode": {
+        "value": 0
+      },
+      "rec-mon": {
+        "value": 100
+      }
+    }
+  }
+]

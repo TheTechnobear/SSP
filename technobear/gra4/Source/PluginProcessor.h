@@ -15,20 +15,24 @@ namespace ID {
 constexpr const char *separator{":"};
 
 
+//common
+PARAMETER_ID (gain)
+
+// rec- only
 PARAMETER_ID (mode)
 PARAMETER_ID (begin)
 PARAMETER_ID (end)
 PARAMETER_ID (loop)
-PARAMETER_ID (gain)
-
-// rec- only
 PARAMETER_ID (rec)
 PARAMETER_ID (mon)
 
 // layer only
 PARAMETER_ID (layer)
+
+PARAMETER_ID (start)
+PARAMETER_ID (length)
 PARAMETER_ID (rate)
-PARAMETER_ID (crossfade)
+PARAMETER_ID (pan)
 PARAMETER_ID (size)
 
 
@@ -61,12 +65,10 @@ public:
     struct LayerParams {
         using Parameter = juce::RangedAudioParameter;
         explicit LayerParams(AudioProcessorValueTreeState &apvt, unsigned ln);
-        Parameter &mode_;
+        Parameter &start_;
+        Parameter &length_;
         Parameter &rate_;
-        Parameter &begin_;
-        Parameter &end_;
-        Parameter &loop_;
-        Parameter &xfade_;
+        Parameter &pan_;
         Parameter &gain_;
         Parameter &size_;
     };
@@ -109,18 +111,30 @@ public:
     static unsigned constexpr MAX_LAYERS = 4;
     enum {
         I_IN,
+        I_LAYER1_TRIG,
+        I_LAYER1_START,
+        I_LAYER1_LENGTH,
         I_LAYER1_RATE,
-        I_LAYER1_BEGIN,
-        I_LAYER1_END,
+        I_LAYER1_PAN,
+
+        I_LAYER2_TRIG,
+        I_LAYER2_START,
+        I_LAYER2_LENGTH,
         I_LAYER2_RATE,
-        I_LAYER2_BEGIN,
-        I_LAYER2_END,
+        I_LAYER2_PAN,
+
+        I_LAYER3_TRIG,
+        I_LAYER3_START,
+        I_LAYER3_LENGTH,
         I_LAYER3_RATE,
-        I_LAYER3_BEGIN,
-        I_LAYER3_END,
+        I_LAYER3_PAN,
+
+        I_LAYER4_TRIG,
+        I_LAYER4_START,
+        I_LAYER4_LENGTH,
         I_LAYER4_RATE,
-        I_LAYER4_BEGIN,
-        I_LAYER4_END,
+        I_LAYER4_PAN,
+
         I_REC_MODE,
 //        I_REC_BEGIN,
 //        I_REC_END,
@@ -128,16 +142,16 @@ public:
     };
 
     enum {
-        O_SUM,
-        O_LAYER1,
-        O_LAYER2,
-        O_LAYER3,
-        O_LAYER4,
-//        O_REC_POS,
-//        O_LAYER1_POS,
-//        O_LAYER2_POS,
-//        O_LAYER3_POS,
-//        O_LAYER4_POS,
+        O_SUM_L,
+        O_SUM_R,
+        O_LAYER1_L,
+        O_LAYER1_R,
+        O_LAYER2_L,
+        O_LAYER2_R,
+        O_LAYER3_L,
+        O_LAYER3_R,
+        O_LAYER4_L,
+        O_LAYER4_R,
         O_MAX
     };
 
@@ -175,8 +189,8 @@ private:
 
 
     struct { ;
-        float begin_ = 0.0f;
-        float end_ = 1.0f;
+        float start_ = 0.0f;
+        float len_ = 1.0f;
         float cur_ = 0.0f;
         bool isRec_ = false;
         float recCur_ = 0.0f;
@@ -192,17 +206,17 @@ private:
         return true;
     }
 
-    std::map<std::string, unsigned> nameToRnboIdMap_;
-
-    static const String getInputBusName(int channelIndex);
-    static const String getOutputBusName(int channelIndex);
-    AudioFormatManager formatManager_;
-
 #if __APPLE__
     static constexpr bool loadOnAudioThread_ = false;
 #else
     static constexpr bool loadOnAudioThread_ = true;
 #endif
+
+    std::map<std::string, unsigned> nameToRnboIdMap_;
+
+    static const String getInputBusName(int channelIndex);
+    static const String getOutputBusName(int channelIndex);
+    AudioFormatManager formatManager_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };

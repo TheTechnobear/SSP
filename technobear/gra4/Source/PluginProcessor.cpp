@@ -2,7 +2,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "ssp/EditorHost.h"
-
 #include <thread>
 
 inline float constrainFloat(float v, float vMin, float vMax) {
@@ -45,7 +44,6 @@ PluginProcessor::PluginProcessor(
             nameToRnboIdMap_.insert(std::make_pair(pid, i));
         }
     }
-
     rnbo_.lastParamVals_ = new float[rnbo_.nParams_];
     for (int i = 0; i < rnbo_.nParams_; i++) {
         rnbo_.lastParamVals_[i] = -100.0;
@@ -56,9 +54,10 @@ PluginProcessor::PluginProcessor(
         layers_[i].maxLayerSize_ = p.convertFrom0to1(1.0f);
     }
 
+
 #if DEBUG
     assert(rnbo_.nInputs_ == I_MAX + 2); // not using rec begin,end
-    assert(rnbo_.nOutputs_ == O_MAX + 5); // don't output positions
+    assert(rnbo_.nOutputs_ == O_MAX + 1); // don't output positions
 #endif
 
 }
@@ -78,13 +77,12 @@ std::string getLayerPid(unsigned ln, const char *pid) {
     return std::string("layer") + std::to_string(ln + 1) + "/" + std::string(pid);
 }
 
+
 PluginProcessor::LayerParams::LayerParams(AudioProcessorValueTreeState &apvt, unsigned ln) :
-    mode_(*apvt.getParameter(getLayerPid(ln, "mode"))),
+    start_(*apvt.getParameter(getLayerPid(ln, "start"))),
+    length_(*apvt.getParameter(getLayerPid(ln, "len"))),
     rate_(*apvt.getParameter(getLayerPid(ln, "rate"))),
-    begin_(*apvt.getParameter(getLayerPid(ln, "begin"))),
-    end_(*apvt.getParameter(getLayerPid(ln, "end"))),
-    loop_(*apvt.getParameter(getLayerPid(ln, "loop"))),
-    xfade_(*apvt.getParameter(getLayerPid(ln, "xfade"))),
+    pan_(*apvt.getParameter(getLayerPid(ln, "pan"))),
     gain_(*apvt.getParameter(getLayerPid(ln, "gain"))),
     size_(*apvt.getParameter(getLayerPid(ln, "size"))) {
 }
@@ -171,18 +169,22 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 }
 
 const String PluginProcessor::getInputBusName(int channelIndex) {
-    if (channelIndex >= I_LAYER1_RATE && channelIndex <= I_LAYER4_END) {
-        unsigned nLayerSigs = I_LAYER2_RATE - I_LAYER1_RATE;
-        unsigned layer = (channelIndex - I_LAYER1_RATE) / nLayerSigs;
-        unsigned sig = ((channelIndex - I_LAYER1_RATE) - layer * nLayerSigs) % nLayerSigs;
+    if (channelIndex >= I_LAYER1_TRIG && channelIndex <= I_LAYER4_PAN) {
+        unsigned nLayerSigs = I_LAYER2_TRIG - I_LAYER1_TRIG;
+        unsigned layer = (channelIndex - I_LAYER1_TRIG) / nLayerSigs;
+        unsigned sig = ((channelIndex - I_LAYER1_TRIG) - layer * nLayerSigs) % nLayerSigs;
         std::string lstr = std::string("Layer ") + std::to_string(layer + 1);
         switch (sig) {
             case 0:
-                return lstr + std::string(" Rate");
+                return lstr + std::string(" Trig");
             case 1:
-                return lstr + std::string(" Begin");
+                return lstr + std::string(" Start");
             case 2:
-                return lstr + std::string(" End");
+                return lstr + std::string(" Len");
+            case 3:
+                return lstr + std::string(" Rate");
+            case 4:
+                return lstr + std::string(" Pan");
             default :
                 return lstr + std::string("ZZ ") + std::to_string(sig);
         }
@@ -208,17 +210,21 @@ const String PluginProcessor::getInputBusName(int channelIndex) {
 
 const String PluginProcessor::getOutputBusName(int channelIndex) {
     switch (channelIndex) {
-        case O_SUM :
-            return String("Sum");
+        case O_SUM_L :
+            return String("Sum L");
+        case O_SUM_R :
+            return String("Sum R");
         default: {
             if (channelIndex < O_MAX) {
-                unsigned nLayerSigs = O_LAYER2 - O_LAYER1;
-                unsigned layer = (channelIndex - O_LAYER1) / nLayerSigs;
-                unsigned sig = ((channelIndex - O_LAYER1) - layer * nLayerSigs) % nLayerSigs;
+                unsigned nLayerSigs = O_LAYER2_L - O_LAYER1_L;
+                unsigned layer = (channelIndex - O_LAYER1_L) / nLayerSigs;
+                unsigned sig = ((channelIndex - O_LAYER1_L) - layer * nLayerSigs) % nLayerSigs;
                 std::string lstr = std::string("Layer ") + std::to_string(layer + 1);
                 switch (sig) {
                     case 0:
-                        return lstr + std::string(" Out");
+                        return lstr + std::string(" L");
+                    case 1:
+                        return lstr + std::string(" R");
                     default :
                         return lstr + std::string(" ZZ ") + std::to_string(sig);
                 }
@@ -232,7 +238,7 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 
 void PluginProcessor::fillLayerData(unsigned lidx,
                                     float *data, unsigned sz,
-                                    float &cur, float &begin, float &end,
+                                    float &cur, float &start, float &len,
                                     bool &isRec, float &recCur
 ) {
     if (lidx >= MAX_LAYERS) return;
@@ -246,8 +252,8 @@ void PluginProcessor::fillLayerData(unsigned lidx,
     }
 
     cur = layer.cur_;
-    begin = layer.begin_;
-    end = layer.end_;
+    start = layer.start_;
+    len = layer.len_;
     isRec = layer.isRec_;
     recCur = layer.recCur_;
 }
@@ -393,11 +399,11 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     for (int lidx = 0; lidx < MAX_LAYERS; lidx++) {
         auto &layer = layers_[lidx];
 
-        layer.cur_ = rnbo_.outputBuffers_[1 + MAX_LAYERS + 1 + lidx][n - 1];
+        layer.cur_ = 0.0f; // not supported by granulator~
         layer.isRec_ = lidx == recLayer;
         layer.recCur_ = layer.isRec_ ? rnbo_.outputBuffers_[1 + MAX_LAYERS][n - 1] : 0.0f;
-        layer.begin_ = normValue(*getParameter(getLayerPid(lidx, "begin")));
-        layer.end_ = normValue(*getParameter(getLayerPid(lidx, "end")));
+        layer.start_ = normValue(*getParameter(getLayerPid(lidx, "start")));
+        layer.len_ = normValue(*getParameter(getLayerPid(lidx, "len")));
     }
 
     {
@@ -408,7 +414,6 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
             }
         }
     }
-
 }
 
 bool PluginProcessor::loadLayerFile(unsigned lidx, const std::string &fn, bool wait) {
@@ -430,7 +435,6 @@ bool PluginProcessor::loadLayerFile(unsigned lidx, const std::string &fn, bool w
             return false;
         }
     }
-
     File file(fn);
     if (file.exists() && !file.isDirectory()) {
 
@@ -448,7 +452,6 @@ bool PluginProcessor::loadLayerFile(unsigned lidx, const std::string &fn, bool w
 
                 float pSize = float(n) / float(sampleRate_);
                 if (pSize > layers_[lidx].maxLayerSize_) pSize = pSize > layers_[lidx].maxLayerSize_;
-
                 float layerSize = pSize * sampleRate_;
 
                 loadData.size_ = layerSize < n ? layerSize : n;
