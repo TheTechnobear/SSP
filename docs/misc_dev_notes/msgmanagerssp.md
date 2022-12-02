@@ -1,6 +1,13 @@
+## message manager issues
 
-running debug versions of vsts on SSP we get various assertions 
+these are noticed when running debug versions of vsts on SSP we get various assertions 
 
+
+it should be noted, that these assertions seem harmless when run not run in debug
+
+
+
+```
 
 (gdb) bt
 #0  0xb67e5e9c in kill () from /lib/libc.so.6
@@ -39,6 +46,7 @@ running debug versions of vsts on SSP we get various assertions
     stop=...) at ../../common/SSPDRM.h:635
 #23 main (argc=<optimized out>, argv=<optimized out>) at ../../common/Main.cpp:426
 
+```
 
 also... 
 JUCE Assertion failure in juce_Component.cpp:1917
