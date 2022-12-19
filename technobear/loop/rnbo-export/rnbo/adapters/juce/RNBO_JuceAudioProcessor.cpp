@@ -28,6 +28,12 @@ public:
 	, _index(index)
 	, _rnboObject(rnboObject)
 	{
+		ParameterInfo info;
+		_rnboObject.getParameterInfo(index, &info);
+		if (info.unit) {
+			_unitName = String(info.unit);
+		}
+		_defaultValue = static_cast<float>(_rnboObject.convertToNormalizedParameterValue(_index, info.initialValue));
 	}
 
 	float getValue() const override
@@ -48,9 +54,7 @@ public:
 
 	float getDefaultValue() const override
 	{
-		ParameterInfo info;
-		_rnboObject.getParameterInfo(_index, &info);
-		return static_cast<float>(_rnboObject.convertToNormalizedParameterValue(_index, info.initialValue));
+		return _defaultValue;
 	}
 
 	/*
@@ -68,7 +72,7 @@ public:
 
 	String getLabel() const override
 	{
-		return String();
+		return _unitName;
 	}
 
 	float getValueForText (const String& text) const override
@@ -90,6 +94,8 @@ public:
 protected:
 	ParameterIndex			_index;
 	CoreObject&				_rnboObject;
+	String _unitName;
+	float _defaultValue;
 };
 
 class EnumParameter : public FloatParameter
@@ -428,8 +434,39 @@ void JuceAudioProcessor::processBlock (AudioSampleBuffer& buffer, juce::MidiBuff
 {
 	_rnboObject.prepareToProcess(getSampleRate(), static_cast<Index>(buffer.getNumSamples()));
 
+	RNBO::MillisecondTime time = _rnboObject.getCurrentTime();
+
+	//transport
+	{
+		AudioPlayHead* playhead = getPlayHead();
+		AudioPlayHead::CurrentPositionInfo info;
+		if (playhead && playhead->getCurrentPosition(info)) {
+			if (info.bpm != _lastBPM) {
+				_lastBPM = info.bpm;
+				RNBO::TempoEvent event(time, _lastBPM);
+				_rnboObject.scheduleEvent(event);
+			}
+			if (info.timeSigNumerator != _lastTimeSigNumerator || info.timeSigDenominator != _lastTimeSigDenominator) {
+				_lastTimeSigNumerator = info.timeSigNumerator;
+				_lastTimeSigDenominator = info.timeSigDenominator;
+				RNBO::TimeSignatureEvent event(time, _lastTimeSigNumerator, _lastTimeSigDenominator);
+				_rnboObject.scheduleEvent(event);
+			}
+			if (info.ppqPosition != _lastPpqPosition) {
+				_lastPpqPosition = info.ppqPosition;
+				RNBO::BeatTimeEvent event(time, _lastPpqPosition);
+				_rnboObject.scheduleEvent(event);
+			}
+			if (info.isPlaying != _lastIsPlaying) {
+				_lastIsPlaying = info.isPlaying;
+				RNBO::TransportEvent event(time, _lastIsPlaying ? RNBO::TransportState::RUNNING : RNBO::TransportState::STOPPED);
+				_rnboObject.scheduleEvent(event);
+			}
+		}
+	}
+
 	// fill midi input
-	TimeConverter timeConverter(_rnboObject.getSampleRate(), _rnboObject.getCurrentTime());
+	TimeConverter timeConverter(_rnboObject.getSampleRate(), time);
 
 	_midiInput.clear();  // make sure midi input starts clear
 	for (auto meta: midiMessages)
@@ -509,9 +546,12 @@ void JuceAudioProcessor::SyncEventHandler::handlePresetEvent(const PresetEvent& 
 
 } // namespace RNBO
 
+// optionally disable createPluginFilter so you can implement your own with a subclass of RNBO::JuceAudioProcessor
+#ifndef RNBO_JUCE_NO_CREATE_PLUGIN_FILTER
 //==============================================================================
 // This creates new instances of the plugin..
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
 	return new RNBO::JuceAudioProcessor();
 }
+#endif

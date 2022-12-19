@@ -42,17 +42,17 @@ namespace RNBO {
 class rnbomatic : public PatcherInterfaceImpl {
 public:
 
-class RNBOSubpatcher_17 : public PatcherInterfaceImpl {
+class RNBOSubpatcher_46 : public PatcherInterfaceImpl {
     
     friend class rnbomatic;
     
     public:
     
-    RNBOSubpatcher_17()
+    RNBOSubpatcher_46()
     {
     }
     
-    ~RNBOSubpatcher_17()
+    ~RNBOSubpatcher_46()
     {
     }
     
@@ -87,54 +87,6 @@ class RNBOSubpatcher_17 : public PatcherInterfaceImpl {
     
     Index vectorsize() {
         return this->vs;
-    }
-    
-    ParameterIndex getParameterIndexForID(ConstCharPointer paramid) const {
-        if (!stringCompare(paramid, "rate")) {
-            return 0;
-        }
-    
-        if (!stringCompare(paramid, "mode")) {
-            return 1;
-        }
-    
-        if (!stringCompare(paramid, "loop")) {
-            return 2;
-        }
-    
-        if (!stringCompare(paramid, "begin")) {
-            return 3;
-        }
-    
-        if (!stringCompare(paramid, "xfade")) {
-            return 4;
-        }
-    
-        if (!stringCompare(paramid, "end")) {
-            return 5;
-        }
-    
-        if (!stringCompare(paramid, "size")) {
-            return 6;
-        }
-    
-        if (!stringCompare(paramid, "gain")) {
-            return 7;
-        }
-    
-        if (!stringCompare(paramid, "button_obj-43/bangval")) {
-            return 8;
-        }
-    
-        if (!stringCompare(paramid, "button_obj-46/bangval")) {
-            return 9;
-        }
-    
-        if (!stringCompare(paramid, "button_obj-22/bangval")) {
-            return 10;
-        }
-    
-        return INVALID_INDEX;
     }
     
     Index getNumMidiInputPorts() const {
@@ -1307,13 +1259,6 @@ class RNBOSubpatcher_17 : public PatcherInterfaceImpl {
         );//#map:layer1//_obj-15:1
     }
     
-    void data_01_sizeout_set(number v) {
-        this->data_01_sizeout = v;
-        this->expr_01_in1_set(v);
-    }
-    
-    void data_01_chanout_set(number ) {}
-    
     void expr_01_in2_set(number v) {
         this->expr_01_in2 = v;
         this->expr_01_in1_set(this->expr_01_in1);
@@ -1334,6 +1279,13 @@ class RNBOSubpatcher_17 : public PatcherInterfaceImpl {
     
     void data_01_srout_set(number v) {
         this->expr_02_in1_set(v);
+    }
+    
+    void data_01_chanout_set(number ) {}
+    
+    void data_01_sizeout_set(number v) {
+        this->data_01_sizeout = v;
+        this->expr_01_in1_set(v);
     }
     
     void data_01_info_bang() {
@@ -1713,9 +1665,9 @@ class RNBOSubpatcher_17 : public PatcherInterfaceImpl {
     }
     
     void data_01_report() {
-        this->data_01_sizeout_set(this->data_01_buffer->getSize());
-        this->data_01_chanout_set(this->data_01_buffer->getChannels());
         this->data_01_srout_set(this->data_01_buffer->getSampleRate());
+        this->data_01_chanout_set(this->data_01_buffer->getChannels());
+        this->data_01_sizeout_set(this->data_01_buffer->getSize());
     }
     
     Index data_01_evaluateSizeExpr(number samplerate, number vectorsize) {
@@ -1851,6 +1803,7 @@ class RNBOSubpatcher_17 : public PatcherInterfaceImpl {
         data_01_sizeout = 0;
         data_01_size = 0;
         data_01_sizems = 0;
+        data_01_normalize = 0.995;
         data_01_channels = 1;
         param_04_value = 0;
         expr_02_in1 = 0;
@@ -1938,6 +1891,7 @@ class RNBOSubpatcher_17 : public PatcherInterfaceImpl {
         number data_01_sizeout;
         number data_01_size;
         number data_01_sizems;
+        number data_01_normalize;
         number data_01_channels;
         number param_04_value;
         number expr_02_in1;
@@ -1991,17 +1945,17 @@ class RNBOSubpatcher_17 : public PatcherInterfaceImpl {
     
 };
 
-class RNBOSubpatcher_18 : public PatcherInterfaceImpl {
+class RNBOSubpatcher_47 : public PatcherInterfaceImpl {
     
     friend class rnbomatic;
     
     public:
     
-    RNBOSubpatcher_18()
+    RNBOSubpatcher_47()
     {
     }
     
-    ~RNBOSubpatcher_18()
+    ~RNBOSubpatcher_47()
     {
     }
     
@@ -2036,54 +1990,6 @@ class RNBOSubpatcher_18 : public PatcherInterfaceImpl {
     
     Index vectorsize() {
         return this->vs;
-    }
-    
-    ParameterIndex getParameterIndexForID(ConstCharPointer paramid) const {
-        if (!stringCompare(paramid, "rate")) {
-            return 0;
-        }
-    
-        if (!stringCompare(paramid, "mode")) {
-            return 1;
-        }
-    
-        if (!stringCompare(paramid, "loop")) {
-            return 2;
-        }
-    
-        if (!stringCompare(paramid, "begin")) {
-            return 3;
-        }
-    
-        if (!stringCompare(paramid, "xfade")) {
-            return 4;
-        }
-    
-        if (!stringCompare(paramid, "end")) {
-            return 5;
-        }
-    
-        if (!stringCompare(paramid, "size")) {
-            return 6;
-        }
-    
-        if (!stringCompare(paramid, "gain")) {
-            return 7;
-        }
-    
-        if (!stringCompare(paramid, "button_obj-43/bangval")) {
-            return 8;
-        }
-    
-        if (!stringCompare(paramid, "button_obj-46/bangval")) {
-            return 9;
-        }
-    
-        if (!stringCompare(paramid, "button_obj-22/bangval")) {
-            return 10;
-        }
-    
-        return INVALID_INDEX;
     }
     
     Index getNumMidiInputPorts() const {
@@ -3256,13 +3162,6 @@ class RNBOSubpatcher_18 : public PatcherInterfaceImpl {
         );//#map:layer2//_obj-15:1
     }
     
-    void data_02_sizeout_set(number v) {
-        this->data_02_sizeout = v;
-        this->expr_04_in1_set(v);
-    }
-    
-    void data_02_chanout_set(number ) {}
-    
     void expr_04_in2_set(number v) {
         this->expr_04_in2 = v;
         this->expr_04_in1_set(this->expr_04_in1);
@@ -3283,6 +3182,13 @@ class RNBOSubpatcher_18 : public PatcherInterfaceImpl {
     
     void data_02_srout_set(number v) {
         this->expr_05_in1_set(v);
+    }
+    
+    void data_02_chanout_set(number ) {}
+    
+    void data_02_sizeout_set(number v) {
+        this->data_02_sizeout = v;
+        this->expr_04_in1_set(v);
     }
     
     void data_02_info_bang() {
@@ -3662,9 +3568,9 @@ class RNBOSubpatcher_18 : public PatcherInterfaceImpl {
     }
     
     void data_02_report() {
-        this->data_02_sizeout_set(this->data_02_buffer->getSize());
-        this->data_02_chanout_set(this->data_02_buffer->getChannels());
         this->data_02_srout_set(this->data_02_buffer->getSampleRate());
+        this->data_02_chanout_set(this->data_02_buffer->getChannels());
+        this->data_02_sizeout_set(this->data_02_buffer->getSize());
     }
     
     Index data_02_evaluateSizeExpr(number samplerate, number vectorsize) {
@@ -3800,6 +3706,7 @@ class RNBOSubpatcher_18 : public PatcherInterfaceImpl {
         data_02_sizeout = 0;
         data_02_size = 0;
         data_02_sizems = 0;
+        data_02_normalize = 0.995;
         data_02_channels = 1;
         param_12_value = 0;
         expr_05_in1 = 0;
@@ -3887,6 +3794,7 @@ class RNBOSubpatcher_18 : public PatcherInterfaceImpl {
         number data_02_sizeout;
         number data_02_size;
         number data_02_sizems;
+        number data_02_normalize;
         number data_02_channels;
         number param_12_value;
         number expr_05_in1;
@@ -3940,17 +3848,17 @@ class RNBOSubpatcher_18 : public PatcherInterfaceImpl {
     
 };
 
-class RNBOSubpatcher_19 : public PatcherInterfaceImpl {
+class RNBOSubpatcher_48 : public PatcherInterfaceImpl {
     
     friend class rnbomatic;
     
     public:
     
-    RNBOSubpatcher_19()
+    RNBOSubpatcher_48()
     {
     }
     
-    ~RNBOSubpatcher_19()
+    ~RNBOSubpatcher_48()
     {
     }
     
@@ -3985,54 +3893,6 @@ class RNBOSubpatcher_19 : public PatcherInterfaceImpl {
     
     Index vectorsize() {
         return this->vs;
-    }
-    
-    ParameterIndex getParameterIndexForID(ConstCharPointer paramid) const {
-        if (!stringCompare(paramid, "rate")) {
-            return 0;
-        }
-    
-        if (!stringCompare(paramid, "mode")) {
-            return 1;
-        }
-    
-        if (!stringCompare(paramid, "loop")) {
-            return 2;
-        }
-    
-        if (!stringCompare(paramid, "begin")) {
-            return 3;
-        }
-    
-        if (!stringCompare(paramid, "xfade")) {
-            return 4;
-        }
-    
-        if (!stringCompare(paramid, "end")) {
-            return 5;
-        }
-    
-        if (!stringCompare(paramid, "size")) {
-            return 6;
-        }
-    
-        if (!stringCompare(paramid, "gain")) {
-            return 7;
-        }
-    
-        if (!stringCompare(paramid, "button_obj-43/bangval")) {
-            return 8;
-        }
-    
-        if (!stringCompare(paramid, "button_obj-46/bangval")) {
-            return 9;
-        }
-    
-        if (!stringCompare(paramid, "button_obj-22/bangval")) {
-            return 10;
-        }
-    
-        return INVALID_INDEX;
     }
     
     Index getNumMidiInputPorts() const {
@@ -5205,13 +5065,6 @@ class RNBOSubpatcher_19 : public PatcherInterfaceImpl {
         );//#map:layer3//_obj-15:1
     }
     
-    void data_03_sizeout_set(number v) {
-        this->data_03_sizeout = v;
-        this->expr_07_in1_set(v);
-    }
-    
-    void data_03_chanout_set(number ) {}
-    
     void expr_07_in2_set(number v) {
         this->expr_07_in2 = v;
         this->expr_07_in1_set(this->expr_07_in1);
@@ -5232,6 +5085,13 @@ class RNBOSubpatcher_19 : public PatcherInterfaceImpl {
     
     void data_03_srout_set(number v) {
         this->expr_08_in1_set(v);
+    }
+    
+    void data_03_chanout_set(number ) {}
+    
+    void data_03_sizeout_set(number v) {
+        this->data_03_sizeout = v;
+        this->expr_07_in1_set(v);
     }
     
     void data_03_info_bang() {
@@ -5611,9 +5471,9 @@ class RNBOSubpatcher_19 : public PatcherInterfaceImpl {
     }
     
     void data_03_report() {
-        this->data_03_sizeout_set(this->data_03_buffer->getSize());
-        this->data_03_chanout_set(this->data_03_buffer->getChannels());
         this->data_03_srout_set(this->data_03_buffer->getSampleRate());
+        this->data_03_chanout_set(this->data_03_buffer->getChannels());
+        this->data_03_sizeout_set(this->data_03_buffer->getSize());
     }
     
     Index data_03_evaluateSizeExpr(number samplerate, number vectorsize) {
@@ -5749,6 +5609,7 @@ class RNBOSubpatcher_19 : public PatcherInterfaceImpl {
         data_03_sizeout = 0;
         data_03_size = 0;
         data_03_sizems = 0;
+        data_03_normalize = 0.995;
         data_03_channels = 1;
         param_20_value = 0;
         expr_08_in1 = 0;
@@ -5836,6 +5697,7 @@ class RNBOSubpatcher_19 : public PatcherInterfaceImpl {
         number data_03_sizeout;
         number data_03_size;
         number data_03_sizems;
+        number data_03_normalize;
         number data_03_channels;
         number param_20_value;
         number expr_08_in1;
@@ -5889,17 +5751,17 @@ class RNBOSubpatcher_19 : public PatcherInterfaceImpl {
     
 };
 
-class RNBOSubpatcher_20 : public PatcherInterfaceImpl {
+class RNBOSubpatcher_49 : public PatcherInterfaceImpl {
     
     friend class rnbomatic;
     
     public:
     
-    RNBOSubpatcher_20()
+    RNBOSubpatcher_49()
     {
     }
     
-    ~RNBOSubpatcher_20()
+    ~RNBOSubpatcher_49()
     {
     }
     
@@ -5934,54 +5796,6 @@ class RNBOSubpatcher_20 : public PatcherInterfaceImpl {
     
     Index vectorsize() {
         return this->vs;
-    }
-    
-    ParameterIndex getParameterIndexForID(ConstCharPointer paramid) const {
-        if (!stringCompare(paramid, "rate")) {
-            return 0;
-        }
-    
-        if (!stringCompare(paramid, "mode")) {
-            return 1;
-        }
-    
-        if (!stringCompare(paramid, "loop")) {
-            return 2;
-        }
-    
-        if (!stringCompare(paramid, "begin")) {
-            return 3;
-        }
-    
-        if (!stringCompare(paramid, "xfade")) {
-            return 4;
-        }
-    
-        if (!stringCompare(paramid, "end")) {
-            return 5;
-        }
-    
-        if (!stringCompare(paramid, "size")) {
-            return 6;
-        }
-    
-        if (!stringCompare(paramid, "gain")) {
-            return 7;
-        }
-    
-        if (!stringCompare(paramid, "button_obj-43/bangval")) {
-            return 8;
-        }
-    
-        if (!stringCompare(paramid, "button_obj-46/bangval")) {
-            return 9;
-        }
-    
-        if (!stringCompare(paramid, "button_obj-22/bangval")) {
-            return 10;
-        }
-    
-        return INVALID_INDEX;
     }
     
     Index getNumMidiInputPorts() const {
@@ -7154,13 +6968,6 @@ class RNBOSubpatcher_20 : public PatcherInterfaceImpl {
         );//#map:layer4//_obj-15:1
     }
     
-    void data_04_sizeout_set(number v) {
-        this->data_04_sizeout = v;
-        this->expr_10_in1_set(v);
-    }
-    
-    void data_04_chanout_set(number ) {}
-    
     void expr_10_in2_set(number v) {
         this->expr_10_in2 = v;
         this->expr_10_in1_set(this->expr_10_in1);
@@ -7181,6 +6988,13 @@ class RNBOSubpatcher_20 : public PatcherInterfaceImpl {
     
     void data_04_srout_set(number v) {
         this->expr_11_in1_set(v);
+    }
+    
+    void data_04_chanout_set(number ) {}
+    
+    void data_04_sizeout_set(number v) {
+        this->data_04_sizeout = v;
+        this->expr_10_in1_set(v);
     }
     
     void data_04_info_bang() {
@@ -7560,9 +7374,9 @@ class RNBOSubpatcher_20 : public PatcherInterfaceImpl {
     }
     
     void data_04_report() {
-        this->data_04_sizeout_set(this->data_04_buffer->getSize());
-        this->data_04_chanout_set(this->data_04_buffer->getChannels());
         this->data_04_srout_set(this->data_04_buffer->getSampleRate());
+        this->data_04_chanout_set(this->data_04_buffer->getChannels());
+        this->data_04_sizeout_set(this->data_04_buffer->getSize());
     }
     
     Index data_04_evaluateSizeExpr(number samplerate, number vectorsize) {
@@ -7698,6 +7512,7 @@ class RNBOSubpatcher_20 : public PatcherInterfaceImpl {
         data_04_sizeout = 0;
         data_04_size = 0;
         data_04_sizems = 0;
+        data_04_normalize = 0.995;
         data_04_channels = 1;
         param_28_value = 0;
         expr_11_in1 = 0;
@@ -7785,6 +7600,7 @@ class RNBOSubpatcher_20 : public PatcherInterfaceImpl {
         number data_04_sizeout;
         number data_04_size;
         number data_04_sizems;
+        number data_04_normalize;
         number data_04_channels;
         number param_28_value;
         number expr_11_in1;
@@ -7917,46 +7733,6 @@ number mstobeats(number ms) {
 
 MillisecondTime sampstoms(number samps) {
     return samps * 1000 / this->sr;
-}
-
-ParameterIndex getParameterIndexForID(ConstCharPointer paramid) const {
-    if (!stringCompare(paramid, "rec-layer")) {
-        return 0;
-    }
-
-    if (!stringCompare(paramid, "rec-mon")) {
-        return 1;
-    }
-
-    if (!stringCompare(paramid, "rec-mode")) {
-        return 2;
-    }
-
-    if (!stringCompare(paramid, "rec-gain")) {
-        return 3;
-    }
-
-    if (!stringCompare(paramid, "rec-loop")) {
-        return 4;
-    }
-
-    if (!stringCompare(paramid, "rec-begin")) {
-        return 5;
-    }
-
-    if (!stringCompare(paramid, "rec-end")) {
-        return 6;
-    }
-
-    if (!stringCompare(paramid, "toggle_obj-40/value")) {
-        return 7;
-    }
-
-    if (!stringCompare(paramid, "number_obj-58/value")) {
-        return 8;
-    }
-
-    return INVALID_INDEX;
 }
 
 Index getNumMidiInputPorts() const {
@@ -8165,19 +7941,19 @@ Index getPatcherSerial() const {
 void getState(PatcherStateInterface& ) {}
 
 void setState() {
-    this->p_01 = new RNBOSubpatcher_17();
+    this->p_01 = new RNBOSubpatcher_46();
     this->p_01->setEngineAndPatcher(this->getEngine(), this);
     this->p_01->initialize();
     this->p_01->setParameterOffset(this->getParameterOffset(this->p_01));
-    this->p_02 = new RNBOSubpatcher_18();
+    this->p_02 = new RNBOSubpatcher_47();
     this->p_02->setEngineAndPatcher(this->getEngine(), this);
     this->p_02->initialize();
     this->p_02->setParameterOffset(this->getParameterOffset(this->p_02));
-    this->p_03 = new RNBOSubpatcher_19();
+    this->p_03 = new RNBOSubpatcher_48();
     this->p_03->setEngineAndPatcher(this->getEngine(), this);
     this->p_03->initialize();
     this->p_03->setParameterOffset(this->getParameterOffset(this->p_03));
-    this->p_04 = new RNBOSubpatcher_20();
+    this->p_04 = new RNBOSubpatcher_49();
     this->p_04->setEngineAndPatcher(this->getEngine(), this);
     this->p_04->initialize();
     this->p_04->setParameterOffset(this->getParameterOffset(this->p_04));
@@ -10877,10 +10653,10 @@ void assign_defaults()
     Index isMuted;
     indexlist paramInitIndices;
     indexlist paramInitOrder;
-    RNBOSubpatcher_17* p_01;
-    RNBOSubpatcher_18* p_02;
-    RNBOSubpatcher_19* p_03;
-    RNBOSubpatcher_20* p_04;
+    RNBOSubpatcher_46* p_01;
+    RNBOSubpatcher_47* p_02;
+    RNBOSubpatcher_48* p_03;
+    RNBOSubpatcher_49* p_04;
 
 };
 

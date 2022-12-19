@@ -173,10 +173,11 @@ struct ParameterInfo {
 };
 
 struct DataType {
-    RNBO::DataType::Type type = RNBO::DataType::Untyped;
-    // for audio buffers
+    int type = RNBO::DataType::Untyped;
+
+	// for audio buffers
     size_t channels = 0;
-		RNBO::number sampleRate = 0;
+	RNBO::number sampleRate = 0;
 };
 
 struct DataRefData {
@@ -470,6 +471,7 @@ public:
     {
         auto ref = _engine->getPatcher().getDataRef(index);
         ref->setData(nullptr, 0);
+		_engine->getPatcher().processDataViewUpdate(index, _engine->getCurrentTime());
     }
 
     uintptr_t getArrayPassingHEAP(size_t size)
@@ -615,8 +617,13 @@ EMSCRIPTEN_BINDINGS(rnbo) {
     value_object<DataType>("DataType")
         .field("type", &DataType::type)
         .field("channels", &DataType::channels)
-        .field("samplerate", &DataType::sampleRate)
+        .field("sampleRate", &DataType::sampleRate)
     ;
+
+	value_object<DataRefData>("DataRefData")
+		.field("data", &DataRefData::data)
+		.field("sizeInBytes", &DataRefData::sizeInBytes)
+	;
 
     class_<CoreObjectWrapper>("CoreObject")
         .constructor<>()

@@ -28,4 +28,5 @@ add_subdirectory(dlyd)
 add_subdirectory(ldrf)
 add_subdirectory(loop)
 add_subdirectory(gra4)
+add_subdirectory(sfft)
 

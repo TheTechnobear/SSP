@@ -89,7 +89,7 @@ target_sources(LOOP
         PRIVATE
         Source/PluginEditor.cpp
         Source/PluginProcessor.cpp
-        rnbo-export/rnbo_source.cpp
+        rnbo-export/loop.cpp
         rnbo-export/rnbo/RNBO.cpp
         ${COMMON_SRC}
         )

@@ -1,0 +1,153 @@
+{
+	"filetype" : "C74Snapshot",
+	"version" : 2,
+	"minorversion" : 0,
+	"name" : "gra4",
+	"origin" : "gra4",
+	"type" : "rnbo",
+	"subtype" : "",
+	"embed" : 1,
+	"snapshot" : 	{
+		"__sps" : 		{
+			"layer4" : 			{
+				"size" : 				{
+					"value" : 1.0
+				}
+,
+				"pan" : 				{
+					"value" : 1.0
+				}
+,
+				"start" : 				{
+					"value" : 0.0
+				}
+,
+				"rate" : 				{
+					"value" : 1.0
+				}
+,
+				"gain" : 				{
+					"value" : 1.0
+				}
+,
+				"len" : 				{
+					"value" : 1.0
+				}
+
+			}
+,
+			"layer2" : 			{
+				"size" : 				{
+					"value" : 1.0
+				}
+,
+				"pan" : 				{
+					"value" : 1.0
+				}
+,
+				"start" : 				{
+					"value" : 0.0
+				}
+,
+				"rate" : 				{
+					"value" : 1.0
+				}
+,
+				"gain" : 				{
+					"value" : 1.0
+				}
+,
+				"len" : 				{
+					"value" : 1.0
+				}
+
+			}
+,
+			"layer3" : 			{
+				"size" : 				{
+					"value" : 1.0
+				}
+,
+				"pan" : 				{
+					"value" : 1.0
+				}
+,
+				"start" : 				{
+					"value" : 0.0
+				}
+,
+				"rate" : 				{
+					"value" : 1.0
+				}
+,
+				"gain" : 				{
+					"value" : 1.0
+				}
+,
+				"len" : 				{
+					"value" : 1.0
+				}
+
+			}
+,
+			"layer1" : 			{
+				"size" : 				{
+					"value" : 32.0
+				}
+,
+				"pan" : 				{
+					"value" : 0.0
+				}
+,
+				"start" : 				{
+					"value" : 0.0
+				}
+,
+				"rate" : 				{
+					"value" : 1.0
+				}
+,
+				"gain" : 				{
+					"value" : 7.0
+				}
+,
+				"len" : 				{
+					"value" : 0.1
+				}
+
+			}
+
+		}
+,
+		"rec-begin" : 		{
+			"value" : 0.0
+		}
+,
+		"rec-mode" : 		{
+			"value" : 0.0
+		}
+,
+		"rec-loop" : 		{
+			"value" : 1.0
+		}
+,
+		"rec-gain" : 		{
+			"value" : 1.0
+		}
+,
+		"rec-mon" : 		{
+			"value" : 100.0
+		}
+,
+		"rec-end" : 		{
+			"value" : 1.0
+		}
+,
+		"rec-layer" : 		{
+			"value" : 0.0
+		}
+,
+		"__presetid" : "gra4"
+	}
+
+}

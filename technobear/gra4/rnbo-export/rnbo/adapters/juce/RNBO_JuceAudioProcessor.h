@@ -117,6 +117,12 @@ namespace RNBO {
 		bool									_isSettingPresetAsync = false;
 		//rnbo might have some invisible parameters that aren't given to juce, so we map the rnbo index to the juce index
 		std::unordered_map<RNBO::ParameterIndex, int> _rnboParamIndexToJuceParamIndex;
+
+		double _lastBPM = -1.0;
+		int _lastTimeSigNumerator = 0;
+		int _lastTimeSigDenominator = 0;
+		double _lastPpqPosition = -1.0;
+		bool _lastIsPlaying = false;
 	};
 
 

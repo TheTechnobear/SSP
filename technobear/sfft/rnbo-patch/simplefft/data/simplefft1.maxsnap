@@ -1,0 +1,37 @@
+{
+	"filetype" : "C74Snapshot",
+	"version" : 2,
+	"minorversion" : 0,
+	"name" : "simplefft1",
+	"origin" : "simplefft1",
+	"type" : "rnbo",
+	"subtype" : "",
+	"embed" : 1,
+	"snapshot" : 	{
+		"__sps" : 		{
+			"p_obj-53" : 			{
+
+			}
+,
+			"p_obj-47" : 			{
+
+			}
+,
+			"p_obj-50" : 			{
+
+			}
+,
+			"p_obj-44" : 			{
+
+			}
+,
+			"p_obj-32" : 			{
+
+			}
+
+		}
+,
+		"__presetid" : "simplefft1"
+	}
+
+}

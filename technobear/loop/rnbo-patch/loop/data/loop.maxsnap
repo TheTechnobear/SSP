@@ -1,0 +1,185 @@
+{
+	"filetype" : "C74Snapshot",
+	"version" : 2,
+	"minorversion" : 0,
+	"name" : "loop",
+	"origin" : "loop",
+	"type" : "rnbo",
+	"subtype" : "",
+	"embed" : 0,
+	"snapshot" : 	{
+		"__sps" : 		{
+			"layer4" : 			{
+				"xfade" : 				{
+					"value" : 1.0
+				}
+,
+				"gain" : 				{
+					"value" : 1.0
+				}
+,
+				"loop" : 				{
+					"value" : 1.0
+				}
+,
+				"begin" : 				{
+					"value" : 0.0
+				}
+,
+				"size" : 				{
+					"value" : 10.0
+				}
+,
+				"mode" : 				{
+					"value" : 0.0
+				}
+,
+				"end" : 				{
+					"value" : 1.0
+				}
+,
+				"rate" : 				{
+					"value" : 1.0
+				}
+
+			}
+,
+			"layer3" : 			{
+				"xfade" : 				{
+					"value" : 1.0
+				}
+,
+				"gain" : 				{
+					"value" : 1.0
+				}
+,
+				"loop" : 				{
+					"value" : 1.0
+				}
+,
+				"begin" : 				{
+					"value" : 0.0
+				}
+,
+				"size" : 				{
+					"value" : 2.0
+				}
+,
+				"mode" : 				{
+					"value" : 1.0
+				}
+,
+				"end" : 				{
+					"value" : 1.0
+				}
+,
+				"rate" : 				{
+					"value" : 1.0
+				}
+
+			}
+,
+			"layer2" : 			{
+				"xfade" : 				{
+					"value" : 1.0
+				}
+,
+				"gain" : 				{
+					"value" : 1.0
+				}
+,
+				"loop" : 				{
+					"value" : 1.0
+				}
+,
+				"begin" : 				{
+					"value" : 0.0
+				}
+,
+				"size" : 				{
+					"value" : 10.0
+				}
+,
+				"mode" : 				{
+					"value" : 0.0
+				}
+,
+				"end" : 				{
+					"value" : 1.0
+				}
+,
+				"rate" : 				{
+					"value" : 1.0
+				}
+
+			}
+,
+			"layer1" : 			{
+				"xfade" : 				{
+					"value" : 1.0
+				}
+,
+				"gain" : 				{
+					"value" : 1.0
+				}
+,
+				"loop" : 				{
+					"value" : 1.0
+				}
+,
+				"begin" : 				{
+					"value" : 0.0
+				}
+,
+				"size" : 				{
+					"value" : 3.0
+				}
+,
+				"mode" : 				{
+					"value" : 1.0
+				}
+,
+				"end" : 				{
+					"value" : 1.0
+				}
+,
+				"rate" : 				{
+					"value" : 1.0
+				}
+
+			}
+
+		}
+,
+		"rec-begin" : 		{
+			"value" : 0.0
+		}
+,
+		"rec-mode" : 		{
+			"value" : 0.0
+		}
+,
+		"rec-loop" : 		{
+			"value" : 1.0
+		}
+,
+		"rec-gain" : 		{
+			"value" : 1.0
+		}
+,
+		"rec-mon" : 		{
+			"value" : 100.0
+		}
+,
+		"rec-end" : 		{
+			"value" : 0.0
+		}
+,
+		"rec-layer" : 		{
+			"value" : 0.0
+		}
+,
+		"__presetid" : "loop"
+	}
+
+}

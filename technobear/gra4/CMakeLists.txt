@@ -89,7 +89,7 @@ target_sources(GRA4
         PRIVATE
         Source/PluginEditor.cpp
         Source/PluginProcessor.cpp
-        rnbo-export/rnbo_source.cpp
+        rnbo-export/gra4.cpp
         rnbo-export/rnbo/RNBO.cpp
         ${COMMON_SRC}
         )

@@ -42,17 +42,17 @@ namespace RNBO {
 class rnbomatic : public PatcherInterfaceImpl {
 public:
 
-class RNBOSubpatcher_98 : public PatcherInterfaceImpl {
+class RNBOSubpatcher_68 : public PatcherInterfaceImpl {
     
     friend class rnbomatic;
     
     public:
     
-    RNBOSubpatcher_98()
+    RNBOSubpatcher_68()
     {
     }
     
-    ~RNBOSubpatcher_98()
+    ~RNBOSubpatcher_68()
     {
     }
     
@@ -321,34 +321,6 @@ class RNBOSubpatcher_98 : public PatcherInterfaceImpl {
     number hann(number x) {
         x = (x > 1 ? 1 : (x < 0 ? 0 : x));
         return 0.5 * (1 - rnbo_cos(6.28318530717958647692 * x));
-    }
-    
-    ParameterIndex getParameterIndexForID(ConstCharPointer paramid) const {
-        if (!stringCompare(paramid, "start")) {
-            return 0;
-        }
-    
-        if (!stringCompare(paramid, "len")) {
-            return 1;
-        }
-    
-        if (!stringCompare(paramid, "gain")) {
-            return 2;
-        }
-    
-        if (!stringCompare(paramid, "rate")) {
-            return 3;
-        }
-    
-        if (!stringCompare(paramid, "pan")) {
-            return 4;
-        }
-    
-        if (!stringCompare(paramid, "size")) {
-            return 5;
-        }
-    
-        return INVALID_INDEX;
     }
     
     Index getNumMidiInputPorts() const {
@@ -4815,17 +4787,17 @@ class RNBOSubpatcher_98 : public PatcherInterfaceImpl {
     
 };
 
-class RNBOSubpatcher_99 : public PatcherInterfaceImpl {
+class RNBOSubpatcher_69 : public PatcherInterfaceImpl {
     
     friend class rnbomatic;
     
     public:
     
-    RNBOSubpatcher_99()
+    RNBOSubpatcher_69()
     {
     }
     
-    ~RNBOSubpatcher_99()
+    ~RNBOSubpatcher_69()
     {
     }
     
@@ -5094,34 +5066,6 @@ class RNBOSubpatcher_99 : public PatcherInterfaceImpl {
     number hann(number x) {
         x = (x > 1 ? 1 : (x < 0 ? 0 : x));
         return 0.5 * (1 - rnbo_cos(6.28318530717958647692 * x));
-    }
-    
-    ParameterIndex getParameterIndexForID(ConstCharPointer paramid) const {
-        if (!stringCompare(paramid, "start")) {
-            return 0;
-        }
-    
-        if (!stringCompare(paramid, "len")) {
-            return 1;
-        }
-    
-        if (!stringCompare(paramid, "gain")) {
-            return 2;
-        }
-    
-        if (!stringCompare(paramid, "rate")) {
-            return 3;
-        }
-    
-        if (!stringCompare(paramid, "pan")) {
-            return 4;
-        }
-    
-        if (!stringCompare(paramid, "size")) {
-            return 5;
-        }
-    
-        return INVALID_INDEX;
     }
     
     Index getNumMidiInputPorts() const {
@@ -9588,17 +9532,17 @@ class RNBOSubpatcher_99 : public PatcherInterfaceImpl {
     
 };
 
-class RNBOSubpatcher_100 : public PatcherInterfaceImpl {
+class RNBOSubpatcher_70 : public PatcherInterfaceImpl {
     
     friend class rnbomatic;
     
     public:
     
-    RNBOSubpatcher_100()
+    RNBOSubpatcher_70()
     {
     }
     
-    ~RNBOSubpatcher_100()
+    ~RNBOSubpatcher_70()
     {
     }
     
@@ -9867,34 +9811,6 @@ class RNBOSubpatcher_100 : public PatcherInterfaceImpl {
     number hann(number x) {
         x = (x > 1 ? 1 : (x < 0 ? 0 : x));
         return 0.5 * (1 - rnbo_cos(6.28318530717958647692 * x));
-    }
-    
-    ParameterIndex getParameterIndexForID(ConstCharPointer paramid) const {
-        if (!stringCompare(paramid, "start")) {
-            return 0;
-        }
-    
-        if (!stringCompare(paramid, "len")) {
-            return 1;
-        }
-    
-        if (!stringCompare(paramid, "gain")) {
-            return 2;
-        }
-    
-        if (!stringCompare(paramid, "rate")) {
-            return 3;
-        }
-    
-        if (!stringCompare(paramid, "pan")) {
-            return 4;
-        }
-    
-        if (!stringCompare(paramid, "size")) {
-            return 5;
-        }
-    
-        return INVALID_INDEX;
     }
     
     Index getNumMidiInputPorts() const {
@@ -14361,17 +14277,17 @@ class RNBOSubpatcher_100 : public PatcherInterfaceImpl {
     
 };
 
-class RNBOSubpatcher_101 : public PatcherInterfaceImpl {
+class RNBOSubpatcher_71 : public PatcherInterfaceImpl {
     
     friend class rnbomatic;
     
     public:
     
-    RNBOSubpatcher_101()
+    RNBOSubpatcher_71()
     {
     }
     
-    ~RNBOSubpatcher_101()
+    ~RNBOSubpatcher_71()
     {
     }
     
@@ -14640,34 +14556,6 @@ class RNBOSubpatcher_101 : public PatcherInterfaceImpl {
     number hann(number x) {
         x = (x > 1 ? 1 : (x < 0 ? 0 : x));
         return 0.5 * (1 - rnbo_cos(6.28318530717958647692 * x));
-    }
-    
-    ParameterIndex getParameterIndexForID(ConstCharPointer paramid) const {
-        if (!stringCompare(paramid, "start")) {
-            return 0;
-        }
-    
-        if (!stringCompare(paramid, "len")) {
-            return 1;
-        }
-    
-        if (!stringCompare(paramid, "gain")) {
-            return 2;
-        }
-    
-        if (!stringCompare(paramid, "rate")) {
-            return 3;
-        }
-    
-        if (!stringCompare(paramid, "pan")) {
-            return 4;
-        }
-    
-        if (!stringCompare(paramid, "size")) {
-            return 5;
-        }
-    
-        return INVALID_INDEX;
     }
     
     Index getNumMidiInputPorts() const {
@@ -19215,42 +19103,6 @@ MillisecondTime sampstoms(number samps) {
     return samps * 1000 / this->sr;
 }
 
-ParameterIndex getParameterIndexForID(ConstCharPointer paramid) const {
-    if (!stringCompare(paramid, "rec-layer")) {
-        return 0;
-    }
-
-    if (!stringCompare(paramid, "rec-mon")) {
-        return 1;
-    }
-
-    if (!stringCompare(paramid, "rec-mode")) {
-        return 2;
-    }
-
-    if (!stringCompare(paramid, "rec-gain")) {
-        return 3;
-    }
-
-    if (!stringCompare(paramid, "rec-loop")) {
-        return 4;
-    }
-
-    if (!stringCompare(paramid, "rec-begin")) {
-        return 5;
-    }
-
-    if (!stringCompare(paramid, "rec-end")) {
-        return 6;
-    }
-
-    if (!stringCompare(paramid, "toggle_obj-40/value")) {
-        return 7;
-    }
-
-    return INVALID_INDEX;
-}
-
 Index getNumMidiInputPorts() const {
     return 0;
 }
@@ -19473,19 +19325,19 @@ Index getPatcherSerial() const {
 void getState(PatcherStateInterface& ) {}
 
 void setState() {
-    this->p_01 = new RNBOSubpatcher_98();
+    this->p_01 = new RNBOSubpatcher_68();
     this->p_01->setEngineAndPatcher(this->getEngine(), this);
     this->p_01->initialize();
     this->p_01->setParameterOffset(this->getParameterOffset(this->p_01));
-    this->p_02 = new RNBOSubpatcher_99();
+    this->p_02 = new RNBOSubpatcher_69();
     this->p_02->setEngineAndPatcher(this->getEngine(), this);
     this->p_02->initialize();
     this->p_02->setParameterOffset(this->getParameterOffset(this->p_02));
-    this->p_03 = new RNBOSubpatcher_100();
+    this->p_03 = new RNBOSubpatcher_70();
     this->p_03->setEngineAndPatcher(this->getEngine(), this);
     this->p_03->initialize();
     this->p_03->setParameterOffset(this->getParameterOffset(this->p_03));
-    this->p_04 = new RNBOSubpatcher_101();
+    this->p_04 = new RNBOSubpatcher_71();
     this->p_04->setEngineAndPatcher(this->getEngine(), this);
     this->p_04->initialize();
     this->p_04->setParameterOffset(this->getParameterOffset(this->p_04));
@@ -21921,10 +21773,10 @@ void assign_defaults()
     Index isMuted;
     indexlist paramInitIndices;
     indexlist paramInitOrder;
-    RNBOSubpatcher_98* p_01;
-    RNBOSubpatcher_99* p_02;
-    RNBOSubpatcher_100* p_03;
-    RNBOSubpatcher_101* p_04;
+    RNBOSubpatcher_68* p_01;
+    RNBOSubpatcher_69* p_02;
+    RNBOSubpatcher_70* p_03;
+    RNBOSubpatcher_71* p_04;
 
 };
 
