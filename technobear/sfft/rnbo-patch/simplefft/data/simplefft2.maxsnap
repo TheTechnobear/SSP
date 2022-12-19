@@ -3,7 +3,7 @@
 	"version" : 2,
 	"minorversion" : 0,
 	"name" : "simplefft2",
-	"origin" : "simplefft2",
+	"origin" : "simplefft",
 	"type" : "rnbo",
 	"subtype" : "",
 	"embed" : 1,
@@ -13,11 +13,19 @@
 
 			}
 ,
+			"p_obj-50" : 			{
+
+			}
+,
+			"p_obj-32" : 			{
+
+			}
+,
 			"p_obj-47" : 			{
 
 			}
 ,
-			"p_obj-50" : 			{
+			"calcgainpitch[1]" : 			{
 
 			}
 ,
@@ -25,13 +33,13 @@
 
 			}
 ,
-			"p_obj-32" : 			{
+			"calcgainpitch" : 			{
 
 			}
 
 		}
 ,
-		"__presetid" : "simplefft2"
+		"__presetid" : "simplefft"
 	}
 
 }

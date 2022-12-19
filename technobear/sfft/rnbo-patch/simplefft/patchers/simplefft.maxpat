@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 495.0, 98.0, 738.0, 750.0 ],
+		"rect" : [ 399.0, 499.0, 738.0, 750.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,12 +40,96 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-42",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 305.0, 514.0, 29.5, 22.0 ],
+					"text" : "*~"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-41",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 223.0, 514.0, 29.5, 22.0 ],
+					"text" : "*~"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-40",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 223.0, 577.0, 29.5, 22.0 ],
+					"text" : "+~"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-36",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 305.0, 446.0, 39.0, 22.0 ],
+					"text" : "mtof~"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-37",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 305.0, 478.0, 66.0, 22.0 ],
+					"text" : "cycle~ 440"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-38",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 305.0, 419.0, 39.0, 22.0 ],
+					"text" : "+~ 60"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-39",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 305.0, 389.0, 37.0, 22.0 ],
+					"text" : "*~ 60"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-16",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 227.0, 429.0, 39.0, 22.0 ],
+					"patching_rect" : [ 223.0, 446.0, 39.0, 22.0 ],
 					"text" : "mtof~"
 				}
 
@@ -69,7 +153,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 161.0, 415.0, 39.0, 22.0 ],
+					"patching_rect" : [ 223.0, 419.0, 39.0, 22.0 ],
 					"text" : "+~ 60"
 				}
 
@@ -81,7 +165,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 161.0, 385.0, 37.0, 22.0 ],
+					"patching_rect" : [ 223.0, 389.0, 37.0, 22.0 ],
 					"text" : "*~ 60"
 				}
 
@@ -95,7 +179,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 121.0, 478.0, 22.0, 140.0 ]
+					"patching_rect" : [ 121.5, 478.0, 22.0, 140.0 ]
 				}
 
 			}
@@ -130,7 +214,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 143.0, 176.0, 32.0, 22.0 ],
+					"patching_rect" : [ 127.0, 139.0, 32.0, 22.0 ],
 					"text" : "mtof"
 				}
 
@@ -156,7 +240,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "int", "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 93.0, 66.0, 336.0, 53.0 ]
+					"patching_rect" : [ 104.0, 57.0, 336.0, 53.0 ]
 				}
 
 			}
@@ -167,8 +251,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 133.0, 228.0, 66.0, 22.0 ],
-					"text" : "cycle~ 440"
+					"patching_rect" : [ 77.5, 237.0, 66.0, 22.0 ],
+					"text" : "cycle~ 480"
 				}
 
 			}
@@ -188,7 +272,7 @@
 ,
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 12,
+					"numoutlets" : 11,
 					"outletInfo" : 					{
 						"IOInfo" : [ 							{
 								"type" : "signal",
@@ -250,17 +334,11 @@
 								"tag" : "out10",
 								"comment" : "amp-5"
 							}
-, 							{
-								"type" : "signal",
-								"index" : 11,
-								"tag" : "out11",
-								"comment" : "sync"
-							}
  ]
 					}
 ,
-					"outlettype" : [ "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "list" ],
-					"patching_rect" : [ 137.0, 312.0, 94.0, 22.0 ],
+					"outlettype" : [ "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "list" ],
+					"patching_rect" : [ 137.0, 312.0, 134.5, 22.0 ],
 					"rnboattrcache" : 					{
 
 					}
@@ -297,11 +375,19 @@
 
 								}
 ,
+								"p_obj-50" : 								{
+
+								}
+,
+								"p_obj-32" : 								{
+
+								}
+,
 								"p_obj-47" : 								{
 
 								}
 ,
-								"p_obj-50" : 								{
+								"calcgainpitch[1]" : 								{
 
 								}
 ,
@@ -309,13 +395,13 @@
 
 								}
 ,
-								"p_obj-32" : 								{
+								"calcgainpitch" : 								{
 
 								}
 
 							}
 ,
-							"__presetid" : "simplefft1"
+							"__presetid" : "simplefft"
 						}
 ,
 						"snapshotlist" : 						{
@@ -324,8 +410,8 @@
 									"filetype" : "C74Snapshot",
 									"version" : 2,
 									"minorversion" : 0,
-									"name" : "simplefft1",
-									"origin" : "simplefft1",
+									"name" : "simplefft2",
+									"origin" : "simplefft",
 									"type" : "rnbo",
 									"subtype" : "",
 									"embed" : 1,
@@ -335,11 +421,19 @@
 
 											}
 ,
+											"p_obj-50" : 											{
+
+											}
+,
+											"p_obj-32" : 											{
+
+											}
+,
 											"p_obj-47" : 											{
 
 											}
 ,
-											"p_obj-50" : 											{
+											"calcgainpitch[1]" : 											{
 
 											}
 ,
@@ -347,21 +441,21 @@
 
 											}
 ,
-											"p_obj-32" : 											{
+											"calcgainpitch" : 											{
 
 											}
 
 										}
 ,
-										"__presetid" : "simplefft1"
+										"__presetid" : "simplefft"
 									}
 ,
 									"fileref" : 									{
-										"name" : "simplefft1",
-										"filename" : "simplefft1.maxsnap",
+										"name" : "simplefft2",
+										"filename" : "simplefft2.maxsnap",
 										"filepath" : "~/projects/SSP.private/technobear/sfft/rnbo-patch/simplefft/data",
 										"filepos" : -1,
-										"snapshotfileid" : "db4694eb315952ca4d62b2624b466a07"
+										"snapshotfileid" : "b3bb86b90f43f9ed4722f0a9efb4471f"
 									}
 
 								}
@@ -370,7 +464,7 @@
 
 					}
 ,
-					"text" : "rnbo~ simplefft1",
+					"text" : "rnbo~ simplefft",
 					"varname" : "rnbo~"
 				}
 
@@ -380,6 +474,27 @@
 				"patchline" : 				{
 					"destination" : [ "obj-13", 0 ],
 					"source" : [ "obj-1", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-39", 0 ],
+					"source" : [ "obj-1", 2 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-41", 1 ],
+					"source" : [ "obj-1", 1 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-42", 1 ],
+					"source" : [ "obj-1", 3 ]
 				}
 
 			}
@@ -413,7 +528,7 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-12", 0 ],
+					"destination" : [ "obj-41", 0 ],
 					"source" : [ "obj-15", 0 ]
 				}
 
@@ -438,6 +553,55 @@
 					"destination" : [ "obj-11", 0 ],
 					"order" : 1,
 					"source" : [ "obj-2", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-37", 0 ],
+					"source" : [ "obj-36", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-42", 0 ],
+					"source" : [ "obj-37", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-36", 0 ],
+					"source" : [ "obj-38", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-38", 0 ],
+					"source" : [ "obj-39", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-12", 0 ],
+					"source" : [ "obj-40", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-40", 0 ],
+					"source" : [ "obj-41", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-40", 1 ],
+					"source" : [ "obj-42", 0 ]
 				}
 
 			}
@@ -480,17 +644,17 @@
 		}
 ,
 		"dependency_cache" : [ 			{
-				"name" : "simplefft1.maxsnap",
-				"bootpath" : "~/projects/SSP.private/technobear/sfft/rnbo-patch/simplefft/data",
-				"patcherrelativepath" : "../data",
-				"type" : "mx@s",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "simplefft1.rnbopat",
+				"name" : "simplefft.rnbopat",
 				"bootpath" : "~/projects/SSP.private/technobear/sfft/rnbo-patch/simplefft/patchers",
 				"patcherrelativepath" : ".",
 				"type" : "RBOP",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "simplefft2.maxsnap",
+				"bootpath" : "~/projects/SSP.private/technobear/sfft/rnbo-patch/simplefft/data",
+				"patcherrelativepath" : "../data",
+				"type" : "mx@s",
 				"implicit" : 1
 			}
  ],
