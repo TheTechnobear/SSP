@@ -114,9 +114,10 @@ const String PluginProcessor::getInputBusName(int channelIndex) {
 //    RNBO::CoreObject rnboObj_;
 //    unsigned I_MAX = rnboObj_.getNumInputChannels();
 //    if (channelIndex < I_MAX) { return "In " + String(channelIndex); }
-//    return "ZZIn-" + String(channelIndex);
     switch( channelIndex) {
-        case 0 : return "Audio In";
+        case 0 : return "In";
+        case 1 : return "Freq";
+        case 2 : return "Width";
         default :
             ;
     }
@@ -128,14 +129,9 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 //    RNBO::CoreObject rnboObj_;
 //    unsigned O_MAX = rnboObj_.getNumOutputChannels();
 //    if (channelIndex < O_MAX) { return "Out " + String(channelIndex); }
-//    return "ZZOut-" + String(channelIndex);
-    switch(channelIndex % 2) {
-        case 0 : {
-            return "V/Oct " + String((channelIndex / 2) + 1);
-        }
-        case 1 : {
-            return "Amp " + String((channelIndex / 2) + 1);
-        }
+    switch( channelIndex) {
+        case 0 : return "Out";
+        case 1 : return "Aux";
         default :
             ;
     }

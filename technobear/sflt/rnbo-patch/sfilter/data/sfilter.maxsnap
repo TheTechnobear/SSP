@@ -1,0 +1,22 @@
+{
+	"filetype" : "C74Snapshot",
+	"version" : 2,
+	"minorversion" : 0,
+	"name" : "sfilter",
+	"origin" : "sfilter",
+	"type" : "rnbo",
+	"subtype" : "",
+	"embed" : 0,
+	"snapshot" : 	{
+		"freq" : 		{
+			"value" : 0.945205479452055
+		}
+,
+		"width" : 		{
+			"value" : 0.843444227005871
+		}
+,
+		"__presetid" : "sfilter"
+	}
+
+}
