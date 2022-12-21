@@ -130,6 +130,9 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
     RNBO::CoreObject rnboObj_;
     unsigned O_MAX = rnboObj_.getNumOutputChannels();
     if(channelIndex < O_MAX) {
+        if(channelIndex == (O_MAX-2)) {
+            return "Sum";
+        }
         if(channelIndex == (O_MAX-1)) {
             return "Aux";
         }

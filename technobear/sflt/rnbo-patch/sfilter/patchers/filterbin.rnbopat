@@ -48,7 +48,7 @@
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 323.0, 80.0, 38.0, 23.0 ],
 					"rnbo_classname" : "*~",
-					"rnbo_serial" : 6,
+					"rnbo_serial" : 1,
 					"rnbo_uniqueid" : "*~_obj-5",
 					"text" : "*~ #2"
 				}
@@ -63,7 +63,7 @@
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 746.75, 80.0, 38.0, 23.0 ],
 					"rnbo_classname" : "*~",
-					"rnbo_serial" : 5,
+					"rnbo_serial" : 2,
 					"rnbo_uniqueid" : "*~_obj-4",
 					"text" : "*~ #2"
 				}
@@ -78,7 +78,7 @@
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 51.5, 500.0, 29.5, 23.0 ],
 					"rnbo_classname" : "*~",
-					"rnbo_serial" : 1,
+					"rnbo_serial" : 3,
 					"rnbo_uniqueid" : "*~_obj-3",
 					"text" : "*~"
 				}
@@ -93,7 +93,7 @@
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 51.5, 450.0, 29.5, 23.0 ],
 					"rnbo_classname" : "*~",
-					"rnbo_serial" : 2,
+					"rnbo_serial" : 4,
 					"rnbo_uniqueid" : "*~_obj-2",
 					"text" : "*~"
 				}
@@ -205,7 +205,7 @@
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 737.75, 412.0, 74.0, 23.0 ],
 					"rnbo_classname" : "clamp~",
-					"rnbo_serial" : 2,
+					"rnbo_serial" : 1,
 					"rnbo_uniqueid" : "clamp~_obj-36",
 					"text" : "clamp~ 0 #2"
 				}
@@ -220,7 +220,7 @@
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 323.0, 412.0, 76.0, 23.0 ],
 					"rnbo_classname" : "clamp~",
-					"rnbo_serial" : 3,
+					"rnbo_serial" : 2,
 					"rnbo_uniqueid" : "clamp~_obj-16",
 					"text" : "clamp~ 0. #2"
 				}
@@ -289,23 +289,23 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 793.75, 80.0, 296.0, 23.0 ],
+					"patching_rect" : [ 793.75, 80.0, 314.0, 23.0 ],
 					"rnbo_classname" : "param",
 					"rnbo_extra_attributes" : 					{
-						"order" : "0",
-						"meta" : "",
-						"preset" : 1,
+						"displayorder" : "-",
+						"tonormalized" : "",
 						"minimum" : 0.0,
+						"meta" : "",
+						"exponent" : 1.0,
+						"unit" : "",
+						"preset" : 1,
+						"order" : "0",
+						"fromnormalized" : "",
+						"sendinit" : 1,
+						"ctlin" : 0.0,
 						"enum" : "",
 						"steps" : 0.0,
-						"ctlin" : 0.0,
-						"tonormalized" : "",
-						"displayorder" : "-",
-						"exponent" : 1.0,
-						"maximum" : 1.0,
-						"unit" : "",
-						"fromnormalized" : "",
-						"sendinit" : 1
+						"maximum" : 1.0
 					}
 ,
 					"rnbo_serial" : 5,
@@ -699,7 +699,7 @@
 						"changesPatcherIO" : 0
 					}
 ,
-					"text" : "param width 0 @displayname Width @min 0. @max #2",
+					"text" : "param width 0 @displayname Width-#1 @min 0. @max #2",
 					"varname" : "width"
 				}
 
@@ -711,27 +711,27 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 381.0, 80.0, 282.0, 23.0 ],
+					"patching_rect" : [ 381.0, 80.0, 285.0, 23.0 ],
 					"rnbo_classname" : "param",
 					"rnbo_extra_attributes" : 					{
-						"order" : "0",
-						"meta" : "",
-						"preset" : 1,
+						"displayorder" : "-",
+						"tonormalized" : "",
 						"minimum" : 0.0,
+						"meta" : "",
+						"exponent" : 1.0,
+						"unit" : "",
+						"preset" : 1,
+						"order" : "0",
+						"fromnormalized" : "",
+						"sendinit" : 1,
+						"ctlin" : 0.0,
 						"enum" : "",
 						"steps" : 0.0,
-						"ctlin" : 0.0,
-						"tonormalized" : "",
-						"displayorder" : "-",
-						"exponent" : 1.0,
-						"maximum" : 1.0,
-						"unit" : "",
-						"fromnormalized" : "",
-						"sendinit" : 1
+						"maximum" : 1.0
 					}
 ,
-					"rnbo_serial" : 8,
-					"rnbo_uniqueid" : "start",
+					"rnbo_serial" : 4,
+					"rnbo_uniqueid" : "bin",
 					"rnboinfo" : 					{
 						"needsInstanceInfo" : 1,
 						"argnames" : 						{
@@ -1121,8 +1121,8 @@
 						"changesPatcherIO" : 0
 					}
 ,
-					"text" : "param start 0 @displayname Start @min 0. @max #2",
-					"varname" : "start"
+					"text" : "param bin 0 @displayname Bin-#1 @min 0. @max #2",
+					"varname" : "bin"
 				}
 
 			}
@@ -1234,7 +1234,7 @@
 						"meta" : ""
 					}
 ,
-					"rnbo_serial" : 4,
+					"rnbo_serial" : 2,
 					"rnbo_uniqueid" : "in~_obj-17",
 					"rnboinfo" : 					{
 						"needsInstanceInfo" : 1,
