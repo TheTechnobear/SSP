@@ -8,12 +8,95 @@
 	"subtype" : "",
 	"embed" : 0,
 	"snapshot" : 	{
-		"freq" : 		{
-			"value" : 0.945205479452055
-		}
+		"__sps" : 		{
+			"f4" : 			{
+				"width" : 				{
+					"value" : 511.0
+				}
 ,
-		"width" : 		{
-			"value" : 0.843444227005871
+				"start" : 				{
+					"value" : 0.0
+				}
+
+			}
+,
+			"f8" : 			{
+				"width" : 				{
+					"value" : 511.0
+				}
+,
+				"start" : 				{
+					"value" : 0.0
+				}
+
+			}
+,
+			"f3" : 			{
+				"width" : 				{
+					"value" : 511.0
+				}
+,
+				"start" : 				{
+					"value" : 0.0
+				}
+
+			}
+,
+			"f7" : 			{
+				"width" : 				{
+					"value" : 511.0
+				}
+,
+				"start" : 				{
+					"value" : 0.0
+				}
+
+			}
+,
+			"f2" : 			{
+				"width" : 				{
+					"value" : 0.0
+				}
+,
+				"start" : 				{
+					"value" : 0.0
+				}
+
+			}
+,
+			"f6" : 			{
+				"width" : 				{
+					"value" : 511.0
+				}
+,
+				"start" : 				{
+					"value" : 0.0
+				}
+
+			}
+,
+			"f1" : 			{
+				"width" : 				{
+					"value" : 72.0
+				}
+,
+				"start" : 				{
+					"value" : 0.0
+				}
+
+			}
+,
+			"f5" : 			{
+				"width" : 				{
+					"value" : 511.0
+				}
+,
+				"start" : 				{
+					"value" : 0.0
+				}
+
+			}
+
 		}
 ,
 		"__presetid" : "sfilter"

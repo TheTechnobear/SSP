@@ -2,7 +2,7 @@
 	"name" : "sfilter",
 	"version" : 1,
 	"creationdate" : 3754391114,
-	"modificationdate" : 3754391139,
+	"modificationdate" : 3754467217,
 	"viewrect" : [ 25.0, 106.0, 300.0, 500.0 ],
 	"autoorganize" : 1,
 	"hideprojectwindow" : 0,
@@ -15,6 +15,24 @@
 				"local" : 1,
 				"toplevel" : 1
 			}
+,
+			"sfilter.rnbopat" : 			{
+				"kind" : "rnbopat",
+				"local" : 1
+			}
+,
+			"filterbin.rnbopat" : 			{
+				"kind" : "rnbopat",
+				"local" : 1
+			}
+
+		}
+,
+		"media" : 		{
+
+		}
+,
+		"data" : 		{
 
 		}
 

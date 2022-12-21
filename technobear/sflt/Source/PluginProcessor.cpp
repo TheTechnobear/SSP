@@ -111,29 +111,30 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 }
 
 const String PluginProcessor::getInputBusName(int channelIndex) {
-//    RNBO::CoreObject rnboObj_;
-//    unsigned I_MAX = rnboObj_.getNumInputChannels();
-//    if (channelIndex < I_MAX) { return "In " + String(channelIndex); }
     switch( channelIndex) {
         case 0 : return "In";
-        case 1 : return "Freq";
-        case 2 : return "Width";
-        default :
-            ;
+        default : {
+            unsigned f =  ((channelIndex - 1) / 2) + 1;
+            if(((channelIndex-1)  % 2) == 0) {
+                return "Bin " + String(f);
+            } else {
+                return "Width " + String(f);
+            }
+        }
     }
     return "ZZIn-" + String(channelIndex);
 }
 
 
 const String PluginProcessor::getOutputBusName(int channelIndex) {
-//    RNBO::CoreObject rnboObj_;
-//    unsigned O_MAX = rnboObj_.getNumOutputChannels();
-//    if (channelIndex < O_MAX) { return "Out " + String(channelIndex); }
-    switch( channelIndex) {
-        case 0 : return "Out";
-        case 1 : return "Aux";
-        default :
-            ;
+    RNBO::CoreObject rnboObj_;
+    unsigned O_MAX = rnboObj_.getNumOutputChannels();
+    if(channelIndex < O_MAX) {
+        if(channelIndex == (O_MAX-1)) {
+            return "Aux";
+        }
+        return "Out" + String(channelIndex +1);
+        return "Out" + String(channelIndex +1);
     }
     return "ZZOut-" + String(channelIndex);
 }
