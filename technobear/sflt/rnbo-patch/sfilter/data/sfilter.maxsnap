@@ -88,11 +88,11 @@
 ,
 			"f1" : 			{
 				"width" : 				{
-					"value" : 16.0
+					"value" : 14.0
 				}
 ,
 				"bin" : 				{
-					"value" : 4.0
+					"value" : 0.0
 				}
 
 			}

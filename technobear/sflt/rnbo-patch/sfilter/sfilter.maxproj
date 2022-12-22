@@ -2,7 +2,7 @@
 	"name" : "sfilter",
 	"version" : 1,
 	"creationdate" : 3754391114,
-	"modificationdate" : 3754467217,
+	"modificationdate" : 3754558806,
 	"viewrect" : [ 25.0, 106.0, 300.0, 500.0 ],
 	"autoorganize" : 1,
 	"hideprojectwindow" : 0,
@@ -23,6 +23,11 @@
 ,
 			"filterbin.rnbopat" : 			{
 				"kind" : "rnbopat",
+				"local" : 1
+			}
+,
+			"test.maxpat" : 			{
+				"kind" : "patcher",
 				"local" : 1
 			}
 

@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 396.0, 234.0, 1501.0, 1076.0 ],
+		"rect" : [ 487.0, 162.0, 1501.0, 1076.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -85,18 +85,6 @@
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 73.0, 160.0, 29.5, 22.0 ],
 					"text" : "+~"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-27",
-					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 126.518885731697083, 101.0, 66.0, 22.0 ],
-					"text" : "cycle~ 220"
 				}
 
 			}
@@ -1160,18 +1148,6 @@
 					"outlettype" : [ "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "signal", "list" ],
 					"patching_rect" : [ 77.509435892105103, 623.056603729724884, 394.0, 22.0 ],
 					"rnboattrcache" : 					{
-						"f1/width" : 						{
-							"label" : "width",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"f2/bin" : 						{
-							"label" : "bin",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
 						"f7/bin" : 						{
 							"label" : "bin",
 							"isEnum" : 0,
@@ -1184,7 +1160,7 @@
 							"parsestring" : ""
 						}
 ,
-						"f5/width" : 						{
+						"f7/width" : 						{
 							"label" : "width",
 							"isEnum" : 0,
 							"parsestring" : ""
@@ -1196,8 +1172,14 @@
 							"parsestring" : ""
 						}
 ,
-						"f3/width" : 						{
-							"label" : "width",
+						"f4/bin" : 						{
+							"label" : "bin",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"f1/bin" : 						{
+							"label" : "bin",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
@@ -1214,7 +1196,7 @@
 							"parsestring" : ""
 						}
 ,
-						"f7/width" : 						{
+						"f4/width" : 						{
 							"label" : "width",
 							"isEnum" : 0,
 							"parsestring" : ""
@@ -1226,8 +1208,20 @@
 							"parsestring" : ""
 						}
 ,
-						"f1/bin" : 						{
+						"f1/width" : 						{
+							"label" : "width",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"f2/bin" : 						{
 							"label" : "bin",
+							"isEnum" : 0,
+							"parsestring" : ""
+						}
+,
+						"f5/width" : 						{
+							"label" : "width",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
@@ -1244,14 +1238,8 @@
 							"parsestring" : ""
 						}
 ,
-						"f4/width" : 						{
+						"f3/width" : 						{
 							"label" : "width",
-							"isEnum" : 0,
-							"parsestring" : ""
-						}
-,
-						"f4/bin" : 						{
-							"label" : "bin",
 							"isEnum" : 0,
 							"parsestring" : ""
 						}
@@ -1365,11 +1353,11 @@
 ,
 								"f1" : 								{
 									"width" : 									{
-										"value" : 16.0
+										"value" : 14.0
 									}
 ,
 									"bin" : 									{
-										"value" : 4.0
+										"value" : 0.0
 									}
 
 								}
@@ -1471,11 +1459,11 @@
 ,
 											"f1" : 											{
 												"width" : 												{
-													"value" : 16.0
+													"value" : 14.0
 												}
 ,
 												"bin" : 												{
-													"value" : 4.0
+													"value" : 0.0
 												}
 
 											}
@@ -1535,7 +1523,7 @@
 				"patchline" : 				{
 					"destination" : [ "obj-3", 1 ],
 					"order" : 1,
-					"source" : [ "obj-1", 8 ]
+					"source" : [ "obj-1", 9 ]
 				}
 
 			}
@@ -1607,6 +1595,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-59", 1 ],
+					"order" : 0,
 					"source" : [ "obj-1", 9 ]
 				}
 
@@ -1614,7 +1603,6 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-59", 0 ],
-					"order" : 0,
 					"source" : [ "obj-1", 8 ]
 				}
 
@@ -1759,13 +1747,6 @@
 					"destination" : [ "obj-32", 0 ],
 					"order" : 1,
 					"source" : [ "obj-25", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-28", 1 ],
-					"source" : [ "obj-27", 0 ]
 				}
 
 			}
