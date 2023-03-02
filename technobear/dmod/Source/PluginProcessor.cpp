@@ -6,6 +6,19 @@
 #include <dlfcn.h>
 
 
+#include <fstream>
+
+void log(const std::string& m) {
+#ifdef __APPLE__
+    juce::Logger::writeToLog(m);
+#else
+    std::ofstream s( "/dev/kmsg" );
+    s << m << std::endl;
+#endif
+}
+
+
+
 #ifdef __APPLE__
 const static int  dlopenmode = RTLD_LOCAL | RTLD_NOW;
 #else
@@ -49,12 +62,12 @@ PluginProcessor::PluginProcessor(
     init();
 
 
-    bool scan = true;
+    bool scan = false;
     if (scan) {
         scanPlugins();
     } else {
         // Logger::writeToLog("plugin scan : SKIPPED");
-#ifndef __APPLE__
+#ifdef __APPLE__
         std::string path = "/Users/kodiak/Library/Audio/Plug-Ins/VST3/";
         supportedModules.push_back(path + "clds.vst3/Contents/MacOS/clds");
         supportedModules.push_back(path + "plts.vst3/Contents/MacOS/plts");
@@ -141,11 +154,13 @@ bool PluginProcessor::checkPlugin(const std::string &f) {
         }
         dlclose(fHandle);
     }
+
     return supported;
 }
 
 
 void PluginProcessor::scanPlugins() {
+    log("plugin scan : STARTED");
     // Logger::writeToLog("plugin scan : STARTED");
 
     // build list of files to consider
@@ -168,12 +183,10 @@ void PluginProcessor::scanPlugins() {
                                                        false, "*.so",
                                                        File::findFiles)) {
         if (!entry.isHidden()) {
-            fileList.push_back(entry.getFile().getFileName().toStdString());
+            fileList.push_back(entry.getFile().getFullPathName().toStdString());
         }
     }
 #endif
-
-
     // check for modules supporting compact ui
     for (const auto &fname: fileList) {
         if (checkPlugin(fname)) {
@@ -182,8 +195,10 @@ void PluginProcessor::scanPlugins() {
     }
 
     // Logger::writeToLog("plugin scan : COMPLETED");
-    for (const auto &module: supportedModules) {
+    log("plugin scan : COMPLETED");
+     for (const auto &module: supportedModules) {
         // Logger::writeToLog(module);
+        log(module);
     }
 }
 
