@@ -31,6 +31,8 @@ message("using VSTSDK  :  ${VSTSDK}")
 
 juce_set_vst2_sdk_path(${VSTSDK})
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DJUCE_DISABLE_JUCE_VERSION_PRINTING=1")
+
 
 add_subdirectory(daisySP)
 add_subdirectory(technobear)

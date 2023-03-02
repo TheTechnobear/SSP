@@ -60,8 +60,8 @@ public:
 
     bool isInputEnabled(unsigned i) { return i < numIn && inputEnabled[i]; }
 
-    void setMidiIn(const std::string& name);
-    void setMidiOut(const std::string& name);
+    void setMidiIn(const std::string &name);
+    void setMidiOut(const std::string &name);
 
 
     bool isActiveMidiIn(const std::string &name) { return midiInDeviceName_ == name; }
@@ -78,14 +78,16 @@ public:
 
     int midiChannel() { return midiChannel_; }
 
+    void useCompactUI(bool b) { compactEditor_ = b; }
+
 protected:
     friend class BaseEditor;
 
     friend class SystemEditor;
 
     //FIXME : or at least clean up!
-    static constexpr unsigned numIn=24;
-    static constexpr unsigned numOut=24;
+    static constexpr unsigned numIn = 24;
+    static constexpr unsigned numOut = 24;
 
     AudioProcessorValueTreeState apvts;
     bool inputEnabled[numIn];
@@ -109,7 +111,7 @@ protected:
     // AudioProcessorListener
     void audioProcessorParameterChanged(AudioProcessor *p, int parameterIndex, float newValue) override;
 
-    void audioProcessorChanged(AudioProcessor *processor, const AudioProcessorListener::ChangeDetails& details) override { ; }
+    void audioProcessorChanged(AudioProcessor *processor, const AudioProcessorListener::ChangeDetails &details) override { ; }
 
     // MidiInputCallback
     void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message) override;
@@ -146,7 +148,7 @@ protected:
         void recall(XmlElement *);
     };
 
-    void automateParam(int idx,const MidiAutomation& a, const MidiMessage &msg);
+    void automateParam(int idx, const MidiAutomation &a, const MidiMessage &msg);
 
     std::map<int, MidiAutomation> midiAutomation_;
 
@@ -160,12 +162,14 @@ protected:
 
     MidiAutomation lastLearn_;
 
+    bool compactEditor_ = false;
+
 public:
     std::map<int, MidiAutomation> &midiAutomation() { return midiAutomation_; }
 
 private:
-    std::string getMidiInputDeviceId(const std::string& name);
-    std::string getMidiOutputDeviceId(const std::string& name);
+    std::string getMidiInputDeviceId(const std::string &name);
+    std::string getMidiOutputDeviceId(const std::string &name);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BaseProcessor)
 };

@@ -44,6 +44,9 @@ public:
     void onRightShiftButton(bool v) override;
     void onSSPTimer() override;
 
+
+    BaseEditor* getEditorView() { return editor_;}
+
 private:
     void drawMenuBox(Graphics &g);
     void drawButtonBox(Graphics &g);

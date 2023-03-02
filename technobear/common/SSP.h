@@ -4,6 +4,10 @@
 
 #include <algorithm>
 
+typedef void(*pfnApiExtensions)(bool&);
+
+
+
 inline float cv2Pitch(float r) {
     static constexpr float p1 = 0.0f; // first C note
     static constexpr float p2 = 0.2f; // second C note

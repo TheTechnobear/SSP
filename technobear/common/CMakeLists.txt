@@ -1,5 +1,6 @@
 set(COMMON_SRC
         ../common/SSP.cpp
+        ../common/SSPApiEditor.cpp
         ../common/ssp/EditorHost.cpp
         ../common/ssp/BaseEditor.cpp
         ../common/ssp/SystemEditor.cpp
@@ -20,5 +21,4 @@ set(COMMON_SRC
         ../common/ssp/FileBrowser.cpp
         ../common/ssp/TextEdit.cpp
         ../common/ssp/SSPUI.cpp
-
 )

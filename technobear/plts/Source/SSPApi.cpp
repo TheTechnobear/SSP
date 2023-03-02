@@ -4,14 +4,31 @@
 
 extern "C" __attribute__ ((visibility("default")))
 Percussa::SSP::PluginDescriptor *createDescriptor() {
-    auto desc=SSP_createDescriptor();
+    auto desc = new Percussa::SSP::PluginDescriptor;
+    SSP_defaultDescriptor(desc);
     desc->colour = Colours::aqua.getARGB();
     return desc;
 }
 
 extern "C" __attribute__ ((visibility("default")))
 Percussa::SSP::PluginInterface *createInstance() {
+#ifdef JUCE_DEBUG
+    if (msgThreadManager == nullptr) msgThreadManager = new MsgThreadManager;
+#endif
     return new SSP_PluginInterface(new PluginProcessor());
-
 }
 
+// Supports thetechnobear extensions
+extern "C" __attribute__ ((visibility("default")))
+bool apiExtensions() {
+    return true;
+}
+
+extern "C" __attribute__ ((visibility("default")))
+Percussa::SSP::PluginDescriptor *createExtendedDescriptor() {
+    auto desc = new SSPExtendedApi::PluginDescriptor;
+    SSP_defaultDescriptor(desc);
+    desc->colour = Colours::aqua.getARGB();
+    desc->supportCompactUI_ = true;
+    return desc;
+}
