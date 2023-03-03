@@ -3,7 +3,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"
-#include "ssp/LineParamEditor.h"
+#include "ssp/editors/LineParamEditor.h"
 
 class PluginEditor : public ssp::LineParamEditor {
 public:

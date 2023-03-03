@@ -1,24 +1,29 @@
+include_directories("${PROJECT_SOURCE_DIR}/../common")
+
 set(COMMON_SRC
         ../common/SSP.cpp
-        ../common/SSPApiEditor.cpp
-        ../common/ssp/EditorHost.cpp
-        ../common/ssp/BaseEditor.cpp
-        ../common/ssp/SystemEditor.cpp
-        ../common/ssp/BaseViewEditor.cpp
-        ../common/ssp/SingleViewEditor.cpp
-        ../common/ssp/MultiViewEditor.cpp
-        ../common/ssp/MultiBarEditor.cpp
-        ../common/ssp/LineParamEditor.cpp
-        ../common/ssp/TableParamEditor.cpp
-        ../common/ssp/BarParamEditor.cpp
+        ../common/ssp/BaseView.cpp
         ../common/ssp/BaseProcessor.cpp
-        ../common/ssp/ParamControl.cpp
-        ../common/ssp/ParamButton.cpp
-        ../common/ssp/ValueControl.cpp
-        ../common/ssp/ValueButton.cpp
-        ../common/ssp/RmsTrack.cpp
-        ../common/ssp/VuMeter.cpp
-        ../common/ssp/FileBrowser.cpp
-        ../common/ssp/TextEdit.cpp
+        ../common/ssp/SystemEditor.cpp
+        ../common/ssp/EditorHost.cpp
         ../common/ssp/SSPUI.cpp
+        ../common/SSPApiEditor.cpp
+        ../common/ssp/editors/BaseEditor.cpp
+        ../common/ssp/editors/BaseViewEditor.cpp
+        ../common/ssp/editors/MultiView.cpp
+        ../common/ssp/editors/BaseMiniView.cpp
+        ../common/ssp/editors/SingleViewEditor.cpp
+        ../common/ssp/editors/MultiViewEditor.cpp
+        ../common/ssp/editors/MultiBarEditor.cpp
+        ../common/ssp/editors/LineParamEditor.cpp
+        ../common/ssp/editors/TableParamEditor.cpp
+        ../common/ssp/editors/BarParamEditor.cpp
+        ../common/ssp/editors/FileBrowser.cpp
+        ../common/ssp/editors/TextEdit.cpp
+        ../common/ssp/controls/ParamControl.cpp
+        ../common/ssp/controls/ParamButton.cpp
+        ../common/ssp/controls/ValueControl.cpp
+        ../common/ssp/controls/ValueButton.cpp
+        ../common/ssp/controls/RmsTrack.cpp
+        ../common/ssp/controls/VuMeter.cpp
 )

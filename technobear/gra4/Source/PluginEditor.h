@@ -3,10 +3,10 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"
-#include "ssp/BaseViewEditor.h"
-#include "ssp/WaveDisp.h"
-#include "ssp/FileBrowser.h"
-#include "ssp/TextEdit.h"
+#include "ssp/editors/BaseViewEditor.h"
+#include "ssp/controls/WaveDisp.h"
+#include "ssp/editors/FileBrowser.h"
+#include "ssp/editors/TextEdit.h"
 
 
 class PluginEditor : public ssp::BaseViewEditor {

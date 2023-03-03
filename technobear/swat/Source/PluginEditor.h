@@ -3,7 +3,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"
-#include "ssp/BaseEditor.h"
+#include "ssp/editors/BaseEditor.h"
 
 class PluginEditor : public ssp::BaseEditor {
 public:

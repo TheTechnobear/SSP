@@ -1,11 +1,11 @@
 #include "MultiViewEditor.h"
 
-#include "BaseProcessor.h"
+#include "ssp/BaseProcessor.h"
 
 #include "SSP.h"
 
-#include "ParamControl.h"
-#include "ParamButton.h"
+#include "ssp/controls/ParamControl.h"
+#include "ssp/controls/ParamButton.h"
 
 namespace ssp {
 

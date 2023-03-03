@@ -1,11 +1,11 @@
 #include "BaseEditor.h"
 
-#include "BaseProcessor.h"
+#include "ssp/BaseProcessor.h"
 
 #include "SSP.h"
 
-#include "ParamControl.h"
-#include "ParamButton.h"
+#include "ssp/controls/ParamControl.h"
+#include "ssp/controls/ParamButton.h"
 
 namespace ssp {
 
@@ -14,8 +14,8 @@ static constexpr unsigned btnTopY = 380 - 1;
 static constexpr unsigned btnSpaceY = 50;
 
 
-BaseEditor::BaseEditor(BaseProcessor *p) :
-    baseProcessor_(p),
+BaseEditor::BaseEditor(BaseProcessor *p)  :
+    BaseView(p),
     leftBtn_("PG-", nullptr, 32, Colours::red), rightBtn_("PG+", nullptr, 32, Colours::red),
     upBtn_("EN-", nullptr, 32, Colours::red), downBtn_("EN+", nullptr, 32, Colours::red),
     leftShiftBtn_("LS", nullptr, 32, Colours::grey, Colours::black), rightShiftBtn_("RS", nullptr, 32, Colours::grey, Colours::black) {
@@ -29,28 +29,10 @@ BaseEditor::BaseEditor(BaseProcessor *p) :
 
     addAndMakeVisible(upBtn_);
     addAndMakeVisible(downBtn_);
-
-    startTimer(50);
 }
 
 
 BaseEditor::~BaseEditor() {
-    stopTimer();
-}
-
-void BaseEditor::timerCallback() {
-    repaint();
-}
-
-void BaseEditor::paint(Graphics &g) {
-//    drawBasicPanel(g);
-    drawView(g);
-}
-
-void BaseEditor::drawView(Graphics &g) {
-    // display 1600x 480
-    // x= left/right (0..1599)
-    // y= top/bottom (0..479)
 }
 
 void BaseEditor::setButtonBounds(ValueButton &btn, unsigned r, unsigned c) {
@@ -60,11 +42,6 @@ void BaseEditor::setButtonBounds(ValueButton &btn, unsigned r, unsigned c) {
     unsigned y = btnTopY + (r * h);
     btn.setBounds(x, y, w, h);
 }
-
-void BaseEditor::resized() {
-
-}
-
 
 void BaseEditor::setButtonBounds(unsigned idx, std::shared_ptr<ParamButton> c) {
     if (c == nullptr) return;
@@ -113,10 +90,5 @@ void BaseEditor::onLeftShiftButton(bool v) {
 void BaseEditor::onRightShiftButton(bool v) {
     rightShiftBtn_.value(v);
 }
-
-void BaseEditor::onSSPTimer() {
-
-}
-
 
 }

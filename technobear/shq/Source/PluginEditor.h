@@ -3,8 +3,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"
-#include "ssp/LineParamEditor.h"
-#include "ssp/VuMeter.h"
+#include "ssp/editors/LineParamEditor.h"
+#include "ssp/controls/VuMeter.h"
 
 class PluginEditor : public ssp::LineParamEditor {
 public:

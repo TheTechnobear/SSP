@@ -4,7 +4,8 @@
 
 using namespace juce;
 
-#include "ValueButton.h"
+#include "ssp/BaseView.h"
+#include "ssp/controls/ValueButton.h"
 
 namespace ssp {
 
@@ -17,32 +18,14 @@ class ParamButton;
 class EditorHost;
 
 
-#include "SSPActions.h"
+#include "ssp/SSPActions.h"
 
-class BaseEditor :
-    public Component,
-    public Timer,
-    public SSPActions {
+class BaseEditor : public BaseView {
 
 public:
     explicit BaseEditor(BaseProcessor *p);
     virtual ~BaseEditor();
 
-    void timerCallback() override;
-
-    void resized() override;
-
-
-//    using base_type = juce::AudioProcessorEditor;
-
-    virtual void drawView(Graphics &g);
-
-    // new for BaseViewEditor
-    virtual void editorShown() {}
-    virtual void editorHidden() {}
-
-    // ssp actions
-    friend class EditorHost;
 
     void onEncoder(unsigned enc, float v) override;
     void onEncoderSwitch(unsigned enc, bool v) override;
@@ -53,16 +36,11 @@ public:
     void onDownButton(bool v) override;
     void onLeftShiftButton(bool v) override;
     void onRightShiftButton(bool v) override;
-    void onSSPTimer() override;
 
 protected:
-
     void setButtonBounds(unsigned idx, std::shared_ptr<ParamButton>);
-
     // temp
     void setButtonBounds(ValueButton &btn, unsigned r, unsigned c);
-
-    BaseProcessor *baseProcessor_;
 
     struct ControlPage {
         std::shared_ptr<BaseParamControl> control_[4] = {nullptr, nullptr, nullptr, nullptr};
@@ -81,11 +59,7 @@ protected:
     ValueButton leftBtn_, rightBtn_, upBtn_, downBtn_;
     ValueButton leftShiftBtn_, rightShiftBtn_;
 
-    Colour defaultBg_=  Colour(0xff111111);
-
 private:
-    void paint(Graphics &) override;
-
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BaseEditor)
 };
 

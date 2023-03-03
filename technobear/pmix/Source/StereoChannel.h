@@ -4,7 +4,7 @@
 #include <assert.h>
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
-#include "ssp/VuMeter.h"
+#include "ssp/controls/VuMeter.h"
 
 class StereoChannel : public Component {
 public:

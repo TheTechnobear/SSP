@@ -3,8 +3,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"
-#include "ssp/MultiViewEditor.h"
-#include "ssp/VuMeter.h"
+#include "ssp/editors/MultiViewEditor.h"
+#include "ssp/controls/VuMeter.h"
 #include "MonoChannel.h"
 #include "StereoChannel.h"
 

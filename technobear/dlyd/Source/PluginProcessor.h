@@ -8,7 +8,7 @@
 
 #include <atomic>
 #include <algorithm>
-#include "ssp/RmsTrack.h"
+#include "ssp/controls/RmsTrack.h"
 
 
 namespace ID {

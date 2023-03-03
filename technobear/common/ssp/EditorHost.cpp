@@ -2,7 +2,7 @@
 #include "EditorHost.h"
 
 
-#include "BaseEditor.h"
+#include "BaseView.h"
 #include "BaseProcessor.h"
 #include "SSP.h"
 
@@ -13,7 +13,7 @@ static constexpr unsigned menuTopY = 200 - 1;
 static constexpr unsigned btnTopY = 380 - 1;
 static constexpr unsigned btnSpaceY = 50;
 
-EditorHost::EditorHost(BaseProcessor *p, BaseEditor *e) :
+EditorHost::EditorHost(BaseProcessor *p, BaseView *e) :
     AudioProcessorEditor(p),
     processor_(p),
     editor_(e),
@@ -82,11 +82,6 @@ void EditorHost::drawBasicPanel(Graphics &g) {
                          + String(JucePlugin_Desc)
                          + String(" @ thetechnobear"),
                          10, 30);
-
-//    g.drawSingleLineText("thetechnobear's "
-//                         + String(JucePlugin_Name) + " : "
-//                         + String(JucePlugin_Desc),
-//                         10, 30);
 
     g.setColour(Colours::grey);
     g.drawSingleLineText("v " + String(JucePlugin_VersionString), 1505, 30);

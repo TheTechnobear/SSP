@@ -4,8 +4,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"
-#include "ssp/BarParamEditor.h"
-#include "ssp/VuMeter.h"
+#include "ssp/editors/BarParamEditor.h"
+#include "ssp/controls/VuMeter.h"
 
 class PluginEditor : public ssp::BarParamEditor {
 public:

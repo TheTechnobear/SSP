@@ -3,7 +3,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"
-#include "ssp/MultiBarEditor.h"
+#include "ssp/editors/MultiBarEditor.h"
 
 class PluginEditor : public ssp::MultiBarEditor {
 public:

@@ -2,8 +2,8 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-#include "ssp/ParamControl.h"
-#include "ssp/ParamButton.h"
+#include "ssp/controls/ParamControl.h"
+#include "ssp/controls/ParamButton.h"
 
 inline float constrain(float v, float vMin, float vMax) {
     return std::max<float>(vMin, std::min<float>(vMax, v));

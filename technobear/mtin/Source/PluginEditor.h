@@ -4,7 +4,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"
-#include "ssp/BarParamEditor.h"
+#include "ssp/editors/BarParamEditor.h"
 
 class PluginEditor : public ssp::BarParamEditor {
 public:

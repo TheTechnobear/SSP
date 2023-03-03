@@ -7,7 +7,7 @@ using namespace juce;
 
 #include "SSP.h"
 
-#include "BaseParameter.h"
+#include "controls/BaseParameter.h"
 
 namespace ssp {
 

@@ -3,9 +3,9 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"
-#include "ssp/LineParamEditor.h"
-#include "ssp/LineScope.h"
-#include "ssp/XYScope.h"
+#include "ssp/editors/LineParamEditor.h"
+#include "ssp/controls/LineScope.h"
+#include "ssp/controls/XYScope.h"
 
 class PluginEditor : public ssp::LineParamEditor {
 public:

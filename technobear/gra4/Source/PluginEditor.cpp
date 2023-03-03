@@ -1,12 +1,11 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-#include "ssp/ParamControl.h"
-#include "ssp/ParamButton.h"
+#include "ssp/controls/ParamControl.h"
+#include "ssp/controls/ParamButton.h"
 
 
-//#include "ssp/SingleViewEditor.h"
-#include "ssp/BarParamEditor.h"
+#include "ssp/editors/BarParamEditor.h"
 
 
 using pcontrol_type = ssp::BarParamControl;

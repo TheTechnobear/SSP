@@ -9,7 +9,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "ssp/BaseProcessor.h"
-#include "ssp/RmsTrack.h"
+#include "ssp/controls/RmsTrack.h"
 
 #include <atomic>
 #include <algorithm>

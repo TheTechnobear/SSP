@@ -2,8 +2,8 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-#include "ssp/ParamControl.h"
-#include "ssp/ParamButton.h"
+#include "ssp/controls/ParamControl.h"
+#include "ssp/controls/ParamButton.h"
 
 using pcontrol_type = ssp::BarParamControl;
 using bcontrol_type = ssp::ParamButton;

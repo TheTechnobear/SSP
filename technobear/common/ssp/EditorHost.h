@@ -7,8 +7,8 @@ using namespace juce;
 
 #include "SSPActions.h"
 
-#include "ValueButton.h"
-#include "BaseEditor.h"
+#include "controls/ValueButton.h"
+#include "BaseView.h"
 #include "SystemEditor.h"
 #include "BaseProcessor.h"
 #include "SSPUI.h"
@@ -19,7 +19,7 @@ class EditorHost :
     public AudioProcessorEditor,
     public SSPActions {
 public:
-    explicit EditorHost(BaseProcessor *p, BaseEditor *e);
+    explicit EditorHost(BaseProcessor *p, BaseView *e);
     ~EditorHost();
 
     void paint(Graphics &g) override {
@@ -45,7 +45,7 @@ public:
     void onSSPTimer() override;
 
 
-    BaseEditor* getEditorView() { return editor_;}
+    BaseView* getEditorView() { return editor_;}
 
 private:
     void drawMenuBox(Graphics &g);
@@ -63,7 +63,7 @@ private:
     bool sysActive_ = false;
 
     BaseProcessor *processor_;
-    BaseEditor *editor_;
+    BaseView *editor_;
     SystemEditor *system_;
 
     Colour defaultBg_=  Colour(0xff111111);

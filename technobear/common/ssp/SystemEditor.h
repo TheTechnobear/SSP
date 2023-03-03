@@ -4,8 +4,8 @@
 
 using namespace juce;
 
-#include "ValueButton.h"
-#include "ValueControl.h"
+#include "controls/ValueButton.h"
+#include "controls/ValueControl.h"
 
 namespace ssp {
 

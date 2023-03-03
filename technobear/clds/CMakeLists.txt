@@ -98,6 +98,7 @@ target_sources(CLDS
         PRIVATE
         Source/PluginEditor.cpp
         Source/PluginProcessor.cpp
+        Source/PluginMiniEditor.cpp
         ${MI_SRC}
         ${COMMON_SRC}
         )

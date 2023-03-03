@@ -2,8 +2,6 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "BaseEditor.h"
-//#include "BaseView.h"
-
 
 #include <vector>
 
@@ -13,9 +11,6 @@ namespace ssp {
 
 class BaseProcessor;
 
-class BaseParamControl;
-
-class ParamButton;
 
 class BaseViewEditor :
     public BaseEditor {
