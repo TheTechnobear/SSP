@@ -7,8 +7,8 @@
 
 namespace ssp {
 
-MultiView::MultiView(BaseProcessor *p)
-    : base_type(p) {
+MultiView::MultiView(BaseProcessor *p,bool compactUI)
+    : base_type(p,compactUI) {
 }
 
 
@@ -45,22 +45,6 @@ void MultiView::addView(std::shared_ptr<base_type> view) {
     views_.push_back(view);
     view->setBounds(0, 0, 1600, 480);
     addChildComponent(view.get());
-}
-
-// default right/left buttons to view switch
-// everything else is simple redirect
-void MultiView::onLeftButton(bool v) {
-    base_type::onLeftButton(v);
-//    if(view_< 0) return;
-//    views_[view_]->onLeftButton(v);
-    previousView();
-}
-
-void MultiView::onRightButton(bool v) {
-    base_type::onRightButton(v);
-//    if(view_< 0) return;
-//    views_[view_]->onRightButton(v);
-    nextView();
 }
 
 void MultiView::drawView(Graphics &g) {
@@ -103,6 +87,17 @@ void MultiView::onButton(unsigned id, bool v) {
     base_type::onButton(id, v);
     if (view_ < 0) return;
     views_[view_]->onButton(id, v);
+}
+void MultiView::onLeftButton(bool v) {
+    base_type::onLeftButton(v);
+    if(view_< 0) return;
+    views_[view_]->onLeftButton(v);
+}
+
+void MultiView::onRightButton(bool v) {
+    base_type::onRightButton(v);
+    if(view_< 0) return;
+    views_[view_]->onRightButton(v);
 }
 
 void MultiView::onUpButton(bool v) {

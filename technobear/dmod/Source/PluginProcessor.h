@@ -52,43 +52,57 @@ public:
     static constexpr unsigned MAX_IN = I_MAX / MAX_MODULES;
     static constexpr unsigned MAX_OUT = O_MAX / MAX_MODULES;
 
-    SSPExtendedApi::PluginEditorInterface *getEditor(unsigned m) { return modules_[m].editor_; };
+    const std::string &getPluginFile(unsigned m) { return modules_[m].pluginFile_; };
+
+    SSPExtendedApi::PluginEditorInterface *getEditor(unsigned midx) {
+        auto &m = modules_[midx];
+        if(m.requestInProgress_) return nullptr; // it about to switch !
+
+        if (m.plugin_ != nullptr && m.editor_ == nullptr) {
+            m.editor_ = (SSPExtendedApi::PluginEditorInterface *) m.plugin_->getEditor();
+        }
+        return m.editor_;
+    };
 
     SSPExtendedApi::PluginInterface *getPlugin(unsigned m) { return modules_[m].plugin_; };
 
+    SSPExtendedApi::PluginDescriptor *getDescriptor(unsigned m) { return modules_[m].descriptor_; };
 
     void getStateInformation(MemoryBlock &destData) override;
     void setStateInformation(const void *data, int sizeInBytes) override;
     void onInputChanged(unsigned i, bool b) override;
     void onOutputChanged(unsigned i, bool b) override;
 
+    const std::vector<std::string> &getSupportedModules() { return supportedModules_; }
+
+    bool requestModuleChange(unsigned midx, const std::string &f);
+
 protected:
+    void loadPlugin(unsigned m, const std::string &f);
+    void scanPlugins();
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
-    void scanPlugins();
-    void loadPlugin(unsigned m, const std::string &f);
     static bool checkPlugin(const std::string &f);
-
-
 private:
 
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
         return true;
     }
 
-    std::vector<std::string> supportedModules;
+    std::vector<std::string> supportedModules_;
 
 
     struct Module {
         void alloc(
             const std::string &f,
             SSPExtendedApi::PluginInterface *p,
-            SSPExtendedApi::PluginEditorInterface *e,
             SSPExtendedApi::PluginDescriptor *d,
             void *h);
         void free();
 
         std::string pluginFile_;
+        std::string requestedModule_;
+        bool requestInProgress_ = false;
         SSPExtendedApi::PluginInterface *plugin_ = nullptr;
         SSPExtendedApi::PluginEditorInterface *editor_ = nullptr;
         SSPExtendedApi::PluginDescriptor *descriptor_ = nullptr;
@@ -97,7 +111,7 @@ private:
     };
 
     Module modules_[MAX_MODULES];
-    bool loadModule(const std::string &f, Module &m);
+    bool loadModule(std::string, Module &m);
 
 
     static const String getInputBusName(int channelIndex);

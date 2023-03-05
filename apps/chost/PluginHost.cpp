@@ -1,22 +1,25 @@
 
-#include "PluginProcessor.h"
-#include "PluginEditor.h"
-#include "ssp/EditorHost.h"
+#include "PluginHost.h"
 
 #include <dlfcn.h>
 
-
 #include <fstream>
+#include <iostream>
+
 
 void log(const std::string &m) {
 #ifdef __APPLE__
-    juce::Logger::writeToLog(m);
+    std::cerr << m << std::endl;
 #else
-    std::ofstream s( "/dev/kmsg" );
-    s << m << std::endl;
+    std::cerr << m << std::endl;
+//    std::ofstream s( "/dev/kmsg" );
+//    s << m << std::endl;
 #endif
 }
 
+void logMessage(const String &m) {
+    log(m.toStdString());
+}
 
 #ifdef __APPLE__
 const static int dlopenmode = RTLD_LOCAL | RTLD_NOW;
@@ -24,22 +27,57 @@ const static int dlopenmode = RTLD_LOCAL | RTLD_NOW;
 const static int  dlopenmode = RTLD_LOCAL | RTLD_NOW | RTLD_DEEPBIND;
 #endif
 
-void PluginProcessor::Module::alloc(
+
+static bool callbackDone = false;
+void PluginHost::audioDeviceIOCallback(const float **inputChannelData,
+                                       int numInputChannels,
+                                       float **outputChannelData,
+                                       int numOutputChannels,
+                                       int numSamples) {
+    if(!callbackDone) {
+        logMessage("audio received first callback");
+        callbackDone = true;
+    }
+    MAX_IN = numInputChannels;
+    MAX_OUT = numOutputChannels;
+
+    AudioBuffer<const float> input(inputChannelData,numInputChannels,numSamples);
+    AudioBuffer< float> output(outputChannelData,numOutputChannels,numSamples);
+//    AudioBuffer<float> output(numOutputChannels,numSamples);
+    processBlock(input,output);
+}
+
+void PluginHost::audioDeviceAboutToStart(AudioIODevice *device) {
+    logMessage("audio starting : " + device->getName());
+    prepareToPlay(getSampleRate(),getBlockSize());
+}
+
+void PluginHost::audioDeviceStopped() {
+    logMessage("audio stopped");
+}
+
+void PluginHost::audioDeviceError(const String &errorMessage) {
+    logMessage("audio error : " + errorMessage);
+}
+
+
+void PluginHost::Module::alloc(
     const std::string &f,
     SSPExtendedApi::PluginInterface *p,
+    SSPExtendedApi::PluginEditorInterface *e,
     SSPExtendedApi::PluginDescriptor *d,
     void *h) {
     pluginFile_ = f;
     plugin_ = p;
+    editor_ = e;
     descriptor_ = d;
     dlHandle_ = h;
-    requestedModule_ = f;
-    requestInProgress_ = false;
 }
 
 
-void PluginProcessor::Module::free() {
+void PluginHost::Module::free() {
     if (plugin_) delete plugin_;
+//    if(editor_) delete editor_; // plugin owns and deletes
     if (descriptor_) delete descriptor_;
     if (dlHandle_) dlclose(dlHandle_);
     plugin_ = nullptr;
@@ -47,65 +85,71 @@ void PluginProcessor::Module::free() {
     dlHandle_ = nullptr;
     descriptor_ = nullptr;
     pluginFile_ = "";
-    requestedModule_ = "";
-    requestInProgress_ = false;
 }
 
 
-PluginProcessor::PluginProcessor()
-    : PluginProcessor(getBusesProperties(), createParameterLayout()) {}
-
-PluginProcessor::PluginProcessor(
-    const AudioProcessor::BusesProperties &ioLayouts,
-    AudioProcessorValueTreeState::ParameterLayout layout)
-    : BaseProcessor(ioLayouts, std::move(layout)) {
-    init();
-
+PluginHost::PluginHost(int argc, char *argv[]) {
 
     bool scan = false;
+    if (argc > 1) {
+        scan = !strcmp(argv[1], "scan");
+    }
+
+    deviceManager_.initialiseWithDefaultDevices(MAX_IN, MAX_OUT);
+    dumpDeviceInfo();
+
+    AudioDeviceManager::AudioDeviceSetup audioSetup;
+    deviceManager_.getAudioDeviceSetup(audioSetup);
+    audioSetup.sampleRate = sampleRate_;
+    audioSetup.bufferSize = blockSize_;
+    deviceManager_.setAudioDeviceSetup(audioSetup,true);
+
+    dumpDeviceInfo();
+    auto *device = deviceManager_.getCurrentAudioDevice();
+    sampleRate_ = device->getCurrentSampleRate();
+    blockSize_ = device->getCurrentBufferSizeSamples();
+    inputBuffer_.setSize(MAX_IN, getBlockSize());
+    outputBuffer_.setSize(MAX_OUT, getBlockSize());
+
+
+
     if (scan) {
         scanPlugins();
     } else {
         // Logger::writeToLog("plugin scan : SKIPPED");
 #ifdef __APPLE__
         std::string path = "/Users/kodiak/Library/Audio/Plug-Ins/VST3/";
-        supportedModules_.push_back(path + "clds.vst3/Contents/MacOS/clds");
-        supportedModules_.push_back(path + "plts.vst3/Contents/MacOS/plts");
+//        supportedModules.push_back(path + "clds.vst3/Contents/MacOS/clds");
+        supportedModules.push_back(path + "plts.vst3/Contents/MacOS/plts");
 #else
         std::string path = "/media/BOOT/plugins/";
-        supportedModules_.push_back(path + "clds.so");
-        supportedModules_.push_back(path + "plts.so");
+//        supportedModules.push_back(path + "clds.so");
+        supportedModules.push_back(path + "plts.so");
 #endif
 
     }
 
-    loadPlugin(0, supportedModules_[0]);
-    loadPlugin(1, supportedModules_[1]);
+    loadPlugin(0, supportedModules[0]);
+//    loadPlugin(1, supportedModules[1]);
+
+    deviceManager_.addAudioCallback(this);
+
 }
 
-PluginProcessor::~PluginProcessor() {
+PluginHost::~PluginHost() {
     for (auto &module: modules_) {
         module.free();
     }
+    deviceManager_.removeAudioCallback(this);
 }
 
 
-bool PluginProcessor::requestModuleChange(unsigned midx, const std::string &f) {
-    auto &module = modules_[midx];
-    if (!module.requestInProgress_) {
-        module.requestedModule_ = f;
-        module.requestInProgress_ = true;
-    }
-    return false;
-}
-
-
-void PluginProcessor::loadPlugin(unsigned m, const std::string &f) {
+void PluginHost::loadPlugin(unsigned m, const std::string &f) {
+    modules_[m].free();
     loadModule(f, modules_[m]);
 }
 
-bool PluginProcessor::loadModule(std::string f, PluginProcessor::Module &m) {
-    m.free();
+bool PluginHost::loadModule(const std::string &f, PluginHost::Module &m) {
     auto fHandle = dlopen(f.c_str(), dlopenmode);
 //    auto fnVersion = (Percussa::SSP::VersionFun) dlsym(fHandle, Percussa::SSP::getApiVersionName);
 //    auto fnCreateDescriptor = (Percussa::SSP::DescriptorFun) dlsym(fHandle, Percussa::SSP::createDescriptorName);
@@ -122,7 +166,9 @@ bool PluginProcessor::loadModule(std::string f, PluginProcessor::Module &m) {
                     auto pluginInterace = fnCreateInterface();
                     auto *plugin = (SSPExtendedApi::PluginInterface *) pluginInterace;
                     plugin->useCompactUI(true);
-                    m.alloc(f, plugin, desc, fHandle);
+                    auto *editor = (SSPExtendedApi::PluginEditorInterface *) plugin->getEditor();
+                    m.alloc(f, plugin, editor, desc, fHandle);
+
 
                     // prepare for play
                     int inSz = m.descriptor_->inputChannelNames.size();
@@ -136,7 +182,7 @@ bool PluginProcessor::loadModule(std::string f, PluginProcessor::Module &m) {
                     if (SR != 0) {
                         plugin->prepare(SR, m.audioSampleBuffer_.getNumSamples());
                     }
-
+                    log("plugin loaded : " + f);
                     return true;
                 }
                 delete desc;
@@ -144,10 +190,12 @@ bool PluginProcessor::loadModule(std::string f, PluginProcessor::Module &m) {
         }
         dlclose(fHandle);
     }
+    log("unable to load : " + f);
+
     return false;
 }
 
-bool PluginProcessor::checkPlugin(const std::string &f) {
+bool PluginHost::checkPlugin(const std::string &f) {
     bool supported = false;
     auto fHandle = dlopen(f.c_str(), dlopenmode); // macOS does now have deepbind
     if (fHandle) {
@@ -167,7 +215,7 @@ bool PluginProcessor::checkPlugin(const std::string &f) {
 }
 
 
-void PluginProcessor::scanPlugins() {
+void PluginHost::scanPlugins() {
     log("plugin scan : STARTED");
     // Logger::writeToLog("plugin scan : STARTED");
 
@@ -198,48 +246,20 @@ void PluginProcessor::scanPlugins() {
     // check for modules supporting compact ui
     for (const auto &fname: fileList) {
         if (checkPlugin(fname)) {
-            supportedModules_.push_back(fname);
+            supportedModules.push_back(fname);
         }
     }
 
     // Logger::writeToLog("plugin scan : COMPLETED");
     log("plugin scan : COMPLETED");
-    for (const auto &module: supportedModules_) {
+    for (const auto &module: supportedModules) {
         // Logger::writeToLog(module);
         log(module);
     }
 }
 
 
-AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLayout() {
-    AudioProcessorValueTreeState::ParameterLayout params;
-    BaseProcessor::addBaseParameters(params);
-    return params;
-}
-
-const String PluginProcessor::getInputBusName(int channelIndex) {
-    String bname =
-        String("M")
-        + String(channelIndex / MAX_IN)
-        + String("_P")
-        + String(channelIndex % MAX_IN);
-    return bname;
-}
-
-
-const String PluginProcessor::getOutputBusName(int channelIndex) {
-    String bname =
-        String("M")
-        + String(channelIndex / MAX_OUT)
-        + String("_P")
-        + String(channelIndex % MAX_OUT);
-    return bname;
-}
-
-void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
-    BaseProcessor::prepareToPlay(sampleRate, samplesPerBlock);
-
-
+void PluginHost::prepareToPlay(double sampleRate, int samplesPerBlock) {
     // buffers are allocated in loadModule, but sampleRate or blocksize could change
     // so these may need updating
     for (auto &m: modules_) {
@@ -252,17 +272,9 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
     }
 }
 
-void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
-    size_t n = buffer.getNumSamples();
+void PluginHost::processBlock(AudioBuffer<const float> &in, AudioBuffer<float>& out) {
+    size_t n = in.getNumSamples();
     int modIdx = 0;
-    for (auto &m: modules_) {
-        if (m.requestInProgress_) {
-            if (m.pluginFile_ != m.requestedModule_) {
-                loadModule(m.requestedModule_, m);
-            }
-            m.requestInProgress_ = false;
-        }
-    }
 
     // prepare input & process audio
     for (auto &m: modules_) {
@@ -272,7 +284,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         int chOffset = modIdx * MAX_IN;
         int nCh = m.descriptor_->inputChannelNames.size();
         for (unsigned i = 0; i < nCh && i < MAX_IN; i++) {
-            m.audioSampleBuffer_.copyFrom(i, 0, buffer.getReadPointer(i + chOffset), n);
+            m.audioSampleBuffer_.copyFrom(i, 0, in.getReadPointer(i + chOffset), n);
         }
         float **buffers = m.audioSampleBuffer_.getArrayOfWritePointers();
         plugin->process(buffers, nCh, n);
@@ -290,117 +302,35 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         int nCh = m.descriptor_->outputChannelNames.size();
         for (unsigned i = 0; i < MAX_OUT; i++) {
             if (i < nCh) {
-                buffer.copyFrom(i + chOffset, 0, m.audioSampleBuffer_.getReadPointer(i), n);
+                out.copyFrom(i + chOffset, 0, m.audioSampleBuffer_.getReadPointer(i), n);
             } else {
                 // zero output where not enough channels
-                buffer.applyGain(i + chOffset, 0, n, 0.0f);
+                out.applyGain(i + chOffset, 0, n, 0.0f);
             }
         }
         modIdx++;
     }
 }
 
-void PluginProcessor::onInputChanged(unsigned i, bool b) {
-    if (i >= MAX_IN) return;
 
-    int midx = i / MAX_IN;
-    int ch = i % MAX_IN;
-    auto plugin = modules_[midx].plugin_;
-    if (!plugin) return;
 
-    if (ch < modules_[midx].descriptor_->inputChannelNames.size()) {
-        plugin->inputEnabled(ch, b);
+void PluginHost::dumpDeviceInfo() {
+    logMessage("--------------------------------------");
+    logMessage("Current audio device type: " + (deviceManager_.getCurrentDeviceTypeObject() != nullptr
+                                                ? deviceManager_.getCurrentDeviceTypeObject()->getTypeName()
+                                                : "<none>"));
+
+    if (auto *device = deviceManager_.getCurrentAudioDevice()) {
+        logMessage("Current audio device: " + device->getName().quoted());
+        logMessage("Sample rate: " + juce::String(device->getCurrentSampleRate()) + " Hz");
+        logMessage("Block size: " + juce::String(device->getCurrentBufferSizeSamples()) + " samples");
+        logMessage("Bit depth: " + juce::String(device->getCurrentBitDepth()));
+        logMessage("Input channel names: " + device->getInputChannelNames().joinIntoString(", "));
+//        logMessage ("Active input channels: "  + getListOfActiveBits (device->getActiveInputChannels()));
+        logMessage("Output channel names: " + device->getOutputChannelNames().joinIntoString(", "));
+//        logMessage ("Active output channels: " + getListOfActiveBits (device->getActiveOutputChannels()));
+    } else {
+        logMessage("No audio device open");
     }
 }
-
-void PluginProcessor::onOutputChanged(unsigned i, bool b) {
-    if (i >= MAX_OUT) return;
-
-    int midx = i / MAX_OUT;
-    int ch = i % MAX_OUT;
-    auto plugin = modules_[midx].plugin_;
-    if (!plugin) return;
-
-    if (ch < modules_[midx].descriptor_->outputChannelNames.size()) {
-        plugin->outputEnabled(ch, b);
-    }
-}
-
-void PluginProcessor::getStateInformation(MemoryBlock &destData) {
-    // store plugin information
-    return;
-
-    // TODO - incomplete
-
-    void *data[MAX_MODULES] = {nullptr, nullptr};
-    size_t dataSz[MAX_MODULES] = {0, 0};
-    int destSize = 0;
-
-    // TODO MORE
-    // 1. need to store plugin name
-    // 2. need to store data size for each plugin, as we need it when loading
-
-    int i = 0;
-    for (auto &m: modules_) {
-        auto &plugin = m.plugin_;
-        if (!plugin) continue;
-
-        plugin->getState(&data[i], &dataSz[i]);
-        destSize += dataSz[i];
-        i++;
-    }
-
-    int offset = 0;
-    destData.setSize(destSize);
-    for (int i = 0; i < MAX_MODULES; i++) {
-        if (data[i] == nullptr) continue;
-        destData.copyFrom(data[i], offset, dataSz[i]);
-        offset += dataSz[i];
-    }
-}
-
-
-void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
-    // restore plugin state
-    // TODO : Incomplete
-
-    return;
-
-    MemoryBlock srcData(data, sizeInBytes);
-
-    int nModules = 0;
-    std::string moduleName[MAX_MODULES];
-    size_t dataSz[MAX_MODULES] = {0, 0};
-    // TODO
-    // deserialise name & data sz
-    // loadModule using module name
-    // restore data using size
-
-    int offset = 0;
-    for (int i = 0; i < MAX_MODULES; i++) {
-        auto fname = moduleName[i];
-        loadPlugin(i, fname);
-
-        auto &plugin = modules_[i].plugin_;
-        if (!plugin) continue;
-
-        MemoryBlock moduleData;
-        moduleData.setSize(dataSz[i]);
-        moduleData.copyFrom(srcData.getData(), offset, dataSz[i]);
-        offset += dataSz[i];
-        plugin->setState(moduleData.getData(), moduleData.getSize());
-    }
-}
-
-AudioProcessorEditor *PluginProcessor::createEditor() {
-    static constexpr bool useSysEditor = false, defaultDraw = false;
-    return new ssp::EditorHost(this,
-                               new PluginEditor(*this),
-                               useCompactUI(), useSysEditor, defaultDraw);
-}
-
-AudioProcessor *JUCE_CALLTYPE createPluginFilter() {
-    return new PluginProcessor();
-}
-
 

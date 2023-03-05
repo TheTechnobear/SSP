@@ -18,21 +18,30 @@ class BaseView :
     public SSPActions {
 
 public:
-    explicit BaseView(BaseProcessor *p);
+    explicit BaseView(BaseProcessor *p, bool compactUI);
     virtual ~BaseView();
 
     void timerCallback() override;
 
     void resized() override;
 
-
-//    using base_type = juce::AudioProcessorEditor;
-
     virtual void drawView(Graphics &g);
 
-    // new for BaseViewEditor
     virtual void editorShown() {}
     virtual void editorHidden() {}
+
+    // SSPActions
+    void onEncoder(unsigned id, float v) override {}
+    void onEncoderSwitch(unsigned id, bool v) override {};
+    void onButton(unsigned id, bool v) override {};
+    void onUpButton(bool v) override {};
+    void onDownButton(bool v) override {};
+    void onLeftButton(bool v) override {};
+    void onRightButton(bool v) override {};
+    void onLeftShiftButton(bool v) override {};
+    void onRightShiftButton(bool v) override {};
+
+
 
     // ssp actions
     friend class EditorHost;
@@ -43,6 +52,7 @@ protected:
     BaseProcessor *baseProcessor_;
 
     Colour defaultBg_=  Colour(0xff111111);
+    bool compactUI_=false;
 
 private:
     void paint(Graphics &) override;

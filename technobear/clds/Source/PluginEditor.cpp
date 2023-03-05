@@ -4,8 +4,6 @@
 #include "ssp/controls/ParamControl.h"
 #include "ssp/controls/ParamButton.h"
 
-//using pcontrol_type = ssp::SimpleParamControl;
-//using pcontrol_type = ssp::LineParamControl;
 using pcontrol_type = ssp::BarParamControl;
 using bcontrol_type = ssp::ParamButton;
 
@@ -56,8 +54,6 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 
     addAndMakeVisible(inVu_);
     addAndMakeVisible(outVu_);
-
-    setSize(1600, 480);
 }
 
 void PluginEditor::onEncoder(unsigned enc, float v) {

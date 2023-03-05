@@ -1,6 +1,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "PluginMiniEditor.h"
 #include "ssp/EditorHost.h"
 
 inline float constrainFloat(float v, float vMin, float vMax) {
@@ -233,7 +234,12 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 }
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
-    return new ssp::EditorHost(this,new PluginEditor(*this));
+    if(useCompactUI()) {
+        return new ssp::EditorHost(this, new PluginMiniEditor(*this),useCompactUI());
+
+    } else {
+        return new ssp::EditorHost(this, new PluginEditor(*this),useCompactUI());
+    }
 }
 
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {

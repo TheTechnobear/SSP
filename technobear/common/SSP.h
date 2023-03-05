@@ -1,12 +1,20 @@
-#pragma once 
+#pragma once
 
-#include "../../ssp-sdk/Percussa.h"
+//#include "../../ssp-sdk/Percussa.h"
 
 #include <algorithm>
 
-typedef void(*pfnApiExtensions)(bool&);
+static constexpr unsigned SSP_FULL_WIDTH = 1600;
+static constexpr unsigned SSP_FULL_HEIGHT = 480;
 
+#ifdef QSP
+static constexpr unsigned SSP_COMPACT_SCALE = 1;
+#else
+static constexpr unsigned SSP_COMPACT_SCALE = 2;
+#endif
 
+static constexpr unsigned SSP_COMPACT_WIDTH = 320 * SSP_COMPACT_SCALE;
+static constexpr unsigned SSP_COMPACT_HEIGHT = 240 * SSP_COMPACT_SCALE;
 
 inline float cv2Pitch(float r) {
     static constexpr float p1 = 0.0f; // first C note

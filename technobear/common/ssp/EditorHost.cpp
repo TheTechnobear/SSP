@@ -13,55 +13,85 @@ static constexpr unsigned menuTopY = 200 - 1;
 static constexpr unsigned btnTopY = 380 - 1;
 static constexpr unsigned btnSpaceY = 50;
 
-EditorHost::EditorHost(BaseProcessor *p, BaseView *e) :
+EditorHost::EditorHost(BaseProcessor *p, BaseView *e,
+                       bool compactUI,
+                       bool enableSysEditor,
+                       bool drawDefaults
+) :
+
     AudioProcessorEditor(p),
     processor_(p),
     editor_(e),
+    system_(nullptr),
+    compactUI_(compactUI),
+    sysActive_(false),
+    drawDefaults_(drawDefaults),
     globalBtn_("G", nullptr, 32, Colours::red),
     networkBtn_("N", nullptr, 32, Colours::red),
     plugInBtn_("P", nullptr, 32, Colours::red),
     recBtn_("R", nullptr, 32, Colours::red) {
 
-    sysActive_ = false;
-    system_ = new SystemEditor(p);
-
     addChildComponent(editor_);
-    addChildComponent(system_);
+    if (compactUI_) {
+        enableSysEditor = false;
+        drawDefaults = false;
+    }
+
+
+    if (enableSysEditor) {
+        system_ = new SystemEditor(p);
+        setVisible(sysActive_);
+        addChildComponent(system_);
+        system_->setBounds(0, 0, SSP_FULL_WIDTH, SSP_FULL_HEIGHT);
+    }
+
+    if (drawDefaults_) {
+        addAndMakeVisible(globalBtn_);
+        addAndMakeVisible(networkBtn_);
+        addAndMakeVisible(plugInBtn_);
+        addAndMakeVisible(recBtn_);
+
+        setMenuBounds(globalBtn_, 0);
+        setMenuBounds(networkBtn_, 1);
+        setMenuBounds(plugInBtn_, 2);
+        setMenuBounds(recBtn_, 3);
+    }
+
+
     editor_->setVisible(!sysActive_);
-    system_->setVisible(sysActive_);
+    if (!compactUI_) {
 
-    int uih = 0;
+        int uih = 0;
 #ifdef __APPLE__
-    uih = 220;
-    sspui_ = new SSPUI(processor_, this);
-    sspui_->setBounds(0, 480, 1600, 220);
-    addChildComponent(sspui_);
-    sspui_->setVisible(true);
+        uih = 220;
+        sspui_ = new SSPUI(processor_, this);
+        sspui_->setBounds(0, SSP_FULL_HEIGHT, SSP_FULL_WIDTH, uih);
+        addChildComponent(sspui_);
+        sspui_->setVisible(true);
 #endif
+        editor_->setBounds(0, 0, SSP_FULL_WIDTH, SSP_FULL_HEIGHT);
+        setSize(SSP_FULL_WIDTH, SSP_FULL_HEIGHT + uih);
+    } else {
+        editor_->setBounds(0, 0, SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT);
+        system_ = nullptr;
+        setSize(SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT
+        );
+    }
 
-    setSize(1600, 480 + uih);
 
-
-    addAndMakeVisible(globalBtn_);
-    addAndMakeVisible(networkBtn_);
-    addAndMakeVisible(plugInBtn_);
-    addAndMakeVisible(recBtn_);
-
-    setMenuBounds(globalBtn_, 0);
-    setMenuBounds(networkBtn_, 1);
-    setMenuBounds(plugInBtn_, 2);
-    setMenuBounds(recBtn_, 3);
-
-    editor_->setBounds(0, 0, 1600, 480);
-    system_->setBounds(0, 0, 1600, 480);
 }
 
 EditorHost::~EditorHost() {
     delete editor_;
-    delete system_;
+    if (system_) delete system_;
     delete sspui_;
 }
 
+void EditorHost::resized() {
+    editor_->resized();
+    if (system_) system_->resized();
+    if (sspui_) sspui_->resized();
+}
 
 void EditorHost::setMenuBounds(ValueButton &btn, unsigned r) {
     const int w = 70;
@@ -75,19 +105,21 @@ void EditorHost::drawBasicPanel(Graphics &g) {
     g.fillAll(Colour(0xff111111));
 
 
-    // title
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), 24, Font::plain));
-    g.setColour(Colours::yellow);
-    g.drawSingleLineText(String(JucePlugin_Name) + " : "
-                         + String(JucePlugin_Desc)
-                         + String(" @ thetechnobear"),
-                         10, 30);
+    if (drawDefaults_) {
+        // title
+        g.setFont(Font(Font::getDefaultMonospacedFontName(), 24, Font::plain));
+        g.setColour(Colours::yellow);
+        g.drawSingleLineText(String(JucePlugin_Name) + " : "
+                             + String(JucePlugin_Desc)
+                             + String(" @ thetechnobear"),
+                             10, 30);
 
-    g.setColour(Colours::grey);
-    g.drawSingleLineText("v " + String(JucePlugin_VersionString), 1505, 30);
+        g.setColour(Colours::grey);
+        g.drawSingleLineText("v " + String(JucePlugin_VersionString), 1505, 30);
 
-    drawMenuBox(g);
-    drawButtonBox(g);
+        drawMenuBox(g);
+        drawButtonBox(g);
+    }
 }
 
 
@@ -118,6 +150,8 @@ void EditorHost::drawButtonBox(Graphics &g) {
 }
 
 void EditorHost::sysEditor() {
+    if (!system_) return;
+
     sysActive_ = !sysActive_;
     editor_->setVisible(!sysActive_);
     system_->setVisible(sysActive_);
@@ -155,6 +189,7 @@ void EditorHost::onUpButton(bool v) {
 }
 
 void EditorHost::onDownButton(bool v) {
+
     if (sysActive_) system_->onDownButton(v);
     else editor_->onDownButton(v);
 }
@@ -164,7 +199,7 @@ void EditorHost::onLeftShiftButton(bool v) {
     else editor_->onLeftShiftButton(v);
 
     LSActive_ = v;
-    if (RSActive_ && LSActive_) sysEditor();
+    if (LSActive_ && RSActive_ && system_) sysEditor();
 }
 
 void EditorHost::onRightShiftButton(bool v) {
@@ -172,7 +207,7 @@ void EditorHost::onRightShiftButton(bool v) {
     else editor_->onRightShiftButton(v);
 
     RSActive_ = v;
-    if (LSActive_ && RSActive_) sysEditor();
+    if (LSActive_ && RSActive_ && system_) sysEditor();
 }
 
 void EditorHost::onSSPTimer() {

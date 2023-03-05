@@ -15,7 +15,7 @@ static constexpr unsigned btnSpaceY = 50;
 
 
 BaseEditor::BaseEditor(BaseProcessor *p)  :
-    BaseView(p),
+    BaseView(p,false),
     leftBtn_("PG-", nullptr, 32, Colours::red), rightBtn_("PG+", nullptr, 32, Colours::red),
     upBtn_("EN-", nullptr, 32, Colours::red), downBtn_("EN+", nullptr, 32, Colours::red),
     leftShiftBtn_("LS", nullptr, 32, Colours::grey, Colours::black), rightShiftBtn_("RS", nullptr, 32, Colours::grey, Colours::black) {

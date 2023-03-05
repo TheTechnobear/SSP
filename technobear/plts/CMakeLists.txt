@@ -124,6 +124,7 @@ target_sources(PLTS
         Source/SSPApi.cpp
         PRIVATE
         Source/PluginEditor.cpp
+        Source/PluginMiniEditor.cpp
         Source/PluginProcessor.cpp
         ${MI_SRC}
         ${COMMON_SRC}

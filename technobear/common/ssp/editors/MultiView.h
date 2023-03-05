@@ -15,12 +15,11 @@ class MultiView :
     public BaseView {
 
 public:
-    explicit MultiView(BaseProcessor *p);
+    explicit MultiView(BaseProcessor *p,bool compactUI);
 
     void onEncoder(unsigned id, float v) override;
     void onEncoderSwitch(unsigned id, bool v) override;
     void onButton(unsigned id, bool v) override;
-
     void onUpButton(bool v) override;
     void onDownButton(bool v) override;
     void onLeftButton(bool v) override;
@@ -30,6 +29,8 @@ public:
 
     void editorShown() override;
     void editorHidden() override;
+
+    int getViewIdx() { return view_;}
 
 protected:
     using base_type = BaseView;

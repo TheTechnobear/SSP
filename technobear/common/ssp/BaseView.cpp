@@ -3,8 +3,9 @@
 
 namespace ssp {
 
-BaseView::BaseView(BaseProcessor *p) :
-    baseProcessor_(p) {
+BaseView::BaseView(BaseProcessor *p,bool compactUI) :
+    baseProcessor_(p),
+    compactUI_(compactUI) {
     startTimer(50);
 }
 

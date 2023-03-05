@@ -15,9 +15,6 @@ class BaseParamControl;
 
 class ParamButton;
 
-class EditorHost;
-
-
 #include "ssp/SSPActions.h"
 
 class BaseEditor : public BaseView {

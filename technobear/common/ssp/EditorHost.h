@@ -19,18 +19,17 @@ class EditorHost :
     public AudioProcessorEditor,
     public SSPActions {
 public:
-    explicit EditorHost(BaseProcessor *p, BaseView *e);
+    explicit EditorHost(BaseProcessor *p, BaseView *e,
+                        bool compactUI=false,
+                        bool enableSysEditor=true,
+                        bool drawDefaults=true);
     ~EditorHost();
 
     void paint(Graphics &g) override {
         drawBasicPanel(g);
     }
 
-    void resized() override {
-        system_->resized();
-        editor_->resized();
-        if(sspui_) sspui_->resized();
-    }
+    void resized() override;
 
     // SSPActions
     void onEncoder(unsigned enc, float v) override;
@@ -65,12 +64,12 @@ private:
     BaseProcessor *processor_;
     BaseView *editor_;
     SystemEditor *system_;
+    bool compactUI_=false;
+    bool drawDefaults_ =false;
 
     Colour defaultBg_=  Colour(0xff111111);
 
-
     SSPUI *sspui_= nullptr;
-
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EditorHost)
 };
 

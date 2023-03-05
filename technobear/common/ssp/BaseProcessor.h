@@ -79,6 +79,7 @@ public:
     int midiChannel() { return midiChannel_; }
 
     void useCompactUI(bool b) { compactEditor_ = b; }
+    bool useCompactUI() { return compactEditor_; }
 
 protected:
     friend class BaseEditor;
