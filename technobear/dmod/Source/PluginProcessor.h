@@ -54,14 +54,20 @@ public:
 
     const std::string &getPluginFile(unsigned m) { return modules_[m].pluginFile_; };
 
-    SSPExtendedApi::PluginEditorInterface *getEditor(unsigned midx) {
+    SSPExtendedApi::PluginEditorInterface *createEditorIfNeeded(unsigned midx) {
         auto &m = modules_[midx];
-        if(m.requestInProgress_) return nullptr; // it about to switch !
 
         if (m.plugin_ != nullptr && m.editor_ == nullptr) {
             m.editor_ = (SSPExtendedApi::PluginEditorInterface *) m.plugin_->getEditor();
         }
         return m.editor_;
+
+    }
+    SSPExtendedApi::PluginEditorInterface *getEditor(unsigned midx) {
+        return createEditorIfNeeded(midx);
+//        auto &m = modules_[midx];
+//        if(m.requestInProgress_) return nullptr; // it about to switch !
+//        return m.editor_;
     };
 
     SSPExtendedApi::PluginInterface *getPlugin(unsigned m) { return modules_[m].plugin_; };
@@ -76,10 +82,9 @@ public:
     const std::vector<std::string> &getSupportedModules() { return supportedModules_; }
 
     bool requestModuleChange(unsigned midx, const std::string &f);
+    void scanPlugins();
 
 protected:
-    void loadPlugin(unsigned m, const std::string &f);
-    void scanPlugins();
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     static bool checkPlugin(const std::string &f);
@@ -102,7 +107,7 @@ private:
 
         std::string pluginFile_;
         std::string requestedModule_;
-        bool requestInProgress_ = false;
+        std::atomic_flag lockModule_ = ATOMIC_FLAG_INIT;
         SSPExtendedApi::PluginInterface *plugin_ = nullptr;
         SSPExtendedApi::PluginEditorInterface *editor_ = nullptr;
         SSPExtendedApi::PluginDescriptor *descriptor_ = nullptr;
@@ -112,7 +117,6 @@ private:
 
     Module modules_[MAX_MODULES];
     bool loadModule(std::string, Module &m);
-
 
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);

@@ -26,7 +26,7 @@ protected:
     void onRightButton(bool v) override;
 //    void onUpButton(bool v) override;
 //    void onDownButton(bool v) override;
-//    void onLeftShiftButton(bool v) override;
+    void onLeftShiftButton(bool v) override;
     void onRightShiftButton(bool v) override;
 
     void onSSPTimer() override;

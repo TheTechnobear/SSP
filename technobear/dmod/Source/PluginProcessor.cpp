@@ -34,7 +34,6 @@ void PluginProcessor::Module::alloc(
     descriptor_ = d;
     dlHandle_ = h;
     requestedModule_ = f;
-    requestInProgress_ = false;
 }
 
 
@@ -48,7 +47,6 @@ void PluginProcessor::Module::free() {
     descriptor_ = nullptr;
     pluginFile_ = "";
     requestedModule_ = "";
-    requestInProgress_ = false;
 }
 
 
@@ -60,27 +58,6 @@ PluginProcessor::PluginProcessor(
     AudioProcessorValueTreeState::ParameterLayout layout)
     : BaseProcessor(ioLayouts, std::move(layout)) {
     init();
-
-
-    bool scan = false;
-    if (scan) {
-        scanPlugins();
-    } else {
-        // Logger::writeToLog("plugin scan : SKIPPED");
-#ifdef __APPLE__
-        std::string path = "/Users/kodiak/Library/Audio/Plug-Ins/VST3/";
-        supportedModules_.push_back(path + "clds.vst3/Contents/MacOS/clds");
-        supportedModules_.push_back(path + "plts.vst3/Contents/MacOS/plts");
-#else
-        std::string path = "/media/BOOT/plugins/";
-        supportedModules_.push_back(path + "clds.so");
-        supportedModules_.push_back(path + "plts.so");
-#endif
-
-    }
-
-    loadPlugin(0, supportedModules_[0]);
-    loadPlugin(1, supportedModules_[1]);
 }
 
 PluginProcessor::~PluginProcessor() {
@@ -91,21 +68,24 @@ PluginProcessor::~PluginProcessor() {
 
 
 bool PluginProcessor::requestModuleChange(unsigned midx, const std::string &f) {
-    auto &module = modules_[midx];
-    if (!module.requestInProgress_) {
-        module.requestedModule_ = f;
-        module.requestInProgress_ = true;
+    auto &m = modules_[midx];
+
+    if (!m.lockModule_.test_and_set()) {
+        loadModule(f, m);
+        m.lockModule_.clear();
+        return true;
     }
     return false;
 }
 
 
-void PluginProcessor::loadPlugin(unsigned m, const std::string &f) {
-    loadModule(f, modules_[m]);
-}
-
 bool PluginProcessor::loadModule(std::string f, PluginProcessor::Module &m) {
     m.free();
+    if (f == "") {
+        /// just cleared this module
+        return true;
+    }
+
     auto fHandle = dlopen(f.c_str(), dlopenmode);
 //    auto fnVersion = (Percussa::SSP::VersionFun) dlsym(fHandle, Percussa::SSP::getApiVersionName);
 //    auto fnCreateDescriptor = (Percussa::SSP::DescriptorFun) dlsym(fHandle, Percussa::SSP::createDescriptorName);
@@ -169,6 +149,7 @@ bool PluginProcessor::checkPlugin(const std::string &f) {
 
 void PluginProcessor::scanPlugins() {
     log("plugin scan : STARTED");
+    supportedModules_.clear();
     // Logger::writeToLog("plugin scan : STARTED");
 
     // build list of files to consider
@@ -255,27 +236,23 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     size_t n = buffer.getNumSamples();
     int modIdx = 0;
-    for (auto &m: modules_) {
-        if (m.requestInProgress_) {
-            if (m.pluginFile_ != m.requestedModule_) {
-                loadModule(m.requestedModule_, m);
-            }
-            m.requestInProgress_ = false;
-        }
-    }
-
+    bool processed[MAX_MODULES] = {false, false};
     // prepare input & process audio
     for (auto &m: modules_) {
-        auto &plugin = m.plugin_;
-        if (!plugin) continue;
-
-        int chOffset = modIdx * MAX_IN;
-        int nCh = m.descriptor_->inputChannelNames.size();
-        for (unsigned i = 0; i < nCh && i < MAX_IN; i++) {
-            m.audioSampleBuffer_.copyFrom(i, 0, buffer.getReadPointer(i + chOffset), n);
+        processed[modIdx] = false;
+        if (!m.lockModule_.test_and_set()) {
+            processed[modIdx] = true;
+            auto &plugin = m.plugin_;
+            if (plugin) {
+                int chOffset = modIdx * MAX_IN;
+                int nCh = m.descriptor_->inputChannelNames.size();
+                for (unsigned i = 0; i < nCh && i < MAX_IN; i++) {
+                    m.audioSampleBuffer_.copyFrom(i, 0, buffer.getReadPointer(i + chOffset), n);
+                }
+                float **buffers = m.audioSampleBuffer_.getArrayOfWritePointers();
+                plugin->process(buffers, nCh, n);
+            }
         }
-        float **buffers = m.audioSampleBuffer_.getArrayOfWritePointers();
-        plugin->process(buffers, nCh, n);
         modIdx++;
         //note: we cannot copy output yet, since this will overwrite input for next module!
     }
@@ -283,18 +260,21 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     // now write the audio back out
     modIdx = 0;
     for (auto &m: modules_) {
-        auto &plugin = m.plugin_;
-        if (!plugin) continue;
-
-        int chOffset = modIdx * MAX_OUT;
-        int nCh = m.descriptor_->outputChannelNames.size();
-        for (unsigned i = 0; i < MAX_OUT; i++) {
-            if (i < nCh) {
-                buffer.copyFrom(i + chOffset, 0, m.audioSampleBuffer_.getReadPointer(i), n);
-            } else {
-                // zero output where not enough channels
-                buffer.applyGain(i + chOffset, 0, n, 0.0f);
+        if (processed[modIdx]) {
+            auto &plugin = m.plugin_;
+            if (plugin) {
+                int chOffset = modIdx * MAX_OUT;
+                int nCh = m.descriptor_->outputChannelNames.size();
+                for (unsigned i = 0; i < MAX_OUT; i++) {
+                    if (i < nCh) {
+                        buffer.copyFrom(i + chOffset, 0, m.audioSampleBuffer_.getReadPointer(i), n);
+                    } else {
+                        // zero output where not enough channels
+                        buffer.applyGain(i + chOffset, 0, n, 0.0f);
+                    }
+                }
             }
+            m.lockModule_.clear();
         }
         modIdx++;
     }
@@ -326,69 +306,84 @@ void PluginProcessor::onOutputChanged(unsigned i, bool b) {
     }
 }
 
+static constexpr int checkBytes = 0x1FF1;
+static constexpr int protoVersion = 0x0001;
+
 void PluginProcessor::getStateInformation(MemoryBlock &destData) {
     // store plugin information
-    return;
+    MemoryOutputStream outStream(destData, false);
 
-    // TODO - incomplete
+    outStream.writeInt(checkBytes);
+    outStream.writeInt(protoVersion);
 
-    void *data[MAX_MODULES] = {nullptr, nullptr};
-    size_t dataSz[MAX_MODULES] = {0, 0};
-    int destSize = 0;
-
-    // TODO MORE
-    // 1. need to store plugin name
-    // 2. need to store data size for each plugin, as we need it when loading
+    outStream.writeInt(supportedModules_.size());
+    for (auto mn: supportedModules_) {
+        outStream.writeString(String(mn));
+    }
 
     int i = 0;
     for (auto &m: modules_) {
+        outStream.writeInt(checkBytes);
         auto &plugin = m.plugin_;
-        if (!plugin) continue;
+        if (!plugin) {
+            outStream.writeString("");
+            outStream.writeInt(0);
+            continue;
+        }
 
-        plugin->getState(&data[i], &dataSz[i]);
-        destSize += dataSz[i];
+        void *data;
+        size_t dataSz;
+        plugin->getState(&data, &dataSz);
+
+        outStream.writeString(String(m.pluginFile_.c_str()));
+        outStream.writeInt(dataSz);
+        outStream.write(data, dataSz);
         i++;
-    }
-
-    int offset = 0;
-    destData.setSize(destSize);
-    for (int i = 0; i < MAX_MODULES; i++) {
-        if (data[i] == nullptr) continue;
-        destData.copyFrom(data[i], offset, dataSz[i]);
-        offset += dataSz[i];
     }
 }
 
 
 void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
-    // restore plugin state
-    // TODO : Incomplete
-
-    return;
-
     MemoryBlock srcData(data, sizeInBytes);
+    MemoryInputStream inputStream(data, sizeInBytes, false);
 
-    int nModules = 0;
-    std::string moduleName[MAX_MODULES];
-    size_t dataSz[MAX_MODULES] = {0, 0};
-    // TODO
-    // deserialise name & data sz
-    // loadModule using module name
-    // restore data using size
+    int check = inputStream.readInt();
+    if (check != checkBytes) return;
+    int proto = inputStream.readInt();
+    if (proto != protoVersion) return;
 
-    int offset = 0;
+    supportedModules_.clear();
+    int nModules = inputStream.readInt();
+    if (nModules == 0) {
+        scanPlugins();
+    } else {
+        while (nModules--) {
+            String m = inputStream.readString();
+            supportedModules_.push_back(m.toStdString());
+        }
+    }
+
     for (int i = 0; i < MAX_MODULES; i++) {
-        auto fname = moduleName[i];
-        loadPlugin(i, fname);
+        int check = inputStream.readInt();
+        if (check != checkBytes) {
+            return;
+        }
 
-        auto &plugin = modules_[i].plugin_;
-        if (!plugin) continue;
+        String fname = inputStream.readString();
+        int size = inputStream.readInt();
 
-        MemoryBlock moduleData;
-        moduleData.setSize(dataSz[i]);
-        moduleData.copyFrom(srcData.getData(), offset, dataSz[i]);
-        offset += dataSz[i];
-        plugin->setState(moduleData.getData(), moduleData.getSize());
+        if (!fname.isEmpty() && size > 0) {
+            MemoryBlock moduleData;
+            moduleData.setSize(size);
+            inputStream.read(moduleData.getData(), size);
+
+            while (!requestModuleChange(i, fname.toStdString())) {
+            }
+            auto &plugin = modules_[i].plugin_;
+            if (!plugin) continue;
+
+            plugin->setState(moduleData.getData(), moduleData.getSize());
+        }
     }
 }
 

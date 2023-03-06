@@ -34,7 +34,7 @@ EditorHost::EditorHost(BaseProcessor *p, BaseView *e,
     addChildComponent(editor_);
     if (compactUI_) {
         enableSysEditor = false;
-        drawDefaults = false;
+        drawDefaults_ = false;
     }
 
 

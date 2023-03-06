@@ -20,6 +20,8 @@ public:
     void onEncoder(unsigned id, float v) override;
     void onEncoderSwitch(unsigned id, bool v) override;
 
+    void drawView(Graphics &) override;
+
 
     using base_type = BaseView;
 private:

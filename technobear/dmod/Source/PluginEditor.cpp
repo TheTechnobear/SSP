@@ -33,7 +33,6 @@ public:
 //    void onLeftShiftButton(bool v) override;
 //    void onRightShiftButton(bool v) override;
 
-
     void setActiveModule(int m) { activeModule_ = m; }
 
 private:
@@ -52,17 +51,19 @@ public:
 
     void onEncoder(unsigned enc, float v) override;
     void onEncoderSwitch(unsigned enc, bool v) override;
-//    void onButton(unsigned btn, bool v) override;
+    void onButton(unsigned btn, bool v) override;
 //    void onLeftButton(bool v) override;
 //    void onRightButton(bool v) override;
     void onUpButton(bool v) override;
     void onDownButton(bool v) override;
-//    void onLeftShiftButton(bool v) override;
+    void onLeftShiftButton(bool v) override;
     void onRightShiftButton(bool v) override;
 
 
     void drawView(Graphics &g) override;
     void setActiveModule(int m);
+
+    void editorShown() override;
 
 private:
 
@@ -97,9 +98,9 @@ void PluginEditor::drawView(Graphics &g) {
 void PluginEditor::onSSPTimer() {
     base_type::onSSPTimer();
     for (int i = 0; i < MAX_MODULES; i++) {
-        auto editor = processor_.getEditor(i);
-        if (!editor) continue;
-        editor->frameStart();
+//        auto editor = processor_.createEditorIfNeeded(i);
+//        if (!editor) continue;
+//        editor->frameStart();
     }
 }
 
@@ -160,6 +161,21 @@ void PluginEditor::onRightShiftButton(bool v) {
     viewIdx = !viewIdx;
     setView(viewIdx);
 }
+
+void PluginEditor::onLeftShiftButton(bool v) {
+//    base_type::onRightShiftButton(v);
+    if (v) return;
+
+    int viewIdx = getViewIdx();
+    if (viewIdx == 1) {
+        // let loadview, load a new module before switching
+        base_type::onLeftShiftButton(v);
+    }
+
+    viewIdx = !viewIdx;
+    setView(viewIdx);
+}
+
 
 void PluginEditor::resized() {
     base_type::resized();
@@ -324,7 +340,10 @@ void LoadView::loadModule() {
     auto &newMod = modules[curModIdx_];
     if (newMod != curMod) {
         // time to load a new module !
-        processor_.requestModuleChange(activeModule_, newMod);
+        bool r=false;
+        while(!r) {
+            r=processor_.requestModuleChange(activeModule_, newMod);
+        }
     }
 }
 
@@ -357,13 +376,29 @@ void LoadView::onEncoderSwitch(unsigned enc, bool v) {
     loadModule();
 }
 
+void LoadView::onButton(unsigned int btn, bool v) {
+    if(v) return;
+    if(btn==0) {
+        processor_.scanPlugins();
+        editorShown(); // reset current plugin
+    }
+}
+
+void LoadView::onLeftShiftButton(bool v) {
+    if (v) return;
+    bool r=false;
+    while(!r) {
+        r = processor_.requestModuleChange(activeModule_, "");
+    }
+}
+
 void LoadView::onRightShiftButton(bool v) {
     if (v) return;
     loadModule();
 }
 
-void LoadView::setActiveModule(int m) {
-    activeModule_ = m;
+void LoadView::editorShown() {
+    curModIdx_ = -1;
     int i = 0;
     auto &modules = processor_.getSupportedModules();
     auto &curMod = processor_.getPluginFile(activeModule_);
@@ -374,5 +409,9 @@ void LoadView::setActiveModule(int m) {
         }
         i++;
     }
+}
+
+void LoadView::setActiveModule(int m) {
+    activeModule_ = m;
 }
 

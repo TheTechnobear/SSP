@@ -12,16 +12,29 @@ MiniParamView::MiniParamView(BaseProcessor *p) : base_type(p,true) {
 
 }
 
+void MiniParamView::drawView(Graphics &g) {
+
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), 24, Font::plain));
+    g.setColour(Colours::yellow);
+    g.drawSingleLineText(String(JucePlugin_Name) + " : "
+                         + String(JucePlugin_Desc)
+                         + String(" @ thetechnobear"),
+                         10, 30);
+
+    g.setColour(Colours::grey);
+    g.drawSingleLineText("v " + String(JucePlugin_VersionString), 1505, 30);
+}
+
+
 void MiniParamView::addParam(const std::shared_ptr<BaseParamControl> &p) {
     params_.push_back(p);
     addChildComponent(p.get());
     float pos = params_.size() - 1;
 
     p->setBounds(10, pos * 100 + 40, 600, 100);
-    if (params_.size() <= 4) {
-        p->active(true);
-        p->setVisible(true);
-    }
+    bool act = params_.size() <= 4;
+    p->active(act);
+    p->setVisible(act);
 }
 
 void MiniParamView::onEncoder(unsigned enc, float v) {

@@ -15,6 +15,7 @@ BaseView::~BaseView() {
 }
 
 void BaseView::timerCallback() {
+    onSSPTimer();
     repaint();
 }
 

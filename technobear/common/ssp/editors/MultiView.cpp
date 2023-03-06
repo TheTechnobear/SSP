@@ -7,20 +7,22 @@
 
 namespace ssp {
 
-MultiView::MultiView(BaseProcessor *p,bool compactUI)
-    : base_type(p,compactUI) {
+MultiView::MultiView(BaseProcessor *p, bool compactUI)
+    : base_type(p, compactUI) {
 }
 
 
 void MultiView::setView(unsigned newView) {
+    // do not setVisible outside message thread !
     if (view_ >= 0) {
-        auto& view = views_[view_];
+        auto &view = views_[view_];
         view->setVisible(false);
         view->editorHidden();
     }
+
     if (newView < views_.size()) {
         view_ = newView;
-        auto& view = views_[view_];
+        auto &view = views_[view_];
         view->setVisible(true);
         view->editorShown();
     }
@@ -52,22 +54,34 @@ void MultiView::drawView(Graphics &g) {
     if (view_ < 0) return;
     views_[view_]->drawView(g);
 }
-void MultiView::editorShown()  {
+
+void MultiView::editorShown() {
     base_type::editorShown();
-    if (view_ < 0) return;
-    views_[view_]->editorShown();
+    int i = 0;
+    for (auto v: views_) {
+        if (view_ == i) {
+            v->setVisible(true);
+            v->editorShown();
+        } else {
+            v->setVisible(false);
+            v->editorHidden();
+        }
+    }
 }
 
-void MultiView::editorHidden()  {
+void MultiView::editorHidden() {
     base_type::editorHidden();
-    if (view_ < 0) return;
-    views_[view_]->editorHidden();
+    for (auto v: views_) {
+        v->setVisible(false);
+        v->editorHidden();
+    }
 }
 
 void MultiView::resized() {
     base_type::resized();
-    if (view_ < 0) return;
-    views_[view_]->resized();
+    for (auto v: views_) {
+        v->resized();
+    }
 }
 
 
@@ -88,15 +102,16 @@ void MultiView::onButton(unsigned id, bool v) {
     if (view_ < 0) return;
     views_[view_]->onButton(id, v);
 }
+
 void MultiView::onLeftButton(bool v) {
     base_type::onLeftButton(v);
-    if(view_< 0) return;
+    if (view_ < 0) return;
     views_[view_]->onLeftButton(v);
 }
 
 void MultiView::onRightButton(bool v) {
     base_type::onRightButton(v);
-    if(view_< 0) return;
+    if (view_ < 0) return;
     views_[view_]->onRightButton(v);
 }
 
