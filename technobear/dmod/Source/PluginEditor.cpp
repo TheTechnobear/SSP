@@ -46,7 +46,30 @@ class LoadView : public ssp::BaseView {
 public:
     LoadView(PluginProcessor &p)
         : ssp::BaseView(&p, false),
-          processor_(p) {
+          processor_(p),
+          scanBtn_("Scan", nullptr, 32, Colours::white, Colours::black),
+          loadBtn_("Load", nullptr, 32, Colours::white, Colours::black),
+          clearBtn_("Clear", nullptr, 32, Colours::white, Colours::black),
+          upBtn_("EN-", nullptr, 32, Colours::black, Colours::red),
+          downBtn_("EN+", nullptr, 32, Colours::black, Colours::red),
+          leftBtn_("", nullptr, 32, Colours::black, Colours::red),
+          rightBtn_("", nullptr, 32, Colours::black, Colours::red) {
+
+        setButtonBounds(scanBtn_, 0, 0);
+        setButtonBounds(clearBtn_, 0, 4);
+        setButtonBounds(upBtn_, 0, 5);
+        setButtonBounds(loadBtn_, 0, 6);
+        setButtonBounds(leftBtn_, 1, 4);
+        setButtonBounds(downBtn_, 1, 5);
+        setButtonBounds(rightBtn_, 1, 6);
+
+        addAndMakeVisible(scanBtn_);
+        addAndMakeVisible(clearBtn_);
+        addAndMakeVisible(loadBtn_);
+        addAndMakeVisible(upBtn_);
+        addAndMakeVisible(downBtn_);
+        addAndMakeVisible(leftBtn_);
+        addAndMakeVisible(rightBtn_);
     }
 
     void onEncoder(unsigned enc, float v) override;
@@ -65,7 +88,32 @@ public:
 
     void editorShown() override;
 
+    void setButtonBounds(ValueButton &btn, unsigned r, unsigned c) {
+        const int w = 100;
+        const int h = btnSpaceY;
+        unsigned x = 900 + (c * w);
+        unsigned y = btnTopY + (r * h);
+        btn.setBounds(x, y, w, h);
+    }
+
+    void drawButtonBox(Graphics &g) {
+        unsigned butTopY = btnTopY;
+        unsigned butLeftX = 900 - 1;
+        float x = butLeftX;
+        float y = butTopY;
+        g.setColour(Colours::grey);
+        g.drawHorizontalLine(y, x, 1600 - 1);
+        g.drawHorizontalLine(y + btnSpaceY, x, 1600 - 1);
+        g.drawHorizontalLine(480 - 1, x, 1600 - 1);
+        for (int i = 0; i < 8; i++) {
+            g.drawVerticalLine(x + i * 100, butTopY, 480 - 1);
+        }
+    }
 private:
+    static constexpr unsigned btnTopY = 380 - 1;
+    static constexpr unsigned btnSpaceY = 50;
+
+    ValueButton scanBtn_, loadBtn_, clearBtn_, upBtn_, downBtn_, leftBtn_, rightBtn_;
 
     void loadModule();
 
@@ -149,7 +197,7 @@ void PluginEditor::onEncoderSwitch(unsigned int enc, bool v) {
 }
 
 void PluginEditor::onRightShiftButton(bool v) {
-//    base_type::onRightShiftButton(v);
+    base_type::onRightShiftButton(v);
     if (v) return;
 
     int viewIdx = getViewIdx();
@@ -163,7 +211,7 @@ void PluginEditor::onRightShiftButton(bool v) {
 }
 
 void PluginEditor::onLeftShiftButton(bool v) {
-//    base_type::onRightShiftButton(v);
+    base_type::onLeftShiftButton(v);
     if (v) return;
 
     int viewIdx = getViewIdx();
@@ -171,6 +219,7 @@ void PluginEditor::onLeftShiftButton(bool v) {
         // let loadview, load a new module before switching
         base_type::onLeftShiftButton(v);
     }
+
 
     viewIdx = !viewIdx;
     setView(viewIdx);
@@ -198,18 +247,11 @@ void ModuleView::drawView(Graphics &g) {
 
 void ModuleView::drawModulePanel(Graphics &g, unsigned panel) {
     auto editor = processor_.getEditor(panel);
-    if (!editor) return;
-
-    //TODO
-    static constexpr unsigned long IMAGECACHE_HASHCODE = 0x53533500000;
 
     unsigned panelWidth = SSP_FULL_WIDTH / MAX_MODULES;
     unsigned border = panelWidth - SSP_COMPACT_WIDTH;
     unsigned panelX = (panel * panelWidth);
     unsigned moduleX = panelX + border - 2;
-
-    drawIO(g, panel);
-
     if (panel == activeModule_) {
         g.setColour(Colours::red);
     } else {
@@ -218,6 +260,12 @@ void ModuleView::drawModulePanel(Graphics &g, unsigned panel) {
     g.drawLine(moduleX - 2, 0, moduleX - 2, SSP_FULL_HEIGHT, 2);
     g.drawLine(moduleX + SSP_COMPACT_WIDTH + 1, 0, moduleX + SSP_COMPACT_WIDTH + 1, SSP_FULL_HEIGHT, 2);
 
+    if (!editor) return;
+
+    static constexpr unsigned long IMAGECACHE_HASHCODE = 0x53533500000;
+
+    drawIO(g, panel);
+
     Image img = ImageCache::getFromHashCode(IMAGECACHE_HASHCODE + panel);
     if (!img.isValid()) {
         Image newimg(Image::ARGB, pluginWidth, pluginHeight, true);
@@ -225,8 +273,15 @@ void ModuleView::drawModulePanel(Graphics &g, unsigned panel) {
         img = newimg;
     }
 
+
     Image::BitmapData bitmap(img, Image::BitmapData::writeOnly);
     editor->renderToImage(bitmap.data, pluginWidth, pluginHeight);
+
+
+    if(panel!=activeModule_) {
+        img.multiplyAllAlphas(0.3);
+//        img.desaturate();
+    }
 
     g.drawImageAt(img, moduleX, 0);
 }
@@ -307,9 +362,10 @@ std::string nicePlugName(const std::string &n) {
 }
 
 void LoadView::drawView(Graphics &g) {
+    drawButtonBox(g);
     unsigned x = 50;
-    unsigned y = 100;
-    static constexpr unsigned fh = 18;
+    unsigned y = 24;
+    static constexpr unsigned fh = 24;
     static constexpr unsigned h = fh + 5;
     g.setColour(Colours::yellow);
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
@@ -318,7 +374,6 @@ void LoadView::drawView(Graphics &g) {
 
     g.setColour(Colours::yellow);
     g.drawSingleLineText("Load Module", x, y);
-    y += h;
     y += h;
     int i = 0;
     for (auto &m: modules) {
@@ -340,19 +395,21 @@ void LoadView::loadModule() {
     auto &newMod = modules[curModIdx_];
     if (newMod != curMod) {
         // time to load a new module !
-        bool r=false;
-        while(!r) {
-            r=processor_.requestModuleChange(activeModule_, newMod);
+        bool r = false;
+        while (!r) {
+            r = processor_.requestModuleChange(activeModule_, newMod);
         }
     }
 }
 
 void LoadView::onUpButton(bool v) {
+    upBtn_.value(v);
     if (v) return;
     if (curModIdx_ > 0) curModIdx_--;
 }
 
 void LoadView::onDownButton(bool v) {
+    downBtn_.value(v);
     if (v) return;
 
     int maxSz = processor_.getSupportedModules().size();
@@ -377,22 +434,28 @@ void LoadView::onEncoderSwitch(unsigned enc, bool v) {
 }
 
 void LoadView::onButton(unsigned int btn, bool v) {
-    if(v) return;
     if(btn==0) {
+        scanBtn_.value(v);
+    }
+
+    if (v) return;
+    if (btn == 0) {
         processor_.scanPlugins();
         editorShown(); // reset current plugin
     }
 }
 
 void LoadView::onLeftShiftButton(bool v) {
+    clearBtn_.value(v);
     if (v) return;
-    bool r=false;
-    while(!r) {
+    bool r = false;
+    while (!r) {
         r = processor_.requestModuleChange(activeModule_, "");
     }
 }
 
 void LoadView::onRightShiftButton(bool v) {
+    loadBtn_.value(v);
     if (v) return;
     loadModule();
 }

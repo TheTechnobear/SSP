@@ -281,6 +281,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 }
 
 void PluginProcessor::onInputChanged(unsigned i, bool b) {
+    BaseProcessor::onInputChanged(i,b);
     if (i >= MAX_IN) return;
 
     int midx = i / MAX_IN;
@@ -294,6 +295,7 @@ void PluginProcessor::onInputChanged(unsigned i, bool b) {
 }
 
 void PluginProcessor::onOutputChanged(unsigned i, bool b) {
+    BaseProcessor::onOutputChanged(i,b);
     if (i >= MAX_OUT) return;
 
     int midx = i / MAX_OUT;
