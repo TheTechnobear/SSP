@@ -201,9 +201,9 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 const String PluginProcessor::getInputBusName(int channelIndex) {
     String bname =
         String("M")
-        + String(channelIndex / MAX_IN)
-        + String("_P")
-        + String(channelIndex % MAX_IN);
+        + String((channelIndex / MAX_IN)+1)
+        + String(" In ")
+        + String((channelIndex % MAX_IN)+1);
     return bname;
 }
 
@@ -211,9 +211,9 @@ const String PluginProcessor::getInputBusName(int channelIndex) {
 const String PluginProcessor::getOutputBusName(int channelIndex) {
     String bname =
         String("M")
-        + String(channelIndex / MAX_OUT)
-        + String("_P")
-        + String(channelIndex % MAX_OUT);
+        + String((channelIndex / MAX_OUT)+1)
+        + String(" Out ")
+        + String((channelIndex % MAX_OUT)+1);
     return bname;
 }
 

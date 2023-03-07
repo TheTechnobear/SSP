@@ -346,7 +346,7 @@ std::string nicePlugName(const std::string &n) {
 #if __APPLE__
 #else
     // linux, remove .so
-    nn = nn.substr(0,nn.find_last_of('l'));
+    nn = nn.substr(0,nn.find_last_of('.'));
 #endif
     return nn;
 }
