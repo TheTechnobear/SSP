@@ -27,6 +27,11 @@ PARAMETER_ID (model)
 //PARAMETER_ID (bypass)
 //PARAMETER_ID (easter_egg)
 PARAMETER_ID (in_gain)
+
+PARAMETER_ID (enable_in)
+PARAMETER_ID (enable_strum)
+PARAMETER_ID (enable_voct)
+
 #undef PARAMETER_ID
 }
 
@@ -61,6 +66,10 @@ public:
         //Parameter&  bypass;
         //Parameter&  easter_egg;
         Parameter &in_gain;
+
+        Parameter &enableIn;
+        Parameter &enableStrum;
+        Parameter &enableVoct;
     } params_;
 
     void getRMS(float &in, float &lOut, float &rOut) {

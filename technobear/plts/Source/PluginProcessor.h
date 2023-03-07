@@ -36,6 +36,10 @@ PARAMETER_ID (timbre_mod)
 PARAMETER_ID (morph_mod)
 PARAMETER_ID (lpg)
 PARAMETER_ID (vca)
+
+PARAMETER_ID (enable_trig)
+PARAMETER_ID (enable_level)
+
 #undef PARAMETER_ID
 }
 
@@ -70,6 +74,8 @@ public:
         Parameter& morph_mod;
         Parameter& lpg;
         Parameter& vca;
+        Parameter& enable_trig;
+        Parameter& enable_level;
     } params_;
 
     void getRMS(float &lOut, float &rOut) {

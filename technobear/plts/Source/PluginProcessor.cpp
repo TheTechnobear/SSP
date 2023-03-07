@@ -35,7 +35,9 @@ PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) 
     timbre_mod(*apvt.getParameter(ID::timbre_mod)),
     morph_mod(*apvt.getParameter(ID::morph_mod)),
     lpg(*apvt.getParameter(ID::lpg)),
-    vca(*apvt.getParameter(ID::vca)) {
+    vca(*apvt.getParameter(ID::vca)),
+    enable_trig(*apvt.getParameter(ID::enable_trig)),
+    enable_level(*apvt.getParameter(ID::enable_level)) {
 }
 
 
@@ -76,6 +78,14 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::lpg, "LPG", 0.0f, 100.0f, 50.0f));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::vca, "VCA", 0.0f, 100.0f, 50.0f));
+
+    bool enableIO[2] = {false,false};
+#ifdef TARGET_QSP
+    enableIO[0] = true;
+#endif
+    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::enable_trig, "Trig", enableIO[0]));
+    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::enable_level, "Level", enableIO[1]));
+
     return params;
 }
 
@@ -120,8 +130,16 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     bool fmEn = inputEnabled[I_FM];
     bool timbreEn = inputEnabled[I_TIMBRE];
     bool morphEn = inputEnabled[I_MORPH];
-    bool trigEn = inputEnabled[I_TRIG];
-    bool levelEn = inputEnabled[I_LEVEL];
+
+    bool trigEn = inputEnabled[I_TRIG] || params_.enable_trig.getValue() > 0.5;
+    bool levelEn = inputEnabled[I_LEVEL] || params_.enable_level.getValue() > 0.5;;
+
+#ifdef TARGET_QSP
+    // these all have attenuators so can be enabled with functional changes?!
+    fmEn=true;
+    timbeEn=true;
+    morphEn=true;
+#endif
 
     for (int bidx = 0; bidx < buffer.getNumSamples(); bidx += n) {
         bool trig = false;

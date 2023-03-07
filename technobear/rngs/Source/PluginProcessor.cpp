@@ -49,7 +49,10 @@ PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) 
     model(*apvt.getParameter(ID::model)),
     //bypass(*apvt.getParameter(ID::bypass)),
     //easter_egg(*apvt.getParameter(ID::easter_egg)),
-    in_gain(*apvt.getParameter(ID::in_gain)) {
+    in_gain(*apvt.getParameter(ID::in_gain)),
+    enableIn(*apvt.getParameter(ID::enable_in)),
+    enableStrum(*apvt.getParameter(ID::enable_strum)),
+    enableVoct(*apvt.getParameter(ID::enable_voct)) {
 }
 
 
@@ -80,6 +83,14 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 //    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::bypass, "bypass", false));
 //    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::easter_egg, "easter_egg", false));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::in_gain, "In Gain", 0.0f, 100.0f, 0.0f));
+
+    bool enableIO[3] = {false,false,false};
+#ifdef TARGET_QSP
+    enableIO[1] = true;
+#endif
+    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::enable_in, "In", enableIO[0]));
+    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::enable_strum, "Strum", enableIO[1]));
+    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::enable_voct, "VOct", enableIO[2]));
     return params;
 }
 
@@ -195,9 +206,9 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         performance_state_.note = note;
         performance_state_.tonic = 12.0f + transpose;
 
-        performance_state_.internal_exciter = inputEnabled[I_IN] < 0.5f;
-        performance_state_.internal_strum = inputEnabled[I_STRUM] < 0.5f;
-        performance_state_.internal_note = inputEnabled[I_VOCT] < 0.5f;
+        performance_state_.internal_exciter = inputEnabled[I_IN] < 0.5f || params_.enableIn.getValue()  < 0.5;
+        performance_state_.internal_strum = inputEnabled[I_STRUM] < 0.5f || params_.enableStrum.getValue()  < 0.5;;
+        performance_state_.internal_note = inputEnabled[I_VOCT] < 0.5f || params_.enableVoct.getValue()  < 0.5;;
         performance_state_.chord = constrain(chord, 0, rings::kNumChords - 1);;
 
         if (!performance_state_.internal_note) {

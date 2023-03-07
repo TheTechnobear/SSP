@@ -246,12 +246,23 @@ void ModuleView::drawView(Graphics &g) {
 
 
 void ModuleView::drawModulePanel(Graphics &g, unsigned panel) {
-    auto editor = processor_.getEditor(panel);
-    if (!editor) return;
-
     unsigned panelWidth = (SSP_FULL_WIDTH - 10 ) / MAX_MODULES;
     unsigned border = ( panelWidth - SSP_COMPACT_WIDTH) / 2;
     unsigned moduleX = (panel * panelWidth) + border;
+
+
+    auto editor = processor_.getEditor(panel);
+    if (!editor) {
+        if(panel == activeModule_) g.setColour(Colours::white);
+        else g.setColour(Colours::darkgrey);
+
+        g.setFont(Font(Font::getDefaultMonospacedFontName(), 20, Font::plain));
+        g.drawSingleLineText("No Module Loaded", moduleX + 40 , getHeight() / 2 - 20 );
+        g.setFont(Font(Font::getDefaultMonospacedFontName(), 16, Font::plain));
+        g.drawSingleLineText("(press RS to load)", moduleX + 40 , getHeight() / 2  );
+        return;
+    }
+
 
 //    drawIO(g, panel);
 

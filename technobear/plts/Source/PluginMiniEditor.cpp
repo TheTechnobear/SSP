@@ -24,6 +24,12 @@ PluginMiniEditor::PluginMiniEditor(PluginProcessor &p) :
     view->addParam(std::make_shared<pcontrol_type>(processor_.params_.morph_mod));
     view->addParam(std::make_shared<pcontrol_type>(processor_.params_.lpg));
     view->addParam(std::make_shared<pcontrol_type>(processor_.params_.vca));
+
+#ifdef TARGET_QSP
+    view->addButton(std::make_shared<bcontrol_type>(processor_.params_.enable_trig, 12 * SSP_COMPACT_SCALE, Colours::lightskyblue));
+    view->addButton(std::make_shared<bcontrol_type>(processor_.params_.enable_level, 12 * SSP_COMPACT_SCALE, Colours::lightskyblue));
+#endif
+
     addView(view);
     setView(0);
 }
