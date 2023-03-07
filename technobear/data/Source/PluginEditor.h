@@ -28,7 +28,6 @@ protected:
     );
     void onSSPTimer() override {
         base_type::onSSPTimer();
-        timerCallback();
     }
 
 
