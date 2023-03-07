@@ -1,4 +1,5 @@
 #include "PluginProcessor.h"
+#include "PluginMiniEditor.h"
 #include "PluginEditor.h"
 #include "ssp/EditorHost.h"
 
@@ -147,6 +148,11 @@ void PluginProcessor::prepareToPlay(double newSampleRate, int estimatedSamplesPe
 
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
+    if(activityCount_==0) {
+        for(int i=0;i<I_MAX;i++) {
+            inActivity_[i]=buffer.getSample(i,0);
+        }
+    }
     unsigned sz = buffer.getNumSamples();
 
     float size = params_.size.getValue();
@@ -218,11 +224,26 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
     outRms_[0].process(buffer, O_OUT_1);
     outRms_[1].process(buffer, O_OUT_2);
+
+    if(activityCount_==0) {
+        for(int i=0;i<O_MAX;i++) {
+            outActivity_[i]=buffer.getSample(i,0);
+        }
+    }
+    activityCount_ = (activityCount_ + 1 ) % ACTIVITY_PERIOD;
 }
 
-
 AudioProcessorEditor *PluginProcessor::createEditor() {
-    return new ssp::EditorHost(this, new PluginEditor(*this));
+#ifdef FORCE_COMPACT_UI
+    return new ssp::EditorHost(this, new PluginMiniEditor(*this),true);
+#else
+    if (useCompactUI()) {
+        return new ssp::EditorHost(this, new PluginMiniEditor(*this), useCompactUI());
+
+    } else {
+        return new ssp::EditorHost(this, new PluginEditor(*this), useCompactUI());
+    }
+#endif
 }
 
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {

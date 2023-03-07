@@ -111,6 +111,12 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
 
+    if(activityCount_==0) {
+        for(int i=0;i<I_MAX;i++) {
+            inActivity_[i]=buffer.getSample(i,0);
+        }
+    }
+
     if (granularProcessor_ == nullptr) {
         granularProcessor_ = new clouds::GranularProcessor;
         auto &processor = *granularProcessor_;
@@ -182,7 +188,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         float pitch =
             params_.pitch.convertFrom0to1(params_.pitch.getValue())
             + cv2Pitch(buffer.getSample(I_VOCT, bidx))
-            + (noteInput_ ? noteInputTranspose_ : 0.0f) ;
+            + (noteInput_ ? noteInputTranspose_ : 0.0f);
 
         float position = params_.position.getValue() + buffer.getSample(I_POS, bidx);
         float size = params_.size.getValue() + buffer.getSample(I_SIZE, bidx);
@@ -231,15 +237,25 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     outRms_[0].process(buffer, O_LEFT);
     if (stereoOut) outRms_[1].process(buffer, O_RIGHT);
 
+    if(activityCount_==0) {
+        for(int i=0;i<O_MAX;i++) {
+            outActivity_[i]=buffer.getSample(i,0);
+        }
+    }
+    activityCount_ = (activityCount_ + 1 ) % ACTIVITY_PERIOD;
 }
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
-    if(useCompactUI()) {
-        return new ssp::EditorHost(this, new PluginMiniEditor(*this),useCompactUI());
+#ifdef FORCE_COMPACT_UI
+    return new ssp::EditorHost(this, new PluginMiniEditor(*this),true);
+#else
+    if (useCompactUI()) {
+        return new ssp::EditorHost(this, new PluginMiniEditor(*this), useCompactUI());
 
     } else {
-        return new ssp::EditorHost(this, new PluginEditor(*this),useCompactUI());
+        return new ssp::EditorHost(this, new PluginEditor(*this), useCompactUI());
     }
+#endif
 }
 
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {

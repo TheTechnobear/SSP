@@ -136,6 +136,14 @@ public:
         rOut = outRms_[1].lvl();
     }
 
+    float ioActivity(bool input, int bus) {
+        jassert(
+            (input == true && bus < I_MAX)
+            ||
+            (input == false && bus < O_MAX)
+        );
+        return input ? inActivity_[bus] : outActivity_[bus];
+    }
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -165,6 +173,11 @@ private:
 
     ssp::RmsTrack inRms_[2];
     ssp::RmsTrack outRms_[2];
+
+    float inActivity_[I_MAX];
+    float outActivity_[O_MAX];
+    unsigned activityCount_ = 0;
+    static constexpr unsigned ACTIVITY_PERIOD = 10;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };

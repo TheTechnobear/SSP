@@ -38,8 +38,6 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     outVu_.level(outL, outR);
 
     addAndMakeVisible(outVu_);
-
-    setSize(1600, 480);
 }
 
 

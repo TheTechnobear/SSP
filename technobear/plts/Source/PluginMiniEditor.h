@@ -12,7 +12,7 @@ public:
     void resized() override;
 
 protected:
-//    using base_type = ssp::BarParamEditor;
+    using base_type = ssp::BaseMiniView;
 
 private:
 

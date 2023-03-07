@@ -247,25 +247,17 @@ void ModuleView::drawView(Graphics &g) {
 
 void ModuleView::drawModulePanel(Graphics &g, unsigned panel) {
     auto editor = processor_.getEditor(panel);
-
-    unsigned panelWidth = SSP_FULL_WIDTH / MAX_MODULES;
-    unsigned border = panelWidth - SSP_COMPACT_WIDTH;
-    unsigned panelX = (panel * panelWidth);
-    unsigned moduleX = panelX + border - 2;
-    if (panel == activeModule_) {
-        g.setColour(Colours::red);
-    } else {
-        g.setColour(Colours::lightgrey);
-    }
-    g.drawLine(moduleX - 2, 0, moduleX - 2, SSP_FULL_HEIGHT, 2);
-    g.drawLine(moduleX + SSP_COMPACT_WIDTH + 1, 0, moduleX + SSP_COMPACT_WIDTH + 1, SSP_FULL_HEIGHT, 2);
-
     if (!editor) return;
 
+    unsigned panelWidth = (SSP_FULL_WIDTH - 10 ) / MAX_MODULES;
+    unsigned border = ( panelWidth - SSP_COMPACT_WIDTH) / 2;
+    unsigned moduleX = (panel * panelWidth) + border;
+
+//    drawIO(g, panel);
+
+
+
     static constexpr unsigned long IMAGECACHE_HASHCODE = 0x53533500000;
-
-    drawIO(g, panel);
-
     Image img = ImageCache::getFromHashCode(IMAGECACHE_HASHCODE + panel);
     if (!img.isValid()) {
         Image newimg(Image::ARGB, pluginWidth, pluginHeight, true);
@@ -277,10 +269,8 @@ void ModuleView::drawModulePanel(Graphics &g, unsigned panel) {
     Image::BitmapData bitmap(img, Image::BitmapData::writeOnly);
     editor->renderToImage(bitmap.data, pluginWidth, pluginHeight);
 
-
     if(panel!=activeModule_) {
-        img.multiplyAllAlphas(0.3);
-//        img.desaturate();
+        img.multiplyAllAlphas(0.3f);
     }
 
     g.drawImageAt(img, moduleX, 0);
@@ -363,6 +353,7 @@ std::string nicePlugName(const std::string &n) {
 
 void LoadView::drawView(Graphics &g) {
     drawButtonBox(g);
+
     unsigned x = 50;
     unsigned y = 24;
     static constexpr unsigned fh = 24;

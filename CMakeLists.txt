@@ -33,6 +33,35 @@ juce_set_vst2_sdk_path(${VSTSDK})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DJUCE_DISABLE_JUCE_VERSION_PRINTING=1")
 
+if (DEFINED ENV{ALWAYS_COMPACT_UI})
+    set(ALWAYS_COMPACT_UI 1)
+else ()
+    set(ALWAYS_COMPACT_UI 0)
+endif()
+
+
+#set(ALWAYS_COMPACT_UI 1)
+
+
+if (DEFINED ENV{TARGET_SSP})
+    message("target : SSP")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DTARGET_SSP=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCOMPACT_UI_SCALE=2")
+elseif (DEFINED ENV{TARGET_QSP})
+    message("target : QSP")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DTARGET_QSP=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCOMPACT_UI_SCALE=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFORCE_COMPACT_UI=1")
+else()
+    message("default target : SSP")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DTARGET_SSP=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCOMPACT_UI_SCALE=2")
+endif()
+
+if (ALWAYS_COMPACT_UI)
+    message("force compact ui : enabled")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFORCE_COMPACT_UI=1")
+endif()
 
 add_subdirectory(daisySP)
 add_subdirectory(technobear)

@@ -99,6 +99,7 @@ target_sources(RNGS
         Source/SSPApi.cpp
         PRIVATE
         Source/PluginEditor.cpp
+        Source/PluginMiniEditor.cpp
         Source/PluginProcessor.cpp
         ${MI_SRC}
         ${COMMON_SRC}

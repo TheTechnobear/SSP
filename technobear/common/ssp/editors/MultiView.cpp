@@ -45,7 +45,6 @@ void MultiView::previousView() {
 
 void MultiView::addView(std::shared_ptr<base_type> view) {
     views_.push_back(view);
-    view->setBounds(0, 0, 1600, 480);
     addChildComponent(view.get());
 }
 
@@ -80,6 +79,7 @@ void MultiView::editorHidden() {
 void MultiView::resized() {
     base_type::resized();
     for (auto v: views_) {
+        v->setBounds(0, 0, getWidth(), getHeight());
         v->resized();
     }
 }

@@ -82,6 +82,7 @@ target_sources(DLYD
         Source/SSPApi.cpp
         PRIVATE
         Source/PluginEditor.cpp
+        Source/PluginMiniEditor.cpp
         Source/PluginProcessor.cpp
         ${COMMON_SRC}
         )

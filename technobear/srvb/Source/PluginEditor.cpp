@@ -41,8 +41,6 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 
     addAndMakeVisible(inVu_);
     addAndMakeVisible(outVu_);
-
-    setSize(1600, 480);
 }
 
 void PluginEditor::drawView(Graphics &g) {

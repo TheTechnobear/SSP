@@ -54,20 +54,13 @@ public:
 
     const std::string &getPluginFile(unsigned m) { return modules_[m].pluginFile_; };
 
-    SSPExtendedApi::PluginEditorInterface *createEditorIfNeeded(unsigned midx) {
+    SSPExtendedApi::PluginEditorInterface *getEditor(unsigned midx) {
         auto &m = modules_[midx];
 
         if (m.plugin_ != nullptr && m.editor_ == nullptr) {
             m.editor_ = (SSPExtendedApi::PluginEditorInterface *) m.plugin_->getEditor();
         }
         return m.editor_;
-
-    }
-    SSPExtendedApi::PluginEditorInterface *getEditor(unsigned midx) {
-        return createEditorIfNeeded(midx);
-//        auto &m = modules_[midx];
-//        if(m.requestInProgress_) return nullptr; // it about to switch !
-//        return m.editor_;
     };
 
     SSPExtendedApi::PluginInterface *getPlugin(unsigned m) { return modules_[m].plugin_; };

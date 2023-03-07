@@ -192,15 +192,26 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
     outRms_[0].process(buffer, O_OUT);
     if (auxOut) outRms_[1].process(buffer, O_AUX);
+
+    if(activityCount_==0) {
+        for(int i=0;i<O_MAX;i++) {
+            outActivity_[i]=buffer.getSample(i,0);
+        }
+    }
+    activityCount_ = (activityCount_ + 1 ) % ACTIVITY_PERIOD;
 }
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
+#ifdef FORCE_COMPACT_UI
+    return new ssp::EditorHost(this, new PluginMiniEditor(*this),true);
+#else
     if(useCompactUI()) {
         return new ssp::EditorHost(this, new PluginMiniEditor(*this),useCompactUI());
 
     } else {
-        return new ssp::EditorHost(this, new PluginEditor(*this), useCompactUI());
+        return new ssp::EditorHost(this, new PluginEditor(*this),useCompactUI());
     }
+#endif
 }
 
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {

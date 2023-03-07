@@ -245,21 +245,3 @@ void PluginProcessor::getActiveData(unsigned &xp, unsigned &yp, unsigned &cp,
     cCv = layerData_[PluginParams::C].cv_;
     cGate = layerData_[PluginParams::C].gate_;
 }
-
-
-Percussa::SSP::PluginDescriptor *PluginProcessor::createDescriptor() {
-    auto desc = new Percussa::SSP::PluginDescriptor;
-
-    desc->name = JucePlugin_Name;
-    desc->descriptiveName = JucePlugin_Desc;
-    desc->manufacturerName = JucePlugin_Manufacturer;
-    desc->version = JucePlugin_VersionString;
-    desc->uid = (int) JucePlugin_VSTUniqueID;
-    for (int i = 0; i < I_MAX; i++) {
-        desc->inputChannelNames.push_back(getInputBusName(i).toStdString());
-    }
-    for (int i = 0; i < O_MAX; i++) {
-        desc->outputChannelNames.push_back(getOutputBusName(i).toStdString());
-    }
-    return desc;
-}

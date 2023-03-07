@@ -1,14 +1,12 @@
 #pragma once
 
-//#include "../../ssp-sdk/Percussa.h"
-
 #include <algorithm>
 
 static constexpr unsigned SSP_FULL_WIDTH = 1600;
 static constexpr unsigned SSP_FULL_HEIGHT = 480;
 
-#ifdef QSP
-static constexpr unsigned SSP_COMPACT_SCALE = 1;
+#ifdef COMPACT_UI_SCALE
+static constexpr unsigned SSP_COMPACT_SCALE = COMPACT_UI_SCALE;
 #else
 static constexpr unsigned SSP_COMPACT_SCALE = 2;
 #endif
