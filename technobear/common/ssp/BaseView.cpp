@@ -19,12 +19,12 @@ void BaseView::timerCallback() {
     repaint();
 }
 
-void BaseView::paint(Graphics &g) {
+void BaseView::paint(juce::Graphics &g) {
 //    drawBasicPanel(g);
     drawView(g);
 }
 
-void BaseView::drawView(Graphics &g) {
+void BaseView::drawView(juce::Graphics &g) {
     // display 1600x 480
     // x= left/right (0..1599)
     // y= top/bottom (0..479)

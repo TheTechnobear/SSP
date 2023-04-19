@@ -4,7 +4,7 @@
 #include <assert.h>
 #include "../JuceLibraryCode/JuceHeader.h"
 
-class ValueButton : public Component {
+class ValueButton : public juce::Component {
 public:
     ValueButton(const String &label,
                 std::function<void(bool v)> cb,

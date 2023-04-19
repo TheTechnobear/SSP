@@ -93,8 +93,8 @@ SSPUI::SSPUI(BaseProcessor *processor, SSPActions *actions)
         bI.setBounds(i * bw + x, y, bw, bh);
         bO.setBounds(i * bw + x, y + bh, bw, bh);
 
-        bI.setToggleState(processor_->isInputEnabled(i), dontSendNotification);
-        bO.setToggleState(processor_->isOutputEnabled(i), dontSendNotification);
+        bI.setToggleState(processor_->isInputEnabled(i), juce::dontSendNotification);
+        bO.setToggleState(processor_->isOutputEnabled(i), juce::dontSendNotification);
         bI.addListener(this);
         bO.addListener(this);
         addAndMakeVisible(bI);
@@ -105,20 +105,20 @@ SSPUI::SSPUI(BaseProcessor *processor, SSPActions *actions)
 
 void SSPUI::paint(juce::Graphics &g) {
 //    g.fillAll(Colours::grey);
-    g.setColour(Colours::white);
-    g.drawText("Inputs :", 30, 150, 65, 30, Justification::left);
-    g.drawText("Outputs :", 30, 180, 65, 30, Justification::left);
+    g.setColour(juce::Colours::white);
+    g.drawText("Inputs :", 30, 150, 65, 30, juce::Justification::left);
+    g.drawText("Outputs :", 30, 180, 65, 30, juce::Justification::left);
 
 }
 
 void SSPUI::resized() {
 }
 
-void SSPUI::buttonStateChanged(Button *button) {
+void SSPUI::buttonStateChanged(juce::Button *button) {
     Listener::buttonStateChanged(button);
 }
 
-void SSPUI::buttonClicked(Button *button) {
+void SSPUI::buttonClicked(juce::Button *button) {
     for (unsigned i = 0; i < NENC; i++) {
         if (button == &encUp_[i]) {
             actions_->onEncoder(i, 1.0f);

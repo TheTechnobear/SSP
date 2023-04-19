@@ -5,6 +5,7 @@
 
 #include <assert.h>
 
+
 namespace ssp {
 
 #ifdef __APPLE__
@@ -16,7 +17,7 @@ static constexpr bool defIOState = false;
 
 
 BaseProcessor::BaseProcessor(
-    const AudioProcessor::BusesProperties &ioLayouts,
+    const juce::AudioProcessor::BusesProperties &ioLayouts,
     juce::AudioProcessorValueTreeState::ParameterLayout pl)
     : AudioProcessor(ioLayouts), apvts(*this, nullptr, "state", std::move(pl)) {
     addListener(this);
@@ -48,7 +49,7 @@ void BaseProcessor::releaseResources() {
 }
 
 
-void BaseProcessor::addBaseParameters(AudioProcessorValueTreeState::ParameterLayout &params) {
+void BaseProcessor::addBaseParameters(juce::AudioProcessorValueTreeState::ParameterLayout &params) {
 }
 
 void BaseProcessor::init() {
@@ -61,7 +62,7 @@ void BaseProcessor::init() {
 }
 
 
-void BaseProcessor::MidiAutomation::store(XmlElement *xml) {
+void BaseProcessor::MidiAutomation::store(juce::XmlElement *xml) {
     xml->setAttribute("paramId", paramIdx_);
     xml->setAttribute("scale", scale_);
     xml->setAttribute("offset", offset_);
@@ -70,7 +71,7 @@ void BaseProcessor::MidiAutomation::store(XmlElement *xml) {
     xml->setAttribute("midi.type", midi_.type_);
 }
 
-void BaseProcessor::MidiAutomation::recall(XmlElement *xml) {
+void BaseProcessor::MidiAutomation::recall(juce::XmlElement *xml) {
     paramIdx_ = xml->getIntAttribute("paramId", -1);
     scale_ = xml->getDoubleAttribute("scale", 1.0f);
     offset_ = xml->getDoubleAttribute("offset", 0.0f);
@@ -119,7 +120,7 @@ void BaseProcessor::midiToXml(juce::XmlElement *xml) {
     for (auto &ap: midiAutomation_) {
         auto &a = ap.second;
         if (a.paramIdx_ != -1) {
-            auto pxml = amXml->createNewChildElement("P_" + String(a.paramIdx_));
+            auto pxml = amXml->createNewChildElement("P_" + juce::String(a.paramIdx_));
             a.store(pxml);
         }
     }
@@ -170,30 +171,30 @@ static const char *TEST_XML_TAG = "TEST";
 static const char *CUSTOM_XML_TAG = "CUSTOM";
 
 
-void BaseProcessor::getStateInformation(MemoryBlock &destData) {
+void BaseProcessor::getStateInformation(juce::MemoryBlock &destData) {
     auto state = apvts.copyState();
-    std::unique_ptr<juce::XmlElement> xmlVst = std::make_unique<XmlElement>(VST_XML_TAG);
+    std::unique_ptr<juce::XmlElement> xmlVst = std::make_unique<juce::XmlElement>(VST_XML_TAG);
 
     // first save state tree
     std::unique_ptr<juce::XmlElement> xmlState(state.createXml());
 
     // clean this xml by removing SSP parameters (encoders and alike)
-    std::unique_ptr<XmlElement> cleanStateXml = std::make_unique<XmlElement>(xmlState->getTagName());
+    std::unique_ptr<juce::XmlElement> cleanStateXml = std::make_unique<juce::XmlElement>(xmlState->getTagName());
     for (int i = 0; i < xmlState->getNumChildElements(); i++) {
-        XmlElement *p = xmlState->getChildElement(i);
-        XmlElement *ne = new XmlElement(*p);
+        juce::XmlElement *p = xmlState->getChildElement(i);
+        juce::XmlElement *ne = new juce::XmlElement(*p);
         cleanStateXml->addChildElement(ne);
     }
 
 
-    std::unique_ptr<juce::XmlElement> xmlMidi = std::make_unique<XmlElement>(MIDI_XML_TAG);
-    std::unique_ptr<juce::XmlElement> xmlCustom = std::make_unique<XmlElement>(CUSTOM_XML_TAG);
+    std::unique_ptr<juce::XmlElement> xmlMidi = std::make_unique<juce::XmlElement>(MIDI_XML_TAG);
+    std::unique_ptr<juce::XmlElement> xmlCustom = std::make_unique<juce::XmlElement>(CUSTOM_XML_TAG);
 
 
     midiToXml(xmlMidi.get());
     customToXml(xmlCustom.get());
 #ifdef __APPLE__
-    std::unique_ptr<juce::XmlElement> xmlTest = std::make_unique<XmlElement>(TEST_XML_TAG);
+    std::unique_ptr<juce::XmlElement> xmlTest = std::make_unique<juce::XmlElement>(TEST_XML_TAG);
     testToXml(xmlTest.get());
     if (xmlTest) xmlVst->addChildElement(xmlTest.release());
 #endif
@@ -237,12 +238,12 @@ void BaseProcessor::onOutputChanged(unsigned i, bool b) {
     if (i < numOut) outputEnabled[i] = b;
 }
 
-inline bool isInternalMidi(const String &name) {
+inline bool isInternalMidi(const juce::String &name) {
     return name.contains("Juce") || name.contains("Midi Through Port");
 }
 
 std::string BaseProcessor::getMidiInputDeviceId(const std::string &name) {
-    auto devs = MidiInput::getAvailableDevices();
+    auto devs = juce::MidiInput::getAvailableDevices();
     for (int i = 0; i < devs.size(); i++) {
         if (devs[i].name.toStdString() == name) {
             return devs[i].identifier.toStdString();
@@ -252,7 +253,7 @@ std::string BaseProcessor::getMidiInputDeviceId(const std::string &name) {
 }
 
 std::string BaseProcessor::getMidiOutputDeviceId(const std::string &name) {
-    auto devs = MidiOutput::getAvailableDevices();
+    auto devs = juce::MidiOutput::getAvailableDevices();
     for (int i = 0; i < devs.size(); i++) {
         if (devs[i].name.toStdString() == name) {
             return devs[i].identifier.toStdString();
@@ -272,9 +273,9 @@ void BaseProcessor::setMidiIn(const std::string &name) {
         }
 
         if (!isInternalMidi(name)) {
-            std::string id = getMidiOutputDeviceId(name);
+            std::string id = getMidiInputDeviceId(name);
             if (!id.empty()) {
-                midiInDevice_ = MidiInput::openDevice(id, this);
+                midiInDevice_ = juce::MidiInput::openDevice(id, this);
                 if (midiInDevice_ && midiInDevice_->getIdentifier().toStdString() == id) {
                     midiInDevice_->start();
                     // Logger::writeToLog(getName() + ": MIDI IN OPEN -> " + id);
@@ -301,7 +302,7 @@ void BaseProcessor::setMidiOut(const std::string &name) {
         if (!isInternalMidi(name)) {
             std::string id = getMidiOutputDeviceId(name);
             if (!id.empty()) {
-                midiOutDevice_ = MidiOutput::openDevice(id);
+                midiOutDevice_ = juce::MidiOutput::openDevice(id);
                 if (midiOutDevice_ && midiOutDevice_->getIdentifier().toStdString() == id) {
                     midiOutDevice_->startBackgroundThread();
                     // Logger::writeToLog(getName() + ": MIDI OUT OPEN -> " + id);
@@ -316,7 +317,7 @@ void BaseProcessor::setMidiOut(const std::string &name) {
     midiOutDevice_ = nullptr;
 }
 
-void BaseProcessor::automateParam(int idx, const MidiAutomation &a, const MidiMessage &msg) {
+void BaseProcessor::automateParam(int idx, const MidiAutomation &a, const juce::MidiMessage &msg) {
     auto &plist = getParameters();
     if (idx < plist.size()) {
         auto p = plist[idx];
@@ -340,7 +341,7 @@ void BaseProcessor::automateParam(int idx, const MidiAutomation &a, const MidiMe
     }
 }
 
-void BaseProcessor::handleMidi(const MidiMessage &msg) {
+void BaseProcessor::handleMidi(const juce::MidiMessage &msg) {
     if (midiChannel_ == 0 || msg.getChannel() == midiChannel_) {
         if (midiLearn_) {
             if (lastLearn_.paramIdx_ >= 0) {
@@ -379,7 +380,7 @@ void BaseProcessor::handleMidi(const MidiMessage &msg) {
 }
 
 
-void BaseProcessor::handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message) {
+void BaseProcessor::handleIncomingMidiMessage(juce::MidiInput *source, const juce::MidiMessage &message) {
 //    Logger::writeToLog("MidiCallback -> " + message.getDescription());
     handleMidi(message);
 }
@@ -407,22 +408,22 @@ void BaseProcessor::audioProcessorParameterChanged(AudioProcessor *processor,
                 auto &a = midiAutomation_[parameterIndex];
                 switch (a.midi_.type_) {
                     case MidiAutomation::Midi::T_CC : {
-                        auto msg = MidiMessage::controllerEvent(a.midi_.channel_, a.midi_.num_, uint8(v * 127));
+                        auto msg = juce::MidiMessage::controllerEvent(a.midi_.channel_, a.midi_.num_, juce::uint8(v * 127));
                         midiOutDevice_->sendMessageNow(msg);
                         break;
                     }
                     case MidiAutomation::Midi::T_NOTE : {
                         if (v > 0.0f) {
-                            auto msg = MidiMessage::noteOn(a.midi_.channel_, a.midi_.num_, uint8(v * 127));
+                            auto msg = juce::MidiMessage::noteOn(a.midi_.channel_, a.midi_.num_, juce::uint8(v * 127));
                             midiOutDevice_->sendMessageNow(msg);
                         } else {
-                            auto msg = MidiMessage::noteOff(a.midi_.channel_, a.midi_.num_);
+                            auto msg = juce::MidiMessage::noteOff(a.midi_.channel_, a.midi_.num_);
                             midiOutDevice_->sendMessageNow(msg);
                         }
                         break;
                     }
                     case MidiAutomation::Midi::T_PRESSURE : {
-                        auto msg = MidiMessage::channelPressureChange(a.midi_.channel_, uint8(v * 127));
+                        auto msg = juce::MidiMessage::channelPressureChange(a.midi_.channel_, juce::uint8(v * 127));
                         midiOutDevice_->sendMessageNow(msg);
                         break;
                     }

@@ -5,7 +5,7 @@
 namespace ssp {
 
 template<unsigned N>
-class WaveDisp : public Component {
+class WaveDisp : public juce::Component {
 public:
     WaveDisp(bool grid = true, bool legend = false) : grid_(grid), legend_(legend) {
         juce::Colour clrs[4]{Colours::green, Colours::blue, Colours::red, Colours::yellow};
@@ -103,7 +103,7 @@ private:
     }
 
 
-    void paintSignal(Graphics &g, unsigned sigN) {
+    void paintSignal(juce::Graphics &g, unsigned sigN) {
         auto &layer = layer_[sigN];
         float w = (float) getWidth();
         float h = (float) getHeight();
@@ -162,13 +162,13 @@ private:
     }
 
 
-    void drawGrid(Graphics &g) {
+    void drawGrid(juce::Graphics &g) {
         int x = 0;
         int y = 0;
         int w = getWidth();
         int h = getHeight();
 
-        g.setColour(Colours::darkgrey);
+        g.setColour(juce::Colours::darkgrey);
         unsigned div = 10;
         int sw = w / div;
         int sh = h / div;

@@ -1,6 +1,5 @@
 #include "ParamControl.h"
 
-using namespace juce;
 namespace ssp {
 
 BaseParamControl::BaseParamControl(Parameter &p,juce::Colour fg)
@@ -14,9 +13,9 @@ void BaseParamControl::paramChanged(float) {
     repaint();
 }
 
-String BaseParamControl::getTextValue() {
+juce::String BaseParamControl::getTextValue() {
     auto &p = param_;
-    String val = p.getCurrentValueAsText();
+    auto val = p.getCurrentValueAsText();
     if (p.getLabel().length()) { val = val + " " + p.getLabel(); }
     return val;
 }
@@ -63,21 +62,21 @@ void SimpleParamControl::reset() {
     p.endChangeGesture();
 }
 
-void SimpleParamControl::paint(Graphics &g) {
+void SimpleParamControl::paint(juce::Graphics &g) {
     static constexpr unsigned fh = 36;
     int h = getHeight();
     int w = getWidth();
 
     auto &p = param_;
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain));
 
     g.setColour(fg_);
-    g.drawText(p.getName(32), 0, 0, w, fh, Justification::centred);
+    g.drawText(p.getName(32), 0, 0, w, fh, juce::Justification::centred);
 
-    g.setColour(Colours::white);
-    String val = getTextValue();
-    g.drawText(val, 0, h / 2, w, fh, Justification::centred);
+    g.setColour(juce::Colours::white);
+    auto val = getTextValue();
+    g.drawText(val, 0, h / 2, w, fh, juce::Justification::centred);
 }
 
 LineParamControl::LineParamControl(Parameter &p, float coarse, float fine,juce::Colour fg)
@@ -85,21 +84,21 @@ LineParamControl::LineParamControl(Parameter &p, float coarse, float fine,juce::
 
 };
 
-void LineParamControl::paint(Graphics &g) {
+void LineParamControl::paint(juce::Graphics &g) {
     static constexpr unsigned fh = 32;
     int h = getHeight();
     int w = getWidth();
 
     auto &p = param_;
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain));
 
-    g.setColour(active() ? fg_ : Colours::grey);
-    g.drawText(p.getName(32), 0, 0, w, fh, Justification::centred);
+    g.setColour(active() ? fg_ : juce::Colours::grey);
+    g.drawText(p.getName(32), 0, 0, w, fh, juce::Justification::centred);
 
-    g.setColour(active() ? Colours::white : Colours::grey);
-    String val = getTextValue();
-    g.drawText(val, 0, h / 2, w, fh, Justification::centred);
+    g.setColour(active() ? juce::Colours::white : juce::Colours::grey);
+    auto val = getTextValue();
+    g.drawText(val, 0, h / 2, w, fh, juce::Justification::centred);
 }
 
 
@@ -108,25 +107,25 @@ BarParamControl::BarParamControl(Parameter &p, float coarse, float fine,juce::Co
 
 };
 
-void BarParamControl::paint(Graphics &g) {
+void BarParamControl::paint(juce::Graphics &g) {
     static constexpr unsigned fh = 28;
     int h = getHeight();
     int w = getWidth();
 
     auto &p = param_;
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain));
 
-    g.setColour(active() ? fg_ : Colours::grey);
-    g.drawText(p.getName(32), 0, 0, w, fh, Justification::centred);
+    g.setColour(active() ? fg_ : juce::Colours::grey);
+    g.drawText(p.getName(32), 0, 0, w, fh, juce::Justification::centred);
 
-    g.setColour(Colours::black);
+    g.setColour(juce::Colours::black);
     g.drawRect(0, h / 2, w, fh); // border
 
-    g.setColour(Colour(0xFF222222));
+    g.setColour(juce::Colour(0xFF222222));
     g.fillRect(1, (h / 2) + 1, w - 2, fh - 2); // border
 
-    g.setColour(active() ? Colours::darkcyan : Colours::grey);
+    g.setColour(active() ? juce::Colours::darkcyan : juce::Colours::grey);
 
     if (!p.isDiscrete()) {
         int be = (w - 4) * p.getValue();
@@ -139,7 +138,7 @@ void BarParamControl::paint(Graphics &g) {
             int bs = (bl > 0.0f ? 0.5f : 0.5 + v) * (w - 4);
             g.fillRect(bs, int(h / 2) + 2, (bl > 0 ? bl : -bl), fh - 4);
         }
-        g.setColour(Colours::white);
+        g.setColour(juce::Colours::white);
         g.drawVerticalLine(be + 2, int(h / 2) + 2, int(h / 2) + 2 + fh - 4);
     } else {
         int bl = ((w - 4) / p.getNumSteps());
@@ -150,9 +149,9 @@ void BarParamControl::paint(Graphics &g) {
 
 
     if (active()) {
-        g.setColour(active() ? Colours::white : Colours::lightgrey);
-        String val = getTextValue();
-        g.drawText(val, 1, (h / 2) + 1, w - 2, fh - 2, Justification::centred);
+        g.setColour(active() ? juce::Colours::white : juce::Colours::lightgrey);
+        auto val = getTextValue();
+        g.drawText(val, 1, (h / 2) + 1, w - 2, fh - 2, juce::Justification::centred);
     }
 }
 

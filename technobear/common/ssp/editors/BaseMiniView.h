@@ -5,9 +5,6 @@
 
 #include <vector>
 
-using namespace juce;
-
-
 #include "ssp/controls/ParamControl.h"
 #include "ssp/controls/ParamButton.h"
 

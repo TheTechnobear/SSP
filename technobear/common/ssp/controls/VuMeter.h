@@ -3,15 +3,13 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
-using namespace juce;
-
 namespace ssp {
 
-class VuMeter : public Component {
+class VuMeter : public juce::Component {
 public:
     VuMeter() : active_(false) { ; }
 
-    void init(const String &label, bool drawGainLevel=false) {
+    void init(const juce::String &label, bool drawGainLevel=false) {
         label_ = label;
         drawGainLevel_=drawGainLevel;
     }
@@ -24,7 +22,7 @@ public:
 
     bool enabled() { return enabled_; }
 
-    void paint(Graphics &g);
+    void paint(juce::Graphics &g);
 
     void level(float lvl);
     float level()  {return level_;}
@@ -44,11 +42,11 @@ private:
 };
 
 
-class MonoVuMeter : public Component {
+class MonoVuMeter : public juce::Component {
 public:
     MonoVuMeter();
 
-    void init(const String &label,bool drawGainLevel=false) {
+    void init(const juce::String &label,bool drawGainLevel=false) {
         label_ = label;
         channel_.init(label,drawGainLevel);
     }
@@ -64,7 +62,7 @@ public:
     void level(float lvl) { channel_.level(lvl); }
     void gainLevel(float lvl) {channel_.gainLevel(lvl);}
 
-    void paint(Graphics &) override;
+    void paint(juce::Graphics &) override;
     void resized() override;
 private:
     String label_;
@@ -73,11 +71,11 @@ private:
 };
 
 
-class StereoVuMeter : public Component {
+class StereoVuMeter : public juce::Component {
 public:
     StereoVuMeter();
 
-    void init(const String &label,bool drawGainLevel=false) {
+    void init(const juce::String &label,bool drawGainLevel=false) {
         label_ = label;
         lChannel_.init(label,drawGainLevel);
         rChannel_.init("",drawGainLevel);
@@ -108,10 +106,10 @@ public:
         rChannel_.gainLevel(r_lvl);
     }
 
-    void paint(Graphics &) override;
+    void paint(juce::Graphics &) override;
     void resized() override;
 private:
-    String label_;
+    juce::String label_;
     VuMeter lChannel_;
     VuMeter rChannel_;
 

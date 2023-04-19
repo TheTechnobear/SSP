@@ -11,7 +11,7 @@ public:
     explicit FileBrowser(BaseProcessor *p, const String& defDir);
     virtual ~FileBrowser();
 
-    void drawView(Graphics &g) override;
+    void drawView(juce::Graphics &g) override;
 
     void editorShown() override;
     void editorHidden() override;
@@ -26,14 +26,14 @@ public:
     // void onLeftShiftButton(bool v) override;
      void onRightShiftButton(bool v) override;
 
-    String selectedFile();
-    String baseDir() { return baseDir_;}
+    juce::String selectedFile();
+    juce::String baseDir() { return baseDir_;}
     void setFile(String& fullname);
 
 private:
 
     using base_type = BaseEditor;
-    void drawEntry(Graphics &g,unsigned idx, bool selected, const String &name, bool isDir);
+    void drawEntry(juce::Graphics &g,unsigned idx, bool selected, const juce::String &name, bool isDir);
     void scanDir();
     void selectFile();
 
@@ -41,13 +41,13 @@ private:
     int selected_ = -1;
     int offset_ = 0;
 
-    Colour fg_=Colours::red;
-    Colour bg_=defaultBg_;
+    juce::Colour fg_=Colours::red;
+    juce::Colour bg_=defaultBg_;
     static constexpr int nFilePerCol = 15;
     static constexpr int nMaxCols = 4;
     static constexpr int nPageEntries_ = nFilePerCol * nMaxCols;
 
-    String baseDir_ = "~";
+    juce::String baseDir_ = "~";
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FileBrowser)
 

@@ -5,12 +5,9 @@
 
 #include <vector>
 
-using namespace juce;
-
 namespace ssp {
 
 class BaseProcessor;
-
 
 class BaseViewEditor :
     public BaseEditor {
@@ -36,7 +33,7 @@ protected:
     using base_type = BaseEditor;
     using base_view = BaseEditor;
 
-    void drawView(Graphics &g) override;
+    void drawView(juce::Graphics &g) override;
     void resized() override;
     void addView(std::shared_ptr<base_view>);
 

@@ -25,7 +25,7 @@ public:
 
     void fg(juce::Colour c) { fg_ = c; }
 
-    virtual String getTextValue();
+    virtual juce::String getTextValue();
 protected:
     Parameter &param_;
     juce::ParameterAttachment attachment_;

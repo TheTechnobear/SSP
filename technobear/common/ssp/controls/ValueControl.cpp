@@ -1,9 +1,6 @@
 #include "ValueControl.h"
 
-using namespace juce;
-
 namespace ssp {
-
 
 inline float constrain(float v, float vMin, float vMax) {
     return std::max<float>(vMin, std::min<float>(vMax, v));
@@ -60,20 +57,20 @@ void SimpleValueControl::valueChanged(float v) {
     if (callback_) callback_(v);
 }
 
-void SimpleValueControl::paint(Graphics &g) {
+void SimpleValueControl::paint(juce::Graphics &g) {
     static constexpr unsigned fh = 36;
     int h = getHeight();
     int w = getWidth();
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain));
 
     g.setColour(fg_);
-    g.drawText(name_, 0, 0, w, fh, Justification::centred);
+    g.drawText(name_, 0, 0, w, fh, juce::Justification::centred);
 
-    String val = String(value_);
+    auto val =juce:: String(value_);
     if (!label_.empty()) { val = val + " " + label_; }
-    g.setColour(Colours::white);
-    g.drawText(val, 0, h / 2, w, fh, Justification::centred);
+    g.setColour(juce::Colours::white);
+    g.drawText(val, 0, h / 2, w, fh, juce::Justification::centred);
 }
 
 
@@ -83,20 +80,20 @@ LineValueControl::LineValueControl(const std::string &name, const std::string &l
     : SimpleValueControl(name, label, cb, min, max, def, coarse, fine) {
 };
 
-void LineValueControl::paint(Graphics &g) {
+void LineValueControl::paint(juce::Graphics &g) {
     static constexpr unsigned fh = 32;
     int h = getHeight();
     int w = getWidth();
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain));
 
-    g.setColour(active() ? fg_ : Colours::grey);
-    g.drawText(name_, 0, 0, w, fh, Justification::centred);
+    g.setColour(active() ? fg_ : juce::Colours::grey);
+    g.drawText(name_, 0, 0, w, fh, juce::Justification::centred);
 
-    String val = String(value_);
+    auto val = juce::String(value_);
     if (!label_.empty()) { val = val + " " + label_; }
-    g.setColour(active() ? Colours::white : Colours::grey);
-    g.drawText(val, 0, h / 2, w, fh, Justification::centred);
+    g.setColour(active() ? juce::Colours::white : juce::Colours::grey);
+    g.drawText(val, 0, h / 2, w, fh, juce::Justification::centred);
 }
 
 
@@ -106,23 +103,23 @@ BarValueControl::BarValueControl(const std::string &name, const std::string &lab
     : SimpleValueControl(name, label, cb, min, max, def, coarse, fine) {
 };
 
-void BarValueControl::paint(Graphics &g) {
+void BarValueControl::paint(juce::Graphics &g) {
     static constexpr unsigned fh = 28;
     int h = getHeight();
     int w = getWidth();
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain));
 
-    g.setColour(active() ? fg_ : Colours::grey);
-    g.drawText(name_, 0, 0, w, fh, Justification::centred);
+    g.setColour(active() ? fg_ : juce::Colours::grey);
+    g.drawText(name_, 0, 0, w, fh, juce::Justification::centred);
 
-    g.setColour(Colours::black);
+    g.setColour(juce::Colours::black);
     g.drawRect(0, h / 2, w, fh); // border
 
-    g.setColour(Colour(0xFF222222));
+    g.setColour(juce::Colour(0xFF222222));
     g.fillRect(1, (h / 2) + 1, w - 2, fh - 2); // border
 
-    g.setColour(active() ? Colours::darkcyan : Colours::grey);
+    g.setColour(active() ? juce::Colours::darkcyan : juce::Colours::grey);
 
     int be = (w - 4) * value_;
     if (min_) {
@@ -133,15 +130,15 @@ void BarValueControl::paint(Graphics &g) {
         int bs = (bl > 0.0f ? 0.5f : 0.5 + v) * (w - 4);
         g.fillRect(bs, int(h / 2) + 2, (bl > 0 ? bl : -bl), fh - 4);
     }
-    g.setColour(Colours::white);
+    g.setColour(juce::Colours::white);
     g.drawVerticalLine(be + 2, int(h / 2) + 2, int(h / 2) + 2 + fh - 4);
 
 
     if (active()) {
-        g.setColour(active() ? Colours::white : Colours::lightgrey);
-        String val = String(value_);
+        g.setColour(active() ? juce::Colours::white : juce::Colours::lightgrey);
+        auto val = juce::String(value_);
         if (!label_.empty()) { val = val + " " + label_; }
-        g.drawText(val, 1, (h / 2) + 1, w - 2, fh - 2, Justification::centred);
+        g.drawText(val, 1, (h / 2) + 1, w - 2, fh - 2, juce::Justification::centred);
     }
 }
 
@@ -181,21 +178,21 @@ void ListValueControl::valueChanged(float nv) {
     if (callback_) callback_(nv, val);
 }
 
-void ListValueControl::paint(Graphics &g) {
+void ListValueControl::paint(juce::Graphics &g) {
     static constexpr unsigned fh = 36;
     int h = getHeight();
     int w = getWidth();
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain));
 
     g.setColour(fg_);
-    g.drawText(name_, 0, 0, w, fh, Justification::centred);
+    g.drawText(name_, 0, 0, w, fh, juce::Justification::centred);
 
-    String val;
+    juce::String val;
     if (!values_.empty()) val = values_[(unsigned) value_];
     if (!label_.empty()) { val = val + " " + label_; }
-    g.setColour(Colours::white);
-    g.drawText(val, 0, h / 2, w, fh, Justification::centred);
+    g.setColour(juce::Colours::white);
+    g.drawText(val, 0, h / 2, w, fh, juce::Justification::centred);
 }
 
 } //namespace ssp

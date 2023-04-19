@@ -3,9 +3,6 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "MultiViewEditor.h"
 
-
-using namespace juce;
-
 namespace ssp {
 
 class BaseProcessor;

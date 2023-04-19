@@ -1,11 +1,9 @@
 #pragma once
 
-#include <juce_audio_processors/juce_audio_processors.h>
-
-using namespace juce;
-
 #include "controls/ValueButton.h"
 #include "controls/ValueControl.h"
+
+#include <juce_audio_processors/juce_audio_processors.h>
 
 namespace ssp {
 
@@ -17,8 +15,8 @@ class EditorHost;
 #include "SSPActions.h"
 
 class SystemEditor :
-    public Component,
-    public Timer,
+    public juce::Component,
+    public juce::Timer,
     public SSPActions {
 
 public:

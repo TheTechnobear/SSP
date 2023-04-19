@@ -1,7 +1,5 @@
 #include "MiniControl.h"
 
-using namespace juce;
-
 namespace ssp {
 
 MiniControl::MiniControl(Parameter &p, float coarse, float fine, juce::Colour fg)
@@ -9,7 +7,7 @@ MiniControl::MiniControl(Parameter &p, float coarse, float fine, juce::Colour fg
 
 };
 
-void MiniControl::paint(Graphics &g) {
+void MiniControl::paint(juce::Graphics &g) {
     int h = getHeight();
     int w = getWidth();
     unsigned tfh = h / 4;
@@ -18,18 +16,18 @@ void MiniControl::paint(Graphics &g) {
     unsigned gap = scale;
 
     auto &p = param_;
-    const auto &titleFont = Font(Font::getDefaultMonospacedFontName(), tfh, Font::plain);
-    const auto &valueFont = Font(Font::getDefaultMonospacedFontName(), vfh, Font::plain);
+    const auto &titleFont = juce::Font(juce::Font::getDefaultMonospacedFontName(), tfh, juce::Font::plain);
+    const auto &valueFont = juce::Font(juce::Font::getDefaultMonospacedFontName(), vfh, juce::Font::plain);
 
     g.setFont(titleFont);
-    g.setColour(active() ? fg_ : Colours::grey);
-    g.drawText(p.getName(32), 0, scale, w, tfh, Justification::left);
+    g.setColour(active() ? fg_ : juce::Colours::grey);
+    g.drawText(p.getName(32), 0, scale, w, tfh, juce::Justification::left);
 
 
     unsigned bposY = h / 3 + 1;
     unsigned bH = (h * 2) / 3;
 
-    g.setColour(active() ? Colours::darkcyan : Colours::grey);
+    g.setColour(active() ? juce::Colours::darkcyan : juce::Colours::grey);
 
     if (!p.isDiscrete()) {
         int ve = (w - 1) * p.getValue();
@@ -44,7 +42,7 @@ void MiniControl::paint(Graphics &g) {
             int be = bs + bl;
             g.fillRect(bs, bposY, (bl > 0 ? bl : -bl), bH);
         }
-        g.setColour(Colours::white);
+        g.setColour(juce::Colours::white);
         g.drawVerticalLine(ve, bposY, bposY + bH);
 
     } else {
@@ -56,10 +54,10 @@ void MiniControl::paint(Graphics &g) {
 
 
     if (active()) {
-        g.setColour(active() ? Colours::white : Colours::lightgrey);
+        g.setColour(active() ? juce::Colours::white : juce::Colours::lightgrey);
         g.setFont(valueFont);
-        String val = getTextValue();
-        g.drawText(val, 1, bposY + (vfh / 2), w - 2, bposY - 2, Justification::centred);
+        auto val = getTextValue();
+        g.drawText(val, 1, bposY + (vfh / 2), w - 2, bposY - 2, juce::Justification::centred);
     }
 }
 

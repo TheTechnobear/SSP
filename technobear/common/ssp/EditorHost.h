@@ -2,9 +2,6 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
-using namespace juce;
-
-
 #include "SSPActions.h"
 
 #include "controls/ValueButton.h"
@@ -15,8 +12,9 @@ using namespace juce;
 
 namespace ssp {
 
+
 class EditorHost :
-    public AudioProcessorEditor,
+    public juce::AudioProcessorEditor,
     public SSPActions {
 public:
     explicit EditorHost(BaseProcessor *p, BaseView *e,

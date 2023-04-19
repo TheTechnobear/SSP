@@ -2,8 +2,6 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
-using namespace juce;
-
 #include "ssp/BaseView.h"
 #include "ssp/controls/ValueButton.h"
 
@@ -21,7 +19,7 @@ class BaseEditor : public BaseView {
 
 public:
     explicit BaseEditor(BaseProcessor *p);
-    virtual ~BaseEditor();
+    ~BaseEditor() override;
 
 
     void onEncoder(unsigned enc, float v) override;

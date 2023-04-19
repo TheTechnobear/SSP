@@ -1,26 +1,27 @@
 #pragma once
 
+
+#include "SSP.h"
+#include "SSP.h"
+#include "controls/BaseParameter.h"
+
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_audio_devices/juce_audio_devices.h>
 
-using namespace juce;
-
-#include "SSP.h"
-
-#include "controls/BaseParameter.h"
-
 namespace ssp {
 
-class BaseProcessor : public AudioProcessor,
-                      public MidiInputCallback,
-//                      public AudioProcessorListener {
-                      public AudioProcessorListener,
-                      private ValueTree::Listener {
+class BaseProcessor :
+    public juce::AudioProcessor,
+    public juce::MidiInputCallback,
+//                      public juce::AudioProcessorListener {
+    public juce::AudioProcessorListener,
+    private juce::ValueTree::Listener {
+
 public:
 
     explicit BaseProcessor(const AudioProcessor::BusesProperties &ioLayouts,
                            juce::AudioProcessorValueTreeState::ParameterLayout pl);
-    virtual ~BaseProcessor();
+    ~BaseProcessor() override;
 
     virtual void init();
 
@@ -38,20 +39,20 @@ public:
 
     void setCurrentProgram(int index) override {}
 
-    const String getProgramName(int index) override { return ""; }
+    const juce::String getProgramName(int index) override { return ""; }
 
     void changeProgramName(int index, const juce::String &newName) override {}
 
     void prepareToPlay(double newSampleRate, int estimatedSamplesPerBlock) override;
     void releaseResources() override;
 
-    void getStateInformation(MemoryBlock &destData) override;
+    void getStateInformation(juce::MemoryBlock &destData) override;
     void setStateInformation(const void *data, int sizeInBytes) override;
 
 
-    RangedAudioParameter *getParameter(StringRef n) { return apvts.getParameter(n); }
+    juce::RangedAudioParameter *getParameter(juce::StringRef n) { return apvts.getParameter(n); }
 
-    AudioProcessorValueTreeState &vts() { return apvts; }
+    juce::AudioProcessorValueTreeState &vts() { return apvts; }
 
     virtual void onInputChanged(unsigned i, bool b);
     virtual void onOutputChanged(unsigned i, bool b);
@@ -76,10 +77,10 @@ public:
 
     void midiChannel(unsigned ch) { midiChannel_ = ch; }
 
-    int midiChannel() { return midiChannel_; }
+    int midiChannel() const { return midiChannel_; }
 
     void useCompactUI(bool b) { compactEditor_ = b; }
-    bool useCompactUI() { return compactEditor_; }
+    bool useCompactUI() const { return compactEditor_; }
 
 protected:
     friend class BaseEditor;
@@ -90,7 +91,7 @@ protected:
     static constexpr unsigned numIn = 24;
     static constexpr unsigned numOut = 24;
 
-    AudioProcessorValueTreeState apvts;
+    juce::AudioProcessorValueTreeState apvts;
     bool inputEnabled[numIn];
     bool outputEnabled[numOut];
 
@@ -105,19 +106,19 @@ protected:
     virtual void testToXml(juce::XmlElement *);
 #endif
 
-    void addBaseParameters(AudioProcessorValueTreeState::ParameterLayout &);
+    void addBaseParameters(juce::AudioProcessorValueTreeState::ParameterLayout &);
 
 
     // midi automation
     // AudioProcessorListener
-    void audioProcessorParameterChanged(AudioProcessor *p, int parameterIndex, float newValue) override;
+    void audioProcessorParameterChanged(juce::AudioProcessor *p, int parameterIndex, float newValue) override;
 
-    void audioProcessorChanged(AudioProcessor *processor, const AudioProcessorListener::ChangeDetails &details) override { ; }
+    void audioProcessorChanged(juce::AudioProcessor *processor, const AudioProcessorListener::ChangeDetails &details) override { ; }
 
     // MidiInputCallback
-    void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message) override;
+    void handleIncomingMidiMessage(juce::MidiInput *source, const juce::MidiMessage &message) override;
 
-    void handleMidi(const MidiMessage &message);
+    void handleMidi(const juce::MidiMessage &message);
 
     struct MidiAutomation {
         int paramIdx_ = -1;
@@ -143,20 +144,20 @@ protected:
             midi_.type_ = Midi::T_MAX;
         }
 
-        bool valid() { return paramIdx_ >= 0 && midi_.type_ != Midi::T_MAX; }
+        bool valid() const { return paramIdx_ >= 0 && midi_.type_ != Midi::T_MAX; }
 
-        void store(XmlElement *);
-        void recall(XmlElement *);
+        void store(juce::XmlElement *);
+        void recall(juce::XmlElement *);
     };
 
-    void automateParam(int idx, const MidiAutomation &a, const MidiMessage &msg);
+    void automateParam(int idx, const MidiAutomation &a, const juce::MidiMessage &msg);
 
     std::map<int, MidiAutomation> midiAutomation_;
 
     std::string midiInDeviceName_;
     std::string midiOutDeviceName_;
-    std::unique_ptr<MidiInput> midiInDevice_;
-    std::unique_ptr<MidiOutput> midiOutDevice_;
+    std::unique_ptr<juce::MidiInput> midiInDevice_;
+    std::unique_ptr<juce::MidiOutput> midiOutDevice_;
     int midiChannel_ = 0;
     bool midiLearn_ = false;
     bool noteInput_ = false;
@@ -164,6 +165,12 @@ protected:
     MidiAutomation lastLearn_;
 
     bool compactEditor_ = false;
+
+    struct MidiMsg {
+
+    };
+
+//    moodycamel::ReaderWriterQueue<MidiMsg> messageQueue_;
 
 public:
     std::map<int, MidiAutomation> &midiAutomation() { return midiAutomation_; }

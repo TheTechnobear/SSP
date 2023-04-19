@@ -3,20 +3,16 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
-//using namespace juce;
-
-using String=juce::String;
-
 #include "SSP.h"
 
 namespace ssp {
 
 class BaseFloatParameter : public juce::AudioParameterFloat {
 public:
-    typedef std::function<void(const String &id, float v)> ParamCallback;
+    typedef std::function<void(const juce::String &id, float v)> ParamCallback;
 
-    BaseFloatParameter(String parameterID,
-                       String parameterName,
+    BaseFloatParameter(juce::String parameterID,
+                       juce::String parameterName,
                        float minValue,
                        float maxValue,
                        float defaultValue,
@@ -25,8 +21,8 @@ public:
           valueCallback_(callback) {
     }
 
-    BaseFloatParameter(String parameterID,
-                       String parameterName,
+    BaseFloatParameter(juce::String parameterID,
+                       juce::String parameterName,
                        float minValue,
                        float maxValue,
                        float defaultValue,
@@ -49,10 +45,10 @@ private:
 
 class BaseBoolParameter : public juce::AudioParameterBool {
 public:
-    typedef std::function<void(const String &id, bool b)> ParamCallback;
+    typedef std::function<void(const juce::String &id, bool b)> ParamCallback;
 
-    BaseBoolParameter(String parameterID,
-                      String parameterName,
+    BaseBoolParameter(juce::String parameterID,
+                      juce::String parameterName,
                       bool defaultValue,
                       ParamCallback callback = nullptr)
         : juce::AudioParameterBool(parameterID, parameterName, defaultValue),
@@ -72,9 +68,9 @@ private:
 
 class BaseChoiceParameter : public juce::AudioParameterChoice {
 public:
-    typedef std::function<void(const String &id, int v)> ParamCallback;
+    typedef std::function<void(const juce::String &id, int v)> ParamCallback;
 
-    BaseChoiceParameter(const String &parameterID, const String &parameterName,
+    BaseChoiceParameter(const juce::String &parameterID, const juce::String &parameterName,
                         const juce::StringArray &choices,
                         int defaultItemIndex,
                         ParamCallback callback = nullptr)
@@ -93,14 +89,14 @@ private:
 
 class BaseIntParameter : public juce::AudioParameterInt {
 public:
-    typedef std::function<void(const String &id, bool b)> ParamCallback;
+    typedef std::function<void(const juce::String &id, bool b)> ParamCallback;
 
 
-    BaseIntParameter(String parameterID,
-    String parameterName,
-    float minValue,
-    float maxValue,
-    float defaultValue,
+    BaseIntParameter(juce::String parameterID,
+                     juce::String parameterName,
+                    float minValue,
+                    float maxValue,
+                    float defaultValue,
         ParamCallback callback = nullptr)
     : juce::AudioParameterInt(parameterID, parameterName, minValue, maxValue, defaultValue),
     valueCallback_(callback) {

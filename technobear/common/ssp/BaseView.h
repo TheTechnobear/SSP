@@ -2,9 +2,9 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
-using namespace juce;
 
 namespace ssp {
+
 
 class BaseProcessor;
 class EditorHost;
@@ -13,8 +13,8 @@ class EditorHost;
 #include "SSPActions.h"
 
 class BaseView :
-    public Component,
-    public Timer,
+    public juce::Component,
+    public juce::Timer,
     public SSPActions {
 
 public:
@@ -25,7 +25,7 @@ public:
 
     void resized() override;
 
-    virtual void drawView(Graphics &g);
+    virtual void drawView(juce::Graphics &g);
 
     virtual void editorShown() {}
     virtual void editorHidden() {}
@@ -51,11 +51,11 @@ public:
 protected:
     BaseProcessor *baseProcessor_;
 
-    Colour defaultBg_=  Colour(0xff111111);
+    juce::Colour defaultBg_=  juce::Colour(0xff111111);
     bool compactUI_=false;
 
 private:
-    void paint(Graphics &) override;
+    void paint(juce::Graphics &) override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BaseView)
 };

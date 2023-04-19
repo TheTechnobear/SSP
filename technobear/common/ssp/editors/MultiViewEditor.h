@@ -4,8 +4,6 @@
 #include "BaseEditor.h"
 
 
-using namespace juce;
-
 namespace ssp {
 
 class BaseProcessor;

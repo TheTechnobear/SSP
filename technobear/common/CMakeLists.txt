@@ -1,5 +1,7 @@
 include_directories("${PROJECT_SOURCE_DIR}/../common")
 
+include_directories("${PROJECT_SOURCE_DIR}/../../external/readerwriterqueue")
+
 set(COMMON_SRC
         ../common/SSP.cpp
         ../common/ssp/BaseView.cpp

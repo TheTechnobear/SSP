@@ -12,7 +12,7 @@ public:
     explicit TextEdit(BaseProcessor *p);
     virtual ~TextEdit();
 
-    void drawView(Graphics &g) override;
+    void drawView(juce::Graphics &g) override;
 
     void editorShown() override {};
 
@@ -49,8 +49,8 @@ public:
     void onSelect();
 
 private:
-    Colour fg_ = Colours::red;
-    Colour bg_ = defaultBg_;
+    juce::Colour fg_ = Colours::red;
+    juce::Colour bg_ = defaultBg_;
     std::string text_;
     int selected_ = 0;
     int nCols_ = 10;
