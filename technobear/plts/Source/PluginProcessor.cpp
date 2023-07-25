@@ -52,6 +52,16 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 
 
     StringArray models;
+    models.add("AnalogVCF");
+    models.add("PhaseDist");
+    models.add("SixOp1");
+    models.add("SixOp2");
+    models.add("SixOp3");
+    models.add("WTerrain");
+    models.add("StringM");
+    models.add("ChipTune");
+
+
     models.add("Analog");
     models.add("Waveshape");
     models.add("FM");

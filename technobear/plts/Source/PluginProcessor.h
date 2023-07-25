@@ -134,7 +134,7 @@ private:
     static const String getOutputBusName(int channelIndex);
 
     static constexpr unsigned PltsBlock = 16;
-    static constexpr float PltsMaxEngine = 15.0f;
+    static constexpr float PltsMaxEngine = 24.0f -1.0f;
     plaits::Voice voice_;
     plaits::Patch patch_{};
     char shared_buffer_[16384]{};

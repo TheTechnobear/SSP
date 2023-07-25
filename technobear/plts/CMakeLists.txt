@@ -95,9 +95,7 @@ set(MI_SRC
         ../../mi/plaits/dsp/physical_modelling/string.cc
         ../../mi/plaits/dsp/physical_modelling/string_voice.cc
 
-        ../../mi/plaits/dsp/engine/particle_engine.cc
-        ../../mi/plaits/dsp/engine/snare_drum_engine.cc
-        ../../mi/plaits/dsp/engine/speech_engine.cc
+
         ../../mi/plaits/dsp/engine/additive_engine.cc
         ../../mi/plaits/dsp/engine/bass_drum_engine.cc
         ../../mi/plaits/dsp/engine/chord_engine.cc
@@ -106,11 +104,27 @@ set(MI_SRC
         ../../mi/plaits/dsp/engine/hi_hat_engine.cc
         ../../mi/plaits/dsp/engine/modal_engine.cc
         ../../mi/plaits/dsp/engine/noise_engine.cc
+        ../../mi/plaits/dsp/engine/particle_engine.cc
+        ../../mi/plaits/dsp/engine/snare_drum_engine.cc
+        ../../mi/plaits/dsp/engine/speech_engine.cc
         ../../mi/plaits/dsp/engine/string_engine.cc
-        ../../mi/plaits/dsp/engine/virtual_analog_engine.cc
-        ../../mi/plaits/dsp/engine/wavetable_engine.cc
-        ../../mi/plaits/dsp/engine/waveshaping_engine.cc
         ../../mi/plaits/dsp/engine/swarm_engine.cc
+        ../../mi/plaits/dsp/engine/virtual_analog_engine.cc
+        ../../mi/plaits/dsp/engine/waveshaping_engine.cc
+        ../../mi/plaits/dsp/engine/wavetable_engine.cc
+
+
+        ../../mi/plaits/dsp/engine2/chiptune_engine.cc
+        ../../mi/plaits/dsp/engine2/phase_distortion_engine.cc
+        ../../mi/plaits/dsp/engine2/six_op_engine.cc
+        ../../mi/plaits/dsp/engine2/string_machine_engine.cc
+        ../../mi/plaits/dsp/engine2/virtual_analog_vcf_engine.cc
+        ../../mi/plaits/dsp/engine2/wave_terrain_engine.cc
+
+        ../../mi/plaits/dsp/chords/chord_bank.cc
+        ../../mi/plaits/dsp/fm/algorithms.cc
+        ../../mi/plaits/dsp/fm/dx_units.cc
+
         ../../mi/stmlib/utils/random.cc
         ../../mi/stmlib/dsp/atan.cc
         ../../mi/stmlib/dsp/units.cc
@@ -126,8 +140,8 @@ target_sources(PLTS
         Source/PluginEditor.cpp
         Source/PluginMiniEditor.cpp
         Source/PluginProcessor.cpp
-        ${MI_SRC}
         ${COMMON_SRC}
+        ${MI_SRC}
         )
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer
