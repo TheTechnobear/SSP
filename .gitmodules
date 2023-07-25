@@ -1,6 +1,3 @@
-[submodule "juce"]
-	path = juce
-	url = https://github.com/juce-framework/JUCE.git
 [submodule "mi"]
 	path = mi
 	url = https://github.com/TheTechnobear/mi.git
@@ -19,3 +16,6 @@
 [submodule "ssp-sdk"]
 	path = ssp-sdk
 	url = https://github.com/TheTechnobear/ssp-sdk
+[submodule "juce"]
+	path = juce
+	url = https://github.com/juce-framework/JUCE

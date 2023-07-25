@@ -249,8 +249,11 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
                 for (unsigned i = 0; i < nCh && i < MAX_IN; i++) {
                     m.audioSampleBuffer_.copyFrom(i, 0, buffer.getReadPointer(i + chOffset), n);
                 }
-                float **buffers = m.audioSampleBuffer_.getArrayOfWritePointers();
-                plugin->process(buffers, nCh, n);
+
+                float * const* buffers = m.audioSampleBuffer_.getArrayOfWritePointers();
+                // juce has changed, to using a const pointer to float*
+                // now inconsistent with ssp sdk, but will work fine
+                plugin->process((float**) buffers, nCh, n);
             }
         }
         modIdx++;

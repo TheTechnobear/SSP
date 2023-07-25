@@ -21,15 +21,15 @@ endif ()
 
 add_subdirectory(juce)
 
-if (DEFINED ENV{VSTSDK})
-    set(VSTSDK $ENV{VSTSDK})
-else ()
-    set(VSTSDK "$ENV{HOME}/SDKs/vst3-sdk")
-endif ()
+#if (DEFINED ENV{VSTSDK})
+#    set(VSTSDK $ENV{VSTSDK})
+#else ()
+#    set(VSTSDK "$ENV{HOME}/SDKs/vst3-sdk")
+#endif ()
 
-message("using VSTSDK  :  ${VSTSDK}")
+#message("using VSTSDK  :  ${VSTSDK}")
 
-juce_set_vst2_sdk_path(${VSTSDK})
+#juce_set_vst2_sdk_path(${VSTSDK})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DJUCE_DISABLE_JUCE_VERSION_PRINTING=1")
 
