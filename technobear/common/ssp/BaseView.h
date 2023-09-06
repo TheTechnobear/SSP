@@ -21,8 +21,6 @@ public:
     explicit BaseView(BaseProcessor *p, bool compactUI);
     virtual ~BaseView();
 
-    void timerCallback() override;
-
     void resized() override;
 
     virtual void drawView(juce::Graphics &g);
@@ -55,6 +53,7 @@ protected:
     bool compactUI_=false;
 
 private:
+    void timerCallback() override;
     void paint(juce::Graphics &) override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BaseView)

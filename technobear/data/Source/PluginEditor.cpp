@@ -103,7 +103,7 @@ ssp::BaseEditor::ControlPage PluginEditor::addParamPage(
 }
 
 
-void PluginEditor::timerCallback() {
+void PluginEditor::onSSPTimer() {
     PluginProcessor::DataMsg msg;
     while (processor_.messageQueue().try_dequeue(msg)) {
         for (int i = 0; i < MAX_SIG; i++) {
@@ -162,7 +162,7 @@ void PluginEditor::timerCallback() {
     xyScope_[0].pos(syncPos_);
     xyScope_[1].pos(syncPos_);
 
-    base_type::timerCallback();
+    base_type::onSSPTimer();
 }
 
 

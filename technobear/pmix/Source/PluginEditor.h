@@ -15,8 +15,6 @@ public:
 
     void drawView(Graphics &) override;
     void resized() override;
-    void timerCallback() override;
-
     void onEncoder(unsigned enc, float v) override;
     void onEncoderSwitch(unsigned enc, bool v) override;
     void onButton(unsigned btn, bool v) override;
@@ -26,10 +24,7 @@ public:
     void onDownButton(bool v) override;
     void onLeftShiftButton(bool v) override;
     void onRightShiftButton(bool v) override;
-    void onSSPTimer() override {
-        base_type::onSSPTimer();
-        timerCallback();
-    }
+    void onSSPTimer() override;
 
 protected:
     using base_type = ssp::MultiViewEditor;

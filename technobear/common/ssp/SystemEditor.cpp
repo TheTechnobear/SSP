@@ -130,6 +130,7 @@ SystemEditor::~SystemEditor() {
 }
 
 void SystemEditor::timerCallback() {
+    onSSPTimer();
     repaint();
 }
 

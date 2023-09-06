@@ -145,8 +145,8 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 }
 
 
-void PluginEditor::timerCallback() {
-    base_type::timerCallback();
+void PluginEditor::onSSPTimer() {
+    base_type::onSSPTimer();
     if (viewHeldCount_ > 0) viewHeldCount_ -= POLL_TIME;
 }
 

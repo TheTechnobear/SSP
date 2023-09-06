@@ -23,7 +23,6 @@ public:
     explicit SystemEditor(BaseProcessor *p);
     virtual ~SystemEditor();
 
-    void timerCallback() override;
 
     void resized() override;
 
@@ -67,6 +66,8 @@ protected:
     void midiOutCallback(float idx, const std::string &dev);
     void midiChannelCallback(float idx, const std::string &ch);
 private:
+
+    void timerCallback() override;
     void drawLabel(Graphics &, const std::string &str, unsigned idx);
 
     std::vector<std::string> midiInStr_;

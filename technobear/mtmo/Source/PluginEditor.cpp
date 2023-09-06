@@ -6,8 +6,8 @@
 #include "ssp/controls/ParamButton.h"
 
 
-void PluginEditor::timerCallback() {
-    base_type::timerCallback();
+void PluginEditor::onSSPTimer() {
+    base_type::onSSPTimer();
     clock_ = false;
     MidiMessage msg;
     while (processor_.messageQueue().try_dequeue(msg)) {

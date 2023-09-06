@@ -16,7 +16,7 @@ protected:
     using base_type = ssp::LineParamEditor;
 
     void drawView(Graphics &) override;
-    void timerCallback() override;
+    void onSSPTimer() override;
     void resized() override;
 
     ssp::BaseEditor::ControlPage addParamPage(
@@ -26,9 +26,6 @@ protected:
         std::shared_ptr<ssp::BaseParamControl> c4,
         juce::Colour clr
     );
-    void onSSPTimer() override {
-        base_type::onSSPTimer();
-    }
 
 
 private:

@@ -1,0 +1,27 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cmake",
+			"label": "build CLDS_VST3",
+			"command": "build",
+			"targets": [
+				"CLDS_VST3"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "CLDS_VST3"
+		},
+		{
+			"type": "cmake",
+			"label": "build CART_VST3",
+			"command": "build",
+			"targets": [
+				"CART_VST3"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "CART_VST3"
+		}
+	]
+}
