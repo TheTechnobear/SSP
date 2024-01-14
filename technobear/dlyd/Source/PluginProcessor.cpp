@@ -212,7 +212,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
                 float v = dlyline.line_.Read(time) + noisesig;
                 v = tap.lpf_.Process(v);
                 v = tap.hpf_.Process(v);
-                wet += v * tv.level_ * tv.panamt_;
+                wet += v * tv.level_ * tv.panamt_ * mix;
                 fbk += v * tv.feedback_;
                 buffer.setSample(O_OUT_1_TA + sigoffset, s, v);
             }

@@ -96,22 +96,21 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
     static constexpr unsigned max_cc = O_TR_H - O_TR_A;
     for (int i = 0; i < (O_MAX / 2); i++) {
-        if (!isOutputEnabled(O_TR_A + i)) continue;
         int bidx = O_TR_A + (i * 2);
+        if (!isOutputEnabled(bidx)) continue;
         int smp = 0;
         bool tr = nextTR_[i];
-        bool v = nextVel_[i];
+        float v = nextVel_[i]; 
         if (tr) {
             for (; smp < 64; smp++) {
                 buffer.setSample(bidx, smp, tr);
                 buffer.setSample(bidx + 1, smp, v);
             }
             nextTR_[i] = false;
-            nextVel_[i] = 0.0f;
         }
         for (; smp < sz; smp++) {
             buffer.setSample(bidx, smp, 0.0f);
-            buffer.setSample(bidx + 1, smp, 0.0f);
+            buffer.setSample(bidx + 1, smp, v);
         }
     }
 }

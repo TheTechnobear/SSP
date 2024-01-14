@@ -104,8 +104,8 @@ private:
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
 
-    bool  nextTR_[O_MAX];
-    float nextVel_[O_MAX];
+    bool  nextTR_[O_MAX / 2];
+    float nextVel_[O_MAX / 2];
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
 
