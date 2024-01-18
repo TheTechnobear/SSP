@@ -26,39 +26,28 @@ I use cmake, so the basic build, assuming you have dependancies etc , is
 mkdir build
 cd build
 cmake ..
-cmake --build .
+cmake --build . -- -j 8
 ```
 
+note: -- passes extra parameters to make -j 8 = number of cores to build on
 
-## build under linux
 
-as described in this post
+## cross compile 
 
-https://forum.percussa.com/t/how-to-build-modules-vst-plugins-for-the-ssp/348
 
-note: I have moved away from this, so there may be the odd issue ;) 
+instructions for how how to cross compile using toolchains is detailed in under the ssp-sdk
+see Percussa Forum - [specifically this topic](https://forum.percussa.com/t/creating-modules-for-the-ssp-aka-ssp-sdk-updated)
 
-## cross compile on macOS
-
-I use my cross compilation project called xc. there are variations for a variety of platforms, including the SSP , with xcSSP.
-
-this can be found at
-https://github.com/thetechnobear/xcSSP
-
-install as per instructions in this repo
-
-we then need to use homebrew go get clang, cmake etc.
-
-then its similar to a normal cmake build
+after its setup is similar to a normal cmake build, except we specify a toolchain file
 
 ```
 mkdir build
 cd build
 cmake -DCMAKE_TOOLCHAIN_FILE=../xcSSP.cmake ..
-cmake --build .
+cmake --build . -- -j 8
  ```
 
-this builds and places plugins in ~/.vst and ~/.vst3
+this builds and places plugins in ~/.vst3
 
 
 note: 

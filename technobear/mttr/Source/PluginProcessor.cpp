@@ -11,7 +11,7 @@ PluginProcessor::PluginProcessor(
     AudioProcessorValueTreeState::ParameterLayout layout)
     : BaseProcessor(ioLayouts, std::move(layout)), params_(vts()) {
     init();
-    for (int i = 0; i < O_MAX; i++) {
+    for (int i = 0; i < (O_MAX / 2); i++) {
         nextTR_[i] = false;
         nextVel_[i] = 0.0f;
     }
