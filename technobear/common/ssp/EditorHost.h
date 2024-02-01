@@ -2,30 +2,23 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
-#include "SSPActions.h"
-
-#include "controls/ValueButton.h"
-#include "BaseView.h"
-#include "SystemEditor.h"
 #include "BaseProcessor.h"
+#include "BaseView.h"
+#include "SSPActions.h"
 #include "SSPUI.h"
+#include "SystemEditor.h"
+#include "controls/ValueButton.h"
 
 namespace ssp {
 
 
-class EditorHost :
-    public juce::AudioProcessorEditor,
-    public SSPActions {
+class EditorHost : public juce::AudioProcessorEditor, public SSPActions {
 public:
-    explicit EditorHost(BaseProcessor *p, BaseView *e,
-                        bool compactUI=false,
-                        bool enableSysEditor=true,
-                        bool drawDefaults=true);
+    explicit EditorHost(BaseProcessor *p, BaseView *e, bool compactUI = false, bool enableSysEditor = true,
+                        bool drawDefaults = true);
     ~EditorHost();
 
-    void paint(Graphics &g) override {
-        drawBasicPanel(g);
-    }
+    void paint(Graphics &g) override { drawBasicPanel(g); }
 
     void resized() override;
 
@@ -42,7 +35,10 @@ public:
     void onSSPTimer() override;
 
 
-    BaseView* getEditorView() { return editor_;}
+    bool keyStateChanged(bool isKeyDown) override;
+    void modifierKeysChanged(const ModifierKeys &modifiers) override;
+
+    BaseView *getEditorView() { return editor_; }
 
 private:
     void drawMenuBox(Graphics &g);
@@ -59,21 +55,19 @@ private:
     bool RSActive_ = false;
     bool sysActive_ = false;
 
+    bool keyStates_[6] = { false, false, false, false, false, false };
+
     BaseProcessor *processor_;
     BaseView *editor_;
     SystemEditor *system_;
-    bool compactUI_=false;
-    bool drawDefaults_ =false;
+    bool compactUI_ = false;
+    bool drawDefaults_ = false;
 
-    Colour defaultBg_=  Colour(0xff111111);
+    Colour defaultBg_ = Colour(0xff111111);
 
-    SSPUI *sspui_= nullptr;
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EditorHost)
+    SSPUI *sspui_ = nullptr;
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EditorHost)
 };
 
 
-}
-
-
-
-
+}  // namespace ssp

@@ -7,15 +7,15 @@ namespace ssp {
 class ParamButton : public juce::Component {
 public:
     using Parameter = juce::RangedAudioParameter;
-    ParamButton(Parameter &p,
-                  unsigned fh = 36,
-                  const juce::Colour fg = juce::Colours::white,
-                  const juce::Colour bg = juce::Colours::black,
-                  bool momentary = true);
+    ParamButton(Parameter &p, unsigned fh = 36, const juce::Colour fg = juce::Colours::white,
+                const juce::Colour bg = juce::Colours::black, bool momentary = true);
     virtual ~ParamButton() = default;
 
     void onUp();
     void onDown();
+
+    void mouseUp(const juce::MouseEvent &event) override;
+    void mouseDown(const juce::MouseEvent &event) override;
 
 protected:
     Parameter &param_;
@@ -30,7 +30,6 @@ private:
     bool momentary_ = true;
 
     juce_UseDebuggingNewOperator
-
 };
 
-}
+}  // namespace ssp

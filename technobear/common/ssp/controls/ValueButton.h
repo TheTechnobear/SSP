@@ -2,21 +2,22 @@
 #pragma once
 
 #include <assert.h>
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <juce_gui_basics/juce_gui_basics.h>
+using namespace juce;
 
 class ValueButton : public juce::Component {
 public:
     ValueButton(const String &label,
                 std::function<void(bool v)> cb,
                 unsigned fh = 32,
-                const Colour fg = Colours::white, const Colour bg = Colours::black,
+                const juce::Colour fg = juce::Colours::white, const juce::Colour bg = juce::Colours::black,
                 bool def = false);
 
-    void label(const String &str) {
+    void label(const juce::String &str) {
         label(str,fh_);
     }
 
-    void label(const String &str, int fh) {
+    void label(const juce::String &str, int fh) {
         label_ = str;
         fh_= fh;
     }
@@ -29,14 +30,14 @@ public:
     bool toggle();
 
 private:
-    void paint(Graphics &g);
+    void paint(juce::Graphics &g);
     std::function<void(bool value)> callback_;
 
     String label_;
     bool active_ = false;
     int fh_=36;
-    Colour fg_ = Colours::white;
-    Colour bg_ = Colours::black;
+    juce::Colour fg_ = juce::Colours::white;
+    juce::Colour bg_ = juce::Colours::black;
 
     bool value_ = false;
 

@@ -2,6 +2,8 @@
 
 #include "BaseProcessor.h"
 
+#include <juce_audio_devices/juce_audio_devices.h>
+
 //#include "SSP.h"
 
 namespace ssp {

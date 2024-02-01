@@ -26,12 +26,19 @@ public:
     void fg(juce::Colour c) { fg_ = c; }
 
     virtual juce::String getTextValue();
+
+    void mouseDoubleClick (const juce::MouseEvent &event) override;
+    void mouseDown (const juce::MouseEvent &event) override;
+    void mouseDrag (const juce::MouseEvent &event) override;
+
 protected:
     Parameter &param_;
     juce::ParameterAttachment attachment_;
 //    void paint(Graphics &g);
     bool active_;
     juce::Colour fg_ = juce::Colours::red;
+
+    int lastMouseX_= 0;
     juce_UseDebuggingNewOperator
 };
 

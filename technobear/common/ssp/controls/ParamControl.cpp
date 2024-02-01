@@ -2,11 +2,8 @@
 
 namespace ssp {
 
-BaseParamControl::BaseParamControl(Parameter &p,juce::Colour fg)
-    : attachment_(p, [this](float f) { paramChanged(f); }),
-      param_(p),
-      active_(false),
-      fg_(fg){
+BaseParamControl::BaseParamControl(Parameter &p, juce::Colour fg)
+    : attachment_(p, [this](float f) { paramChanged(f); }), param_(p), active_(false), fg_(fg) {
 }
 
 void BaseParamControl::paramChanged(float) {
@@ -21,12 +18,32 @@ juce::String BaseParamControl::getTextValue() {
 }
 
 
+void BaseParamControl::mouseDoubleClick(const juce::MouseEvent &event) {
+    reset();
+}
+
+void BaseParamControl::mouseDown(const juce::MouseEvent &event) {
+    lastMouseX_ = event.getScreenX();
+}
+
+
+void BaseParamControl::mouseDrag(const juce::MouseEvent &event) {
+    const int sen = 1;
+    auto x = event.getScreenX();
+    auto delta = x - lastMouseX_;
+    if (delta > sen) {
+        inc(false);
+        lastMouseX_ = x;
+    } else if (delta < -sen) {
+        dec(false);
+        lastMouseX_ = x;
+    }
+}
+
 /// SimpleParamControl
 
-SimpleParamControl::SimpleParamControl(Parameter &p,
-                                       float coarse, float fine,
-                                       juce::Colour fg)
-    : BaseParamControl(p,fg) {
+SimpleParamControl::SimpleParamControl(Parameter &p, float coarse, float fine, juce::Colour fg)
+    : BaseParamControl(p, fg) {
     coarseInc_ = p.convertTo0to1(p.getNormalisableRange().start + coarse);
     fineInc_ = p.convertTo0to1(p.getNormalisableRange().start + fine);
 }
@@ -79,10 +96,10 @@ void SimpleParamControl::paint(juce::Graphics &g) {
     g.drawText(val, 0, h / 2, w, fh, juce::Justification::centred);
 }
 
-LineParamControl::LineParamControl(Parameter &p, float coarse, float fine,juce::Colour fg)
-    : SimpleParamControl(p, coarse, fine,fg) {
+LineParamControl::LineParamControl(Parameter &p, float coarse, float fine, juce::Colour fg)
+    : SimpleParamControl(p, coarse, fine, fg){
 
-};
+      };
 
 void LineParamControl::paint(juce::Graphics &g) {
     static constexpr unsigned fh = 32;
@@ -102,10 +119,10 @@ void LineParamControl::paint(juce::Graphics &g) {
 }
 
 
-BarParamControl::BarParamControl(Parameter &p, float coarse, float fine,juce::Colour fg)
-    : SimpleParamControl(p, coarse, fine,fg) {
+BarParamControl::BarParamControl(Parameter &p, float coarse, float fine, juce::Colour fg)
+    : SimpleParamControl(p, coarse, fine, fg){
 
-};
+      };
 
 void BarParamControl::paint(juce::Graphics &g) {
     static constexpr unsigned fh = 28;
@@ -120,10 +137,10 @@ void BarParamControl::paint(juce::Graphics &g) {
     g.drawText(p.getName(32), 0, 0, w, fh, juce::Justification::centred);
 
     g.setColour(juce::Colours::black);
-    g.drawRect(0, h / 2, w, fh); // border
+    g.drawRect(0, h / 2, w, fh);  // border
 
     g.setColour(juce::Colour(0xFF222222));
-    g.fillRect(1, (h / 2) + 1, w - 2, fh - 2); // border
+    g.fillRect(1, (h / 2) + 1, w - 2, fh - 2);  // border
 
     g.setColour(active() ? juce::Colours::darkcyan : juce::Colours::grey);
 
@@ -156,4 +173,4 @@ void BarParamControl::paint(juce::Graphics &g) {
 }
 
 
-} //namespace ssp
+}  // namespace ssp

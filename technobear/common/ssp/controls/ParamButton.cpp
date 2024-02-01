@@ -6,13 +6,24 @@ namespace ssp {
 /// ButtonControl
 
 ParamButton::ParamButton(Parameter &p, unsigned fh, const juce::Colour fg, const juce::Colour bg, bool momentary)
-    : attachment_(p, [this](float f) { paramChanged(f); }), param_(p),
-      fh_(fh), fg_(fg), bg_(bg),
+    : attachment_(p, [this](float f) { paramChanged(f); }),
+      param_(p),
+      fh_(fh),
+      fg_(fg),
+      bg_(bg),
       momentary_(momentary) {
 }
 
 void ParamButton::paramChanged(float) {
     repaint();
+}
+
+void ParamButton::mouseUp(const juce::MouseEvent &event) {
+    onUp();
+}
+
+void ParamButton::mouseDown(const juce::MouseEvent &event) {
+    onDown();
 }
 
 
@@ -24,7 +35,7 @@ void ParamButton::onUp() {
     } else {
         v = 0.0f;
     }
-//    std::cerr << "ParamButton onUp " <<  v << std::endl;
+    //    std::cerr << "ParamButton onUp " <<  v << std::endl;
     p.beginChangeGesture();
     p.setValueNotifyingHost(v ? 1.0f : 0.0f);
     p.endChangeGesture();
@@ -63,4 +74,4 @@ void ParamButton::paint(juce::Graphics &g) {
     g.drawText(p.getName(32), 0, 0, w, h, juce::Justification::centred);
 }
 
-}
+}  // namespace ssp
