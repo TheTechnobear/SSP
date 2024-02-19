@@ -28,6 +28,8 @@ public:
 private:
     SSP_PluginEditorInterface *editor_ = nullptr;
     PluginProcessor *processor_ = nullptr;
+
+    ScopedJuceInitialiser_GUI* juceInitialiser_ = nullptr;
 };
 
 #include "SSPApiProcessor.cpp"

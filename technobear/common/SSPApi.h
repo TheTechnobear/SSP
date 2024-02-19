@@ -71,6 +71,9 @@ void getApiVersion(unsigned &major, unsigned &minor) {
 
 
 
+# if 0
+// now using ScopedJuceInitialiser_GUI juceInitialiser_;
+
 
 // MessageManager for JUCE
 // JUCE requires a message manager if we load via this api, otherwise you get assertions in debug
@@ -100,3 +103,4 @@ MsgThreadManager::MsgThreadManager() {
 }
 static MsgThreadManager* msgThreadManager = nullptr;
 
+#endif
