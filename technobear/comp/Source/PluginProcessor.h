@@ -1,8 +1,6 @@
 #pragma once
 
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include "ssp/BaseProcessor.h"
 #include "ssp/controls/RmsTrack.h"
 
@@ -22,6 +20,8 @@ PARAMETER_ID (automakeup)
 
 #undef PARAMETER_ID
 }
+
+using namespace juce;
 
 
 class PluginProcessor : public ssp::BaseProcessor {

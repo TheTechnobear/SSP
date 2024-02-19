@@ -1,11 +1,12 @@
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include "PluginProcessor.h"
 #include "ssp/editors/LineParamEditor.h"
 #include "ssp/controls/LineScope.h"
 #include "ssp/controls/XYScope.h"
+
+using namespace juce;
+
 
 class PluginEditor : public ssp::LineParamEditor {
 public:

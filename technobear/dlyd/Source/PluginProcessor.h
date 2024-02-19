@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include "ssp/BaseProcessor.h"
 
 #include <daisysp.h>
@@ -10,6 +8,7 @@
 #include <algorithm>
 #include "ssp/controls/RmsTrack.h"
 
+using namespace juce;
 
 namespace ID {
 #define PARAMETER_ID(str) constexpr const char* str { #str };

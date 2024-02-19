@@ -8,6 +8,8 @@
 # CMake's behaviour is compatible with the named version. This is a standard CMake command, so more
 # information can be found in the CMake docs.
 
+# set( CMAKE_VERBOSE_MAKEFILE on )
+
 cmake_minimum_required(VERSION 3.15)
 
 # The top-level CMakeLists.txt file for a project must contain a literal, direct call to the
@@ -58,14 +60,6 @@ juce_add_plugin(CLDS
         PLUGIN_CODE CLDS                            # A unique four-character plugin id with at least one upper-case character
         FORMATS VST3                                # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
         PRODUCT_NAME "clds")                        # The name of the final executable, which can differ from the target name
-
-# `juce_generate_juce_header` will create a JuceHeader.h for a given target, which will be generated
-# into your build tree. This should be included with `#include <JuceHeader.h>`. The include path for
-# this header will be automatically added to the target. The main function of the JuceHeader is to
-# include all your JUCE module headers; if you're happy to include module headers directly, you
-# probably don't need to call this.
-
-juce_generate_juce_header(CLDS)
 
 # `target_sources` adds source files to a target. We pass the target that needs the sources as the
 # first argument, then a visibility parameter for the sources (PRIVATE is normally best practice,
@@ -133,6 +127,9 @@ target_compile_definitions(CLDS
 # linked automatically. If we'd generated a binary data target above, we would need to link to it
 # here too. This is a standard CMake command.
 
+
+# target_compile_options(CLDS PRIVATE -fsanitize=address)
+
 target_link_libraries(CLDS PRIVATE
         # AudioPluginData           # If we'd created a binary data target, we'd link to it here
         juce::juce_audio_utils)
@@ -140,4 +137,6 @@ target_link_libraries(CLDS PRIVATE
 
 #set_target_properties(${PROJECT_NAME}_VST PROPERTIES PREFIX "")
 set_target_properties(${PROJECT_NAME}_VST3 PROPERTIES PREFIX "")
+
+# target_link_options(CLDS_VST3 PRIVATE -fsanitize=address )
 

@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Quantizer.h"
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include "ssp/BaseProcessor.h"
 
 #include <atomic>
 #include <algorithm>
+
+using namespace juce;
 
 //root
 //scale

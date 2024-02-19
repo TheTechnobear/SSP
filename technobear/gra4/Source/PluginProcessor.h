@@ -1,14 +1,17 @@
 #pragma once
 
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include "ssp/BaseProcessor.h"
 
 #include <atomic>
 #include <algorithm>
 
 #include "RNBO.h"
+
+
+#include <juce_audio_formats/juce_audio_formats.h>
+
+using namespace juce;
 
 namespace ID {
 #define PARAMETER_ID(str) constexpr const char* str { #str };
@@ -38,6 +41,7 @@ PARAMETER_ID (size)
 
 #undef PARAMETER_ID
 }
+
 
 
 class PluginProcessor : public ssp::BaseProcessor {

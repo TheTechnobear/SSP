@@ -3,13 +3,15 @@
 
 #include "clouds/dsp/granular_processor.h"
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include "ssp/BaseProcessor.h"
 #include "ssp/controls/RmsTrack.h"
 
 #include <atomic>
 #include <algorithm>
+
+
+using namespace juce;
+
 
 namespace ID {
 #define PARAMETER_ID(str) constexpr const char* str { #str };

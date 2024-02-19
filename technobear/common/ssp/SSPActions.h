@@ -1,5 +1,7 @@
 #pragma once
 
+namespace ssp {
+
 class SSPActions {
 public:
     virtual void onEncoder(unsigned enc, float v) = 0;
@@ -14,3 +16,6 @@ public:
 
     virtual void onSSPTimer() = 0;
 };
+
+
+}

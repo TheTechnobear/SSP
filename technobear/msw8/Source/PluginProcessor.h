@@ -1,11 +1,10 @@
 #pragma once
-
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include "ssp/BaseProcessor.h"
 
 #include <atomic>
 #include <algorithm>
+
+using namespace juce;
 
 //inSel
 //outSel

@@ -2,9 +2,10 @@
 #pragma once
 
 #include <assert.h>
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 #include "ssp/controls/VuMeter.h"
+
+using namespace juce;
 
 class MonoChannel : public Component {
 public:

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include "ssp/BaseProcessor.h"
 
 #include <atomic>
@@ -22,6 +20,7 @@ PARAMETER_ID (val)
 #undef PARAMETER_ID
 }
 
+using namespace juce;
 
 class PluginProcessor : public ssp::BaseProcessor {
 public:

@@ -2,9 +2,11 @@
 #pragma once
 
 #include <assert.h>
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 #include "ssp/controls/VuMeter.h"
+
+using namespace juce;
+
 
 class StereoChannel : public Component {
 public:

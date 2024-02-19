@@ -1,13 +1,12 @@
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include "PluginProcessor.h"
 #include "ssp/editors/BaseViewEditor.h"
 #include "ssp/controls/WaveDisp.h"
 #include "ssp/editors/FileBrowser.h"
 #include "ssp/editors/TextEdit.h"
 
+using namespace juce;
 
 class PluginEditor : public ssp::BaseViewEditor {
 public:

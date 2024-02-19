@@ -10,14 +10,14 @@ using namespace juce;
 #include "controls/ValueControl.h"
 
 
+#include "SSPActions.h"
+
+
 namespace ssp {
 
 class BaseProcessor;
 
 class EditorHost;
-
-
-#include "SSPActions.h"
 
 class SystemEditor :
     public juce::Component,

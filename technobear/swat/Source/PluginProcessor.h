@@ -1,8 +1,6 @@
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "ssp/BaseProcessor.h"
-
 
 #include "Algo.h"
 #include <atomic>
@@ -10,6 +8,8 @@
 #include <memory>
 #include <vector>
 #include <algorithm>
+
+using namespace juce;
 
 class PluginProcessor : public ssp::BaseProcessor {
 public:

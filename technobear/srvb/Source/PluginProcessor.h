@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include "ssp/BaseProcessor.h"
 #include "ssp/controls/RmsTrack.h"
 
@@ -9,6 +7,8 @@
 #include <algorithm>
 
 #include <daisysp.h>
+
+using namespace juce;
 
 
 namespace ID {

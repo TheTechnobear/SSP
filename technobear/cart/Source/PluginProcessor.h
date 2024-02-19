@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include "ssp/BaseProcessor.h"
 
 #include <atomic>
@@ -42,6 +40,9 @@ PARAMETER_ID (glide)
 }
 
 #include "Snakes.h"
+
+
+using namespace juce;
 
 class PluginProcessor : public ssp::BaseProcessor {
 public:

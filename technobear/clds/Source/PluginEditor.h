@@ -1,10 +1,12 @@
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"
 #include "ssp/editors/BarParamEditor.h"
 #include "ssp/controls/VuMeter.h"
+
+using namespace juce;
+
 
 class PluginEditor : public ssp::BarParamEditor {
 public:

@@ -2,8 +2,6 @@
 
 #include <readerwriterqueue.h>
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include "ssp/BaseProcessor.h"
 
 #include <atomic>
@@ -30,6 +28,8 @@ PARAMETER_ID (show)
 
 #undef PARAMETER_ID
 }
+
+using namespace juce;
 
 
 class PluginProcessor : public ssp::BaseProcessor {

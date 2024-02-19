@@ -4,15 +4,13 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 using namespace juce;
 
+#include "SSPActions.h"
 
 namespace ssp {
-
 
 class BaseProcessor;
 class EditorHost;
 
-
-#include "SSPActions.h"
 
 class BaseView :
     public juce::Component,

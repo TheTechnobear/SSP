@@ -1,13 +1,14 @@
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include "PluginProcessor.h"
 #include "ssp/editors/MultiView.h"
 
 
 class ModuleView ;
 class LoadView;
+
+
+using namespace juce;
 
 class PluginEditor : public ssp::MultiView {
 public:

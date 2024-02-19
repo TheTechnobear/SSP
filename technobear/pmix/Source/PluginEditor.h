@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include "PluginProcessor.h"
 #include "ssp/editors/MultiViewEditor.h"
 #include "ssp/controls/VuMeter.h"
 #include "MonoChannel.h"
 #include "StereoChannel.h"
+
+using namespace juce;
 
 class PluginEditor : public ssp::MultiViewEditor {
 public:
