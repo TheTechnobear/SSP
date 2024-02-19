@@ -59,7 +59,7 @@ EditorHost::EditorHost(BaseProcessor *p, BaseView *e, bool compactUI, bool enabl
         int uih = 0;
 #ifdef __APPLE__
         uih = 220;
-        sspui_ = new SSPUI(processor_, this);
+        sspui_ = new SSPUI(processor_,this);
         sspui_->setBounds(0, SSP_FULL_HEIGHT, SSP_FULL_WIDTH, uih);
         addChildComponent(sspui_);
         sspui_->setVisible(true);
