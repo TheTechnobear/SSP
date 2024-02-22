@@ -4,6 +4,11 @@
 
 #include "../Algo.h"
 
+
+#include <juce_gui_basics/juce_gui_basics.h>
+using namespace juce;
+
+
 class AgLogicAnd : public Algo {
 public:
     AgLogicAnd() {

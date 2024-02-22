@@ -6,6 +6,10 @@
 
 #include "../Algo.h"
 
+#include <juce_gui_basics/juce_gui_basics.h>
+using namespace juce;
+
+
 
 // algos
 class AgConstant : public Algo {

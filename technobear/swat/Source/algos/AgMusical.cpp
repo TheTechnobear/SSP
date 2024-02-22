@@ -1,8 +1,9 @@
 #include "AgMusical.h"
 #include "Algos.h"
 
+#include <juce_audio_basics/juce_audio_basics.h>
 
-#include "../JuceLibraryCode/JuceHeader.h"
+using namespace juce;
 
 
 static constexpr unsigned MAX_TONICS = 12;

@@ -1,7 +1,9 @@
 #include "AgDisplay.h"
 #include "Algos.h"
 
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <juce_audio_basics/juce_audio_basics.h>
+using namespace juce;
+
 
 void AgDisplay::process(
     const float *x, const float *y, const float *z,

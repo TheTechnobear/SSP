@@ -1,12 +1,11 @@
 #pragma once
 
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #include <atomic>
 #include <vector>
 #include <memory>
 
+#include <juce_gui_basics/juce_gui_basics.h>
 
 inline float constrain(float v, float vMin, float vMax) {
     return std::max<float>(vMin, std::min<float>(vMax, v));
@@ -80,11 +79,11 @@ public:
     //note: x,y,z,a,b will be null(!) if not connected!
 
     // UI thread
-    virtual void paint (Graphics&);
+    virtual void paint (juce::Graphics&);
     virtual void encoder(unsigned enc, int dir);
     virtual void encswitch(unsigned enc, bool state);
     virtual void button(unsigned btn, bool state);
-    virtual void drawHelp(Graphics&);
+    virtual void drawHelp(juce::Graphics&);
 
 
     void writeToXml(juce::XmlElement& xml);
@@ -98,7 +97,7 @@ public:
 };
 
 // simple helper
-void drawAB(Graphics& g, float A, float B);
+void drawAB(juce::Graphics& g, float A, float B);
 
 
 

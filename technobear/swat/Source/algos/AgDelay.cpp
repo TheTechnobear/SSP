@@ -2,6 +2,10 @@
 #include "Algos.h"
 
 
+#include <juce_audio_basics/juce_audio_basics.h>
+
+using namespace juce;
+
 // AgDelay ////////////////////////////////////////////////////////////////////////
 
 // "X = Signal\n"

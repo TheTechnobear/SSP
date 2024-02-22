@@ -1,11 +1,12 @@
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
+
+#include <juce_gui_basics/juce_gui_basics.h>
 
 namespace ssp {
 
 template<unsigned N>
-class LineScope : public Component {
+class LineScope : public juce::Component {
 public:
     LineScope(bool grid = true, bool legend = false) : grid_(grid), legend_(legend) {
         juce::Colour clrs[4]{Colours::green, Colours::blue, Colours::red, Colours::yellow};

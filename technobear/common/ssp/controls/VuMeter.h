@@ -1,7 +1,8 @@
 #pragma once
 
 
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <juce_gui_basics/juce_gui_basics.h>
+using namespace juce;
 
 namespace ssp {
 

@@ -4,6 +4,10 @@
 
 // Display algos
 
+#include <juce_gui_basics/juce_gui_basics.h>
+using namespace juce;
+
+
 #include "../Algo.h"
 
 class AgDisplay : public Algo {

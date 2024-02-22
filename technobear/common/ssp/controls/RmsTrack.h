@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <juce_audio_basics/juce_audio_basics.h>
 
 namespace ssp {
 

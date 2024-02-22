@@ -1,20 +1,17 @@
 #include "Algo.h"
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
-
 // Helper /////////////////////////////////////////////////////////////////////
-void drawAB(Graphics &g, float A, float B) {
+void drawAB(juce::Graphics &g, float A, float B) {
     unsigned space = 32;
     unsigned fh = 32;
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, juce::Font::plain));
 
-    g.drawSingleLineText("A : " + String(A), x, y);
+    g.drawSingleLineText("A : " + juce::String(A), x, y);
     y += space * 2;
-    g.drawSingleLineText("B : " + String(B), x, y);
+    g.drawSingleLineText("B : " + juce::String(B), x, y);
 }
 
 
@@ -23,7 +20,7 @@ void drawAB(Graphics &g, float A, float B) {
 double Algo::sampleRate_ = 48000.0f;
 
 
-void Algo::paint(Graphics &g) {
+void Algo::paint(juce::Graphics &g) {
     drawHelp(g);
 }
 
@@ -50,18 +47,18 @@ void Algo::encswitch(unsigned enc, bool state) {
 }
 
 
-void Algo::drawHelp(Graphics &g) {
+void Algo::drawHelp(juce::Graphics &g) {
     unsigned x = 900;
     unsigned y = 40;
     unsigned space = 30;
     unsigned yText = y + space;
-    g.setColour(Colours::yellow);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), 40, Font::plain));
+    g.setColour(juce::Colours::yellow);
+    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), 40, juce::Font::plain));
     g.drawSingleLineText(name(), x, y);
 
     y = yText;
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), 18, Font::plain));
-    g.setColour(Colours::white);
+    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), 18, juce::Font::plain));
+    g.setColour(juce::Colours::white);
 
     std::string::size_type pos = 0;
     std::string::size_type prev = 0;
@@ -81,7 +78,7 @@ void Algo::drawHelp(Graphics &g) {
     for (auto p : params_) {
         String desc;
         if (p->desc().length() > 0) desc = " - " + p->desc();
-        g.drawSingleLineText("Enc " + String(enc) + " : " + p->name() + desc, x, y);
+        g.drawSingleLineText("Enc " + juce::String(enc) + " : " + p->name() + desc, x, y);
         y += space;
         enc++;
     }
