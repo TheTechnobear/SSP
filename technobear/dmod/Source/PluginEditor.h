@@ -41,7 +41,6 @@ private:
     std::shared_ptr<ModuleView> moduleView_;
     std::shared_ptr<LoadView> loadView_;
 
-
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)
 };
 

@@ -3,7 +3,8 @@
 #include "SSPApiEditor.h"
 
 //SSPHASH
-#define SSP_IMAGECACHE_HASHCODE 0x53535048415348
+#define SSP_FULL_IMAGECACHE_HASHCODE 0x53535048415348
+#define SSP_COMPACT_IMAGECACHE_HASHCODE 0x53535048415349
 
 SSP_PluginEditorInterface::SSP_PluginEditorInterface(ssp::EditorHost *editor) :
     editor_(editor) {
@@ -23,11 +24,12 @@ void SSP_PluginEditorInterface::visibilityChanged(bool b) {
 }
 
 void SSP_PluginEditorInterface::renderToImage(unsigned char *buffer, int width, int height) {
-    Image img = ImageCache::getFromHashCode(SSP_IMAGECACHE_HASHCODE);
+    auto hashcode = editor_->isCompactUI() ? SSP_COMPACT_IMAGECACHE_HASHCODE : SSP_FULL_IMAGECACHE_HASHCODE;
+    Image img = ImageCache::getFromHashCode(hashcode);
     if (!img.isValid()) {
         // std::cerr << "new render image created" << std::endl;
         Image newimg(Image::ARGB, width, height, true);
-        ImageCache::addImageToCache(newimg, SSP_IMAGECACHE_HASHCODE);
+        ImageCache::addImageToCache(newimg, hashcode);
         img = newimg;
     }
 

@@ -1,11 +1,11 @@
-#include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "SSPApiEditor.h"
 
+#include "PluginProcessor.h"
+#include "SSPApiEditor.h"
 #include "ssp/editors/MultiView.h"
 
-//TODO
-// - PluginEditorInterface::draw  ... I don't use this, not sure when it would be needed
+// TODO
+//  - PluginEditorInterface::draw  ... I don't use this, not sure when it would be needed
 
 
 static constexpr unsigned MAX_MODULES = 2;
@@ -14,10 +14,8 @@ static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
 
 class ModuleView : public ssp::BaseView {
 public:
-    ModuleView(PluginProcessor &p)
-        : ssp::BaseView(&p, false),
-          processor_(p) {
-    }
+    ModuleView(PluginProcessor &p);
+    ~ModuleView() override;
 
     void drawView(Graphics &g) override;
     void drawModulePanel(Graphics &, unsigned);
@@ -26,17 +24,17 @@ public:
     void onEncoder(unsigned enc, float v) override;
     void onEncoderSwitch(unsigned enc, bool v) override;
     void onButton(unsigned btn, bool v) override;
-//    void onLeftButton(bool v) override;
-//    void onRightButton(bool v) override;
-//    void onUpButton(bool v) override;
-//    void onDownButton(bool v) override;
-//    void onLeftShiftButton(bool v) override;
-//    void onRightShiftButton(bool v) override;
+    //    void onLeftButton(bool v) override;
+    //    void onRightButton(bool v) override;
+    //    void onUpButton(bool v) override;
+    //    void onDownButton(bool v) override;
+    //    void onLeftShiftButton(bool v) override;
+    //    void onRightShiftButton(bool v) override;
 
     void setActiveModule(int m) { activeModule_ = m; }
-
 private:
-
+    Image *image_ = nullptr;
+    Image::BitmapData* bitmap_=nullptr;
     int activeModule_ = 0;
     PluginProcessor &processor_;
 };
@@ -54,7 +52,6 @@ public:
           downBtn_("EN+", nullptr, 32, Colours::black, Colours::red),
           leftBtn_("", nullptr, 32, Colours::black, Colours::red),
           rightBtn_("", nullptr, 32, Colours::black, Colours::red) {
-
         setButtonBounds(scanBtn_, 0, 0);
         setButtonBounds(clearBtn_, 0, 4);
         setButtonBounds(upBtn_, 0, 5);
@@ -75,8 +72,8 @@ public:
     void onEncoder(unsigned enc, float v) override;
     void onEncoderSwitch(unsigned enc, bool v) override;
     void onButton(unsigned btn, bool v) override;
-//    void onLeftButton(bool v) override;
-//    void onRightButton(bool v) override;
+    //    void onLeftButton(bool v) override;
+    //    void onRightButton(bool v) override;
     void onUpButton(bool v) override;
     void onDownButton(bool v) override;
     void onLeftShiftButton(bool v) override;
@@ -105,10 +102,9 @@ public:
         g.drawHorizontalLine(y, x, 1600 - 1);
         g.drawHorizontalLine(y + btnSpaceY, x, 1600 - 1);
         g.drawHorizontalLine(480 - 1, x, 1600 - 1);
-        for (int i = 0; i < 8; i++) {
-            g.drawVerticalLine(x + i * 100, butTopY, 480 - 1);
-        }
+        for (int i = 0; i < 8; i++) { g.drawVerticalLine(x + i * 100, butTopY, 480 - 1); }
     }
+
 private:
     static constexpr unsigned btnTopY = 380 - 1;
     static constexpr unsigned btnSpaceY = 50;
@@ -123,10 +119,7 @@ private:
 };
 
 
-PluginEditor::PluginEditor(PluginProcessor &p)
-    : base_type(&p, false),
-      processor_(p) {
-
+PluginEditor::PluginEditor(PluginProcessor &p) : base_type(&p, false), processor_(p) {
     activeModule_ = 0;
     moduleView_ = std::make_shared<ModuleView>(p);
     loadView_ = std::make_shared<LoadView>(p);
@@ -146,9 +139,10 @@ void PluginEditor::drawView(Graphics &g) {
 void PluginEditor::onSSPTimer() {
     base_type::onSSPTimer();
     for (int i = 0; i < MAX_MODULES; i++) {
-//        auto editor = processor_.createEditorIfNeeded(i);
-//        if (!editor) continue;
-//        editor->frameStart();
+        //        auto editor = processor_.createEditorIfNeeded(i);
+        auto editor = processor_.getEditor(i);
+        if (!editor) continue;
+        editor->frameStart();
     }
 }
 
@@ -172,14 +166,14 @@ void PluginEditor::editorHidden() {
 
 
 void PluginEditor::onLeftButton(bool v) {
-//    base_type::onLeftButton(v);
+    //    base_type::onLeftButton(v);
     if (!v) activeModule_ = 0;
     moduleView_->setActiveModule(activeModule_);
     loadView_->setActiveModule(activeModule_);
 }
 
 void PluginEditor::onRightButton(bool v) {
-//    base_type::onRightButton(v);
+    //    base_type::onRightButton(v);
     if (!v) activeModule_ = 1;
     moduleView_->setActiveModule(activeModule_);
     loadView_->setActiveModule(activeModule_);
@@ -238,53 +232,66 @@ void PluginEditor::resized() {
 
 /// ModuleView
 
+ModuleView::ModuleView(PluginProcessor &p) : ssp::BaseView(&p, false), processor_(p) {
+    image_= new Image(Image::ARGB, pluginWidth, pluginHeight, true);
+    bitmap_ = new Image::BitmapData (*image_, Image::BitmapData::writeOnly);
+}
+
+ModuleView::~ModuleView() {
+    delete bitmap_;
+    delete image_;
+}
+
 void ModuleView::drawView(Graphics &g) {
-    for (int i = 0; i < MAX_MODULES; i++) {
-        drawModulePanel(g, i);
-    }
+    for (int i = 0; i < MAX_MODULES; i++) { drawModulePanel(g, i); }
 }
 
 
-void ModuleView::drawModulePanel(Graphics &g, unsigned panel) {
-    unsigned panelWidth = (SSP_FULL_WIDTH - 10 ) / MAX_MODULES;
-    unsigned border = ( panelWidth - SSP_COMPACT_WIDTH) / 2;
-    unsigned moduleX = (panel * panelWidth) + border;
+#define IMAGECACHE_HASHCODE 0x53535048415400
 
+void ModuleView::drawModulePanel(Graphics &g, unsigned panel) {
+    unsigned panelWidth = (SSP_FULL_WIDTH - 10) / MAX_MODULES;
+    unsigned border = (panelWidth - SSP_COMPACT_WIDTH) / 2;
+    unsigned moduleX = (panel * panelWidth) + border;
 
     auto editor = processor_.getEditor(panel);
     if (!editor) {
-        if(panel == activeModule_) g.setColour(Colours::white);
-        else g.setColour(Colours::darkgrey);
+        if (panel == activeModule_)
+            g.setColour(Colours::white);
+        else
+            g.setColour(Colours::darkgrey);
 
         g.setFont(Font(Font::getDefaultMonospacedFontName(), 20, Font::plain));
-        g.drawSingleLineText("No Module Loaded", moduleX + 40 , getHeight() / 2 - 20 );
+        g.drawSingleLineText("No Module Loaded", moduleX + 40, getHeight() / 2 - 20);
         g.setFont(Font(Font::getDefaultMonospacedFontName(), 16, Font::plain));
-        g.drawSingleLineText("(press RS to load)", moduleX + 40 , getHeight() / 2  );
+        g.drawSingleLineText("(press RS to load)", moduleX + 40, getHeight() / 2);
         return;
     }
 
+    //    drawIO(g, panel);
 
-//    drawIO(g, panel);
+    // auto hashcode = IMAGECACHE_HASHCODE;
+    // Image img = ImageCache::getFromHashCode(hashcode + panel);
+    // if (!img.isValid()) {
+    //     Image newimg(Image::ARGB, pluginWidth, pluginHeight, true);
+    //     ImageCache::addImageToCache(newimg, hashcode + panel);
+    //     img = newimg;
+    // }
+
+    // Image::BitmapData bitmap(img, Image::BitmapData::writeOnly);
+    // editor->renderToImage(bitmap.data, pluginWidth, pluginHeight);
+
+    // if (panel != activeModule_) { img.multiplyAllAlphas(0.3f); }
+
+    // g.drawImageAt(img, moduleX, 0);
 
 
+    editor->renderToImage(bitmap_->data, pluginWidth, pluginHeight);
 
-    static constexpr unsigned long IMAGECACHE_HASHCODE = 0x53533500000;
-    Image img = ImageCache::getFromHashCode(IMAGECACHE_HASHCODE + panel);
-    if (!img.isValid()) {
-        Image newimg(Image::ARGB, pluginWidth, pluginHeight, true);
-        ImageCache::addImageToCache(newimg, IMAGECACHE_HASHCODE + panel);
-        img = newimg;
-    }
+    if (panel != activeModule_) { image_->multiplyAllAlphas(0.3f); }
 
+    g.drawImageAt(*image_, moduleX, 0);
 
-    Image::BitmapData bitmap(img, Image::BitmapData::writeOnly);
-    editor->renderToImage(bitmap.data, pluginWidth, pluginHeight);
-
-    if(panel!=activeModule_) {
-        img.multiplyAllAlphas(0.3f);
-    }
-
-    g.drawImageAt(img, moduleX, 0);
 }
 
 
@@ -306,9 +313,9 @@ void ModuleView::drawIO(Graphics &g, unsigned panel) {
         y += h;
 
         g.setColour(Colours::white);
-        int i = 8; // max 8 inputs
+        int i = 8;  // max 8 inputs
         const auto &inputs = desc->inputChannelNames;
-        for (const auto &n: inputs) {
+        for (const auto &n : inputs) {
             g.drawSingleLineText(n, x, y);
             y += h;
             i--;
@@ -320,10 +327,10 @@ void ModuleView::drawIO(Graphics &g, unsigned panel) {
         g.setColour(Colours::yellow);
         g.drawSingleLineText("Outputs", x, y);
         y += h;
-        i = 2; // max 2 outputs
+        i = 2;  // max 2 outputs
         g.setColour(Colours::white);
         const auto &outputs = desc->outputChannelNames;
-        for (const auto &n: outputs) {
+        for (const auto &n : outputs) {
             g.drawSingleLineText(n, x, y);
             y += h;
             if (i == 0) break;
@@ -357,7 +364,7 @@ std::string nicePlugName(const std::string &n) {
 #if __APPLE__
 #else
     // linux, remove .so
-    nn = nn.substr(0,nn.find_last_of('.'));
+    nn = nn.substr(0, nn.find_last_of('.'));
 #endif
     return nn;
 }
@@ -378,7 +385,7 @@ void LoadView::drawView(Graphics &g) {
     g.drawSingleLineText("Load Module", x, y);
     y += h;
     int i = 0;
-    for (auto &m: modules) {
+    for (auto &m : modules) {
         if (i == curModIdx_) {
             g.setColour(Colours::red);
         } else {
@@ -398,9 +405,7 @@ void LoadView::loadModule() {
     if (newMod != curMod) {
         // time to load a new module !
         bool r = false;
-        while (!r) {
-            r = processor_.requestModuleChange(activeModule_, newMod);
-        }
+        while (!r) { r = processor_.requestModuleChange(activeModule_, newMod); }
     }
 }
 
@@ -415,15 +420,19 @@ void LoadView::onDownButton(bool v) {
     if (v) return;
 
     int maxSz = processor_.getSupportedModules().size();
-    if (curModIdx_ < 0) curModIdx_ = 0;
-    else if (curModIdx_ < (maxSz - 1)) curModIdx_++;
+    if (curModIdx_ < 0)
+        curModIdx_ = 0;
+    else if (curModIdx_ < (maxSz - 1))
+        curModIdx_++;
 }
 
 void LoadView::onEncoder(unsigned enc, float v) {
     if (v > 0.0f) {
         int maxSz = processor_.getSupportedModules().size();
-        if (curModIdx_ < 0) curModIdx_ = 0;
-        else if (curModIdx_ < (maxSz - 1)) curModIdx_++;
+        if (curModIdx_ < 0)
+            curModIdx_ = 0;
+        else if (curModIdx_ < (maxSz - 1))
+            curModIdx_++;
     } else if (v < 0.0f) {
         if (curModIdx_ > 0) curModIdx_--;
     }
@@ -436,14 +445,12 @@ void LoadView::onEncoderSwitch(unsigned enc, bool v) {
 }
 
 void LoadView::onButton(unsigned int btn, bool v) {
-    if(btn==0) {
-        scanBtn_.value(v);
-    }
+    if (btn == 0) { scanBtn_.value(v); }
 
     if (v) return;
     if (btn == 0) {
         processor_.scanPlugins();
-        editorShown(); // reset current plugin
+        editorShown();  // reset current plugin
     }
 }
 
@@ -451,9 +458,7 @@ void LoadView::onLeftShiftButton(bool v) {
     clearBtn_.value(v);
     if (v) return;
     bool r = false;
-    while (!r) {
-        r = processor_.requestModuleChange(activeModule_, "");
-    }
+    while (!r) { r = processor_.requestModuleChange(activeModule_, ""); }
 }
 
 void LoadView::onRightShiftButton(bool v) {
@@ -467,7 +472,7 @@ void LoadView::editorShown() {
     int i = 0;
     auto &modules = processor_.getSupportedModules();
     auto &curMod = processor_.getPluginFile(activeModule_);
-    for (auto &m: modules) {
+    for (auto &m : modules) {
         if (m == curMod) {
             curModIdx_ = i;
             break;
@@ -479,4 +484,3 @@ void LoadView::editorShown() {
 void LoadView::setActiveModule(int m) {
     activeModule_ = m;
 }
-
