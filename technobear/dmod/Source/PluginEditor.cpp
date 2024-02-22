@@ -222,11 +222,6 @@ void PluginEditor::onLeftShiftButton(bool v) {
 
 void PluginEditor::resized() {
     base_type::resized();
-    for (int i = 0; i < MAX_MODULES; i++) {
-        auto editor = processor_.getEditor(i);
-        if (!editor) continue;
-        editor->draw(pluginWidth, pluginHeight);
-    }
 }
 
 
@@ -287,6 +282,9 @@ void ModuleView::drawModulePanel(Graphics &g, unsigned panel) {
 
 
     editor->renderToImage(bitmap_->data, pluginWidth, pluginHeight);
+
+    // theoretical for opengl plugs
+    // editor->draw(pluginWidth,pluginHeight);
 
     if (panel != activeModule_) { image_->multiplyAllAlphas(0.3f); }
 
