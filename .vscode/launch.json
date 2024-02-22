@@ -15,6 +15,32 @@
       "preLaunchTask": "build CLDS_VST3"
     },
     {
+      "name": "PLTS",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/Users/kodiak/bin/AudioPluginHost.app",
+      "args": ["./plts.filtergraph"],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/resources/test",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
+      "preLaunchTask": "build PLTS_VST3"
+    },
+    {
+      "name": "DMOD",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/Users/kodiak/bin/AudioPluginHost.app",
+      "args": ["./dmod.filtergraph"],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/resources/test",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
+      "preLaunchTask": "build DMOD_VST3"
+    },
+    {
       "name": "CART",
       "type": "cppdbg",
       "request": "launch",

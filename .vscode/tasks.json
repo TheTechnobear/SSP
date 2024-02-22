@@ -14,6 +14,28 @@
 		},
 		{
 			"type": "cmake",
+			"label": "build PLTS_VST3",
+			"command": "build",
+			"targets": [
+				"PLTS_VST3"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "PLTS_VST3"
+		},
+		{
+			"type": "cmake",
+			"label": "build DMOD_VST3",
+			"command": "build",
+			"targets": [
+				"DMOD_VST3"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "DMOD_VST3"
+		},
+		{
+			"type": "cmake",
 			"label": "build CART_VST3",
 			"command": "build",
 			"targets": [
