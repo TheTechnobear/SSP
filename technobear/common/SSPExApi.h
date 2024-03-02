@@ -2,6 +2,7 @@
 
 #include "../../ssp-sdk/Percussa.h"
 
+#include <juce_gui_basics/juce_gui_basics.h>
 
 namespace SSPExtendedApi {
 
@@ -15,6 +16,7 @@ public:
 class PluginEditorInterface : public Percussa::SSP::PluginEditorInterface {
 public:
     ~PluginEditorInterface() override = default;
+    virtual juce::Component* editorComponent() { return nullptr;}
 };
 
 

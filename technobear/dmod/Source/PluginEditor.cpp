@@ -31,12 +31,14 @@ public:
     //    void onLeftShiftButton(bool v) override;
     //    void onRightShiftButton(bool v) override;
 
-    void setActiveModule(int m) { activeModule_ = m; }
+    void setActiveModule(int m);
+
 private:
     Image *image_ = nullptr;
-    Image::BitmapData* bitmap_=nullptr;
+    Image::BitmapData *bitmap_ = nullptr;
     int activeModule_ = 0;
     PluginProcessor &processor_;
+    Component *pComponent_[2] = { nullptr, nullptr };
 };
 
 
@@ -228,8 +230,8 @@ void PluginEditor::resized() {
 /// ModuleView
 
 ModuleView::ModuleView(PluginProcessor &p) : ssp::BaseView(&p, false), processor_(p) {
-    image_= new Image(Image::ARGB, pluginWidth, pluginHeight, true);
-    bitmap_ = new Image::BitmapData (*image_, Image::BitmapData::writeOnly);
+    image_ = new Image(Image::ARGB, pluginWidth, pluginHeight, true);
+    bitmap_ = new Image::BitmapData(*image_, Image::BitmapData::writeOnly);
 }
 
 ModuleView::~ModuleView() {
@@ -241,6 +243,14 @@ void ModuleView::drawView(Graphics &g) {
     for (int i = 0; i < MAX_MODULES; i++) { drawModulePanel(g, i); }
 }
 
+
+void ModuleView::setActiveModule(int m) {
+    if (activeModule_ != m) {
+        if (pComponent_[0]) pComponent_[0]->setAlpha(m == 0 ? 1.0f : 0.3f);
+        if (pComponent_[1]) pComponent_[1]->setAlpha(m == 1 ? 1.0f : 0.3f);
+        activeModule_ = m;
+    }
+}
 
 #define IMAGECACHE_HASHCODE 0x53535048415400
 
@@ -263,6 +273,24 @@ void ModuleView::drawModulePanel(Graphics &g, unsigned panel) {
         return;
     }
 
+    // we are currently using editorhost->baseview, this is because editorshost is AudioProcessorEditor
+    // and it appears AudioProcessorEditor has special handling for resizing etc. 
+    auto pComponent = editor->editorComponent();
+    if (pComponent != pComponent_[panel]) {
+        if (pComponent_[panel] != nullptr) removeChildComponent(pComponent_[panel]);
+        pComponent_[panel] = pComponent;
+        addChildComponent(pComponent_[panel]);
+        pComponent->setBounds(moduleX, 0, pluginWidth, pluginHeight);
+        pComponent->resized();
+        pComponent->setAlpha(panel == activeModule_ ? 1.0f : 0.3f);
+
+        // juce crashes if we let mouse events go to components
+        // possibly something to do with AudioProcessorEditor and us using 'its' component!
+        pComponent->setInterceptsMouseClicks (false, false);
+    }
+
+
+#if 0
     //    drawIO(g, panel);
 
     // auto hashcode = IMAGECACHE_HASHCODE;
@@ -286,10 +314,10 @@ void ModuleView::drawModulePanel(Graphics &g, unsigned panel) {
     // theoretical for opengl plugs
     // editor->draw(pluginWidth,pluginHeight);
 
+
     if (panel != activeModule_) { image_->multiplyAllAlphas(0.3f); }
-
     g.drawImageAt(*image_, moduleX, 0);
-
+#endif
 }
 
 
