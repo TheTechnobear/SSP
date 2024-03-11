@@ -11,9 +11,8 @@ BaseMiniView::BaseMiniView(BaseProcessor *p) : base_type(p, true) {
 
 MiniParamView::MiniParamView(BaseProcessor *p, ioActivity cb)
     : base_type(p, true),
-      ioCallback_(cb),
-      pageBtn_("Page", nullptr, 12 * scale, Colours::red) {
-    addAndMakeVisible(pageBtn_);
+      ioCallback_(cb) {
+
 }
 
 void MiniParamView::drawView(Graphics &g) {
@@ -92,26 +91,50 @@ void MiniParamView::onEncoderSwitch(unsigned enc, bool v) {
 void MiniParamView::onButton(unsigned int id, bool v) {
     base_type::onButton(id, v);
 
-    if (id == nextPageBtnId) {
-        pageBtn_.value(v);
-    } else {
-        unsigned r = id / 4;
-        unsigned c = id % 4;
+    unsigned r = id / 4;
+    unsigned c = id % 4;
 
-        unsigned bidx = (r * 3) + c;
-        if (bidx < buttons_.size()) {
-            auto &btn = buttons_[bidx];
-            if (v) btn->onDown();
-            else btn->onUp();
-        }
-    }
-
-    if (v) return;
-
-    if (id == nextPageBtnId) {
-        nextPage();
+    unsigned bidx = (r * 4) + c;
+    if (bidx < buttons_.size()) {
+        auto &btn = buttons_[bidx];
+        if (v) btn->onDown();
+        else btn->onUp();
     }
 }
+
+void MiniParamView::onUpButton(bool v) {
+    base_type::onUpButton(v);
+     if (v) return;
+     prevPage();   
+}
+
+void MiniParamView::onDownButton(bool v) {
+    base_type::onDownButton(v);
+    if (v) return;
+    nextPage();
+}
+
+
+
+void MiniParamView::prevPage() {
+    unsigned nPages = (params_.size() / nParamPerPage);
+    nPages += (params_.size() % 4) > 0;
+    if ( (int(paramOffset_) - int(nParamPerPage)) >= 0 ) {
+        paramOffset_ -= nParamPerPage;
+    } else {
+        return;
+    }
+    unsigned pidx = 0;
+    unsigned pStart = paramOffset_;
+    unsigned pEnd = paramOffset_ + nParamPerPage;
+    for (auto p: params_) {
+        bool act = pidx >= pStart && pidx < pEnd;
+        p->active(act);
+        p->setVisible(act);
+        pidx++;
+    }
+}
+
 
 void MiniParamView::nextPage() {
     unsigned nPages = (params_.size() / nParamPerPage);
@@ -119,8 +142,9 @@ void MiniParamView::nextPage() {
     if ((paramOffset_ + nParamPerPage) < ((nPages * nParamPerPage) )) {
         paramOffset_ += nParamPerPage;
     } else {
-        // cycle around
-        paramOffset_ = 0;
+        return;
+        // // cycle around
+        // paramOffset_ = 0;
     }
     unsigned pidx = 0;
     unsigned pStart = paramOffset_;
@@ -155,9 +179,6 @@ void MiniParamView::resized() {
         }
         bidx++;
     }
-    unsigned r = 1;
-    unsigned c = 3;
-    pageBtn_.setBounds(butLeftX + (c * bw), butTopY + r * (buttonBarH_ / 2), bw, buttonBarH_ / 2);
 
     // size parameters
     unsigned paramW = canvasW_ - ioW_ - gap;

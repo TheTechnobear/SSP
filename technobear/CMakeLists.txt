@@ -31,4 +31,4 @@ add_subdirectory(gra4)
 add_subdirectory(sfft)
 add_subdirectory(sflt)
 add_subdirectory(dmod)
-
+add_subdirectory(xmix)

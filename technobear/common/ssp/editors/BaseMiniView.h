@@ -26,11 +26,14 @@ public:
     void onEncoder(unsigned id, float v) override;
     void onEncoderSwitch(unsigned id, bool v) override;
     void onButton(unsigned int id, bool v) override;
+    void onUpButton(bool v) override;
+    void onDownButton(bool v) override;
 
     void drawView(Graphics &) override;
     void resized() override;
 
 private:
+    void prevPage();
     void nextPage();
     void drawButtonBox(Graphics &);
     void drawIO(Graphics &);
@@ -44,15 +47,13 @@ private:
     unsigned paramOffset_=0;
     static constexpr unsigned  nParamPerPage = 4;
     static constexpr unsigned  scale = COMPACT_UI_SCALE;
-    static constexpr unsigned  nextPageBtnId = 7;
-    static constexpr unsigned maxUserBtns = 6;
+    static constexpr unsigned maxUserBtns = 8;
 
     unsigned buttonBarH_ = 0;
     unsigned ioW_ = 0;
     unsigned canvasH_ = 0;
     unsigned canvasW_ = 0;
     unsigned titleH_ = 30;
-    ValueButton pageBtn_;
 
     ioActivity ioCallback_;
 

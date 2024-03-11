@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<FILTERGRAPH>
+  <FILTER uid="15" x="0.5" y="0.1">
+    <PLUGIN name="Audio Input" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="JUCE" version="1.0" file="" uid="246006c0" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="0" numOutputs="2"
+            isShell="0"/>
+    <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="disabled"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="L R"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="16" x="0.25" y="0.1">
+    <PLUGIN name="MIDI Input" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="JUCE" version="1.0" file="" uid="a9e4f9eb" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="0" numOutputs="0"
+            isShell="0"/>
+    <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="disabled"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="disabled"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="17" x="0.5" y="0.9">
+    <PLUGIN name="Audio Output" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="JUCE" version="1.0" file="" uid="724248cb" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="2" numOutputs="0"
+            isShell="0"/>
+    <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="L R"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="disabled"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="18" x="0.25" y="0.9">
+    <PLUGIN name="MIDI Output" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="JUCE" version="1.0" file="" uid="9d5bbb00" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="0" numOutputs="0"
+            isShell="0"/>
+    <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="disabled"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="disabled"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="19" x="0.418230563002681" y="0.4796116504854369">
+    <PLUGIN name="xmix" format="VST3" category="Fx" manufacturer="Technobear"
+            version="1.0.1" file="/Users/kodiak/Library/Audio/Plug-Ins/VST3/xmix.vst3"
+            uid="aeab8cc8" isInstrument="0" fileTime="18e2daf0e97" infoUpdateTime="18e2e0c05f9"
+            numInputs="16" numOutputs="4" isShell="0"/>
+    <STATE>904.VMjLg72....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9TSNz3xcqDjKtPjKt3hK1EjKt3hK0QELhsVRxHVcxESXpslUXEGNBM0aIwlXmkzUjUGQTMlZqESX04RQgAyXVsTRzDiX0gELTQUS4sTZ3XUX1QCZikWTxvTcLoWXzE0UYQWTxHVc5QEVogidTUGSwD1bAcjK0QELhsVRxHVcxESXpslUXEGNBM0aIwlXmkzUjUGQTMlZqESX04RQgAyXVsTRzDiX0gELTQUS4sDdzDSV4QCZikWTxvTcLoWXzE0UYQWTxHVc5QEVogidTUGRsEVaMcjK0QELhsVRxHVcxESXpslUXEGNBM0aIwlXmkzUjUGQTMlZqESX04RQgAyXVsTRzDiX0gELTQUS4sTdI01XnQCZikWTxvTcLoWXzE0UYQWTxHVc5QEVogidTUGSsIVLIYjK0QELhsVRxHVcxESXpslUXEGNBM0aIwlXmkzUjUGQTMlZqESX04RQgAyXVsTRzDiX0gELTQUS4sjZ2YEYpQCZikWTxvTcLoWXzE0UYQWTxHVc5QEVogidTUGTFEFMQYjK0QELhsVRxHVcxESXpslUXEGNBM0aIwlXmkzUjUGQTMlZqESX04RQgAyXVsTRzDiX0gELTQUS4sTZ2YTV4QCZikWTxvTcLoWXzE0UYQWTxHVc5QEVogidTUGSFElZMcjK0QELhsVRxHVcxESXpslUXEGNBM0aIwlXmkzUjUGQTMlZqESX04RQgAyXVsTRzDiX0gELTQUS4sjaEwlXyQCZikWTxvTcLoWXzE0UYQWTxHVc5QEVogidTUmYVgEdvXjK0QELhsVRxHVcxESXpslUXEGNBM0aIwlXmkzUjUGQTMlZqESX04RQgAyXVsTRzDiX0gELTQUS4sjc2YzX4QCZikWTxvTcLoWXzE0UYQWTxHVc5QEVogidTUmKGEldMcjK2sRPt3hKt3hKt3hK2sRPt3hKt3hKt3hKt3hKt3hKt3hKtXlTU0DUQAURWoULEYzXqEEUXoWQF4RPDYFTzDzUXkWSG4RPDYmKtnWPt3hKt3hKt3hKJUELPUTPqI1aYcEV5UkQQcVTWgEOujzPu0Fbu4VYtQmO77hUSQ0LPwVcmklaSQWXzUlO..</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+        <BUS index="2" layout="C"/>
+        <BUS index="3" layout="C"/>
+        <BUS index="4" layout="C"/>
+        <BUS index="5" layout="C"/>
+        <BUS index="6" layout="C"/>
+        <BUS index="7" layout="C"/>
+        <BUS index="8" layout="C"/>
+        <BUS index="9" layout="C"/>
+        <BUS index="10" layout="C"/>
+        <BUS index="11" layout="C"/>
+        <BUS index="12" layout="C"/>
+        <BUS index="13" layout="C"/>
+        <BUS index="14" layout="C"/>
+        <BUS index="15" layout="C"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+        <BUS index="2" layout="C"/>
+        <BUS index="3" layout="C"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+</FILTERGRAPH>

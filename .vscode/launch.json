@@ -41,6 +41,19 @@
       "preLaunchTask": "build DMOD_VST3"
     },
     {
+      "name": "XMIX",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/Users/kodiak/bin/AudioPluginHost.app",
+      "args": ["./xmix.filtergraph"],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/resources/test",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
+      "preLaunchTask": "build XMIX_VST3"
+    },
+    {
       "name": "CART",
       "type": "cppdbg",
       "request": "launch",
