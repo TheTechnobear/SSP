@@ -21,11 +21,11 @@ public:
 protected:
     using base_type = ssp::MultiView;
 
-    //    void onEncoder(unsigned enc, float v) override;
+    // void onEncoder(unsigned enc, float v) override;
     void onEncoderSwitch(unsigned enc, bool v) override;
     void onButton(unsigned btn, bool v) override;
-    void onLeftButton(bool v) override;
-    void onRightButton(bool v) override;
+    // void onLeftButton(bool v) override;
+    // void onRightButton(bool v) override;
     void onUpButton(bool v) override;
     void onDownButton(bool v) override;
     // void onLeftShiftButton(bool v) override;
@@ -36,10 +36,9 @@ protected:
     void editorHidden() override;
 
 private:
-
-    int MAX_COUNTER=15;
-    int upDownCounter_[2] = {0,0};
-    bool upDownState_[2] = {false, false};
+    int MAX_COUNTER = 15;
+    int upDownCounter_[2] = { 0, 0 };
+    bool upDownState_[2] = { false, false };
 
     PluginProcessor &processor_;
     int activeModule_ = 0;

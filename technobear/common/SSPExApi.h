@@ -4,6 +4,7 @@
 
 #include <juce_gui_basics/juce_gui_basics.h>
 
+
 namespace SSPExtendedApi {
 
 class PluginInterface : public Percussa::SSP::PluginInterface {

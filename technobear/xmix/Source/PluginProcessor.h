@@ -46,11 +46,8 @@ public:
         return props;
     }
 
-    static constexpr unsigned I_MAX = 16;
-    static constexpr unsigned O_MAX = 4;
-    static constexpr unsigned MAX_MODULES = 2;
-    static constexpr unsigned MAX_IN = I_MAX / MAX_MODULES;
-    static constexpr unsigned MAX_OUT = O_MAX / MAX_MODULES;
+    static constexpr unsigned I_MAX = 8;
+    static constexpr unsigned O_MAX = 2;
 
     const std::string &getPluginFile(unsigned m) { return modules_[m].pluginFile_; };
 
@@ -76,6 +73,14 @@ public:
 
     bool requestModuleChange(unsigned midx, const std::string &f);
     void scanPlugins();
+
+    enum ModuleIdx {
+        M_MOD,
+        M_PRE,
+        M_MAIN,
+        M_POST, 
+        M_MAX
+    };
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -108,7 +113,7 @@ private:
         AudioSampleBuffer audioSampleBuffer_;
     };
 
-    Module modules_[MAX_MODULES];
+    Module modules_[M_MAX];
     bool loadModule(std::string, Module &m);
 
     static const String getInputBusName(int channelIndex);

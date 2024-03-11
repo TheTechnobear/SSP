@@ -36,6 +36,8 @@ target_sources(XMIX
         PRIVATE
         Source/PluginEditor.cpp
         Source/PluginProcessor.cpp
+        Source/LoadView.cpp
+        Source/ModuleView.cpp
         ${COMMON_SRC}
         )
 

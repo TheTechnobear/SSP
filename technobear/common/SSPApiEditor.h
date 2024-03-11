@@ -3,23 +3,6 @@
 #include "SSPExApi.h"
 #include "ssp/EditorHost.h"
 
-enum SSPButtons {
-    SSP_Soft_1,
-    SSP_Soft_2,
-    SSP_Soft_3,
-    SSP_Soft_4,
-    SSP_Soft_5,
-    SSP_Soft_6,
-    SSP_Soft_7,
-    SSP_Soft_8,
-    SSP_Left,
-    SSP_Right,
-    SSP_Up,
-    SSP_Down,
-    SSP_Shift_L,
-    SSP_Shift_R,
-    SSP_LastBtn
-};
 
 class SSP_PluginEditorInterface : public SSPExtendedApi::PluginEditorInterface {
 public:
