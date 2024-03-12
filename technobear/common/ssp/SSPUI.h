@@ -4,36 +4,52 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 using namespace juce;
 
-#include "SSPActions.h"
 #include "BaseProcessor.h"
+#include "SSP.h"
+#include "SSPActions.h"
 
 namespace ssp {
 
-class SSPUI : public juce::Component,juce::Button::Listener {
+class SSPUI : public juce::Component, public juce::Timer, juce::Button::Listener {
 public:
     SSPUI(BaseProcessor* processor, SSPActions* actions);
-    void paint(juce::Graphics &g) override;
+    ~SSPUI();
+    void paint(juce::Graphics& g) override;
     void resized() override;
+
 private:
-    void buttonClicked(juce::Button *button) override;
-    void buttonStateChanged(juce::Button *button) override;
+    void timerCallback() override;
+
+    void buttonClicked(juce::Button* button) override;
+    void buttonStateChanged(juce::Button* button) override;
     BaseProcessor* processor_;
     SSPActions* actions_;
 
-    static constexpr unsigned NENC=4;
+    static constexpr unsigned NENC = 4;
     juce::TextButton encUp_[NENC];
     juce::TextButton encDown_[NENC];
     juce::ToggleButton encSW_[NENC];
 
-    juce::ToggleButton left_,right_,up_,down_, ls_,rs_;
-    static constexpr unsigned NBUTS=8;
+    juce::ToggleButton left_, right_, up_, down_, ls_, rs_;
+    static constexpr unsigned NBUTS = 8;
     juce::ToggleButton buttons_[NBUTS];
 
-    static constexpr unsigned NIO=24;
+    static constexpr unsigned NIO = 24;
     juce::ToggleButton inputs_[NIO];
     juce::ToggleButton outputs_[NIO];
+
+
+    void buttonPressed(int n, bool val);
+
+    void generateButtenEvents(int n, bool val);
+    static constexpr unsigned LONG_PRESS_COUNT = 30;
+    bool buttonState_[SSP_LastBtn] = { false, false, false, false, false, false, false,
+                                       false, false, false, false, false, false, false };
+    unsigned buttonCounter_[SSP_LastBtn] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+
     juce_UseDebuggingNewOperator
 };
 
 
-} // namespace
+}  // namespace ssp

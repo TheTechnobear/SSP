@@ -139,4 +139,54 @@ void MultiView::onLeftShiftButton(bool v) {
     views_[view_]->onLeftShiftButton(v);
 }
 
+
+void MultiView::eventButton(unsigned btn, bool longPress) {
+    base_type::eventButton(btn, longPress);
+    if (view_ < 0) return;
+    views_[view_]->eventButton(btn, longPress);
+}
+
+void MultiView::eventUp(bool longPress) {
+    base_type::eventUp(longPress);
+    if (view_ < 0) return;
+    views_[view_]->eventUp(longPress);
+}
+
+void MultiView::eventDown(bool longPress) {
+    base_type::eventDown(longPress);
+    if (view_ < 0) return;
+    views_[view_]->eventDown(longPress);
+}
+
+void MultiView::eventLeft(bool longPress) {
+    base_type::eventLeft(longPress);
+    if (view_ < 0) return;
+    views_[view_]->eventLeft(longPress);
+}
+
+void MultiView::eventRight(bool longPress) {
+    base_type::eventRight(longPress);
+    if (view_ < 0) return;
+    views_[view_]->eventRight(longPress);
+}
+
+void MultiView::eventLeftShift(bool longPress) {
+    base_type::eventLeftShift(longPress);
+    if (view_ < 0) return;
+    views_[view_]->eventLeftShift(longPress);
+}
+
+void MultiView::eventRightShift(bool longPress) {
+    base_type::eventRightShift(longPress);
+    if (view_ < 0) return;
+    views_[view_]->eventRightShift(longPress);
+}
+
+void MultiView::eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress) {
+    base_type::eventButtonCombo(btn, comboBtn, longPress);
+    if (view_ < 0) return;
+    views_[view_]->eventButtonCombo(btn, comboBtn, longPress);
+}
+
+
 }//ssp

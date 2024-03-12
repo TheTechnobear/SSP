@@ -62,17 +62,17 @@ BaseEditor::ControlPage LineParamEditor::addParamPage(
 }
 
 
-void LineParamEditor::onUpButton(bool v) {
-    base_type::onUpButton(v);
+void LineParamEditor::eventUp(bool v) {
+    base_type::eventUp(v);
 
-    if (v) return; // change on button up
+    if (v) return; 
     chgParamPage(-1,true);
 }
 
-void LineParamEditor::onDownButton(bool v) {
-    base_type::onDownButton(v);
+void LineParamEditor::eventDown(bool v) {
+    base_type::eventDown(v);
 
-    if (v) return; // change on button up
+    if (v) return; 
     chgParamPage(1,true);
 }
 

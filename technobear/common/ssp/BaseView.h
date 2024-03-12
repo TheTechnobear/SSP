@@ -14,7 +14,6 @@ class EditorHost;
 
 class BaseView :
     public juce::Component,
-    public juce::Timer,
     public SSPActions {
 
 public:
@@ -39,12 +38,20 @@ public:
     void onLeftShiftButton(bool v) override {};
     void onRightShiftButton(bool v) override {};
 
+    void onSSPTimer() override;
+
+    void eventButton(unsigned btn,bool longPress) override {}
+    void eventUp(bool longPress) override {}
+    void eventDown(bool longPress) override {}
+    void eventLeft(bool longPress) override {}
+    void eventRight(bool longPress) override {}
+    void eventLeftShift(bool longPress) override {}
+    void eventRightShift(bool longPress) override {}
+    void eventButtonCombo(unsigned btn,unsigned comboBtn, bool longPress) override {}
 
 
-    // ssp actions
     friend class EditorHost;
 
-    void onSSPTimer() override;
 
 protected:
     BaseProcessor *baseProcessor_;
@@ -53,7 +60,6 @@ protected:
     bool compactUI_=false;
 
 private:
-    void timerCallback() override;
     void paint(juce::Graphics &) override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BaseView)

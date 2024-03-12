@@ -184,6 +184,19 @@ void MultiViewEditor::onButton(unsigned btn, bool v) {
     }
 }
 
+void MultiViewEditor::eventButton(unsigned btn, bool v) {
+    base_type::eventButton(btn, v);
+
+    auto &view = views_[view_];
+    if (buttonPage_ < view.buttonPages_.size()) {
+        auto page = view.buttonPages_[buttonPage_];
+        auto c = page.control_[btn];
+        if (c != nullptr) {
+            c->onClick();
+        }
+    }
+}
+
 
 void MultiViewEditor::chgParamPage(int delta, bool changeVis) {
     auto &view = views_[view_];
@@ -328,30 +341,30 @@ void MultiViewEditor::setView(unsigned v) {
     }
 }
 
-void MultiViewEditor::onUpButton(bool v) {
-    base_type::onUpButton(v);
+void MultiViewEditor::eventUp(bool v) {
+    base_type::eventUp(v);
 
     if (v) return; // change on button up
     chgParamPage(-1, true);
 }
 
-void MultiViewEditor::onDownButton(bool v) {
-    base_type::onDownButton(v);
+void MultiViewEditor::eventDown(bool v) {
+    base_type::eventDown(v);
 
     if (v) return; // change on button up
     chgParamPage(1, true);
 }
 
 
-void MultiViewEditor::onLeftButton(bool v) {
-    base_type::onLeftButton(v);
+void MultiViewEditor::eventLeft(bool v) {
+    base_type::eventLeft(v);
 
     if (v) return; // change on button up
     chgButtonPage(-1);
 }
 
-void MultiViewEditor::onRightButton(bool v) {
-    base_type::onRightButton(v);
+void MultiViewEditor::eventRight(bool v) {
+    base_type::eventRight(v);
 
     if (v) return; // change on button up
     chgButtonPage(1);

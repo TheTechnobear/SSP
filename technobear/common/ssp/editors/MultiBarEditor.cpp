@@ -108,27 +108,31 @@ void MultiBarEditor::setView(unsigned v) {
 
 void MultiBarEditor::onUpButton(bool v) {
     upBtn_.value(v);
-
-    if (v) return; // change on button up
-
-    chgParamPage(-1, false);
 }
 
 void MultiBarEditor::onDownButton(bool v) {
     downBtn_.value(v);
+}
 
-    if (v) return; // change on button up
+
+void MultiBarEditor::eventUp(bool v) {
+    if (v) return; 
+    chgParamPage(-1, false);
+}
+
+void MultiBarEditor::eventDown(bool v) {
+    if (v) return;
     chgParamPage(1, false);
 }
 
 
-void MultiBarEditor::onLeftButton(bool v) {
-    if (v) return; // change on button up
+void MultiBarEditor::eventLeft(bool v) {
+    if (v) return;
     chgView(-1);
 }
 
-void MultiBarEditor::onRightButton(bool v) {
-    if (v) return; // change on button up
+void MultiBarEditor::eventRight(bool v) {
+    if (v) return;
     chgView(1);
 }
 

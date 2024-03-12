@@ -1,17 +1,16 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
-#include "BaseEditor.h"
 
 #include <vector>
+
+#include "BaseEditor.h"
 
 namespace ssp {
 
 class BaseProcessor;
 
-class BaseViewEditor :
-    public BaseEditor {
-
+class BaseViewEditor : public BaseEditor {
 public:
     explicit BaseViewEditor(BaseProcessor *p);
 
@@ -25,6 +24,17 @@ public:
     void onRightButton(bool v) override;
     void onLeftShiftButton(bool v) override;
     void onRightShiftButton(bool v) override;
+
+
+    void eventButton(unsigned btn, bool longPress) override;
+    void eventUp(bool longPress) override;
+    void eventDown(bool longPress) override;
+    void eventLeft(bool longPress) override;
+    void eventRight(bool longPress) override;
+    void eventLeftShift(bool longPress) override;
+    void eventRightShift(bool longPress) override;
+    void eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress) override;
+
 
     void editorShown() override;
     void editorHidden() override;
@@ -44,12 +54,9 @@ protected:
     std::vector<std::shared_ptr<base_view>> views_;
 
     int view_ = -1;
+
 private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BaseViewEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(BaseViewEditor)
 };
 
-}
-
-
-
-
+}  // namespace ssp

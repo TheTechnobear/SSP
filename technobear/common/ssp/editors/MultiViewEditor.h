@@ -23,10 +23,11 @@ public:
     void onEncoderSwitch(unsigned enc, bool v) override;
     void onButton(unsigned btn, bool v) override;
 
-    void onUpButton(bool v) override;
-    void onDownButton(bool v) override;
-    void onLeftButton(bool v) override;
-    void onRightButton(bool v) override;
+    void eventButton(unsigned btn, bool v) override;
+    void eventUp(bool v) override;
+    void eventDown(bool v) override;
+    void eventRight(bool v) override;
+    void eventLeft(bool v) override;
     void setParamBounds(unsigned idx, std::shared_ptr<BaseParamControl>);
 
 

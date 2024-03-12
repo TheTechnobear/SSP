@@ -1,16 +1,13 @@
 #include "BaseViewEditor.h"
 
-#include "ssp/BaseProcessor.h"
-
 #include "SSP.h"
-
-#include "ssp/controls/ParamControl.h"
+#include "ssp/BaseProcessor.h"
 #include "ssp/controls/ParamButton.h"
+#include "ssp/controls/ParamControl.h"
 
 namespace ssp {
 
-BaseViewEditor::BaseViewEditor(BaseProcessor *p)
-    : base_type(p) {
+BaseViewEditor::BaseViewEditor(BaseProcessor* p) : base_type(p) {
     setButtonBounds(leftBtn_, 1, 4);
     addAndMakeVisible(leftBtn_);
 
@@ -36,16 +33,12 @@ void BaseViewEditor::setView(unsigned newView) {
 
 void BaseViewEditor::nextView() {
     int newView = view_++;
-    if (newView < views_.size()) {
-        setView(newView);
-    }
+    if (newView < views_.size()) { setView(newView); }
 }
 
 void BaseViewEditor::previousView() {
     int newView = view_--;
-    if (newView >= 0) {
-        setView(newView);
-    }
+    if (newView >= 0) { setView(newView); }
 }
 
 void BaseViewEditor::addView(std::shared_ptr<base_type> view) {
@@ -58,30 +51,30 @@ void BaseViewEditor::addView(std::shared_ptr<base_type> view) {
 // everything else is simple redirect
 void BaseViewEditor::onLeftButton(bool v) {
     base_type::onLeftButton(v);
-//    if(view_< 0) return;
-//    views_[view_]->onLeftButton(v);
+    //    if(view_< 0) return;
+    //    views_[view_]->onLeftButton(v);
     previousView();
 }
 
 void BaseViewEditor::onRightButton(bool v) {
     base_type::onRightButton(v);
-//    if(view_< 0) return;
-//    views_[view_]->onRightButton(v);
+    //    if(view_< 0) return;
+    //    views_[view_]->onRightButton(v);
     nextView();
 }
 
-void BaseViewEditor::drawView(Graphics &g) {
+void BaseViewEditor::drawView(Graphics& g) {
     base_type::drawView(g);
     if (view_ < 0) return;
     views_[view_]->drawView(g);
 }
-void BaseViewEditor::editorShown()  {
+void BaseViewEditor::editorShown() {
     base_type::editorShown();
     if (view_ < 0) return;
     views_[view_]->editorShown();
 }
 
-void BaseViewEditor::editorHidden()  {
+void BaseViewEditor::editorHidden() {
     base_type::editorHidden();
     if (view_ < 0) return;
     views_[view_]->editorHidden();
@@ -136,4 +129,54 @@ void BaseViewEditor::onLeftShiftButton(bool v) {
     views_[view_]->onLeftShiftButton(v);
 }
 
-}//ssp
+
+void BaseViewEditor::eventButton(unsigned btn, bool longPress) {
+    base_type::eventButton(btn, longPress);
+    if (view_ < 0) return;
+    views_[view_]->eventButton(btn, longPress);
+}
+
+void BaseViewEditor::eventUp(bool longPress) {
+    base_type::eventUp(longPress);
+    if (view_ < 0) return;
+    views_[view_]->eventUp(longPress);
+}
+
+void BaseViewEditor::eventDown(bool longPress) {
+    base_type::eventDown(longPress);
+    if (view_ < 0) return;
+    views_[view_]->eventDown(longPress);
+}
+
+void BaseViewEditor::eventLeft(bool longPress) {
+    base_type::eventLeft(longPress);
+    if (view_ < 0) return;
+    views_[view_]->eventLeft(longPress);
+}
+
+void BaseViewEditor::eventRight(bool longPress) {
+    base_type::eventRight(longPress);
+    if (view_ < 0) return;
+    views_[view_]->eventRight(longPress);
+}
+
+void BaseViewEditor::eventLeftShift(bool longPress) {
+    base_type::eventLeftShift(longPress);
+    if (view_ < 0) return;
+    views_[view_]->eventLeftShift(longPress);
+}
+
+void BaseViewEditor::eventRightShift(bool longPress) {
+    base_type::eventRightShift(longPress);
+    if (view_ < 0) return;
+    views_[view_]->eventRightShift(longPress);
+}
+
+void BaseViewEditor::eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress) {
+    base_type::eventButtonCombo(btn, comboBtn, longPress);
+    if (view_ < 0) return;
+    views_[view_]->eventButtonCombo(btn, comboBtn, longPress);
+}
+
+
+}  // namespace ssp

@@ -1,13 +1,17 @@
-#include "../../ssp-sdk/Percussa.h"
-#include "ssp/EditorHost.h"
 #include "SSPApiEditor.h"
 
-//SSPHASH
+#include "../../ssp-sdk/Percussa.h"
+#include "ssp/EditorHost.h"
+
+// SSPHASH
 #define SSP_FULL_IMAGECACHE_HASHCODE 0x53535048415348
 #define SSP_COMPACT_IMAGECACHE_HASHCODE 0x53535048415349
 
-SSP_PluginEditorInterface::SSP_PluginEditorInterface(ssp::EditorHost *editor) :
-    editor_(editor) {
+SSP_PluginEditorInterface::SSP_PluginEditorInterface(ssp::EditorHost *editor) : editor_(editor) {
+    for (int i = 0; i < SSP_LastBtn; i++) {
+        buttonCounter_[i] = 0;
+        buttonState_[i] = false;
+    }
 }
 
 SSP_PluginEditorInterface::~SSP_PluginEditorInterface() {
@@ -17,6 +21,7 @@ SSP_PluginEditorInterface::~SSP_PluginEditorInterface() {
 void SSP_PluginEditorInterface::frameStart() {
     PluginEditorInterface::frameStart();
     if (editor_) editor_->onSSPTimer();
+    for (int i = 0; i < SSP_LastBtn; i++) { buttonCounter_[i] -= (buttonCounter_[i] > 0); }
 }
 
 void SSP_PluginEditorInterface::visibilityChanged(bool b) {
@@ -47,40 +52,41 @@ void SSP_PluginEditorInterface::renderToImage(unsigned char *buffer, int width, 
 }
 
 void SSP_PluginEditorInterface::buttonPressed(int n, bool val) {
-//        std::cerr << "buttonPressed " << n <<  " : " << val << std::endl;
+    //        std::cerr << "buttonPressed " << n <<  " : " << val << std::endl;
     if (n <= SSP_Soft_8) {
         editor_->onButton(n, val);
     } else {
         switch (n) {
-            case SSP_Left : {
+            case SSP_Left: {
                 editor_->onLeftButton(val);
                 break;
             }
-            case SSP_Right : {
+            case SSP_Right: {
                 editor_->onRightButton(val);
                 break;
             }
-            case SSP_Up : {
+            case SSP_Up: {
                 editor_->onUpButton(val);
                 break;
             }
-            case SSP_Down : {
+            case SSP_Down: {
                 editor_->onDownButton(val);
                 break;
             }
-            case SSP_Shift_L : {
+            case SSP_Shift_L: {
                 editor_->onLeftShiftButton(val);
                 break;
             }
-            case SSP_Shift_R : {
+            case SSP_Shift_R: {
                 editor_->onRightShiftButton(val);
                 break;
             }
-            default : {
+            default: {
                 // ignore
             }
         }
     }
+    generateButtenEvents(n, val);
 }
 
 void SSP_PluginEditorInterface::encoderPressed(int n, bool val) {
@@ -88,5 +94,69 @@ void SSP_PluginEditorInterface::encoderPressed(int n, bool val) {
 }
 
 void SSP_PluginEditorInterface::encoderTurned(int n, int val) {
-    editor_->onEncoder(n, (float) val);
+    editor_->onEncoder(n, (float)val);
+}
+
+
+void SSP_PluginEditorInterface::generateButtenEvents(int n, bool val) {
+    if (buttonState_[n] == val) return;
+    // only look at transitions
+
+    auto &actions_ = editor_;
+    buttonState_[n] = val;
+
+    if (val) {
+        // button pressed
+        buttonCounter_[n] = LONG_PRESS_COUNT;
+        // no other action on press..
+        return;
+    }
+
+    // on release...
+    bool longPress = buttonCounter_[n] == 0;
+    switch (n) {
+        case SSP_Soft_1:
+        case SSP_Soft_2:
+        case SSP_Soft_3:
+        case SSP_Soft_4:
+        case SSP_Soft_5:
+        case SSP_Soft_6:
+        case SSP_Soft_7:
+        case SSP_Soft_8: {
+            bool evtSent = false;
+            for (int i = 0; i < SSP_LastBtn && !evtSent; i++) {
+                if (i == n) continue;
+                if (buttonState_[i] && buttonCounter_[i] == 0) {
+                    actions_->eventButtonCombo(n, i, longPress);
+                    evtSent = true;
+                }
+            }
+            if (!evtSent) { actions_->eventButton(n, longPress); }
+            break;
+        }
+        case SSP_Left: {
+            actions_->eventLeft(longPress);
+            break;
+        }
+        case SSP_Right: {
+            actions_->eventRight(longPress);
+            break;
+        }
+        case SSP_Up: {
+            actions_->eventUp(longPress);
+            break;
+        }
+        case SSP_Down: {
+            actions_->eventDown(longPress);
+            break;
+        }
+        case SSP_Shift_L: {
+            actions_->eventLeftShift(longPress);
+            break;
+        }
+        case SSP_Shift_R: {
+            actions_->eventRightShift(longPress);
+            break;
+        }
+    }
 }

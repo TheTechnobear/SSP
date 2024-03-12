@@ -3,8 +3,8 @@
 
 namespace ssp {
 
-SSPUI::SSPUI(BaseProcessor *processor, SSPActions *actions)
-    : processor_(processor), actions_(actions) {
+SSPUI::SSPUI(BaseProcessor *processor, SSPActions *actions) : processor_(processor), actions_(actions) {
+    startTimer(50);
 
     for (unsigned i = 0; i < NENC; i++) {
         auto &up = encUp_[i];
@@ -27,7 +27,6 @@ SSPUI::SSPUI(BaseProcessor *processor, SSPActions *actions)
         sw.setBounds(((i * 4) * bw) + (2 * bw) + x, y, bw, bh);
         sw.addListener(this);
         addAndMakeVisible(sw);
-
     }
 
     for (unsigned i = 0; i < NBUTS; i++) {
@@ -100,15 +99,28 @@ SSPUI::SSPUI(BaseProcessor *processor, SSPActions *actions)
         addAndMakeVisible(bI);
         addAndMakeVisible(bO);
     }
+
+    for (int i = 0; i < SSP_LastBtn; i++) {
+        buttonCounter_[i] = 0;
+        buttonState_[i] = false;
+    }
+}
+
+SSPUI::~SSPUI() {
+    stopTimer();
 }
 
 
+void SSPUI::timerCallback() {
+    actions_->onSSPTimer();
+    for (int i = 0; i < SSP_LastBtn; i++) { buttonCounter_[i] -= (buttonCounter_[i] > 0); }
+}
+
 void SSPUI::paint(juce::Graphics &g) {
-//    g.fillAll(Colours::grey);
+    //    g.fillAll(Colours::grey);
     g.setColour(juce::Colours::white);
     g.drawText("Inputs :", 30, 150, 65, 30, juce::Justification::left);
     g.drawText("Outputs :", 30, 180, 65, 30, juce::Justification::left);
-
 }
 
 void SSPUI::resized() {
@@ -136,34 +148,41 @@ void SSPUI::buttonClicked(juce::Button *button) {
     for (unsigned i = 0; i < NBUTS; i++) {
         if (button == &buttons_[i]) {
             if (button == &buttons_[i]) {
-                actions_->onButton(i, button->getToggleState());
+                buttonPressed(i, button->getToggleState());
+                // actions_->onButton(i, button->getToggleState());
                 return;
             }
             return;
         }
     }
     if (button == &ls_) {
-        actions_->onLeftShiftButton(button->getToggleState());
+        buttonPressed(SSP_Shift_L, button->getToggleState());
+        // actions_->onLeftShiftButton(button->getToggleState());
         return;
     }
     if (button == &rs_) {
-        actions_->onRightShiftButton(button->getToggleState());
+        buttonPressed(SSP_Shift_R, button->getToggleState());
+        // actions_->onRightShiftButton(button->getToggleState());
         return;
     }
     if (button == &up_) {
-        actions_->onUpButton(button->getToggleState());
+        buttonPressed(SSP_Up, button->getToggleState());
+        // actions_->onUpButton(button->getToggleState());
         return;
     }
     if (button == &down_) {
-        actions_->onDownButton(button->getToggleState());
+        buttonPressed(SSP_Down, button->getToggleState());
+        // actions_->onDownButton(button->getToggleState());
         return;
     }
     if (button == &left_) {
-        actions_->onLeftButton(button->getToggleState());
+        buttonPressed(SSP_Left, button->getToggleState());
+        // actions_->onLeftButton(button->getToggleState());
         return;
     }
     if (button == &right_) {
-        actions_->onRightButton(button->getToggleState());
+        buttonPressed(SSP_Right, button->getToggleState());
+        // actions_->onRightButton(button->getToggleState());
         return;
     }
 
@@ -180,4 +199,104 @@ void SSPUI::buttonClicked(juce::Button *button) {
 }
 
 
-} // namespace
+void SSPUI::buttonPressed(int n, bool val) {
+    if (n <= SSP_Soft_8) {
+        actions_->onButton(n, val);
+    } else {
+        switch (n) {
+            case SSP_Left: {
+                actions_->onLeftButton(val);
+                break;
+            }
+            case SSP_Right: {
+                actions_->onRightButton(val);
+                break;
+            }
+            case SSP_Up: {
+                actions_->onUpButton(val);
+                break;
+            }
+            case SSP_Down: {
+                actions_->onDownButton(val);
+                break;
+            }
+            case SSP_Shift_L: {
+                actions_->onLeftShiftButton(val);
+                break;
+            }
+            case SSP_Shift_R: {
+                actions_->onRightShiftButton(val);
+                break;
+            }
+            default: {
+                // ignore
+            }
+        }
+    }
+
+    generateButtenEvents(n, val);
+}
+
+void SSPUI::generateButtenEvents(int n, bool val) {
+    if (buttonState_[n] == val) return;
+    // only look at transitions
+
+    buttonState_[n] = val;
+
+    if (val) {
+        // button pressed
+        buttonCounter_[n] = LONG_PRESS_COUNT;
+        // no other action on press..
+        return;
+    }
+
+    // on release...
+    bool longPress = buttonCounter_[n] == 0;
+    switch (n) {
+        case SSP_Soft_1:
+        case SSP_Soft_2:
+        case SSP_Soft_3:
+        case SSP_Soft_4:
+        case SSP_Soft_5:
+        case SSP_Soft_6:
+        case SSP_Soft_7:
+        case SSP_Soft_8: {
+            bool evtSent = false;
+            for (int i = 0; i < SSP_LastBtn && !evtSent; i++) {
+                if (i == n) continue;
+                if (buttonState_[i] && buttonCounter_[i] == 0) {
+                    actions_->eventButtonCombo(n, i, longPress);
+                    evtSent = true;
+                }
+            }
+            if (!evtSent) { actions_->eventButton(n, longPress); }
+            break;
+        }
+        case SSP_Left: {
+            actions_->eventLeft(longPress);
+            break;
+        }
+        case SSP_Right: {
+            actions_->eventRight(longPress);
+            break;
+        }
+        case SSP_Up: {
+            actions_->eventUp(longPress);
+            break;
+        }
+        case SSP_Down: {
+            actions_->eventDown(longPress);
+            break;
+        }
+        case SSP_Shift_L: {
+            actions_->eventLeftShift(longPress);
+            break;
+        }
+        case SSP_Shift_R: {
+            actions_->eventRightShift(longPress);
+            break;
+        }
+    }
+}
+
+}  // namespace ssp

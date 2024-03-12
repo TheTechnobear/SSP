@@ -15,6 +15,8 @@ protected:
 
     void onUpButton(bool v) override;
     void onDownButton(bool v) override;
+    void eventUp(bool v) override;
+    void eventDown(bool v) override;
     void setParamBounds(unsigned page,unsigned idx,std::shared_ptr<BaseParamControl>);
     ControlPage addParamPage(
         std::shared_ptr<BaseParamControl> c1,

@@ -5,14 +5,10 @@
 namespace ssp {
 
 BaseMiniView::BaseMiniView(BaseProcessor *p) : base_type(p, true) {
-
 }
 
 
-MiniParamView::MiniParamView(BaseProcessor *p, ioActivity cb)
-    : base_type(p, true),
-      ioCallback_(cb) {
-
+MiniParamView::MiniParamView(BaseProcessor *p, ioActivity cb) : base_type(p, true), ioCallback_(cb) {
 }
 
 void MiniParamView::drawView(Graphics &g) {
@@ -20,16 +16,11 @@ void MiniParamView::drawView(Graphics &g) {
     g.setFont(Font(Font::getDefaultMonospacedFontName(), 10 * scale, Font::plain));
 
     g.setColour(Colours::yellow);
-    g.drawSingleLineText(String(JucePlugin_Name) + ":"
-                         + String(JucePlugin_Desc)
-                         + String(" @ thetechnobear"),
-                         gap,
+    g.drawSingleLineText(String(JucePlugin_Name) + ":" + String(JucePlugin_Desc) + String(" @ thetechnobear"), gap,
                          gap * 2);
 
     g.setColour(Colours::grey);
-    g.drawSingleLineText("v " + String(JucePlugin_VersionString),
-                         270 * scale,
-                         gap * 2);
+    g.drawSingleLineText("v " + String(JucePlugin_VersionString), 270 * scale, gap * 2);
 
     drawButtonBox(g);
     drawIO(g);
@@ -58,9 +49,7 @@ void MiniParamView::onEncoder(unsigned enc, float v) {
     if ((enc + paramOffset_) < params_.size()) {
         auto c = params_[enc + paramOffset_];
         if (c != nullptr) {
-            if (encoderState_[enc]) {
-                encoderFine_[enc] = true;
-            }
+            if (encoderState_[enc]) { encoderFine_[enc] = true; }
             if (v > 0.0f) {
                 c->inc(encoderFine_[enc]);
             } else if (v < 0.0f) {
@@ -73,15 +62,13 @@ void MiniParamView::onEncoder(unsigned enc, float v) {
 void MiniParamView::onEncoderSwitch(unsigned enc, bool v) {
     base_type::onEncoderSwitch(enc, v);
     encoderState_[enc] = v;
-    if (v) return; // change on button up
+    if (v) return;  // change on button up
 
     if (!encoderFine_[enc]) {
         if ((enc + paramOffset_) < params_.size()) {
             auto c = params_[enc + paramOffset_];
             if (c != nullptr) {
-                if (v == 0) {
-                    c->reset();
-                }
+                if (v == 0) { c->reset(); }
             }
         }
     }
@@ -97,29 +84,46 @@ void MiniParamView::onButton(unsigned int id, bool v) {
     unsigned bidx = (r * 4) + c;
     if (bidx < buttons_.size()) {
         auto &btn = buttons_[bidx];
-        if (v) btn->onDown();
-        else btn->onUp();
+        if (v)
+            btn->onDown();
+        else
+            btn->onUp();
     }
 }
 
-void MiniParamView::onUpButton(bool v) {
-    base_type::onUpButton(v);
-     if (v) return;
-     prevPage();   
+
+void MiniParamView::eventButton(unsigned int id, bool longPress) {
+    base_type::eventButton(id, longPress);
+    if (longPress) return;
+
+    unsigned r = id / 4;
+    unsigned c = id % 4;
+
+    unsigned bidx = (r * 4) + c;
+    if (bidx < buttons_.size()) {
+        auto &btn = buttons_[bidx];
+        btn->onClick();
+    }
 }
 
-void MiniParamView::onDownButton(bool v) {
-    base_type::onDownButton(v);
-    if (v) return;
+
+void MiniParamView::eventUp(bool longPress) {
+    base_type::eventUp(longPress);
+    if (longPress) return;
+    prevPage();
+}
+
+void MiniParamView::eventDown(bool longPress) {
+    base_type::eventDown(longPress);
+    if (longPress) return;
     nextPage();
 }
-
 
 
 void MiniParamView::prevPage() {
     unsigned nPages = (params_.size() / nParamPerPage);
     nPages += (params_.size() % 4) > 0;
-    if ( (int(paramOffset_) - int(nParamPerPage)) >= 0 ) {
+    if ((int(paramOffset_) - int(nParamPerPage)) >= 0) {
         paramOffset_ -= nParamPerPage;
     } else {
         return;
@@ -127,7 +131,7 @@ void MiniParamView::prevPage() {
     unsigned pidx = 0;
     unsigned pStart = paramOffset_;
     unsigned pEnd = paramOffset_ + nParamPerPage;
-    for (auto p: params_) {
+    for (auto p : params_) {
         bool act = pidx >= pStart && pidx < pEnd;
         p->active(act);
         p->setVisible(act);
@@ -139,7 +143,7 @@ void MiniParamView::prevPage() {
 void MiniParamView::nextPage() {
     unsigned nPages = (params_.size() / nParamPerPage);
     nPages += (params_.size() % 4) > 0;
-    if ((paramOffset_ + nParamPerPage) < ((nPages * nParamPerPage) )) {
+    if ((paramOffset_ + nParamPerPage) < ((nPages * nParamPerPage))) {
         paramOffset_ += nParamPerPage;
     } else {
         return;
@@ -149,7 +153,7 @@ void MiniParamView::nextPage() {
     unsigned pidx = 0;
     unsigned pStart = paramOffset_;
     unsigned pEnd = paramOffset_ + nParamPerPage;
-    for (auto p: params_) {
+    for (auto p : params_) {
         bool act = pidx >= pStart && pidx < pEnd;
         p->active(act);
         p->setVisible(act);
@@ -170,12 +174,11 @@ void MiniParamView::resized() {
     unsigned butLeftX = gap;
     unsigned bw = (canvasW_) / 4;
     unsigned bidx = 0;
-    for (auto p: buttons_) {
+    for (auto p : buttons_) {
         if (bidx < maxUserBtns) {
             unsigned r = bidx / 3;
             unsigned c = bidx % 3;
-            p->setBounds(butLeftX + (c * bw), butTopY + r * (buttonBarH_ / 2),
-                         bw, buttonBarH_ / 2);
+            p->setBounds(butLeftX + (c * bw), butTopY + r * (buttonBarH_ / 2), bw, buttonBarH_ / 2);
         }
         bidx++;
     }
@@ -186,7 +189,7 @@ void MiniParamView::resized() {
     unsigned paramX = gap + ioW_;
     unsigned paramY = titleH_;
     unsigned pidx = 0;
-    for (auto p: params_) {
+    for (auto p : params_) {
         float pos = (pidx % nParamPerPage);
         bool act = pidx >= paramOffset_ && pidx < paramOffset_ + nParamPerPage;
         unsigned w = paramW - 1;
@@ -207,9 +210,7 @@ void MiniParamView::drawButtonBox(Graphics &g) {
     g.drawHorizontalLine(butTopY, butLeftX, gap + canvasW_ - 1);
     g.drawHorizontalLine(butTopY + (buttonBarH_) / 2, butLeftX, gap + canvasW_ - 1);
     g.drawHorizontalLine((butTopY + buttonBarH_ - 1), butLeftX, gap + canvasW_ - 1);
-    for (int i = 0; i < 5; i++) {
-        g.drawVerticalLine(butLeftX + (i * bw) - 1, butTopY, butTopY + buttonBarH_ - 1);
-    }
+    for (int i = 0; i < 5; i++) { g.drawVerticalLine(butLeftX + (i * bw) - 1, butTopY, butTopY + buttonBarH_ - 1); }
 }
 
 
@@ -274,8 +275,7 @@ void MiniParamView::drawIO(Graphics &g) {
         }
         y += h;
     }
-
 }
 
 
-} // namespace
+}  // namespace ssp

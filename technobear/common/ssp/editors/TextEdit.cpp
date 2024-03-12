@@ -214,8 +214,8 @@ void TextEdit::onButton(unsigned id, bool v) {
     }
 }
 
-void TextEdit::onUpButton(bool v) {
-    base_type::onUpButton(v);
+void TextEdit::eventUp(bool v) {
+    base_type::eventUp(v);
     if (v) return;
     if (selected_ >= nCols_) {
         keys_[selected_]->selected(false);
@@ -224,8 +224,8 @@ void TextEdit::onUpButton(bool v) {
     }
 }
 
-void TextEdit::onDownButton(bool v) {
-    base_type::onDownButton(v);
+void TextEdit::eventDown(bool v) {
+    base_type::eventDown(v);
     if (v) return;
     if (selected_ + nCols_ < keys_.size()) {
         keys_[selected_]->selected(false);
@@ -235,8 +235,8 @@ void TextEdit::onDownButton(bool v) {
 }
 
 
-void TextEdit::onLeftButton(bool v) {
-    base_type::onLeftButton(v);
+void TextEdit::eventLeft(bool v) {
+    base_type::eventLeft(v);
     if (v) return;
     if (selected_ > 0) {
         keys_[selected_]->selected(false);
@@ -245,8 +245,8 @@ void TextEdit::onLeftButton(bool v) {
     }
 }
 
-void TextEdit::onRightButton(bool v) {
-    base_type::onRightButton(v);
+void TextEdit::eventRight(bool v) {
+    base_type::eventRight(v);
     if (v) return;
     if (selected_ + 1 < keys_.size()) {
         keys_[selected_]->selected(false);
@@ -255,15 +255,17 @@ void TextEdit::onRightButton(bool v) {
     }
 }
 
-void TextEdit::onLeftShiftButton(bool v) {
-    base_type::onLeftShiftButton(v);
-    if (!v) onDelete();
+void TextEdit::eventLeftShift(bool v) {
+    base_type::eventLeftShift(v);
+    if(v) return;
+    onDelete();
 }
 
-void TextEdit::onRightShiftButton(bool v) {
-    base_type::onRightShiftButton(v);
-    keys_[selected_]->active(v);
-    if (!v) onSelect();
+void TextEdit::eventRightShift(bool v) {
+    base_type::eventRightShift(v);
+    if(v) return;
+    keys_[selected_]->active(true);
+    onSelect();
 }
 
 

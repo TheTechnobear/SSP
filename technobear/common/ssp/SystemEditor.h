@@ -56,6 +56,17 @@ protected:
 
     void onSSPTimer() override {}
 
+    void eventButton(unsigned btn,bool longPress) override {}
+    void eventUp(bool longPress) override {}
+    void eventDown(bool longPress) override {}
+    void eventLeft(bool longPress) override {}
+    void eventRight(bool longPress) override {}
+    void eventLeftShift(bool longPress) override {}
+    void eventRightShift(bool longPress) override {}
+    void eventButtonCombo(unsigned btn,unsigned comboBtn, bool longPress) override {}
+
+
+
     void setButtonBounds(ValueButton &btn, unsigned r, unsigned c);
 
     BaseProcessor *baseProcessor_;

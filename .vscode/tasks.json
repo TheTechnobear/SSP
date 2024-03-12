@@ -47,6 +47,17 @@
 		},
 		{
 			"type": "cmake",
+			"label": "build PMIX_VST3",
+			"command": "build",
+			"targets": [
+				"PMIX_VST3"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "PMIX_VST3"
+		},
+		{
+			"type": "cmake",
 			"label": "build CART_VST3",
 			"command": "build",
 			"targets": [

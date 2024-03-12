@@ -25,9 +25,12 @@ public:
     void addButton(const std::shared_ptr<ParamButton>& p);
     void onEncoder(unsigned id, float v) override;
     void onEncoderSwitch(unsigned id, bool v) override;
+
     void onButton(unsigned int id, bool v) override;
-    void onUpButton(bool v) override;
-    void onDownButton(bool v) override;
+
+    void eventButton(unsigned int id, bool longPress) override;
+    void eventUp(bool longPress) override;
+    void eventDown(bool longPress) override;
 
     void drawView(Graphics &) override;
     void resized() override;

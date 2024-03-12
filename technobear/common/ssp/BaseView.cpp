@@ -6,17 +6,10 @@ namespace ssp {
 BaseView::BaseView(BaseProcessor *p,bool compactUI) :
     baseProcessor_(p),
     compactUI_(compactUI) {
-    startTimer(50);
 }
 
 
 BaseView::~BaseView() {
-    stopTimer();
-}
-
-void BaseView::timerCallback() {
-    onSSPTimer();
-    repaint();
 }
 
 void BaseView::paint(juce::Graphics &g) {

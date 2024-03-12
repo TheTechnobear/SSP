@@ -31,10 +31,3 @@ PluginMiniEditor::PluginMiniEditor(PluginProcessor &p) :
     setView(0);
 }
 
-void PluginMiniEditor::drawView(Graphics &g) {
-    base_type::drawView(g);
-}
-
-void PluginMiniEditor::resized() {
-    base_type::resized();
-}

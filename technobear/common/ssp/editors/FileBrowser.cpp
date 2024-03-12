@@ -221,12 +221,8 @@ void FileBrowser::onEncoderSwitch(unsigned id, bool v) {
     }
 }
 
-void FileBrowser::onButton(unsigned id, bool v) {
-    base_type::onButton(id, v);
-}
-
-void FileBrowser::onUpButton(bool v) {
-    base_type::onUpButton(v);
+void FileBrowser::eventUp(bool v) {
+    base_type::eventUp(v);
     if (!v) {
         if (selected_ == -1) selected_ = 0;
         else {
@@ -240,8 +236,8 @@ void FileBrowser::onUpButton(bool v) {
     }
 }
 
-void FileBrowser::onDownButton(bool v) {
-    base_type::onDownButton(v);
+void FileBrowser::eventDown(bool v) {
+    base_type::eventDown(v);
     if (!v) {
         if (selected_ == -1) selected_ = 0;
         else {
@@ -256,8 +252,8 @@ void FileBrowser::onDownButton(bool v) {
 }
 
 
-void FileBrowser::onLeftButton(bool v) {
-    base_type::onLeftButton(v);
+void FileBrowser::eventLeft(bool v) {
+    base_type::eventLeft(v);
     if (!v) {
         if (selected_ == -1) selected_ = 0;
         else {
@@ -271,7 +267,7 @@ void FileBrowser::onLeftButton(bool v) {
     }
 }
 
-void FileBrowser::onRightButton(bool v) {
+void FileBrowser::eventRight(bool v) {
     base_type::onRightButton(v);
     if (!v) {
         if (selected_ == -1) selected_ = 0;
@@ -286,12 +282,8 @@ void FileBrowser::onRightButton(bool v) {
     }
 }
 
-// void FileBrowser::onLeftShiftButton(bool v) {
-//     base_type::onLeftShiftButton(v);
-// }
-
- void FileBrowser::onRightShiftButton(bool v) {
-     base_type::onRightShiftButton(v);
+ void FileBrowser::eventRightShift(bool v) {
+     base_type::eventRightShift(v);
      if(!v) {
          selectFile();
      }

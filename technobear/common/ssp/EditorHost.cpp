@@ -13,9 +13,7 @@ static constexpr unsigned btnTopY = 380 - 1;
 static constexpr unsigned btnSpaceY = 50;
 
 EditorHost::EditorHost(BaseProcessor *p, BaseView *e, bool compactUI, bool enableSysEditor, bool drawDefaults)
-    :
-
-      AudioProcessorEditor(p),
+    : AudioProcessorEditor(p),
       processor_(p),
       editor_(e),
       system_(nullptr),
@@ -59,7 +57,7 @@ EditorHost::EditorHost(BaseProcessor *p, BaseView *e, bool compactUI, bool enabl
         int uih = 0;
 #ifdef __APPLE__
         uih = 220;
-        sspui_ = new SSPUI(processor_,this);
+        sspui_ = new SSPUI(processor_, this);
         sspui_->setBounds(0, SSP_FULL_HEIGHT, SSP_FULL_WIDTH, uih);
         addChildComponent(sspui_);
         sspui_->setVisible(true);
@@ -215,6 +213,63 @@ void EditorHost::onRightShiftButton(bool v) {
 
 void EditorHost::onSSPTimer() {
     editor_->onSSPTimer();
+}
+
+
+void EditorHost::eventButton(unsigned btn, bool longPress) {
+    if (sysActive_)
+        system_->eventButton(btn, longPress);
+    else
+        editor_->eventButton(btn, longPress);
+}
+
+void EditorHost::eventUp(bool longPress) {
+    if (sysActive_)
+        system_->eventUp(longPress);
+    else
+        editor_->eventUp(longPress);
+}
+
+void EditorHost::eventDown(bool longPress) {
+    if (sysActive_)
+        system_->eventDown(longPress);
+    else
+        editor_->eventDown(longPress);
+}
+
+void EditorHost::eventLeft(bool longPress) {
+    if (sysActive_)
+        system_->eventLeft(longPress);
+    else
+        editor_->eventLeft(longPress);
+}
+
+void EditorHost::eventRight(bool longPress) {
+    if (sysActive_)
+        system_->eventRight(longPress);
+    else
+        editor_->eventRight(longPress);
+}
+
+void EditorHost::eventLeftShift(bool longPress) {
+    if (sysActive_)
+        system_->eventLeftShift(longPress);
+    else
+        editor_->eventLeftShift(longPress);
+}
+
+void EditorHost::eventRightShift(bool longPress) {
+    if (sysActive_)
+        system_->eventRightShift(longPress);
+    else
+        editor_->eventRightShift(longPress);
+}
+
+void EditorHost::eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress) {
+    if (sysActive_)
+        system_->eventButtonCombo(btn, comboBtn, longPress);
+    else
+        editor_->eventButtonCombo(btn, comboBtn, longPress);
 }
 
 

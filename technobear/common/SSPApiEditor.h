@@ -22,4 +22,10 @@ public:
     void encoderTurned(int n, int val);
 private:
     ssp::EditorHost *editor_;
+    void generateButtenEvents(int n, bool val);
+    static constexpr unsigned LONG_PRESS_COUNT = 30;
+    bool buttonState_[SSP_LastBtn] = { false, false, false, false, false, false, false,
+                                       false, false, false, false, false, false, false };
+    unsigned buttonCounter_[SSP_LastBtn] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
 };

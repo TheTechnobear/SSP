@@ -8,9 +8,6 @@ public:
     explicit PluginMiniEditor(PluginProcessor &);
     ~PluginMiniEditor() override = default;
 
-    void drawView(Graphics &) override;
-    void resized() override;
-
 protected:
     using base_type = ssp::BaseMiniView;
 

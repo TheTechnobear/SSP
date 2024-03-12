@@ -84,15 +84,20 @@ BaseEditor::ControlPage TableParamEditor::addParamPage(
 
 void TableParamEditor::onUpButton(bool v) {
     upBtn_.value(v);
-
-    if (v) return; // change on button up
-
-    chgParamPage(-11,false);
 }
 
 void TableParamEditor::onDownButton(bool v) {
     downBtn_.value(v);
+}
 
+
+
+void TableParamEditor::eventUp(bool v) {
+    if (v) return; // change on button up
+    chgParamPage(-11,false);
+}
+
+void TableParamEditor::eventDown(bool v) {
     if (v) return; // change on button up
     chgParamPage(1,false);
 }

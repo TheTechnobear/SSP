@@ -136,6 +136,20 @@ void SingleViewEditor::onButton(unsigned btn, bool v) {
     }
 }
 
+void SingleViewEditor::eventButton(unsigned btn,bool longPress) {
+    base_type::eventButton(btn, longPress);
+    if(longPress) return;
+
+    if (buttonPage_ < buttonPages_.size()) {
+        auto page = buttonPages_[buttonPage_];
+        auto c = page.control_[btn];
+        if (c != nullptr) {
+            c->onClick();
+        }
+    }
+}
+
+
 void SingleViewEditor::chgParamPage(int delta, bool changeVis) {
     unsigned lastP = paramPage_;
     unsigned nextP = paramPage_;

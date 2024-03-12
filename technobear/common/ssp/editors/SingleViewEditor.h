@@ -19,7 +19,9 @@ public:
 
     virtual void onEncoder(unsigned enc, float v);
     virtual void onEncoderSwitch(unsigned enc, bool v);
+
     virtual void onButton(unsigned btn, bool v);
+    virtual void eventButton(unsigned btn,bool longPress); 
 
     virtual ControlPage addParamPage(
         std::shared_ptr<BaseParamControl> c1,

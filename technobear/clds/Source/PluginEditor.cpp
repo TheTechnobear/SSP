@@ -56,19 +56,6 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     addAndMakeVisible(outVu_);
 }
 
-void PluginEditor::onEncoder(unsigned enc, float v) {
-    base_type::onEncoder(enc, v);
-}
-
-void PluginEditor::onEncoderSwitch(unsigned enc, bool v) {
-    base_type::onEncoderSwitch(enc, v);
-}
-
-
-void PluginEditor::onButton(unsigned int btn, bool v) {
-    base_type::onButton(btn, v);
-}
-
 
 void PluginEditor::drawView(Graphics &g) {
     float inL, inR, outL, outR;

@@ -8,11 +8,13 @@ class ParamButton : public juce::Component {
 public:
     using Parameter = juce::RangedAudioParameter;
     ParamButton(Parameter &p, unsigned fh = 36, const juce::Colour fg = juce::Colours::white,
-                const juce::Colour bg = juce::Colours::black, bool momentary = true);
+                const juce::Colour bg = juce::Colours::black, bool momentary = false);
     virtual ~ParamButton() = default;
 
     void onUp();
     void onDown();
+
+    void onClick();
 
     void mouseUp(const juce::MouseEvent &event) override;
     void mouseDown(const juce::MouseEvent &event) override;

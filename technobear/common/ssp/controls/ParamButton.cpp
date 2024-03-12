@@ -28,30 +28,35 @@ void ParamButton::mouseDown(const juce::MouseEvent &event) {
 
 
 void ParamButton::onUp() {
+    if(!momentary_) return;
+
     auto &p = param_;
-    bool v = p.getValue() > 0.5f;
-    if (momentary_) {
-        v = !v;
-    } else {
-        v = 0.0f;
-    }
-    //    std::cerr << "ParamButton onUp " <<  v << std::endl;
     p.beginChangeGesture();
-    p.setValueNotifyingHost(v ? 1.0f : 0.0f);
+    p.setValueNotifyingHost(0.f);
     p.endChangeGesture();
 }
 
 void ParamButton::onDown() {
+    if(!momentary_) return;
+
     auto &p = param_;
-    if (momentary_) {
-        // toggle on up
-        return;
-    } else {
-        p.beginChangeGesture();
-        p.setValueNotifyingHost(1.0f);
-        p.endChangeGesture();
-    }
+    p.beginChangeGesture();
+    p.setValueNotifyingHost(1.f);
+    p.endChangeGesture();
 }
+
+
+void ParamButton::onClick() {
+    if(momentary_) return;
+
+    // toggle - on event action
+    auto &p = param_;
+    bool v = p.getValue() > 0.5f;
+    p.beginChangeGesture();
+    p.setValueNotifyingHost(!v);
+    p.endChangeGesture();
+}
+
 
 void ParamButton::paint(juce::Graphics &g) {
     const int w = getWidth();
