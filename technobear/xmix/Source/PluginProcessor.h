@@ -49,7 +49,7 @@ public:
     static constexpr unsigned I_MAX = 8;
     static constexpr unsigned O_MAX = 2;
 
-    const std::string &getPluginFile(unsigned m) { return modules_[m].pluginFile_; };
+    const std::string &getLoadedPlugin(unsigned m) { return modules_[m].pluginName_; };
 
     SSPExtendedApi::PluginEditorInterface *getEditor(unsigned midx) {
         auto &m = modules_[midx];
@@ -85,7 +85,6 @@ public:
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
-    static bool checkPlugin(const std::string &f);
 private:
 
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
@@ -103,7 +102,7 @@ private:
             void *h);
         void free();
 
-        std::string pluginFile_;
+        std::string pluginName_;
         std::string requestedModule_;
         std::atomic_flag lockModule_ = ATOMIC_FLAG_INIT;
         SSPExtendedApi::PluginInterface *plugin_ = nullptr;
@@ -118,6 +117,9 @@ private:
 
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
+
+    static std::string getPluginFile(const std::string& m);
+    static bool checkPlugin(const std::string &f);
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)

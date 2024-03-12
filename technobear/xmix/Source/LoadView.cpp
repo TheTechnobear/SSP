@@ -41,7 +41,7 @@ void LoadView::drawView(Graphics &g) {
 
 
 void LoadView::loadModule() {
-    auto &curMod = processor_.getPluginFile(PluginProcessor::M_MAIN);
+    auto &curMod = processor_.getLoadedPlugin(PluginProcessor::M_MAIN);
     auto &modules = processor_.getSupportedModules();
     auto &newMod = modules[curModIdx_];
     if (newMod != curMod) {
@@ -115,7 +115,7 @@ void LoadView::editorShown() {
     curModIdx_ = -1;
     int i = 0;
     auto &modules = processor_.getSupportedModules();
-    auto &curMod = processor_.getPluginFile(PluginProcessor::M_MAIN);
+    auto &curMod = processor_.getLoadedPlugin(PluginProcessor::M_MAIN);
     for (auto &m : modules) {
         if (m == curMod) {
             curModIdx_ = i;

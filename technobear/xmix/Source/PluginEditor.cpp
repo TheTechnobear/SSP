@@ -13,19 +13,29 @@
 
 
 PluginEditor::PluginEditor(PluginProcessor &p) : base_type(&p, false), processor_(p) {
-    activeModule_ = 0;
-    moduleView_ = std::make_shared<ModuleView>(p);
-    loadView_ = std::make_shared<LoadView>(p);
-    addView(moduleView_);
-    addView(loadView_);
-    setView(0);
+    // activeModule_ = 0;
+    // moduleView_ = std::make_shared<ModuleView>(p);
+    // loadView_ = std::make_shared<LoadView>(p);
+    // addView(moduleView_);
+    // addView(loadView_);
+
+    // processor_.requestModuleChange(PluginProcessor::M_PRE, "comp");
+    // processor_.requestModuleChange(PluginProcessor::M_MAIN, "plts");
+    // processor_.requestModuleChange(PluginProcessor::M_POST, "clds");
+
+    for(int i = 0; i< PluginProcessor::M_MAX;i++) {
+        auto mV = std::make_shared<ModuleView>(p, i);
+        addView(mV);
+    }
+
+    setView(PluginProcessor::M_MAIN);
 }
 
+#if 0
 
 void PluginEditor::drawView(Graphics &g) {
     base_type::drawView(g);
 }
-
 
 void PluginEditor::onSSPTimer() {
     base_type::onSSPTimer();
@@ -76,7 +86,6 @@ void PluginEditor::onButton(unsigned btn, bool v) {
     }
 }
 
-
 void PluginEditor::onUpButton(bool v) {
     static constexpr int UP_BTN = 0;
 
@@ -119,3 +128,4 @@ void PluginEditor::resized() {
     base_type::resized();
 }
 
+#endif 

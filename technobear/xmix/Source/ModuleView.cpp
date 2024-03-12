@@ -6,7 +6,12 @@ static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
 static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
 
 
-ModuleView::ModuleView(PluginProcessor &p) : ssp::BaseView(&p, false), processor_(p) {
+ModuleView::ModuleView(PluginProcessor &p, unsigned moduleIdx)
+    : ssp::BaseView(&p, false), moduleIdx_(moduleIdx), processor_(p) {
+
+    if(processor_.getSupportedModules().size()==0) {
+        processor_.scanPlugins();
+    }
 }
 
 ModuleView::~ModuleView() {
@@ -21,7 +26,7 @@ void ModuleView::drawModulePanel(Graphics &g) {
     unsigned panelWidth = pluginWidth;
     // unsigned panelHeight = pluginHeight;
 
-    auto editor = processor_.getEditor(PluginProcessor::M_MAIN);
+    auto editor = processor_.getEditor(moduleIdx_);
     if (!editor) {
         int x = pluginWidth / 2;
         g.setColour(Colours::white);
@@ -62,7 +67,7 @@ void ModuleView::drawIO(Graphics &g) {
     g.setColour(Colours::yellow);
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
 
-    auto desc = processor_.getDescriptor(PluginProcessor::M_MAIN);
+    auto desc = processor_.getDescriptor(moduleIdx_);
     if (desc) {
         g.setColour(Colours::yellow);
         g.drawSingleLineText("Inputs", x, y);
@@ -96,32 +101,33 @@ void ModuleView::drawIO(Graphics &g) {
 
 
 void ModuleView::onEncoder(unsigned enc, float v) {
-    auto plugin = processor_.getPlugin(PluginProcessor::M_MAIN);
+    auto plugin = processor_.getPlugin(moduleIdx_);
     if (!plugin) return;
     plugin->encoderTurned(enc, v);
 }
 
 void ModuleView::onEncoderSwitch(unsigned enc, bool v) {
-    auto plugin = processor_.getPlugin(PluginProcessor::M_MAIN);
+    auto plugin = processor_.getPlugin(moduleIdx_);
     if (!plugin) return;
     plugin->encoderPressed(enc, v);
 }
 
 void ModuleView::onButton(unsigned btn, bool v) {
-    auto plugin = processor_.getPlugin(PluginProcessor::M_MAIN);
+    auto plugin = processor_.getPlugin(moduleIdx_);
     if (!plugin) return;
     plugin->buttonPressed(btn, v);
 }
 
 
 void ModuleView::onUpButton(bool v) {
-    auto plugin = processor_.getPlugin(PluginProcessor::M_MAIN);
+    auto plugin = processor_.getPlugin(moduleIdx_);
     if (!plugin) return;
     plugin->buttonPressed(SSP_Up, v);
 }
 
 void ModuleView::onDownButton(bool v) {
-    auto plugin = processor_.getPlugin(PluginProcessor::M_MAIN);
+    auto plugin = processor_.getPlugin(moduleIdx_);
     if (!plugin) return;
     plugin->buttonPressed(SSP_Down, v);
 }
+

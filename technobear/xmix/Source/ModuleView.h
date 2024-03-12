@@ -10,7 +10,7 @@ using namespace juce;
 
 class ModuleView : public ssp::BaseView {
 public:
-    ModuleView(PluginProcessor &p);
+    ModuleView(PluginProcessor &p, unsigned modIdx);
     ~ModuleView() override;
 
     void drawView(Graphics &g) override;
@@ -28,6 +28,7 @@ public:
     //    void onRightShiftButton(bool v) override;
 
 private:
+    unsigned moduleIdx_;
     PluginProcessor &processor_;
     Component *pComponent_ = nullptr;
 };

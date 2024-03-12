@@ -1,6 +1,7 @@
 {
     "cmake.parallelJobs" : 4,
     "files.associations": {
+        "*.svg": "xml",
         "__bit_reference": "cpp",
         "__config": "cpp",
         "__debug": "cpp",
@@ -72,6 +73,7 @@
         "variant": "cpp",
         "vector": "cpp",
         "algorithm": "cpp",
-        "*.mm": "cpp"
+        "*.mm": "cpp",
+        "execution": "cpp"
     }
 }
