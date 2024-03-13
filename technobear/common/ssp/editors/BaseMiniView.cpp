@@ -9,6 +9,7 @@ BaseMiniView::BaseMiniView(BaseProcessor *p) : base_type(p, true) {
 
 
 MiniParamView::MiniParamView(BaseProcessor *p, ioActivity cb) : base_type(p, true), ioCallback_(cb) {
+    assert(cb != nullptr);
 }
 
 void MiniParamView::drawView(Graphics &g) {
