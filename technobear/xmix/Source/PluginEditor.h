@@ -2,6 +2,7 @@
 
 #include "PluginProcessor.h"
 #include "ssp/editors/MultiView.h"
+#include <memory>
 
 
 class ModuleView;
@@ -21,15 +22,14 @@ protected:
     void eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress) override;
 
 private:
-    int MAX_COUNTER = 15;
+    static constexpr int LOAD_VIEW = PluginProcessor::M_MAX; // not M_MAX is view +1!
+    static constexpr int MAX_COUNTER = 15;
     int upDownCounter_[2] = { 0, 0 };
     bool upDownState_[2] = { false, false };
 
-    PluginProcessor &processor_;
-    // int activeModuleIdx_ = 0;
+    std::shared_ptr<LoadView> loadView_=nullptr;
 
-    // std::shared_ptr<ModuleView> moduleView_;
-    // std::shared_ptr<LoadView> loadView_;
+    PluginProcessor &processor_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginEditor)
 };

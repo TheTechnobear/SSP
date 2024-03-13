@@ -33,8 +33,6 @@ void ModuleView::drawModulePanel(Graphics &g) {
 
         g.setFont(Font(Font::getDefaultMonospacedFontName(), 20, Font::plain));
         g.drawSingleLineText("No Module Loaded", x - 40, getHeight() / 2 - 20);
-        g.setFont(Font(Font::getDefaultMonospacedFontName(), 16, Font::plain));
-        g.drawSingleLineText("(hold UP to load)", x - 40, getHeight() / 2);
         return;
     }
 
@@ -117,7 +115,6 @@ void ModuleView::onButton(unsigned btn, bool v) {
     if (!plugin) return;
     plugin->buttonPressed(btn, v);
 }
-
 
 void ModuleView::onUpButton(bool v) {
     auto plugin = processor_.getPlugin(moduleIdx_);

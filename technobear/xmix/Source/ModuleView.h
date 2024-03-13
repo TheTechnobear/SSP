@@ -20,12 +20,9 @@ public:
     void onEncoder(unsigned enc, float v) override;
     void onEncoderSwitch(unsigned enc, bool v) override;
     void onButton(unsigned btn, bool v) override;
-    //    void onLeftButton(bool v) override;
-    //    void onRightButton(bool v) override;
+
     void onUpButton(bool v) override;
     void onDownButton(bool v) override;
-    //    void onLeftShiftButton(bool v) override;
-    //    void onRightShiftButton(bool v) override;
 
 private:
     unsigned moduleIdx_;

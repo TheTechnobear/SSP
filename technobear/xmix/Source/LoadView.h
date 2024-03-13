@@ -10,42 +10,14 @@ using namespace juce;
 
 class LoadView : public ssp::BaseView {
 public:
-    LoadView(PluginProcessor &p)
-        : ssp::BaseView(&p, false),
-          processor_(p),
-          scanBtn_("Scan", nullptr, 32, Colours::white, Colours::black),
-          loadBtn_("Load", nullptr, 32, Colours::white, Colours::black),
-          clearBtn_("Clear", nullptr, 32, Colours::white, Colours::black),
-          upBtn_("EN-", nullptr, 32, Colours::black, Colours::red),
-          downBtn_("EN+", nullptr, 32, Colours::black, Colours::red),
-          leftBtn_("", nullptr, 32, Colours::black, Colours::red),
-          rightBtn_("", nullptr, 32, Colours::black, Colours::red) {
-        setButtonBounds(scanBtn_, 0, 0);
-        setButtonBounds(clearBtn_, 1, 3);
-        setButtonBounds(upBtn_, 0, 5);
-        setButtonBounds(loadBtn_, 0, 3);
-        setButtonBounds(leftBtn_, 1, 4);
-        setButtonBounds(downBtn_, 1, 5);
-        setButtonBounds(rightBtn_, 1, 6);
-
-        addAndMakeVisible(scanBtn_);
-        addAndMakeVisible(clearBtn_);
-        addAndMakeVisible(loadBtn_);
-        addAndMakeVisible(upBtn_);
-        addAndMakeVisible(downBtn_);
-        addAndMakeVisible(leftBtn_);
-        addAndMakeVisible(rightBtn_);
-    }
+    LoadView(PluginProcessor &p);
 
     void onEncoder(unsigned enc, float v) override;
     void onEncoderSwitch(unsigned enc, bool v) override;
-    void onButton(unsigned btn, bool v) override;
-    //    void onLeftButton(bool v) override;
-    //    void onRightButton(bool v) override;
-    void onUpButton(bool v) override;
-    void onDownButton(bool v) override;
-    // void onLeftShiftButton(bool v) override;
-    // void onRightShiftButton(bool v) override;
+
+    void eventButton(unsigned btn, bool v) override;
+    void eventUp(bool v) override;
+    void eventDown(bool v) override;
 
 
     void drawView(Graphics &g) override;
@@ -72,6 +44,9 @@ public:
         for (int i = 0; i < 8; i++) { g.drawVerticalLine(x + i * 100, butTopY, 480 - 1); }
     }
 
+    void moduleIdx(int midx);
+    int moduleIdx() { return moduleIdx_;}
+
 private:
     static constexpr unsigned btnTopY = 380 - 1;
     static constexpr unsigned btnSpaceY = 50;
@@ -80,6 +55,7 @@ private:
 
     void loadModule();
 
-    int curModIdx_ = -1;
+    int moduleIdx_ = PluginProcessor::M_MAX;
+    int curModNameIdx_ = -1;
     PluginProcessor &processor_;
 };

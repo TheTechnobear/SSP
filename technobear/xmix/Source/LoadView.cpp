@@ -11,6 +11,35 @@ std::string nicePlugName(const std::string &n) {
     return nn;
 }
 
+
+LoadView::LoadView(PluginProcessor &p)
+    : ssp::BaseView(&p, false),
+      processor_(p),
+      scanBtn_("Scan", nullptr, 32, Colours::white, Colours::black),
+      loadBtn_("Load", nullptr, 32, Colours::white, Colours::black),
+      clearBtn_("Clear", nullptr, 32, Colours::white, Colours::black),
+      upBtn_("EN-", nullptr, 32, Colours::black, Colours::red),
+      downBtn_("EN+", nullptr, 32, Colours::black, Colours::red),
+      leftBtn_("", nullptr, 32, Colours::black, Colours::red),
+      rightBtn_("", nullptr, 32, Colours::black, Colours::red) {
+    setButtonBounds(scanBtn_, 0, 0);
+    setButtonBounds(clearBtn_, 1, 3);
+    setButtonBounds(upBtn_, 0, 5);
+    setButtonBounds(loadBtn_, 0, 3);
+    setButtonBounds(leftBtn_, 1, 4);
+    setButtonBounds(downBtn_, 1, 5);
+    setButtonBounds(rightBtn_, 1, 6);
+
+    addAndMakeVisible(scanBtn_);
+    addAndMakeVisible(clearBtn_);
+    addAndMakeVisible(loadBtn_);
+    addAndMakeVisible(upBtn_);
+    addAndMakeVisible(downBtn_);
+    addAndMakeVisible(leftBtn_);
+    addAndMakeVisible(rightBtn_);
+}
+
+
 void LoadView::drawView(Graphics &g) {
     drawButtonBox(g);
 
@@ -28,7 +57,7 @@ void LoadView::drawView(Graphics &g) {
     y += h;
     int i = 0;
     for (auto &m : modules) {
-        if (i == curModIdx_) {
+        if (i == curModNameIdx_) {
             g.setColour(Colours::red);
         } else {
             g.setColour(Colours::white);
@@ -41,87 +70,85 @@ void LoadView::drawView(Graphics &g) {
 
 
 void LoadView::loadModule() {
-    auto &curMod = processor_.getLoadedPlugin(PluginProcessor::M_MAIN);
+    if(moduleIdx_>= PluginProcessor::M_MAX) return;
+
+    auto &curMod = processor_.getLoadedPlugin(moduleIdx_);
     auto &modules = processor_.getSupportedModules();
-    auto &newMod = modules[curModIdx_];
+    auto &newMod = modules[curModNameIdx_];
     if (newMod != curMod) {
         // time to load a new module !
         bool r = false;
-        while (!r) { r = processor_.requestModuleChange(PluginProcessor::M_MAIN, newMod); }
+        while (!r) { r = processor_.requestModuleChange(moduleIdx_, newMod); }
     }
 }
 
-void LoadView::onUpButton(bool v) {
-    upBtn_.value(v);
+void LoadView::eventUp(bool v) {
     if (v) return;
-    if (curModIdx_ > 0) curModIdx_--;
+    if (curModNameIdx_ > 0) curModNameIdx_--;
 }
 
-void LoadView::onDownButton(bool v) {
-    downBtn_.value(v);
+void LoadView::eventDown(bool v) {
     if (v) return;
-
     int maxSz = processor_.getSupportedModules().size();
-    if (curModIdx_ < 0)
-        curModIdx_ = 0;
-    else if (curModIdx_ < (maxSz - 1))
-        curModIdx_++;
+    if (curModNameIdx_ < 0)
+        curModNameIdx_ = 0;
+    else if (curModNameIdx_ < (maxSz - 1))
+        curModNameIdx_++;
 }
 
 void LoadView::onEncoder(unsigned enc, float v) {
     if (v > 0.0f) {
         int maxSz = processor_.getSupportedModules().size();
-        if (curModIdx_ < 0)
-            curModIdx_ = 0;
-        else if (curModIdx_ < (maxSz - 1))
-            curModIdx_++;
+        if (curModNameIdx_ < 0)
+            curModNameIdx_ = 0;
+        else if (curModNameIdx_ < (maxSz - 1))
+            curModNameIdx_++;
     } else if (v < 0.0f) {
-        if (curModIdx_ > 0) curModIdx_--;
+        if (curModNameIdx_ > 0) curModNameIdx_--;
     }
 }
 
 void LoadView::onEncoderSwitch(unsigned enc, bool v) {
     if (v) return;
-
     loadModule();
 }
 
-void LoadView::onButton(unsigned int btn, bool v) {
+void LoadView::eventButton(unsigned int btn, bool v) {
+    if (v) return;
     switch (btn) {
         case 0: {
-            scanBtn_.value(v);
-            if (v) return;
             processor_.scanPlugins();
             editorShown();  // reset current plugin
             break;
         }
         case 3: {
-            loadBtn_.value(v);
-            if (v) return;
             loadModule();
             break;
         }
         case 7: {
-            clearBtn_.value(v);
-            if (v) return;
+            if(moduleIdx_>= PluginProcessor::M_MAX) return;
             bool r = false;
-            while (!r) { r = processor_.requestModuleChange(PluginProcessor::M_MAIN, ""); }
+            while (!r) { r = processor_.requestModuleChange(moduleIdx_, ""); }
             break;
         }
     }
 }
 
 void LoadView::editorShown() {
-    curModIdx_ = -1;
-    int i = 0;
-    auto &modules = processor_.getSupportedModules();
-    auto &curMod = processor_.getLoadedPlugin(PluginProcessor::M_MAIN);
-    for (auto &m : modules) {
-        if (m == curMod) {
-            curModIdx_ = i;
-            break;
+    if (moduleIdx_ < PluginProcessor::M_MAX) {
+        auto curMod = processor_.getLoadedPlugin(moduleIdx_);
+        auto &modules = processor_.getSupportedModules();
+        int i = 0;
+        for (auto &m : modules) {
+            if (m == curMod) {
+                curModNameIdx_ = i;
+                break;
+            }
+            i++;
         }
-        i++;
     }
 }
 
+void LoadView::moduleIdx(int midx) {
+    if (midx < PluginProcessor::M_MAX) { moduleIdx_ = midx; }
+}
