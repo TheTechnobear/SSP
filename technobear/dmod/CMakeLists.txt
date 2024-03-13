@@ -74,6 +74,9 @@ target_sources(DMOD
         PRIVATE
         Source/PluginEditor.cpp
         Source/PluginProcessor.cpp
+        Source/DualView.cpp
+        Source/ModuleView.cpp
+        Source/LoadView.cpp
         ${COMMON_SRC}
         )
 

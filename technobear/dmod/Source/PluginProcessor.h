@@ -1,28 +1,28 @@
 #pragma once
 
-#include "ssp/BaseProcessor.h"
-
-#include <atomic>
 #include <algorithm>
+#include <atomic>
 
 #include "SSPExApi.h"
+#include "ssp/BaseProcessor.h"
 
 using namespace juce;
 
 
 namespace ID {
-#define PARAMETER_ID(str) constexpr const char* str { #str };
-constexpr const char *separator{":"};
+#define PARAMETER_ID(str) constexpr const char *str{ #str };
+constexpr const char *separator{ ":" };
 
-PARAMETER_ID (main)
+PARAMETER_ID(main)
 
 #undef PARAMETER_ID
-}
+}  // namespace ID
 
 class PluginProcessor : public ssp::BaseProcessor {
 public:
     explicit PluginProcessor();
-    explicit PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts, AudioProcessorValueTreeState::ParameterLayout layout);
+    explicit PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts,
+                             AudioProcessorValueTreeState::ParameterLayout layout);
     ~PluginProcessor();
 
     const String getName() const override { return JucePlugin_Name; }
@@ -37,28 +37,27 @@ public:
 
     static BusesProperties getBusesProperties() {
         BusesProperties props;
-        for (auto i = 0; i < I_MAX; i++) {
-            props.addBus(true, getInputBusName(i), AudioChannelSet::mono());
-        }
-        for (auto i = 0; i < O_MAX; i++) {
-            props.addBus(false, getOutputBusName(i), AudioChannelSet::mono());
-        }
+        for (auto i = 0; i < I_MAX; i++) { props.addBus(true, getInputBusName(i), AudioChannelSet::mono()); }
+        for (auto i = 0; i < O_MAX; i++) { props.addBus(false, getOutputBusName(i), AudioChannelSet::mono()); }
         return props;
     }
 
+
+    enum { M_LEFT, M_RIGHT, M_MAX };
+
+
     static constexpr unsigned I_MAX = 16;
     static constexpr unsigned O_MAX = 4;
-    static constexpr unsigned MAX_MODULES = 2;
-    static constexpr unsigned MAX_IN = I_MAX / MAX_MODULES;
-    static constexpr unsigned MAX_OUT = O_MAX / MAX_MODULES;
+    static constexpr unsigned MAX_IN = I_MAX / M_MAX;
+    static constexpr unsigned MAX_OUT = O_MAX / M_MAX;
 
-    const std::string &getPluginFile(unsigned m) { return modules_[m].pluginFile_; };
+    const std::string &getLoadedPlugin(unsigned m) { return modules_[m].pluginName_; };
 
     SSPExtendedApi::PluginEditorInterface *getEditor(unsigned midx) {
         auto &m = modules_[midx];
 
         if (m.plugin_ != nullptr && m.editor_ == nullptr) {
-            m.editor_ = (SSPExtendedApi::PluginEditorInterface *) m.plugin_->getEditor();
+            m.editor_ = (SSPExtendedApi::PluginEditorInterface *)m.plugin_->getEditor();
         }
         return m.editor_;
     };
@@ -80,25 +79,18 @@ public:
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
-    static bool checkPlugin(const std::string &f);
 private:
-
-    bool isBusesLayoutSupported(const BusesLayout &layouts) const override {
-        return true;
-    }
+    bool isBusesLayoutSupported(const BusesLayout &layouts) const override { return true; }
 
     std::vector<std::string> supportedModules_;
 
 
     struct Module {
-        void alloc(
-            const std::string &f,
-            SSPExtendedApi::PluginInterface *p,
-            SSPExtendedApi::PluginDescriptor *d,
-            void *h);
+        void alloc(const std::string &f, SSPExtendedApi::PluginInterface *p, SSPExtendedApi::PluginDescriptor *d,
+                   void *h);
         void free();
 
-        std::string pluginFile_;
+        std::string pluginName_;
         std::string requestedModule_;
         std::atomic_flag lockModule_ = ATOMIC_FLAG_INIT;
         SSPExtendedApi::PluginInterface *plugin_ = nullptr;
@@ -108,14 +100,15 @@ private:
         AudioSampleBuffer audioSampleBuffer_;
     };
 
-    Module modules_[MAX_MODULES];
+    Module modules_[M_MAX];
     bool loadModule(std::string, Module &m);
 
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
 
+    static bool checkPlugin(const std::string &f);
+    static std::string getPluginFile(const std::string &m);
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginProcessor)
 };
-
-

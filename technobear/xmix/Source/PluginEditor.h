@@ -23,10 +23,6 @@ protected:
 
 private:
     static constexpr int LOAD_VIEW = PluginProcessor::M_MAX; // not M_MAX is view +1!
-    static constexpr int MAX_COUNTER = 15;
-    int upDownCounter_[2] = { 0, 0 };
-    bool upDownState_[2] = { false, false };
-
     std::shared_ptr<LoadView> loadView_=nullptr;
 
     PluginProcessor &processor_;

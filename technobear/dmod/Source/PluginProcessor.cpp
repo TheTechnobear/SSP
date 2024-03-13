@@ -17,23 +17,26 @@ void log(const std::string &m) {
 #endif
 }
 
-
 #ifdef __APPLE__
 const static int dlopenmode = RTLD_LOCAL | RTLD_NOW;
+const char* pluginPath = "~/Library/Audio/Plug-Ins/VST3/";
+const char* pluginSuffix = ".vst3/Contents/MacOS/";
 #else
-const static int  dlopenmode = RTLD_LOCAL | RTLD_NOW | RTLD_DEEPBIND;
+const static int dlopenmode = RTLD_LOCAL | RTLD_NOW | RTLD_DEEPBIND;
+const char *pluginPath = "/media/BOOT/plugins/";
+
 #endif
 
 void PluginProcessor::Module::alloc(
-    const std::string &f,
+    const std::string &n,
     SSPExtendedApi::PluginInterface *p,
     SSPExtendedApi::PluginDescriptor *d,
     void *h) {
-    pluginFile_ = f;
+    pluginName_ = n;
     plugin_ = p;
     descriptor_ = d;
     dlHandle_ = h;
-    requestedModule_ = f;
+    requestedModule_ = n;
 }
 
 
@@ -45,7 +48,7 @@ void PluginProcessor::Module::free() {
     editor_ = nullptr;
     dlHandle_ = nullptr;
     descriptor_ = nullptr;
-    pluginFile_ = "";
+    pluginName_ = "";
     requestedModule_ = "";
 }
 
@@ -67,42 +70,66 @@ PluginProcessor::~PluginProcessor() {
 }
 
 
-bool PluginProcessor::requestModuleChange(unsigned midx, const std::string &f) {
+bool PluginProcessor::requestModuleChange(unsigned midx, const std::string &mn) {
     auto &m = modules_[midx];
 
     if (!m.lockModule_.test_and_set()) {
-        loadModule(f, m);
+        loadModule(mn, m);
         m.lockModule_.clear();
         return true;
     }
     return false;
 }
 
+std::string PluginProcessor::getPluginFile(const std::string& mname) {
+    std::string file;
+#ifdef __APPLE__
+    File plugInDir(pluginPath);
+    if(plugInDir.exists()) {
+        std::string absPath = plugInDir.getFullPathName().toStdString();
+        file = absPath + std::string("/") +  mname + pluginSuffix + mname;
+    }
 
-bool PluginProcessor::loadModule(std::string f, PluginProcessor::Module &m) {
+#else
+    File plugInDir(pluginPath);
+    if(plugInDir.exists()) {
+        std::string absPath = plugInDir.getFullPathName().toStdString();
+        file = absPath + std::string("/")  + mname + ".so";
+    }
+#endif
+    return file;
+}
+
+
+
+bool PluginProcessor::loadModule(std::string mn, PluginProcessor::Module &m) {
     m.free();
-    if (f == "") {
+    if (mn == "") {
         /// just cleared this module
         return true;
     }
 
+    std::string f = getPluginFile(mn);
     auto fHandle = dlopen(f.c_str(), dlopenmode);
-//    auto fnVersion = (Percussa::SSP::VersionFun) dlsym(fHandle, Percussa::SSP::getApiVersionName);
-//    auto fnCreateDescriptor = (Percussa::SSP::DescriptorFun) dlsym(fHandle, Percussa::SSP::createDescriptorName);
+    //    auto fnVersion = (Percussa::SSP::VersionFun) dlsym(fHandle, Percussa::SSP::getApiVersionName);
+    //    auto fnCreateDescriptor = (Percussa::SSP::DescriptorFun) dlsym(fHandle, Percussa::SSP::createDescriptorName);
     if (fHandle) {
-        auto fnApiExtension = (SSPExtendedApi::apiExtensionFun) dlsym(fHandle, SSPExtendedApi::apiExtensionsName);
+        auto fnApiExtension = (SSPExtendedApi::apiExtensionFun)dlsym(fHandle, SSPExtendedApi::apiExtensionsName);
         if (fnApiExtension && fnApiExtension()) {
-            auto fnCreateInterface = (Percussa::SSP::InstantiateFun) dlsym(fHandle, Percussa::SSP::createInstanceName);
-            auto fnCreateExDescriptor = (SSPExtendedApi::descriptorExFun) dlsym(fHandle, SSPExtendedApi::createExDescriptorName);
+            auto fnCreateInterface = (Percussa::SSP::InstantiateFun)dlsym(fHandle, Percussa::SSP::createInstanceName);
+            auto fnCreateExDescriptor =
+                (SSPExtendedApi::descriptorExFun)dlsym(fHandle, SSPExtendedApi::createExDescriptorName);
 
             if (fnCreateInterface && fnCreateExDescriptor) {
                 auto desc = fnCreateExDescriptor();
                 bool supported = desc->supportCompactUI_;
                 if (supported) {
+
+                    log(std::string("Loaded modulule : "+ mn));
                     auto pluginInterace = fnCreateInterface();
-                    auto *plugin = (SSPExtendedApi::PluginInterface *) pluginInterace;
+                    auto *plugin = (SSPExtendedApi::PluginInterface *)pluginInterace;
                     plugin->useCompactUI(true);
-                    m.alloc(f, plugin, desc, fHandle);
+                    m.alloc(mn, plugin, desc, fHandle);
 
                     // prepare for play
                     int inSz = m.descriptor_->inputChannelNames.size();
@@ -113,9 +140,7 @@ bool PluginProcessor::loadModule(std::string f, PluginProcessor::Module &m) {
                     int nSamples = getBlockSize();
                     if (nSamples == 0) nSamples = 128;
                     m.audioSampleBuffer_.setSize(nCh, nSamples);
-                    if (SR != 0) {
-                        plugin->prepare(SR, m.audioSampleBuffer_.getNumSamples());
-                    }
+                    if (SR != 0) { plugin->prepare(SR, m.audioSampleBuffer_.getNumSamples()); }
 
                     return true;
                 }
@@ -127,13 +152,16 @@ bool PluginProcessor::loadModule(std::string f, PluginProcessor::Module &m) {
     return false;
 }
 
-bool PluginProcessor::checkPlugin(const std::string &f) {
+bool PluginProcessor::checkPlugin(const std::string &mn) {
     bool supported = false;
-    auto fHandle = dlopen(f.c_str(), dlopenmode); // macOS does now have deepbind
+    std::string f = getPluginFile(mn);
+    log(f);
+    auto fHandle = dlopen(f.c_str(), dlopenmode);  // macOS does now have deepbind
     if (fHandle) {
-        auto fnApiExtension = (SSPExtendedApi::apiExtensionFun) dlsym(fHandle, SSPExtendedApi::apiExtensionsName);
+        auto fnApiExtension = (SSPExtendedApi::apiExtensionFun)dlsym(fHandle, SSPExtendedApi::apiExtensionsName);
         if (fnApiExtension && fnApiExtension()) {
-            auto fnCreateExDescriptor = (SSPExtendedApi::descriptorExFun) dlsym(fHandle, SSPExtendedApi::createExDescriptorName);
+            auto fnCreateExDescriptor =
+                (SSPExtendedApi::descriptorExFun)dlsym(fHandle, SSPExtendedApi::createExDescriptorName);
             if (fnCreateExDescriptor) {
                 auto desc = fnCreateExDescriptor();
                 supported = desc->supportCompactUI_;
@@ -152,40 +180,30 @@ void PluginProcessor::scanPlugins() {
     supportedModules_.clear();
     // Logger::writeToLog("plugin scan : STARTED");
 
-    // build list of files to consider
-    std::vector<std::string> fileList;
+    // build list of modules to consider
+    std::vector<std::string> moduleList;
 #ifdef __APPLE__
-    const char *pluginPath = "~/Library/Audio/Plug-Ins/VST3";
-    for (const DirectoryEntry &entry: RangedDirectoryIterator(File(pluginPath),
-                                                              false, "*.vst3",
-                                                              File::findDirectories)) {
+    for (const DirectoryEntry &entry :
+         RangedDirectoryIterator(File(pluginPath), false, "*.vst3", File::findDirectories)) {
         if (!entry.isHidden()) {
-            auto fname = entry.getFile().getFileNameWithoutExtension().toStdString();
-            auto path = entry.getFile().getFullPathName().toStdString();
-            auto binname = path + "/Contents/MacOS/" + fname;
-            fileList.push_back(binname);
+            auto mname = entry.getFile().getFileNameWithoutExtension().toStdString();
+            moduleList.push_back(mname);
         }
     }
 #else
-    const char* pluginPath = "/media/BOOT/plugins";
-    for (DirectoryEntry entry: RangedDirectoryIterator(File(pluginPath),
-                                                       false, "*.so",
-                                                       File::findFiles)) {
-        if (!entry.isHidden()) {
-            fileList.push_back(entry.getFile().getFullPathName().toStdString());
-        }
+    for (DirectoryEntry entry : RangedDirectoryIterator(File(pluginPath), false, "*.so", File::findFiles)) {
+        // if (!entry.isHidden()) { fileList.push_back(entry.getFile().getFullPathName().toStdString()); }
+        if (!entry.isHidden()) {moduleList.push_back(entry.getFile().getFileNameWithoutExtension().toStdString());}
     }
 #endif
     // check for modules supporting compact ui
-    for (const auto &fname: fileList) {
-        if (checkPlugin(fname)) {
-            supportedModules_.push_back(fname);
-        }
+    for (const auto &mname : moduleList) {
+        if (checkPlugin(mname)) { supportedModules_.push_back(mname); }
     }
 
     // Logger::writeToLog("plugin scan : COMPLETED");
     log("plugin scan : COMPLETED");
-    for (const auto &module: supportedModules_) {
+    for (const auto &module : supportedModules_) {
         // Logger::writeToLog(module);
         log(module);
     }
@@ -236,7 +254,7 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     size_t n = buffer.getNumSamples();
     int modIdx = 0;
-    bool processed[MAX_MODULES] = {false, false};
+    bool processed[M_MAX] = {false, false};
     // prepare input & process audio
     for (auto &m: modules_) {
         processed[modIdx] = false;
@@ -340,7 +358,7 @@ void PluginProcessor::getStateInformation(MemoryBlock &destData) {
         size_t dataSz;
         plugin->getState(&data, &dataSz);
 
-        outStream.writeString(String(m.pluginFile_.c_str()));
+        outStream.writeString(String(m.pluginName_.c_str()));
         outStream.writeInt(dataSz);
         outStream.write(data, dataSz);
         i++;
@@ -368,7 +386,7 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
         }
     }
 
-    for (int i = 0; i < MAX_MODULES; i++) {
+    for (int i = 0; i < M_MAX; i++) {
         int check = inputStream.readInt();
         if (check != checkBytes) {
             return;

@@ -75,11 +75,11 @@ void LoadView::loadModule() {
     auto &curMod = processor_.getLoadedPlugin(moduleIdx_);
     auto &modules = processor_.getSupportedModules();
     auto &newMod = modules[curModNameIdx_];
-    if (newMod != curMod) {
+    // if (newMod != curMod) {
         // time to load a new module !
         bool r = false;
         while (!r) { r = processor_.requestModuleChange(moduleIdx_, newMod); }
-    }
+    // }
 }
 
 void LoadView::eventUp(bool v) {
@@ -150,7 +150,6 @@ void LoadView::editorShown() {
     }
     curModNameIdx_ = -1;
 }
-
 
 void LoadView::moduleIdx(int midx) {
     if (midx < PluginProcessor::M_MAX) { moduleIdx_ = midx; }

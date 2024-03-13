@@ -1,10 +1,9 @@
 #include "ModuleView.h"
 
 
-// ModuleView
+#include "SSP.h"
 static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
 static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
-
 
 ModuleView::ModuleView(PluginProcessor &p, unsigned moduleIdx)
     : ssp::BaseView(&p, false), moduleIdx_(moduleIdx), processor_(p) {
@@ -42,14 +41,13 @@ void ModuleView::drawModulePanel(Graphics &g) {
     if (pComponent != pComponent_) {
         if (pComponent_ != nullptr) removeChildComponent(pComponent_);
         pComponent_ = pComponent;
-        if(pComponent_!=nullptr) {
-            addChildComponent(pComponent_);
-            pComponent->setBounds(0, 0, pluginWidth, pluginHeight);
-            pComponent->resized();
-            // juce crashes if we let mouse events go to components
-            // possibly something to do with AudioProcessorEditor and us using 'its' component!
-            pComponent->setInterceptsMouseClicks(false, false);
-        }
+        addChildComponent(pComponent_);
+        pComponent->setBounds(0, 0, pluginWidth, pluginHeight);
+        pComponent->resized();
+
+        // juce crashes if we let mouse events go to components
+        // possibly something to do with AudioProcessorEditor and us using 'its' component!
+        pComponent->setInterceptsMouseClicks(false, false);
     }
 }
 

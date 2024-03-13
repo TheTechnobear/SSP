@@ -30,6 +30,6 @@ Percussa::SSP::PluginDescriptor *createExtendedDescriptor() {
     auto desc = new SSPExtendedApi::PluginDescriptor;
     SSP_defaultDescriptor(desc);
     desc->colour = Colours::aqua.getARGB();
-    desc->supportCompactUI_ = false;
+    desc->supportCompactUI_ = true;
     return desc;
 }
