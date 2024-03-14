@@ -40,17 +40,17 @@ void Module::free() {
 
 
 void Module::prepare(int sampleRate, int blockSize) {
+    if(!plugin_) return;
+
     // prepare for play
     int inSz = descriptor_->inputChannelNames.size();
-    int outSz = descriptor_->inputChannelNames.size();
+    int outSz = descriptor_->outputChannelNames.size();
 
     int nCh = (inSz > outSz ? inSz : outSz);
-    int SR = sampleRate;
-    int nSamples = blockSize;
-    if (nSamples == 0) nSamples = 128;
-    audioSampleBuffer_.setSize(nCh, nSamples);
-    
-    if (plugin_ && SR != 0) { plugin_->prepare(SR, audioSampleBuffer_.getNumSamples()); }
+    if (blockSize == 0) blockSize = 128;
+
+    audioSampleBuffer_.setSize(nCh, blockSize);
+    if (sampleRate != 0) { plugin_->prepare(sampleRate, blockSize); }
 }
 
 std::string Module::getPluginFile(const std::string& mname) {

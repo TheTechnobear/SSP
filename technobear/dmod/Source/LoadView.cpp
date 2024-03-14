@@ -12,8 +12,8 @@ std::string nicePlugName(const std::string &n) {
 }
 
 
-LoadView::LoadView(PluginProcessor &p)
-    : ssp::BaseView(&p, false),
+LoadView::LoadView(PluginProcessor &p, bool compactUI)
+    : ssp::BaseView(&p, compactUI),
       processor_(p),
       scanBtn_("Scan", nullptr, 32, Colours::white, Colours::black),
       loadBtn_("Load", nullptr, 32, Colours::white, Colours::black),
@@ -22,21 +22,15 @@ LoadView::LoadView(PluginProcessor &p)
       downBtn_("EN+", nullptr, 32, Colours::black, Colours::red),
       leftBtn_("", nullptr, 32, Colours::black, Colours::red),
       rightBtn_("", nullptr, 32, Colours::black, Colours::red) {
-    setButtonBounds(scanBtn_, 0, 0);
-    setButtonBounds(clearBtn_, 1, 3);
-    setButtonBounds(upBtn_, 0, 5);
-    setButtonBounds(loadBtn_, 0, 3);
-    setButtonBounds(leftBtn_, 1, 4);
-    setButtonBounds(downBtn_, 1, 5);
-    setButtonBounds(rightBtn_, 1, 6);
-
     addAndMakeVisible(scanBtn_);
     addAndMakeVisible(clearBtn_);
     addAndMakeVisible(loadBtn_);
-    addAndMakeVisible(upBtn_);
-    addAndMakeVisible(downBtn_);
-    addAndMakeVisible(leftBtn_);
-    addAndMakeVisible(rightBtn_);
+    if (!compactUI_) {
+        addAndMakeVisible(upBtn_);
+        addAndMakeVisible(downBtn_);
+        addAndMakeVisible(leftBtn_);
+        addAndMakeVisible(rightBtn_);
+    }
 }
 
 
@@ -68,9 +62,75 @@ void LoadView::drawView(Graphics &g) {
     }
 }
 
+void LoadView::resized() {
+    ssp::BaseView::resized();
+    setButtonBounds(scanBtn_, 0, 0);
+    setButtonBounds(clearBtn_, 1, 3);
+    setButtonBounds(loadBtn_, 0, 3);
+    if (!compactUI_) {
+        setButtonBounds(upBtn_, 0, 5);
+        setButtonBounds(leftBtn_, 1, 4);
+        setButtonBounds(downBtn_, 1, 5);
+        setButtonBounds(rightBtn_, 1, 6);
+    }
+}
+
+void LoadView::drawButtonBox(Graphics &g) {
+    if (!compactUI_) {
+        unsigned butTopY = btnTopY;
+        unsigned butLeftX = 900 - 1;
+        float x = butLeftX;
+        float y = butTopY;
+        g.setColour(Colours::grey);
+        g.drawHorizontalLine(y, x, 1600 - 1);
+        g.drawHorizontalLine(y + btnSpaceY, x, 1600 - 1);
+        g.drawHorizontalLine(480 - 1, x, 1600 - 1);
+        for (int i = 0; i < 8; i++) { g.drawVerticalLine(x + i * 100, butTopY, 480 - 1); }
+    } else {
+        static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
+        static constexpr unsigned nParamPerPage = 4;
+        static constexpr unsigned titleH = 30;
+        unsigned canvasH = SSP_COMPACT_HEIGHT - titleH;
+        unsigned canvasW = SSP_COMPACT_WIDTH - (gap * 2);
+        unsigned buttonBarH = canvasH / (nParamPerPage + 3);
+        unsigned butTopY = SSP_COMPACT_HEIGHT - buttonBarH;
+
+        unsigned butLeftX = COMPACT_UI_SCALE * 5;
+        unsigned bw = canvasW / 4;
+
+        g.setColour(Colours::grey);
+        g.drawHorizontalLine(butTopY, butLeftX, gap + canvasW - 1);
+        g.drawHorizontalLine(butTopY + (buttonBarH) / 2, butLeftX, gap + canvasW - 1);
+        g.drawHorizontalLine((butTopY + buttonBarH - 1), butLeftX, gap + canvasW - 1);
+        for (int i = 0; i < 5; i++) { g.drawVerticalLine(butLeftX + (i * bw) - 1, butTopY, butTopY + buttonBarH - 1); }
+    }
+}
+
+void LoadView::setButtonBounds(ValueButton &btn, unsigned r, unsigned c) {
+    if (!compactUI_) {
+        const int w = 100;
+        const int h = btnSpaceY;
+        unsigned x = 900 + (c * w);
+        unsigned y = btnTopY + (r * h);
+        btn.setBounds(x, y, w, h);
+    } else {
+        static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
+        static constexpr unsigned nParamPerPage = 4;
+        static constexpr unsigned titleH = 30;
+        unsigned canvasH = SSP_COMPACT_HEIGHT - titleH;
+        unsigned canvasW = SSP_COMPACT_WIDTH - (gap * 2);
+        unsigned buttonBarH = canvasH / (nParamPerPage + 3);
+        unsigned butTopY = SSP_COMPACT_HEIGHT - buttonBarH;
+
+        unsigned butLeftX = gap;
+        unsigned bw = (canvasW) / 4;
+        btn.setBounds(butLeftX + (c * bw), butTopY + r * (buttonBarH / 2), bw, buttonBarH / 2);
+    }
+}
+
 
 void LoadView::loadModule() {
-    if(moduleIdx_>= PluginProcessor::M_MAX) return;
+    if (moduleIdx_ >= PluginProcessor::M_MAX) return;
 
     auto &curMod = processor_.getLoadedPlugin(moduleIdx_);
     auto &modules = processor_.getSupportedModules();
@@ -127,7 +187,7 @@ void LoadView::eventButton(unsigned int btn, bool v) {
             break;
         }
         case 7: {
-            if(moduleIdx_>= PluginProcessor::M_MAX) return;
+            if (moduleIdx_ >= PluginProcessor::M_MAX) return;
             bool r = false;
             curModNameIdx_ = -1;
             while (!r) { r = processor_.requestModuleChange(moduleIdx_, ""); }

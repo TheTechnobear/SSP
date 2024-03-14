@@ -15,6 +15,8 @@ PluginProcessor::PluginProcessor(
     AudioProcessorValueTreeState::ParameterLayout layout)
     : BaseProcessor(ioLayouts, std::move(layout)), params_(vts()) {
     init();
+    for(int i=0;i<I_MAX;i++) inActivity_[i]=0;
+    for(int i=0;i<O_MAX;i++) outActivity_[i]=0;
 }
 
 PluginProcessor::~PluginProcessor() {

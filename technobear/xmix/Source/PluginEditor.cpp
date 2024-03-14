@@ -18,7 +18,10 @@ PluginEditor::PluginEditor(PluginProcessor &p) : base_type(&p, false), processor
         auto mV = std::make_shared<ModuleView>(p, i);
         addView(mV);
     }
-    loadView_ = std::make_shared<LoadView>(processor_);
+    loadView_ = std::make_shared<LoadView>(processor_,true);
+    loadView_->setBounds(0, 0, pluginWidth, pluginHeight);
+    loadView_->resized();
+
     addView(loadView_);
 
     setView(PluginProcessor::M_MAIN);

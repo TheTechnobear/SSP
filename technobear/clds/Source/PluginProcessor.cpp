@@ -23,6 +23,8 @@ PluginProcessor::PluginProcessor(
     granularProcessor_ = nullptr;
     ibuf_ = obuf_ = nullptr;
     block_mem_ = block_ccm_ = nullptr;
+    for(int i=0;i<I_MAX;i++) inActivity_[i]=0;
+    for(int i=0;i<O_MAX;i++) outActivity_[i]=0;
 }
 
 PluginProcessor::~PluginProcessor() {

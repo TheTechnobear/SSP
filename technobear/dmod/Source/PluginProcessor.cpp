@@ -133,7 +133,7 @@ bool PluginProcessor::loadModule(std::string mn, PluginProcessor::Module &m) {
 
                     // prepare for play
                     int inSz = m.descriptor_->inputChannelNames.size();
-                    int outSz = m.descriptor_->inputChannelNames.size();
+                    int outSz = m.descriptor_->outputChannelNames.size();
 
                     int nCh = (inSz > outSz ? inSz : outSz);
                     int SR = getSampleRate();

@@ -9,7 +9,7 @@
 
 PluginEditor::PluginEditor(PluginProcessor &p) : base_type(&p, false), processor_(p) {
     dualView_ = std::make_shared<DualView>(p);
-    loadView_ = std::make_shared<LoadView>(p);
+    loadView_ = std::make_shared<LoadView>(p,true);
     addView(dualView_);
     addView(loadView_);
     dualView_->moduleIdx(0);

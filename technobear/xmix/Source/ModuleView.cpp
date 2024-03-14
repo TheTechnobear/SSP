@@ -2,10 +2,6 @@
 
 #include "Module.h"
 
-// ModuleView
-static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
-static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
-
 
 // #ifdef __APPLE__
 // #include <sstream>
@@ -54,16 +50,22 @@ void ModuleView::drawModulePanel(Graphics &g) {
 
 void ModuleView::editorShown() {
     if (pComponent_ != nullptr) removeChildComponent(pComponent_);
+
     editor_ = processor_.getEditor(moduleIdx_);
-    // we are currently using editorhost->baseview, this is because editorshost is AudioProcessorEditor
-    // and it appears AudioProcessorEditor has special handling for resizing etc.
-    pComponent_ = editor_->editorComponent();
-    addChildComponent(pComponent_);
-    pComponent_->setBounds(0, 0, pluginWidth, pluginHeight);
-    pComponent_->resized();
-    // juce crashes if we let mouse events go to components
-    // possibly something to do with AudioProcessorEditor and us using 'its' component!
-    pComponent_->setInterceptsMouseClicks(false, false);
+    if(editor_!=nullptr) {
+        // we are currently using editorhost->baseview, this is because editorshost is AudioProcessorEditor
+        // and it appears AudioProcessorEditor has special handling for resizing etc.
+        pComponent_ = editor_->editorComponent();
+        addChildComponent(pComponent_);
+        pComponent_->setBounds(0, 0, pluginWidth, pluginHeight);
+        pComponent_->resized();
+        // juce crashes if we let mouse events go to components
+        // possibly something to do with AudioProcessorEditor and us using 'its' component!
+        pComponent_->setInterceptsMouseClicks(false, false);
+    } else {
+        // no editor
+        pComponent_ = nullptr;
+    }
 }
 
 

@@ -177,8 +177,8 @@ void MiniParamView::resized() {
     unsigned bidx = 0;
     for (auto p : buttons_) {
         if (bidx < maxUserBtns) {
-            unsigned r = bidx / 3;
-            unsigned c = bidx % 3;
+            unsigned r = bidx / 4;
+            unsigned c = bidx % 4;
             p->setBounds(butLeftX + (c * bw), butTopY + r * (buttonBarH_ / 2), bw, buttonBarH_ / 2);
         }
         bidx++;

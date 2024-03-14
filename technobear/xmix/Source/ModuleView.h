@@ -28,6 +28,9 @@ public:
     void editorShown() override;
 
 private:
+    static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
+    static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
+
     unsigned moduleIdx_;
     PluginProcessor &processor_;
 

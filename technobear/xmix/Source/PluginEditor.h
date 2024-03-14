@@ -22,6 +22,10 @@ protected:
     void eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress) override;
 
 private:
+
+    static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
+    static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
+
     static constexpr int LOAD_VIEW = PluginProcessor::M_MAX; // not M_MAX is view +1!
     std::shared_ptr<LoadView> loadView_=nullptr;
 
