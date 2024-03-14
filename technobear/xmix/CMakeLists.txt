@@ -38,6 +38,8 @@ target_sources(XMIX
         Source/PluginProcessor.cpp
         Source/LoadView.cpp
         Source/ModuleView.cpp
+        Source/Module.cpp
+        Source/Track.cpp
         ${COMMON_SRC}
         )
 

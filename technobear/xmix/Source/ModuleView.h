@@ -5,6 +5,7 @@
 
 #include "PluginProcessor.h"
 #include "ssp/BaseView.h"
+
 using namespace juce;
 
 

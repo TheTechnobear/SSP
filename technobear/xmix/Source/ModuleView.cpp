@@ -1,5 +1,6 @@
 #include "ModuleView.h"
 
+#include "Module.h"
 
 // ModuleView
 static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
