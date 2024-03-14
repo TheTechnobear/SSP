@@ -26,7 +26,9 @@ public:
 
     void moduleIdx(int m);
     void refreshComponents();
-    
+
+    void editorShown() override;
+
 private:
     std::shared_ptr<ModuleView> leftView_;
     std::shared_ptr<ModuleView> rightView_;

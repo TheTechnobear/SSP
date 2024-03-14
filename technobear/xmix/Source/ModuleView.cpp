@@ -6,12 +6,26 @@ static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
 static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
 
 
+// #ifdef __APPLE__
+// #include <sstream>
+// #include <thread>
+// void mvlog(const std::string &m) {
+//     std::stringstream msg;
+//     msg << std::this_thread::get_id() << " : " << m;
+//     juce::Logger::writeToLog(msg.str());
+// }
+// #else
+// #include <fstream>
+// #include <thread>
+// void mvlog(const std::string &m) {
+//     std::ofstream s("/dev/kmsg");
+//     s << std::this_thread::get_id() << " : " << m << std::endl;
+// }
+// #endif
+
 ModuleView::ModuleView(PluginProcessor &p, unsigned moduleIdx)
     : ssp::BaseView(&p, false), moduleIdx_(moduleIdx), processor_(p) {
-
-    if(processor_.getSupportedModules().size()==0) {
-        processor_.scanPlugins();
-    }
+    if (processor_.getSupportedModules().size() == 0) { processor_.scanPlugins(); }
 }
 
 ModuleView::~ModuleView() {
@@ -35,22 +49,20 @@ void ModuleView::drawModulePanel(Graphics &g) {
         g.drawSingleLineText("No Module Loaded", x - 40, getHeight() / 2 - 20);
         return;
     }
+}
 
+void ModuleView::editorShown() {
+    if (pComponent_ != nullptr) removeChildComponent(pComponent_);
+    editor_ = processor_.getEditor(moduleIdx_);
     // we are currently using editorhost->baseview, this is because editorshost is AudioProcessorEditor
     // and it appears AudioProcessorEditor has special handling for resizing etc.
-    auto pComponent = editor->editorComponent();
-    if (pComponent != pComponent_) {
-        if (pComponent_ != nullptr) removeChildComponent(pComponent_);
-        pComponent_ = pComponent;
-        if(pComponent_!=nullptr) {
-            addChildComponent(pComponent_);
-            pComponent->setBounds(0, 0, pluginWidth, pluginHeight);
-            pComponent->resized();
-            // juce crashes if we let mouse events go to components
-            // possibly something to do with AudioProcessorEditor and us using 'its' component!
-            pComponent->setInterceptsMouseClicks(false, false);
-        }
-    }
+    pComponent_ = editor_->editorComponent();
+    addChildComponent(pComponent_);
+    pComponent_->setBounds(0, 0, pluginWidth, pluginHeight);
+    pComponent_->resized();
+    // juce crashes if we let mouse events go to components
+    // possibly something to do with AudioProcessorEditor and us using 'its' component!
+    pComponent_->setInterceptsMouseClicks(false, false);
 }
 
 
@@ -128,4 +140,3 @@ void ModuleView::onDownButton(bool v) {
     if (!plugin) return;
     plugin->buttonPressed(SSP_Down, v);
 }
-

@@ -3,19 +3,26 @@
 
 #include <dlfcn.h>
 
-#include <fstream>
 
 #include "PluginEditor.h"
 #include "ssp/EditorHost.h"
 
-void log(const std::string &m) {
 #ifdef __APPLE__
-    juce::Logger::writeToLog(m);
-#else
-    std::ofstream s("/dev/kmsg");
-    s << m << std::endl;
-#endif
+#include <sstream>
+#include <thread>
+void log(const std::string &m) {
+    std::stringstream msg;
+    msg << std::this_thread::get_id() << " : " << m;
+    juce::Logger::writeToLog(msg.str());
 }
+#else
+#include <thread>
+#include <fstream>
+void log(const std::string &m) {
+    std::ofstream s("/dev/kmsg");
+    s << std::this_thread::get_id() << " : " << m << std::endl;
+}
+#endif
 
 
 #ifdef __APPLE__
@@ -35,6 +42,7 @@ void PluginProcessor::Module::alloc(const std::string &pname, SSPExtendedApi::Pl
     descriptor_ = d;
     dlHandle_ = h;
     requestedModule_ = pluginName_;
+    if(plugin_ != nullptr) editor_ = (SSPExtendedApi::PluginEditorInterface *)  plugin_->getEditor();
 }
 
 
@@ -98,6 +106,7 @@ std::string PluginProcessor::getPluginFile(const std::string& mname) {
 
 bool PluginProcessor::loadModule(std::string mn, PluginProcessor::Module &m) {
     m.free();
+    log(std::string("free previous module for: "+ mn));
     if (mn == "") {
         /// just cleared this module
         return true;

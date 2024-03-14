@@ -47,6 +47,8 @@ public:
     void moduleIdx(int midx);
     int moduleIdx() { return moduleIdx_;}
 
+    bool moduleUpdated() { return moduleUpdated_;}
+
 private:
     static constexpr unsigned btnTopY = 380 - 1;
     static constexpr unsigned btnSpaceY = 50;
@@ -57,5 +59,6 @@ private:
 
     int moduleIdx_ = PluginProcessor::M_MAX;
     int curModNameIdx_ = -1;
+    bool moduleUpdated_ = false;
     PluginProcessor &processor_;
 };

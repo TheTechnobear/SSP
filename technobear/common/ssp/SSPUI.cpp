@@ -264,7 +264,10 @@ void SSPUI::generateButtenEvents(int n, bool val) {
             bool evtSent = false;
             for (int i = 0; i < SSP_LastBtn && !evtSent; i++) {
                 if (i == n) continue;
-                if (buttonState_[i] && buttonCounter_[i] == 0) {
+                if (buttonState_[i])  {
+                    // consume combo
+                    buttonCounter_[i] = 0;
+                    buttonState_[i] = false;
                     actions_->eventButtonCombo(n, i, longPress);
                     evtSent = true;
                 }

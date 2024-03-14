@@ -79,6 +79,7 @@ void LoadView::loadModule() {
         // time to load a new module !
         bool r = false;
         while (!r) { r = processor_.requestModuleChange(moduleIdx_, newMod); }
+        moduleUpdated_ = true;
     }
 }
 
@@ -136,6 +137,7 @@ void LoadView::eventButton(unsigned int btn, bool v) {
 }
 
 void LoadView::editorShown() {
+    moduleUpdated_ = false;
     if (moduleIdx_ < PluginProcessor::M_MAX) {
         auto curMod = processor_.getLoadedPlugin(moduleIdx_);
         auto &modules = processor_.getSupportedModules();

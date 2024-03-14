@@ -74,6 +74,7 @@
         "vector": "cpp",
         "algorithm": "cpp",
         "*.mm": "cpp",
-        "execution": "cpp"
+        "execution": "cpp",
+        "stack": "cpp"
     }
 }

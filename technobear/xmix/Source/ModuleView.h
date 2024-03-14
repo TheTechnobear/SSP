@@ -24,8 +24,12 @@ public:
     void onUpButton(bool v) override;
     void onDownButton(bool v) override;
 
+    void editorShown() override;
+
 private:
     unsigned moduleIdx_;
     PluginProcessor &processor_;
+
+    SSPExtendedApi::PluginEditorInterface* editor_ = nullptr;
     Component *pComponent_ = nullptr;
 };
