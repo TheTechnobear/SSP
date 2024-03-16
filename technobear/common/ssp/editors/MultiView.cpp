@@ -43,9 +43,10 @@ void MultiView::previousView() {
     }
 }
 
-void MultiView::addView(std::shared_ptr<base_type> view) {
+unsigned MultiView::addView(std::shared_ptr<base_type> view) {
     views_.push_back(view);
     addChildComponent(view.get());
+    return views_.size() - 1;
 }
 
 void MultiView::drawView(Graphics &g) {

@@ -34,12 +34,18 @@ target_sources(XMIX
         PUBLIC
         Source/SSPApi.cpp
         PRIVATE
-        Source/PluginEditor.cpp
-        Source/PluginProcessor.cpp
-        Source/LoadView.cpp
-        Source/ModuleView.cpp
-        Source/Module.cpp
         Source/Track.cpp
+        Source/Module.cpp
+
+        Source/PluginProcessor.cpp
+
+        Source/PluginEditor.cpp
+        Source/MixerView.cpp
+
+        Source/TrackView.cpp
+        Source/TrackOverviewView.cpp
+        Source/ModuleView.cpp
+        Source/LoadView.cpp
         ${COMMON_SRC}
         )
 

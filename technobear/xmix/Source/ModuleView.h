@@ -11,7 +11,7 @@ using namespace juce;
 
 class ModuleView : public ssp::BaseView {
 public:
-    ModuleView(PluginProcessor &p, unsigned modIdx);
+    ModuleView(PluginProcessor &p);
     ~ModuleView() override;
 
     void drawView(Graphics &g) override;
@@ -27,11 +27,18 @@ public:
 
     void editorShown() override;
 
+
+    void moduleIdx(unsigned t, unsigned m) {
+        trackIdx_ = t;
+        moduleIdx_ = m;
+    }
+
 private:
     static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
     static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
 
-    unsigned moduleIdx_;
+    unsigned trackIdx_ = PluginProcessor:TRACKS_MAX;
+    unsigned moduleIdx_ = Track::M_MAX;
     PluginProcessor &processor_;
 
     SSPExtendedApi::PluginEditorInterface* editor_ = nullptr;

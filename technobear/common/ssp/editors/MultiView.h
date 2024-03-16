@@ -46,7 +46,7 @@ protected:
 
     void drawView(juce::Graphics &g) override;
     void resized() override;
-    void addView(std::shared_ptr<base_view>);
+    unsigned addView(std::shared_ptr<base_view>);
 
     virtual void setView(unsigned newView);
     void nextView();

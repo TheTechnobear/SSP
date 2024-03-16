@@ -32,24 +32,23 @@ PluginProcessor::PluginProcessor(const AudioProcessor::BusesProperties &ioLayout
 }
 
 PluginProcessor::~PluginProcessor() {
-    for(auto &track : tracks_) {
+    for (auto &track : tracks_) {
         for (auto &module : track.modules_) { module.free(); }
     }
 }
 
 
-bool PluginProcessor::requestModuleChange(unsigned midx, const std::string &mn) {
-    auto& track = tracks_[0];
-    return track.requestModuleChange(midx, mn);
+bool PluginProcessor::requestModuleChange(unsigned t, unsigned m, const std::string &mn) {
+    if (t >= MAX_TRACKS || m >= Track::M_MAX) return false;
+    auto &track = tracks_[t];
+    return track.requestModuleChange(m, mn);
 }
 
 
 void PluginProcessor::scanPlugins() {
     log("plugin scan - start");
     Module::scanPlugins(supportedModules_);
-    for(auto m: supportedModules_) {
-        log("module: " +m);
-    }
+    for (auto m : supportedModules_) { log("module: " + m); }
     log("plugin scan - send");
 }
 
@@ -75,7 +74,7 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
 
     // buffers are allocated in loadModule, but sampleRate or blocksize could change
     // so these may need updating
-    for(auto &track : tracks_) {
+    for (auto &track : tracks_) {
         track.prepare(sampleRate, samplesPerBlock);
         for (auto &m : track.modules_) {
             auto &plugin = m.plugin_;
@@ -90,16 +89,17 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     size_t n = buffer.getNumSamples();
     int modIdx = 0;
-    bool processed[M_MAX] = { false, false, false, false };
+    bool processed[Track::M_MAX] = { false, false, false, false };
+    // TODO - audio processing
 
     // prepare input & process audio
-    for(auto &track : tracks_) {
+    for (auto &track : tracks_) {
         for (auto &m : track.modules_) {
             processed[modIdx] = false;
             if (!m.lockModule_.test_and_set()) {
                 processed[modIdx] = true;
 
-                if (modIdx == M_MAIN) {
+                if (modIdx == Track::M_MAIN) {
                     auto &plugin = m.plugin_;
                     if (plugin) {
                         int nCh = I_MAX;
@@ -123,7 +123,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         modIdx = 0;
         for (auto &m : track.modules_) {
             if (processed[modIdx]) {
-                if (modIdx == M_MAIN) {
+                if (modIdx == Track : M_MAIN) {
                     auto &plugin = m.plugin_;
                     if (plugin) {
                         int nCh = O_MAX;
@@ -142,34 +142,33 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
             }
             modIdx++;
         }
-
     }
-
 }
 
 void PluginProcessor::onInputChanged(unsigned i, bool b) {
     BaseProcessor::onInputChanged(i, b);
-
-    auto& track = tracks_[0];
-    int midx = M_MAIN;
+    // TODO - audio processing
     int ch = i;
-    auto plugin = track.modules_[midx].plugin_;
-    if (!plugin) return;
-
-    if (ch < track.modules_[midx].descriptor_->inputChannelNames.size()) { plugin->inputEnabled(ch, b); }
+    for (auto& track : tracks_) {
+        int midx = Track::M_MAIN;
+        auto plugin = track.modules_[midx].plugin_;
+        if (!plugin) continue;
+        if (ch < track.modules_[midx].descriptor_->inputChannelNames.size()) { plugin->inputEnabled(ch, b); }
+    }
 }
 
 void PluginProcessor::onOutputChanged(unsigned i, bool b) {
     BaseProcessor::onOutputChanged(i, b);
 
-    auto& track = tracks_[0];
-    int midx = M_MAIN;
     int ch = i;
-    auto plugin = track.modules_[midx].plugin_;
-    if (!plugin) return;
-
-    if (ch < track.modules_[midx].descriptor_->outputChannelNames.size()) { plugin->outputEnabled(ch, b); }
+    for (auto& track : tracks_) {
+        int midx = Track::M_MAIN;
+        auto plugin = track.modules_[midx].plugin_;
+        if (!plugin) continue;
+        if (ch < track.modules_[midx].descriptor_->outputChannelNames.size()) { plugin->outputEnabled(ch, b); }
+    }
 }
+
 
 static constexpr int checkBytes = 0x1FF1;
 static constexpr int protoVersion = 0x0001;
@@ -184,7 +183,7 @@ void PluginProcessor::getStateInformation(MemoryBlock &destData) {
     outStream.writeInt(supportedModules_.size());
     for (auto mn : supportedModules_) { outStream.writeString(String(mn)); }
 
-    auto& track = tracks_[0];
+    auto &track = tracks_[0];
     int i = 0;
     for (auto &m : track.modules_) {
         outStream.writeInt(checkBytes);
@@ -227,8 +226,8 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
         }
     }
 
-    auto& track = tracks_[0];
-   for (int i = 0; i < M_MAX; i++) {
+    auto &track = tracks_[0];
+    for (int i = 0; i < M_MAX; i++) {
         int check = inputStream.readInt();
         if (check != checkBytes) { return; }
 

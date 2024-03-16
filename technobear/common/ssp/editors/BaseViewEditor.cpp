@@ -41,10 +41,11 @@ void BaseViewEditor::previousView() {
     if (newView >= 0) { setView(newView); }
 }
 
-void BaseViewEditor::addView(std::shared_ptr<base_type> view) {
+unsigned  BaseViewEditor::addView(std::shared_ptr<base_view> view) {
     views_.push_back(view);
     view->setBounds(0, 0, 1600, 480);
     addChildComponent(view.get());
+    return views_.size() - 1;
 }
 
 // default right/left buttons to view switch

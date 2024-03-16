@@ -130,15 +130,15 @@ void LoadView::setButtonBounds(ValueButton &btn, unsigned r, unsigned c) {
 
 
 void LoadView::loadModule() {
-    if (moduleIdx_ >= PluginProcessor::M_MAX) return;
+    if (trackIdx_ >= PluginProcessor::MAX_TRACKS || moduleIdx_ >= Track::M_MAX) return;
 
-    auto &curMod = processor_.getLoadedPlugin(moduleIdx_);
+    auto curMod = processor_.getLoadedPlugin(trackIdx_, moduleIdx_);
     auto &modules = processor_.getSupportedModules();
     auto &newMod = modules[curModNameIdx_];
     if (newMod != curMod) {
         // time to load a new module !
         bool r = false;
-        while (!r) { r = processor_.requestModuleChange(moduleIdx_, newMod); }
+        while (!r) { r = processor_.requestModuleChange(trackIdx_, moduleIdx_, newMod); }
         moduleUpdated_ = true;
     }
 }
@@ -187,10 +187,10 @@ void LoadView::eventButton(unsigned int btn, bool v) {
             break;
         }
         case 7: {
-            if (moduleIdx_ >= PluginProcessor::M_MAX) return;
+            if (trackIdx_ >= PluginProcessor::MAX_TRACKS || moduleIdx_ >= Track::M_MAX) return;
             bool r = false;
             curModNameIdx_ = -1;
-            while (!r) { r = processor_.requestModuleChange(moduleIdx_, ""); }
+            while (!r) { r = processor_.requestModuleChange(trackIdx_, moduleIdx_, ""); }
             break;
         }
     }

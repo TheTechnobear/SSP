@@ -48,28 +48,32 @@ public:
     static constexpr unsigned I_MAX = 8;
     static constexpr unsigned O_MAX = 2;
 
-    const std::string &getLoadedPlugin(unsigned m) {
-        auto &track = tracks_[0];
+    std::string getLoadedPlugin(unsigned t, unsigned m) {
+        if (t >= MAX_TRACKS || m >= Track::M_MAX) return "";
+        auto &track = tracks_[t];
         return track.modules_[m].pluginName_;
     };
 
-    SSPExtendedApi::PluginEditorInterface *getEditor(unsigned midx) {
-        auto &track = tracks_[0];
-        auto &m = track.modules_[midx];
+    SSPExtendedApi::PluginEditorInterface *getEditor(unsigned t, unsigned m) {
+        if (t >= MAX_TRACKS || m >= Track::M_MAX) return nullptr;
+        auto &track = tracks_[t];
+        auto &module = track.modules_[m];
 
-        if (m.plugin_ != nullptr && m.editor_ == nullptr) {
-            m.editor_ = (SSPExtendedApi::PluginEditorInterface *)m.plugin_->getEditor();
+        if (module.plugin_ != nullptr && module.editor_ == nullptr) {
+            module.editor_ = (SSPExtendedApi::PluginEditorInterface *)module.plugin_->getEditor();
         }
-        return m.editor_;
+        return module.editor_;
     };
 
-    SSPExtendedApi::PluginInterface *getPlugin(unsigned m) {
-        auto &track = tracks_[0];
+    SSPExtendedApi::PluginInterface *getPlugin(unsigned t, unsigned m) {
+        if (t >= MAX_TRACKS || m >= Track::M_MAX) return nullptr;
+        auto &track = tracks_[t];
         return track.modules_[m].plugin_;
     };
 
-    SSPExtendedApi::PluginDescriptor *getDescriptor(unsigned m) {
-        auto &track = tracks_[0];
+    SSPExtendedApi::PluginDescriptor *getDescriptor(unsigned t, unsigned m) {
+        if (t >= MAX_TRACKS || m >= Track::M_MAX) return nullptr;
+        auto &track = tracks_[t];
         return track.modules_[m].descriptor_;
     };
 
@@ -80,16 +84,10 @@ public:
 
     const std::vector<std::string> &getSupportedModules() { return supportedModules_; }
 
-    bool requestModuleChange(unsigned midx, const std::string &mn);
+    bool requestModuleChange(unsigned t, unsigned m, const std::string &mn);
     void scanPlugins();
 
-    enum ModuleIdx {
-        M_MOD = Track::M_MOD,
-        M_PRE = Track::M_PRE,
-        M_MAIN = Track::M_MAIN,
-        M_POST = Track::M_POST,
-        M_MAX = Track::M_MAX
-    };
+    static constexpr unsigned MAX_TRACKS = 4;
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -99,7 +97,6 @@ private:
 
     std::vector<std::string> supportedModules_;
 
-    static constexpr unsigned MAX_TRACKS = 4;
 
     Track tracks_[MAX_TRACKS];
 

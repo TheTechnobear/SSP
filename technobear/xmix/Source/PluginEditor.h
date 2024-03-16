@@ -2,14 +2,12 @@
 
 #include "PluginProcessor.h"
 #include "ssp/editors/MultiView.h"
+#include <vector>
 #include <memory>
 
 
-class ModuleView;
-class LoadView;
-
-
-using namespace juce;
+class TrackView;
+class MixerView;
 
 class PluginEditor : public ssp::MultiView {
 public:
@@ -26,8 +24,8 @@ private:
     static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
     static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
 
-    static constexpr int LOAD_VIEW = PluginProcessor::M_MAX; // not M_MAX is view +1!
-    std::shared_ptr<LoadView> loadView_=nullptr;
+    std::vector<std::shared_ptr<TrackView>> trackViews_;
+    std::shared_ptr<MixerView> mixerView_;
 
     PluginProcessor &processor_;
 
