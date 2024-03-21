@@ -10,13 +10,13 @@ class LoadView;
 
 using namespace juce;
 
-class PluginEditor : public ssp::MultiView {
+class PluginEditor : public ssp::MultiView<ssp::BaseView> {
 public:
     explicit PluginEditor(PluginProcessor &);
     ~PluginEditor() override = default;
 
 protected:
-    using base_type = ssp::MultiView;
+    using base_type = ssp::MultiView<ssp::BaseView>;
 
     void onSSPTimer() override;
     void editorShown() override;

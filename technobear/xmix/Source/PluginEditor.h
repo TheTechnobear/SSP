@@ -9,13 +9,13 @@
 class TrackView;
 class MixerView;
 
-class PluginEditor : public ssp::MultiView {
+class PluginEditor : public ssp::MultiView<ssp::BaseView> {
 public:
     explicit PluginEditor(PluginProcessor &);
     ~PluginEditor() override = default;
 
 protected:
-    using base_type = ssp::MultiView;
+    using base_type = ssp::MultiView<ssp::BaseView>;
 
     void eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress) override;
 
@@ -29,7 +29,7 @@ private:
 
     std::shared_ptr<MixerView> mixerView_;
     std::shared_ptr<TrackView> trackView_;
-    unsigned trackViewId, mixerViewIdx_;
+    unsigned trackViewIdx_, mixerViewIdx_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginEditor)
 };

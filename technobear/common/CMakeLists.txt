@@ -12,7 +12,6 @@ set(COMMON_SRC
         ../common/SSPApiEditor.cpp
         ../common/ssp/editors/BaseEditor.cpp
         ../common/ssp/editors/BaseViewEditor.cpp
-        ../common/ssp/editors/MultiView.cpp
         ../common/ssp/editors/BaseMiniView.cpp
         ../common/ssp/editors/SingleViewEditor.cpp
         ../common/ssp/editors/MultiViewEditor.cpp

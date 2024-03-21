@@ -62,12 +62,12 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MiniParamView)
 };
 
-class BaseMiniView : public MultiView {
+class BaseMiniView : public MultiView<BaseView> {
 public:
     explicit BaseMiniView(BaseProcessor *p);
     ~BaseMiniView() = default;
 
-    using base_type = MultiView;
+    using base_type = MultiView<BaseView>;
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(BaseMiniView)

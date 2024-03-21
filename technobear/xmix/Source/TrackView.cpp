@@ -5,7 +5,7 @@
 #include "TrackOverviewView.h"
 
 
-TrackView::TrackView(PluginProcessor &p) : ssp::MultiView(&p, false), processor_(p) {
+TrackView::TrackView(PluginProcessor &p) : base_type(&p, false), processor_(p) {
 
     trackOverviewView_ = std::make_shared<TrackOverviewView>(processor_);
     trackOverviewView_->setBounds(0, 0, pluginWidth, pluginHeight);
