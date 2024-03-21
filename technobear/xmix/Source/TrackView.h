@@ -1,6 +1,7 @@
 #pragma once
 
 
+#include "PluginProcessor.h"
 #include "ssp/editors/MultiView.h"
 
 class ModuleView;
@@ -39,5 +40,6 @@ private:
     std::shared_ptr<TrackOverviewView> trackOverviewView_;
     std::shared_ptr<ModuleView> moduleView_;
     std::shared_ptr<LoadView> loadView_;
-   
+
+    unsigned loadViewIdx_, moduleViewIdx_, trackOverviewViewIdx_;
 };

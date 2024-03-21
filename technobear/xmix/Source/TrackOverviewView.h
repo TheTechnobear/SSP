@@ -1,7 +1,7 @@
 #pragma once
 
-#include "PluginProcessor.h"
 #include "ssp/BaseView.h"
+#include "PluginProcessor.h"
 
 
 // provides a look at the track
@@ -14,5 +14,8 @@ public:
 
     void drawView(Graphics &g) override;
 
-}
+private:
+    PluginProcessor &processor_;
+
+};
 

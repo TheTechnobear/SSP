@@ -11,6 +11,7 @@ using namespace juce;
 namespace ssp {
 
 class BaseProcessor;
+class MultiView;
 
 class MultiView : public BaseView {
 public:
@@ -42,7 +43,7 @@ public:
 
 protected:
     using base_type = BaseView;
-    using base_view = BaseView;
+    using base_view = MultiView;
 
     void drawView(juce::Graphics &g) override;
     void resized() override;

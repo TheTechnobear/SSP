@@ -123,7 +123,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         modIdx = 0;
         for (auto &m : track.modules_) {
             if (processed[modIdx]) {
-                if (modIdx == Track : M_MAIN) {
+                if (modIdx == Track::M_MAIN) {
                     auto &plugin = m.plugin_;
                     if (plugin) {
                         int nCh = O_MAX;
@@ -226,8 +226,10 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
         }
     }
 
-    auto &track = tracks_[0];
-    for (int i = 0; i < M_MAX; i++) {
+    //TODO : multi track
+    int t = 0;
+    auto &track = tracks_[t];
+    for (int m = 0; m < Track::M_MAX; m++) {
         int check = inputStream.readInt();
         if (check != checkBytes) { return; }
 
@@ -239,8 +241,8 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
             moduleData.setSize(size);
             inputStream.read(moduleData.getData(), size);
 
-            while (!requestModuleChange(i, pluginName.toStdString())) {}
-            auto &plugin = track.modules_[i].plugin_;
+            while (!requestModuleChange(t, m, pluginName.toStdString())) {}
+            auto &plugin = track.modules_[m].plugin_;
             if (!plugin) continue;
 
             plugin->setState(moduleData.getData(), moduleData.getSize());

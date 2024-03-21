@@ -1,7 +1,7 @@
 
 #include "TrackOverviewView.h"
 
-TrackOverviewView::TrackOverviewView(PluginProcessor &p) ssp::BaseView(&p, false) {
+TrackOverviewView::TrackOverviewView(PluginProcessor &p) : ssp::BaseView(&p, false), processor_(p) {
 
 }
 

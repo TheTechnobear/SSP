@@ -24,10 +24,12 @@ private:
     static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
     static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
 
-    std::vector<std::shared_ptr<TrackView>> trackViews_;
-    std::shared_ptr<MixerView> mixerView_;
 
     PluginProcessor &processor_;
+
+    std::shared_ptr<MixerView> mixerView_;
+    std::shared_ptr<TrackView> trackView_;
+    unsigned trackViewId, mixerViewIdx_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginEditor)
 };

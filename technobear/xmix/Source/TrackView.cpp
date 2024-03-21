@@ -1,21 +1,26 @@
+#include "TrackView.h"
+
+#include "LoadView.h"
+#include "ModuleView.h"
+#include "TrackOverviewView.h"
 
 
+TrackView::TrackView(PluginProcessor &p) : ssp::MultiView(&p, false), processor_(p) {
 
-TrackView::TrackView(PluginProcessor &p) ssp::BaseView(&p, false) {
-    TrackOverviewView = std::make_shared<TrackOverviewView>(processor_, true);
-    TrackOverviewView->setBounds(0, 0, pluginWidth, pluginHeight);
-    TrackOverviewView->resized();
-    addView(TrackOverviewView);
+    trackOverviewView_ = std::make_shared<TrackOverviewView>(processor_);
+    trackOverviewView_->setBounds(0, 0, pluginWidth, pluginHeight);
+    trackOverviewView_->resized();
+    trackOverviewViewIdx_ = addView(trackOverviewView_);
 
-    moduleView_ = std::make_shared<ModuleView>(processor_, true);
+    moduleView_ = std::make_shared<ModuleView>(processor_);
     moduleView_->setBounds(0, 0, pluginWidth, pluginHeight);
     moduleView_->resized();
-    addView(moduleView_);
+    moduleViewIdx_ = addView(moduleView_);
 
-    loadView_ = std::make_shared<LoadView>(processor_, true);
+    loadView_ = std::make_shared<LoadView>(processor_,true);
     loadView_->setBounds(0, 0, pluginWidth, pluginHeight);
     loadView_->resized();
-    addView(loadView_);
+    loadViewIdx_ = addView(loadView_);
 }
 
 TrackView::~TrackView() {
@@ -31,20 +36,22 @@ void TrackView::eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress
             int moduleIdx = btn;
             if (moduleIdx == getViewIdx()) {
                 if (loadView_) {
-                    loadView_->moduleIdx(moduleIdx);
-                    setView(LOAD_VIEW);
+                    loadView_->moduleIdx(trackIdx_, moduleIdx);
+                    setView(loadViewIdx_);
                 }
             } else {
-                setView(moduleIdx);
+                moduleView_->moduleIdx(trackIdx_, moduleIdx);
+                setView(moduleViewIdx_);
             }
 
-        } else if (LOAD_VIEW == getViewIdx()) {
+        } else if (loadViewIdx_ == getViewIdx()) {
             if (loadView_) {
                 int moduleIdx = loadView_->moduleIdx();
-                if (moduleIdx < PluginProcessor::M_MAX) { setView(moduleIdx); }
+                if (moduleIdx < Track::M_MAX) {
+                    moduleView_->moduleIdx(trackIdx_, moduleIdx);
+                    setView(moduleViewIdx_);
+                }
             }
         }
     }
 }
-
-

@@ -198,8 +198,8 @@ void LoadView::eventButton(unsigned int btn, bool v) {
 
 void LoadView::editorShown() {
     moduleUpdated_ = false;
-    if (moduleIdx_ < PluginProcessor::M_MAX) {
-        auto curMod = processor_.getLoadedPlugin(moduleIdx_);
+    if (moduleIdx_ < Track::M_MAX) {
+        auto curMod = processor_.getLoadedPlugin(trackIdx_,moduleIdx_);
         auto &modules = processor_.getSupportedModules();
         int i = 0;
         for (auto &m : modules) {
@@ -214,6 +214,9 @@ void LoadView::editorShown() {
 }
 
 
-void LoadView::moduleIdx(int midx) {
-    if (midx < PluginProcessor::M_MAX) { moduleIdx_ = midx; }
+void LoadView::moduleIdx(unsigned trackIdx, unsigned mIdx) {
+    if (trackIdx < PluginProcessor:: MAX_TRACKS && mIdx < Track::M_MAX) { 
+        trackIdx_ = trackIdx;
+        moduleIdx_ = mIdx; 
+        }
 }
