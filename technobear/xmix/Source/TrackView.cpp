@@ -26,32 +26,46 @@ TrackView::TrackView(PluginProcessor &p) : base_type(&p, false), processor_(p) {
 TrackView::~TrackView() {
 }
 
-void TrackView::eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress) {
-    base_type::eventButtonCombo(btn, comboBtn, longPress);
+void TrackView::editorShown() {
+    setView(trackOverviewViewIdx_);
+}
 
-    // if(longPress) returm;
 
-    if (comboBtn == SSP_Up) {
-        if (btn < Track::M_MAX) {
-            int moduleIdx = btn;
-            if (moduleIdx == getViewIdx()) {
-                if (loadView_) {
-                    loadView_->moduleIdx(trackIdx_, moduleIdx);
-                    setView(loadViewIdx_);
-                }
-            } else {
-                moduleView_->moduleIdx(trackIdx_, moduleIdx);
+void TrackView::eventButton(unsigned btn,bool longPress) {
+    auto v = getViewIdx();
+    if(v == trackOverviewViewIdx_) {
+        if(btn < Track::M_MAX) {
+            auto modIdx = btn;
+            moduleView_->moduleIdx(trackIdx_, modIdx);
+            loadView_->moduleIdx(trackIdx_, modIdx);
+            if(longPress==false) {
+                moduleView_->moduleIdx(trackIdx_, modIdx);
                 setView(moduleViewIdx_);
+            } else {
+                setView(loadViewIdx_);
             }
-
-        } else if (loadViewIdx_ == getViewIdx()) {
-            if (loadView_) {
-                int moduleIdx = loadView_->moduleIdx();
-                if (moduleIdx < Track::M_MAX) {
-                    moduleView_->moduleIdx(trackIdx_, moduleIdx);
-                    setView(moduleViewIdx_);
-                }
+            return;
+        }
+    }
+    if(v==loadViewIdx_ && longPress==false) {
+        // return view on load and clear
+        switch(btn) {
+            case 3 :  { // clear 
+                // carry out action 
+                loadView_->eventButton(btn, longPress);
+                // return to overview 
+                setView(moduleViewIdx_);
+                return;
+            }
+            case 7 :  { // clear 
+                // carry out action 
+                loadView_->eventButton(btn, longPress);
+                // return to overview 
+                setView(trackOverviewViewIdx_);
+                return;
             }
         }
     }
+
+    base_type::eventButton(btn,longPress);
 }

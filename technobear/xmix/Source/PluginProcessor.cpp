@@ -71,85 +71,105 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
     BaseProcessor::prepareToPlay(sampleRate, samplesPerBlock);
 
+    for (auto &track : tracks_) { prepareTrack(track, sampleRate, samplesPerBlock); }
+}
 
-    // buffers are allocated in loadModule, but sampleRate or blocksize could change
-    // so these may need updating
+void PluginProcessor::prepareTrack(Track &track, double sampleRate, int samplesPerBlock) {
+    track.prepare(sampleRate, samplesPerBlock);
+}
+
+
+void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
+    auto n = buffer.getNumSamples();
+
+    // pluginprocessr thread
     for (auto &track : tracks_) {
-        track.prepare(sampleRate, samplesPerBlock);
-        for (auto &m : track.modules_) {
-            auto &plugin = m.plugin_;
-            if (!plugin) continue;
+        auto &ioBuffer = track.bufferIO_;
+        ioBuffer.applyGain(0.0f);  // zero it out
+        for (int i = 0; i < I_MAX; i++) { ioBuffer.addFrom(i, 0, buffer, i, 0, n); }
+    }
 
-            m.audioSampleBuffer_.setSize(m.audioSampleBuffer_.getNumChannels(), samplesPerBlock);
-            plugin->prepare(sampleRate, samplesPerBlock);
+    // process thread
+    for (auto &track : tracks_) {
+        auto &ioBuffer = track.bufferIO_;
+        processTrack(track, ioBuffer);
+    }
+
+    // pluginprocessr thread
+    // once all process done... sum outputs for mix
+    for (int i = 0; i < O_MAX; i++) {
+        buffer.applyGain(0.0f);  // zero it out
+        for (auto &track : tracks_) {
+            auto &ioBuffer = track.bufferIO_;
+            static constexpr float MIX_CHANNEL_GAIN = 1.0f / float(MAX_TRACKS);
+            buffer.addFrom(i, 0, ioBuffer, i, 0, n, MIX_CHANNEL_GAIN);
         }
     }
 }
 
-void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
-    size_t n = buffer.getNumSamples();
-    int modIdx = 0;
-    bool processed[Track::M_MAX] = { false, false, false, false };
-    // TODO - audio processing
+void PluginProcessor::processTrack(Track &track, AudioSampleBuffer &ioBuffer) {
+    for (auto &track : tracks_) { track.process(ioBuffer); }
 
-    // prepare input & process audio
-    for (auto &track : tracks_) {
-        for (auto &m : track.modules_) {
-            processed[modIdx] = false;
-            if (!m.lockModule_.test_and_set()) {
-                processed[modIdx] = true;
+    // int modIdx = 0;
+    // bool processed[Track::M_MAX] = { false, false, false, false };
+    // // TODO - audio processing
 
-                if (modIdx == Track::M_MAIN) {
-                    auto &plugin = m.plugin_;
-                    if (plugin) {
-                        int nCh = I_MAX;
-                        int nPluginCh = m.descriptor_->inputChannelNames.size();
-                        for (unsigned i = 0; i < nCh && i < nPluginCh; i++) {
-                            m.audioSampleBuffer_.copyFrom(i, 0, buffer.getReadPointer(i), n);
-                        }
+    // // prepare input & process audio
+    // for (auto &m : track.modules_) {
+    //     processed[modIdx] = false;
+    //     if (!m.lockModule_.test_and_set()) {
+    //         processed[modIdx] = true;
 
-                        float *const *buffers = m.audioSampleBuffer_.getArrayOfWritePointers();
-                        // juce has changed, to using a const pointer to float*
-                        // now inconsistent with ssp sdk, but will work fine
-                        plugin->process((float **)buffers, m.audioSampleBuffer_.getNumChannels(), n);
-                    }
-                }
-            }
-            modIdx++;
-            // note: we cannot copy output yet, since this will overwrite input for next module!
-        }
+    //         if (modIdx == Track::M_MAIN) {
+    //             auto &plugin = m.plugin_;
+    //             if (plugin) {
+    //                 int nCh = I_MAX;
+    //                 int nPluginCh = m.descriptor_->inputChannelNames.size();
+    //                 for (unsigned i = 0; i < nCh && i < nPluginCh; i++) {
+    //                     m.audioSampleBuffer_.copyFrom(i, 0, buffer.getReadPointer(i), n);
+    //                 }
 
-        // now write the audio back out
-        modIdx = 0;
-        for (auto &m : track.modules_) {
-            if (processed[modIdx]) {
-                if (modIdx == Track::M_MAIN) {
-                    auto &plugin = m.plugin_;
-                    if (plugin) {
-                        int nCh = O_MAX;
-                        int nPluginCh = m.descriptor_->outputChannelNames.size();
-                        for (unsigned i = 0; i < O_MAX; i++) {
-                            if (i < nPluginCh) {
-                                buffer.copyFrom(i, 0, m.audioSampleBuffer_.getReadPointer(i), n);
-                            } else {
-                                // zero output where not enough channels
-                                buffer.applyGain(i, 0, n, 0.0f);
-                            }
-                        }
-                    }
-                }
-                m.lockModule_.clear();
-            }
-            modIdx++;
-        }
-    }
+    //                 float *const *buffers = m.audioSampleBuffer_.getArrayOfWritePointers();
+    //                 // juce has changed, to using a const pointer to float*
+    //                 // now inconsistent with ssp sdk, but will work fine
+    //                 plugin->process((float **)buffers, m.audioSampleBuffer_.getNumChannels(), n);
+    //             }
+    //         }
+    //     }
+    //     modIdx++;
+    //     // note: we cannot copy output yet, since this will overwrite input for next module!
+    // }
+
+    // // now write the audio back out
+    // modIdx = 0;
+    // for (auto &m : track.modules_) {
+    //     if (processed[modIdx]) {
+    //         if (modIdx == Track::M_MAIN) {
+    //             auto &plugin = m.plugin_;
+    //             if (plugin) {
+    //                 int nCh = O_MAX;
+    //                 int nPluginCh = m.descriptor_->outputChannelNames.size();
+    //                 for (unsigned i = 0; i < O_MAX; i++) {
+    //                     if (i < nPluginCh) {
+    //                         buffer.copyFrom(i, 0, m.audioSampleBuffer_.getReadPointer(i), n);
+    //                     } else {
+    //                         // zero output where not enough channels
+    //                         buffer.applyGain(i, 0, n, 0.0f);
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         m.lockModule_.clear();
+    //     }
+    //     modIdx++;
+    // }
 }
 
 void PluginProcessor::onInputChanged(unsigned i, bool b) {
     BaseProcessor::onInputChanged(i, b);
     // TODO - audio processing
     int ch = i;
-    for (auto& track : tracks_) {
+    for (auto &track : tracks_) {
         int midx = Track::M_MAIN;
         auto plugin = track.modules_[midx].plugin_;
         if (!plugin) continue;
@@ -161,7 +181,7 @@ void PluginProcessor::onOutputChanged(unsigned i, bool b) {
     BaseProcessor::onOutputChanged(i, b);
 
     int ch = i;
-    for (auto& track : tracks_) {
+    for (auto &track : tracks_) {
         int midx = Track::M_MAIN;
         auto plugin = track.modules_[midx].plugin_;
         if (!plugin) continue;
@@ -183,25 +203,11 @@ void PluginProcessor::getStateInformation(MemoryBlock &destData) {
     outStream.writeInt(supportedModules_.size());
     for (auto mn : supportedModules_) { outStream.writeString(String(mn)); }
 
-    auto &track = tracks_[0];
-    int i = 0;
-    for (auto &m : track.modules_) {
-        outStream.writeInt(checkBytes);
-        auto &plugin = m.plugin_;
-        if (!plugin) {
-            outStream.writeString("");
-            outStream.writeInt(0);
-            continue;
-        }
-
-        void *data;
-        size_t dataSz;
-        plugin->getState(&data, &dataSz);
-
-        outStream.writeString(String(m.pluginName_.c_str()));
-        outStream.writeInt(dataSz);
-        outStream.write(data, dataSz);
-        i++;
+    int trackIdx = 0;
+    for (auto& track : tracks_) {
+        outStream.writeInt(trackIdx);
+        track.getStateInformation(outStream);
+        trackIdx++;
     }
 }
 
@@ -226,27 +232,13 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
         }
     }
 
-    //TODO : multi track
-    int t = 0;
-    auto &track = tracks_[t];
-    for (int m = 0; m < Track::M_MAX; m++) {
+    int trackIdx = 0;
+    for (auto& track : tracks_) {
         int check = inputStream.readInt();
-        if (check != checkBytes) { return; }
-
-        String pluginName = inputStream.readString();
-        int size = inputStream.readInt();
-
-        if (!pluginName.isEmpty() && size > 0) {
-            MemoryBlock moduleData;
-            moduleData.setSize(size);
-            inputStream.read(moduleData.getData(), size);
-
-            while (!requestModuleChange(t, m, pluginName.toStdString())) {}
-            auto &plugin = track.modules_[m].plugin_;
-            if (!plugin) continue;
-
-            plugin->setState(moduleData.getData(), moduleData.getSize());
+        if(check == trackIdx) {
+            track.setStateInformation(inputStream);
         }
+        trackIdx++;
     }
 }
 

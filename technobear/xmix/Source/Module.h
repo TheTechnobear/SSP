@@ -9,6 +9,7 @@ struct Module {
     void free();
 
     void prepare(int sampleRate, int blockSize);
+    void process(juce::AudioSampleBuffer& );
 
     bool loadModule(std::string);
     static std::string getPluginFile(const std::string& m);
@@ -25,5 +26,4 @@ struct Module {
     SSPExtendedApi::PluginEditorInterface *editor_ = nullptr;
     SSPExtendedApi::PluginDescriptor *descriptor_ = nullptr;
     void *dlHandle_ = nullptr;
-    juce::AudioSampleBuffer audioSampleBuffer_;
 };

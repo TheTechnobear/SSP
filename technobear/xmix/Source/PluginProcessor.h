@@ -93,6 +93,8 @@ protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
 private:
+    void prepareTrack(Track &track, double sampleRate, int samplesPerBlock);
+    void processTrack(Track &track, AudioSampleBuffer &ioBuffer);
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override { return true; }
 
     std::vector<std::string> supportedModules_;

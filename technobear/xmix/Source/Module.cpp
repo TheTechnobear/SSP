@@ -1,14 +1,13 @@
 #include "Module.h"
 
 #include <dlfcn.h>
-
 #include <juce_core/juce_core.h>
 
 
 #ifdef __APPLE__
 const static int dlopenmode = RTLD_LOCAL | RTLD_NOW;
-const char* pluginPath = "~/Library/Audio/Plug-Ins/VST3/";
-const char* pluginSuffix = ".vst3/Contents/MacOS/";
+const char *pluginPath = "~/Library/Audio/Plug-Ins/VST3/";
+const char *pluginSuffix = ".vst3/Contents/MacOS/";
 #else
 const static int dlopenmode = RTLD_LOCAL | RTLD_NOW | RTLD_DEEPBIND;
 const char *pluginPath = "/media/BOOT/plugins/";
@@ -40,7 +39,7 @@ void Module::free() {
 
 
 void Module::prepare(int sampleRate, int blockSize) {
-    if(!plugin_) return;
+    if (!plugin_) return;
 
     // prepare for play
     int inSz = descriptor_->inputChannelNames.size();
@@ -49,24 +48,33 @@ void Module::prepare(int sampleRate, int blockSize) {
     int nCh = (inSz > outSz ? inSz : outSz);
     if (blockSize == 0) blockSize = 128;
 
-    audioSampleBuffer_.setSize(nCh, blockSize);
     if (sampleRate != 0) { plugin_->prepare(sampleRate, blockSize); }
 }
 
-std::string Module::getPluginFile(const std::string& mname) {
+
+void Module::process(juce::AudioSampleBuffer &buffer) {
+    if (!plugin_) return;
+
+    float *const *buffers = buffer.getArrayOfWritePointers();
+    // juce has changed, to using a const pointer to float*
+    // now inconsistent with ssp sdk, but will work fine
+    plugin_->process((float **)buffers,buffer.getNumChannels(), buffer.getNumSamples());
+}
+
+std::string Module::getPluginFile(const std::string &mname) {
     std::string file;
 #ifdef __APPLE__
     juce::File plugInDir(pluginPath);
-    if(plugInDir.exists()) {
+    if (plugInDir.exists()) {
         std::string absPath = plugInDir.getFullPathName().toStdString();
-        file = absPath + std::string("/") +  mname + pluginSuffix + mname;
+        file = absPath + std::string("/") + mname + pluginSuffix + mname;
     }
 
 #else
     File plugInDir(pluginPath);
-    if(plugInDir.exists()) {
+    if (plugInDir.exists()) {
         std::string absPath = plugInDir.getFullPathName().toStdString();
-        file = absPath + std::string("/")  + mname + ".so";
+        file = absPath + std::string("/") + mname + ".so";
     }
 #endif
     return file;
@@ -95,7 +103,6 @@ bool Module::loadModule(std::string mn) {
                 auto desc = fnCreateExDescriptor();
                 bool supported = desc->supportCompactUI_;
                 if (supported) {
-
                     // log(std::string("Loaded modulule : "+ mn));
                     auto pluginInterace = fnCreateInterface();
                     auto *plugin = (SSPExtendedApi::PluginInterface *)pluginInterace;
@@ -134,7 +141,7 @@ bool Module::checkPlugin(const std::string &mn) {
 }
 
 
-void Module::scanPlugins(std::vector<std::string>& supportedModules) {
+void Module::scanPlugins(std::vector<std::string> &supportedModules) {
     supportedModules.clear();
     // build list of modules to consider
     std::vector<std::string> moduleList;
@@ -149,7 +156,7 @@ void Module::scanPlugins(std::vector<std::string>& supportedModules) {
 #else
     for (DirectoryEntry entry : RangedDirectoryIterator(File(pluginPath), false, "*.so", File::findFiles)) {
         // if (!entry.isHidden()) { fileList.push_back(entry.getFile().getFullPathName().toStdString()); }
-        if (!entry.isHidden()) {moduleList.push_back(entry.getFile().getFileNameWithoutExtension().toStdString());}
+        if (!entry.isHidden()) { moduleList.push_back(entry.getFile().getFileNameWithoutExtension().toStdString()); }
     }
 #endif
     // check for modules supporting compact ui

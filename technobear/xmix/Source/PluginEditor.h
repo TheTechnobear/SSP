@@ -18,6 +18,7 @@ protected:
     using base_type = ssp::MultiView<ssp::BaseView>;
 
     void eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress) override;
+    void eventUp(bool longPress) override;
 
 private:
 
