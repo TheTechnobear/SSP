@@ -9,7 +9,6 @@ BaseMiniView::BaseMiniView(BaseProcessor *p) : base_type(p, true) {
 
 
 MiniParamView::MiniParamView(BaseProcessor *p, ioActivity cb) : base_type(p, true), ioCallback_(cb) {
-    assert(cb != nullptr);
 }
 
 void MiniParamView::drawView(Graphics &g) {
@@ -275,6 +274,67 @@ void MiniParamView::drawIO(Graphics &g) {
             }
         }
         y += h;
+    }
+}
+///////
+
+MiniBasicView::MiniBasicView(BaseProcessor *p, ioActivity cb) : base_type(p, true), ioCallback_(cb) {
+    for (int i = 0; i < maxUserBtns; i++) buttons_[i] = nullptr;
+}
+
+void MiniBasicView::addButton(unsigned idx, const std::shared_ptr<ValueButton> &p) {
+    if(idx < maxUserBtns) {
+        buttons_[idx] = p;
+        addAndMakeVisible(*buttons_[idx]);
+    }
+}
+
+void MiniBasicView::drawButtonBox(Graphics &g) {
+    static constexpr unsigned gap = 5 * scale;
+    unsigned butTopY = getHeight() - buttonBarH_;
+    unsigned butLeftX = scale * 5;
+    unsigned bw = canvasW_ / 4;
+
+    g.setColour(Colours::grey);
+    g.drawHorizontalLine(butTopY, butLeftX, gap + canvasW_ - 1);
+    g.drawHorizontalLine(butTopY + (buttonBarH_) / 2, butLeftX, gap + canvasW_ - 1);
+    g.drawHorizontalLine((butTopY + buttonBarH_ - 1), butLeftX, gap + canvasW_ - 1);
+    for (int i = 0; i < 5; i++) { g.drawVerticalLine(butLeftX + (i * bw) - 1, butTopY, butTopY + buttonBarH_ - 1); }
+}
+
+void MiniBasicView::onButton(unsigned int id, bool v) {
+    base_type::onButton(id, v);
+
+    if (id >= maxUserBtns || buttons_[id] == nullptr) return;
+    auto &btn = buttons_[id];
+    btn->valueChanged(v);
+}
+
+void MiniBasicView::drawView(Graphics &g) {
+    drawButtonBox(g);
+}
+
+
+void MiniBasicView::resized() {
+    base_type::resized();
+    static constexpr unsigned gap = 5 * scale;
+    canvasH_ = SSP_COMPACT_HEIGHT - titleH_;
+    canvasW_ = SSP_COMPACT_WIDTH- (gap * 2);
+    buttonBarH_ = canvasH_ / (nParamPerPage + 3);
+    ioW_ = 60 * scale;
+
+    // size buttons
+    unsigned butTopY = getHeight() - buttonBarH_;
+    unsigned butLeftX = gap;
+    unsigned bw = (canvasW_) / 4;
+    unsigned bidx = 0;
+    for (auto p : buttons_) {
+        if (bidx < maxUserBtns) {
+            unsigned r = bidx / 4;
+            unsigned c = bidx % 4;
+            if(p) p->setBounds(butLeftX + (c * bw), butTopY + r * (buttonBarH_ / 2), bw, buttonBarH_ / 2);
+        }
+        bidx++;
     }
 }
 

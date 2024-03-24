@@ -18,10 +18,14 @@ public:
 
     explicit MiniParamView(BaseProcessor *p, ioActivity callback = nullptr);
     ~MiniParamView() = default;
-    using base_type = BaseView;
 
     void addParam(const std::shared_ptr<BaseParamControl> &p);
     void addButton(const std::shared_ptr<ParamButton> &p);
+
+    void resized() override;
+protected:
+    using base_type = BaseView;
+
     void onEncoder(unsigned id, float v) override;
     void onEncoderSwitch(unsigned id, bool v) override;
 
@@ -32,7 +36,6 @@ public:
     void eventDown(bool longPress) override;
 
     void drawView(Graphics &) override;
-    void resized() override;
 
 private:
     void prevPage();
@@ -61,6 +64,40 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MiniParamView)
 };
+
+class MiniBasicView : public BaseView {
+public:
+    typedef std::function<float(bool io, unsigned ch)> ioActivity;
+
+    explicit MiniBasicView(BaseProcessor *p, ioActivity callback = nullptr);
+    ~MiniBasicView() = default;
+
+    void addButton(unsigned idx, const std::shared_ptr<ValueButton> &p);
+    void resized() override;
+protected:
+    using base_type = BaseView;
+    void onButton(unsigned int id, bool v) override;
+
+    void drawView(Graphics &) override;
+    void drawButtonBox(Graphics &);
+
+private:
+    unsigned paramOffset_ = 0;
+    static constexpr unsigned nParamPerPage = 4;
+    static constexpr unsigned scale = COMPACT_UI_SCALE;
+    static constexpr unsigned maxUserBtns = 8;
+    unsigned buttonBarH_ = 0;
+    unsigned ioW_ = 0;
+    unsigned canvasH_ = 0;
+    unsigned canvasW_ = 0;
+    unsigned titleH_ = 30;
+    std::shared_ptr<ValueButton> buttons_[maxUserBtns];
+    ioActivity ioCallback_ = nullptr;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MiniBasicView)
+
+};
+
 
 class BaseMiniView : public MultiView<BaseView> {
 public:

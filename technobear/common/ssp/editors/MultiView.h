@@ -41,6 +41,7 @@ public:
 
     int getViewIdx() { return view_; }
 
+    void onSSPTimer() override;
 protected:
     using base_type = BaseView;
 
@@ -63,6 +64,13 @@ private:
 
 template <class T>
 MultiView<T>::MultiView(BaseProcessor *p, bool compactUI) : base_type(p, compactUI) {
+}
+
+template <class T>
+void MultiView<T>::onSSPTimer() {
+    for(auto& v: views_) {
+        v->onSSPTimer();
+    }
 }
 
 

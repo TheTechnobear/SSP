@@ -27,6 +27,7 @@ TrackView::~TrackView() {
 }
 
 void TrackView::editorShown() {
+    trackOverviewView_->trackIdx(trackIdx_);
     setView(trackOverviewViewIdx_);
 }
 
@@ -61,6 +62,7 @@ void TrackView::eventButton(unsigned btn,bool longPress) {
                 // carry out action 
                 loadView_->eventButton(btn, longPress);
                 // return to overview 
+                trackOverviewView_->trackIdx(trackIdx_);
                 setView(trackOverviewViewIdx_);
                 return;
             }
@@ -69,3 +71,8 @@ void TrackView::eventButton(unsigned btn,bool longPress) {
 
     base_type::eventButton(btn,longPress);
 }
+
+    void TrackView::trackIdx(unsigned t) {
+        trackIdx_ = t;
+        trackOverviewView_->trackIdx(trackIdx_);
+    }

@@ -8,6 +8,7 @@
 #include "Track.h"
 #include "ssp/BaseProcessor.h"
 
+#include "ssp/controls/RmsTrack.h"
 
 using namespace juce;
 
@@ -87,6 +88,8 @@ public:
     bool requestModuleChange(unsigned t, unsigned m, const std::string &mn);
     void scanPlugins();
 
+    void rmsLevels(unsigned t, float& lLevel, float& rLevel) { lLevel = rmsData_[t][0].lvl();rLevel = rmsData_[t][1].lvl();}
+
     static constexpr unsigned MAX_TRACKS = 4;
 
 protected:
@@ -105,6 +108,7 @@ private:
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
 
+    ssp::RmsTrack rmsData_[MAX_TRACKS][O_MAX];
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginProcessor)
 };

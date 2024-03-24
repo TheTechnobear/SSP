@@ -99,70 +99,19 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     // once all process done... sum outputs for mix
     for (int i = 0; i < O_MAX; i++) {
         buffer.applyGain(0.0f);  // zero it out
+        int trackIdx=0;
         for (auto &track : tracks_) {
             auto &ioBuffer = track.bufferIO_;
+            rmsData_[trackIdx][i].process(ioBuffer,i);
             static constexpr float MIX_CHANNEL_GAIN = 1.0f / float(MAX_TRACKS);
             buffer.addFrom(i, 0, ioBuffer, i, 0, n, MIX_CHANNEL_GAIN);
+            trackIdx++;
         }
     }
 }
 
 void PluginProcessor::processTrack(Track &track, AudioSampleBuffer &ioBuffer) {
     for (auto &track : tracks_) { track.process(ioBuffer); }
-
-    // int modIdx = 0;
-    // bool processed[Track::M_MAX] = { false, false, false, false };
-    // // TODO - audio processing
-
-    // // prepare input & process audio
-    // for (auto &m : track.modules_) {
-    //     processed[modIdx] = false;
-    //     if (!m.lockModule_.test_and_set()) {
-    //         processed[modIdx] = true;
-
-    //         if (modIdx == Track::M_MAIN) {
-    //             auto &plugin = m.plugin_;
-    //             if (plugin) {
-    //                 int nCh = I_MAX;
-    //                 int nPluginCh = m.descriptor_->inputChannelNames.size();
-    //                 for (unsigned i = 0; i < nCh && i < nPluginCh; i++) {
-    //                     m.audioSampleBuffer_.copyFrom(i, 0, buffer.getReadPointer(i), n);
-    //                 }
-
-    //                 float *const *buffers = m.audioSampleBuffer_.getArrayOfWritePointers();
-    //                 // juce has changed, to using a const pointer to float*
-    //                 // now inconsistent with ssp sdk, but will work fine
-    //                 plugin->process((float **)buffers, m.audioSampleBuffer_.getNumChannels(), n);
-    //             }
-    //         }
-    //     }
-    //     modIdx++;
-    //     // note: we cannot copy output yet, since this will overwrite input for next module!
-    // }
-
-    // // now write the audio back out
-    // modIdx = 0;
-    // for (auto &m : track.modules_) {
-    //     if (processed[modIdx]) {
-    //         if (modIdx == Track::M_MAIN) {
-    //             auto &plugin = m.plugin_;
-    //             if (plugin) {
-    //                 int nCh = O_MAX;
-    //                 int nPluginCh = m.descriptor_->outputChannelNames.size();
-    //                 for (unsigned i = 0; i < O_MAX; i++) {
-    //                     if (i < nPluginCh) {
-    //                         buffer.copyFrom(i, 0, m.audioSampleBuffer_.getReadPointer(i), n);
-    //                     } else {
-    //                         // zero output where not enough channels
-    //                         buffer.applyGain(i, 0, n, 0.0f);
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //         m.lockModule_.clear();
-    //     }
-    //     modIdx++;
-    // }
 }
 
 void PluginProcessor::onInputChanged(unsigned i, bool b) {

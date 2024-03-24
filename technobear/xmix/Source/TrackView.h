@@ -20,10 +20,8 @@ public:
 
     void editorShown() override;
 
-    void trackIdx(unsigned t) {
-        trackIdx_ = t;
-    }
-    void eventButton(unsigned btn,bool longPress) override;
+    void trackIdx(unsigned t);
+    void eventButton(unsigned btn, bool longPress) override;
 
 
 private:

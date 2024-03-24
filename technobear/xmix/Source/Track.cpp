@@ -36,8 +36,6 @@ void Track::prepare(int sampleRate, int blockSize) {
 
 void Track::process(juce::AudioSampleBuffer &ioBuffer) {
     size_t n = blockSize_;
-
-
     unsigned modIdx = 0;
     for (auto &m : modules_) {
         // prep input

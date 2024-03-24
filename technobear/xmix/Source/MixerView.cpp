@@ -1,16 +1,38 @@
 #include "MixerView.h"
 
 
-MixerView::MixerView(PluginProcessor &p) : ssp::BaseView(&p, false), processor_(p) {
+MixerView::MixerView(PluginProcessor &p) : ssp::MiniBasicView(&p, nullptr), processor_(p) {
+    // 320 x 240
+    int x = 10 * COMPACT_UI_SCALE;
+    int y = (10 * COMPACT_UI_SCALE) * 2;
+
+    int h = 150 * COMPACT_UI_SCALE;
+    int w = 65 * COMPACT_UI_SCALE;
+    int offset = 5 *COMPACT_UI_SCALE;
+
+    for (int t = 0; t < PluginProcessor::MAX_TRACKS; t++) {
+        vuMeters_[t].init("Track " + String(t), false);
+        vuMeters_[t].setBounds(x + (offset + w + offset) * t, y, w, h);
+        addAndMakeVisible(vuMeters_[t]);
+    }
 }
 
 MixerView::~MixerView() {
 }
 
 void MixerView::drawView(Graphics &g) {
-        int x = pluginWidth / 2;
-        g.setColour(Colours::white);
-        g.setFont(Font(Font::getDefaultMonospacedFontName(), 20, Font::plain));
-        g.drawSingleLineText("MixerView", x - 40, getHeight() / 2 - 20);
+    ssp::MiniBasicView::drawView(g);
+    g.setColour(Colours::yellow);
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), 20, Font::plain));
+    g.drawSingleLineText("XMix", 10 * COMPACT_UI_SCALE, 10 * COMPACT_UI_SCALE);
+}
 
+
+void MixerView::onSSPTimer() {
+    for (int t = 0; t < PluginProcessor::MAX_TRACKS; t++) {
+        float lLevel = 0.f, rLevel = 0.f;
+        processor_.rmsLevels(0, lLevel, rLevel);
+        vuMeters_[t].level(lLevel, rLevel);
+        vuMeters_[t].repaint();
+    }
 }
