@@ -36,7 +36,8 @@ target_sources(XMIX
         PRIVATE
         Source/Track.cpp
         Source/Module.cpp
-
+        Source/Matrix.cpp
+ 
         Source/PluginProcessor.cpp
 
         Source/PluginEditor.cpp

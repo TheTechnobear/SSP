@@ -99,5 +99,50 @@ It MAYBE initially the MAIN module cannot be swapped?!... is it the 'mixer' bit.
 
 
 
+# Threading
+
+tracks are on separate threads.
+each will be given their own copy of the iobuffer.
+
+basic process is: 
+DSP threads are waiting for signal
+plugin thread will copy audio to threads buffer
+signal dsp to start
+do its own DSP processing (!)
+wait for all DSP threads to complete.
+
+we should be able to use spin lock for main thread, using simple test n'set
+we need to consider how to block other dsp thread.
+
+module changes are currently protected by a test n set.
+
+
+UI and DSP both attempt to grab lock for processing and changing.
+if they cannot get it then
+UI - will try again (assummption dsp is quick to execute- fast fail)
+
+DSP - will just not process that module.
+this will potentially cause audio glitch, since audio may not be passed thru, 
+or will be different audio, but switching modules is generally likely to do this?!
+
+this same approach will need to be done for modulation routing
+(so that we dont end up visually changing routing whilst DSP is trying to use)
+
+# alternative plugin flip - later alternative?
+rather than blocking the DSP thread we could 'hot swap'
+basically, load the plugin within UI thread, (as we do currently)
+but 'queue' it so that the DSP thread does the actual 'flip' in a single operation. 
+(like a backing buffer).
+then once 'flipped' the 'old' plugin could be unloaded.
+
+this would mean the audio thread would never have to wait, so no audio disruption.
+
+note: we need to be a bit careful on 
+- operations that need to be done on UI thread vs DSP thread
+- UI needs to draw the new plugin editor.
+
+this might be ok, if we BLOCK the UI thread until THE dsp thread actually has flipped.
+(this might align nicely with the UI thread being able to do the unload)
+
 
 

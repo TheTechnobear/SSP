@@ -26,7 +26,8 @@ void Track::prepare(int sampleRate, int blockSize) {
             blockSize_ = blockSize;
             bufferIO_.setSize(MAX_IO, blockSize_);
             bufferMod_.setSize(MAX_MOD_IO, blockSize_);
-            bufferWork_.setSize(MAX_WORK_IO, blockSize_);
+            bufferWork_[0].setSize(MAX_WORK_IO, blockSize_);
+            bufferWork_[1].setSize(MAX_WORK_IO, blockSize_);
         }
         sampleRate_ = sampleRate;
 
@@ -36,37 +37,67 @@ void Track::prepare(int sampleRate, int blockSize) {
 
 void Track::process(juce::AudioSampleBuffer &ioBuffer) {
     size_t n = blockSize_;
+
+    bufferIO_ = ioBuffer;
+    bufferWork_[0].applyGain(0.f);
+    bufferWork_[1].applyGain(0.f);
+
     unsigned modIdx = 0;
+
     for (auto &m : modules_) {
+        unsigned workIdx = modIdx % 2;
+        auto &moduleBuf = modIdx == Track::M_MOD ? bufferMod_ : bufferWork_[workIdx];
+
         // prep input
-        if (modIdx == Track::M_PRE) {
-            auto &buffer = bufferWork_;
-            buffer.applyGain(0.f);
-            for (int i = 0; i < MAX_IO_IN; i++) { buffer.addFrom(i, 0, ioBuffer, i, 0, n); }
+        for (auto &route : matrix_.modules_[modIdx].routes_) {
+            switch (route.src_) {
+                case Matrix::SRC_INPUT: {
+                    auto &buffer = ioBuffer;
+                    moduleBuf.addFrom(route.destChannel_, 0, buffer, route.srcChannel_, 0, n);
+                    break;
+                }
+                case Matrix::SRC_MOD: {
+                    auto &buffer = bufferMod_;
+                    moduleBuf.addFrom(route.destChannel_, 0, buffer, route.srcChannel_, 0, n);
+                    break;
+                }
+                case Matrix::SRC_WORK: {
+                    unsigned prevWorkIdx = (modIdx + 1) % 2;
+                    auto &buffer = bufferWork_[prevWorkIdx];
+                    moduleBuf.addFrom(route.destChannel_, 0, buffer, route.srcChannel_, 0, n);
+                    break;
+                }
+            }
         }
 
-        if (modIdx == Track::M_MOD) {
-            auto &buffer = bufferMod_;
-            buffer.applyGain(0.f);
-            for (int i = 0; i < MAX_IO_IN; i++) { buffer.addFrom(i, 0, ioBuffer, i, 0, n); }
-        }
 
         if (!m.lockModule_.test_and_set()) {
-            if (modIdx == Track::M_MOD) {
-                m.process(bufferMod_);
-            } else {
-                m.process(bufferWork_);
-            }
+            m.process(moduleBuf);
             m.lockModule_.clear();
         }
-
-        if (modIdx == Track::M_POST) {
-            auto &buffer = ioBuffer;
-            buffer.applyGain(0.f);
-            for (int i = 0; i < MAX_IO_OUT; i++) { buffer.addFrom(i, 0, bufferWork_, i, 0, n); }
-        }
-
         modIdx++;
+    }
+
+    // prep output
+    for (auto &route : matrix_.output_.routes_) {
+        switch (route.src_) {
+            case Matrix::SRC_INPUT: {
+                auto &buffer = bufferIO_;
+                ioBuffer.addFrom(route.destChannel_, 0, buffer, route.srcChannel_, 0, n);
+                break;
+            }
+            case Matrix::SRC_MOD: {
+                auto &buffer = bufferMod_;
+                ioBuffer.addFrom(route.destChannel_, 0, buffer, route.srcChannel_, 0, n);
+                break;
+            }
+            case Matrix::SRC_WORK: {
+                unsigned workIdx = (M_MAX - 1) % 2;
+                auto &buffer = bufferWork_[workIdx];
+                ioBuffer.addFrom(route.destChannel_, 0, buffer, route.srcChannel_, 0, n);
+                break;
+            }
+        }
     }
 }
 
@@ -93,23 +124,24 @@ void Track::getStateInformation(juce::MemoryOutputStream &outStream) {
         outStream.writeInt(dataSz);
         outStream.write(data, dataSz);
     }
+    matrix_.getStateInformation(outStream);
 }
 
-void Track::setStateInformation(juce::MemoryInputStream &inputStream) {
-    int check = inputStream.readInt();
+void Track::setStateInformation(juce::MemoryInputStream &inStream) {
+    int check = inStream.readInt();
     if (check != checkTrackBytes) return;
 
     for (int m = 0; m < Track::M_MAX; m++) {
-        int check = inputStream.readInt();
+        int check = inStream.readInt();
         if (check != checkModuleBytes) { return; }
 
-        juce::String pluginName = inputStream.readString();
-        int size = inputStream.readInt();
+        juce::String pluginName = inStream.readString();
+        int size = inStream.readInt();
 
         if (!pluginName.isEmpty() && size > 0) {
             juce::MemoryBlock moduleData;
             moduleData.setSize(size);
-            inputStream.read(moduleData.getData(), size);
+            inStream.read(moduleData.getData(), size);
 
             while (!requestModuleChange(m, pluginName.toStdString())) {}
             auto &plugin = modules_[m].plugin_;
@@ -118,4 +150,6 @@ void Track::setStateInformation(juce::MemoryInputStream &inputStream) {
             plugin->setState(moduleData.getData(), moduleData.getSize());
         }
     }
+
+    matrix_.setStateInformation(inStream);
 }

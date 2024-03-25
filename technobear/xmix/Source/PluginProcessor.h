@@ -12,7 +12,6 @@
 
 using namespace juce;
 
-
 namespace ID {
 #define PARAMETER_ID(str) constexpr const char *str{ #str };
 constexpr const char *separator{ ":" };

@@ -1,6 +1,7 @@
 
 #include "PluginProcessor.h"
 
+#include "Matrix.h"
 #include "PluginEditor.h"
 #include "ssp/EditorHost.h"
 
@@ -82,29 +83,34 @@ void PluginProcessor::prepareTrack(Track &track, double sampleRate, int samplesP
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     auto n = buffer.getNumSamples();
 
-    // pluginprocessr thread
-    for (auto &track : tracks_) {
-        auto &ioBuffer = track.bufferIO_;
-        ioBuffer.applyGain(0.0f);  // zero it out
-        for (int i = 0; i < I_MAX; i++) { ioBuffer.addFrom(i, 0, buffer, i, 0, n); }
+    AudioSampleBuffer threadBuffers[4];
+
+    for(auto& tBuf : threadBuffers) {
+        tBuf = buffer;
     }
 
+
     // process thread
+    int trackIdx = 0;
     for (auto &track : tracks_) {
-        auto &ioBuffer = track.bufferIO_;
-        processTrack(track, ioBuffer);
+        auto& threadBuf = threadBuffers[trackIdx];
+        threadBuf = buffer;
+        processTrack(track, threadBuf);
+        trackIdx++;
     }
 
     // pluginprocessr thread
     // once all process done... sum outputs for mix
+    buffer.applyGain(0.0f);  // zero it out
     for (int i = 0; i < O_MAX; i++) {
-        buffer.applyGain(0.0f);  // zero it out
-        int trackIdx=0;
+        trackIdx = 0;
         for (auto &track : tracks_) {
-            auto &ioBuffer = track.bufferIO_;
-            rmsData_[trackIdx][i].process(ioBuffer,i);
+            auto& threadBuf = threadBuffers[trackIdx];
+            threadBuf = buffer;
+
+            rmsData_[trackIdx][i].process(threadBuf, i);
             static constexpr float MIX_CHANNEL_GAIN = 1.0f / float(MAX_TRACKS);
-            buffer.addFrom(i, 0, ioBuffer, i, 0, n, MIX_CHANNEL_GAIN);
+            buffer.addFrom(i, 0, threadBuf, i, 0, n, MIX_CHANNEL_GAIN);
             trackIdx++;
         }
     }
@@ -116,26 +122,10 @@ void PluginProcessor::processTrack(Track &track, AudioSampleBuffer &ioBuffer) {
 
 void PluginProcessor::onInputChanged(unsigned i, bool b) {
     BaseProcessor::onInputChanged(i, b);
-    // TODO - audio processing
-    int ch = i;
-    for (auto &track : tracks_) {
-        int midx = Track::M_MAIN;
-        auto plugin = track.modules_[midx].plugin_;
-        if (!plugin) continue;
-        if (ch < track.modules_[midx].descriptor_->inputChannelNames.size()) { plugin->inputEnabled(ch, b); }
-    }
 }
 
 void PluginProcessor::onOutputChanged(unsigned i, bool b) {
     BaseProcessor::onOutputChanged(i, b);
-
-    int ch = i;
-    for (auto &track : tracks_) {
-        int midx = Track::M_MAIN;
-        auto plugin = track.modules_[midx].plugin_;
-        if (!plugin) continue;
-        if (ch < track.modules_[midx].descriptor_->outputChannelNames.size()) { plugin->outputEnabled(ch, b); }
-    }
 }
 
 
@@ -153,7 +143,7 @@ void PluginProcessor::getStateInformation(MemoryBlock &destData) {
     for (auto mn : supportedModules_) { outStream.writeString(String(mn)); }
 
     int trackIdx = 0;
-    for (auto& track : tracks_) {
+    for (auto &track : tracks_) {
         outStream.writeInt(trackIdx);
         track.getStateInformation(outStream);
         trackIdx++;
@@ -182,11 +172,9 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
     }
 
     int trackIdx = 0;
-    for (auto& track : tracks_) {
+    for (auto &track : tracks_) {
         int check = inputStream.readInt();
-        if(check == trackIdx) {
-            track.setStateInformation(inputStream);
-        }
+        if (check == trackIdx) { track.setStateInformation(inputStream); }
         trackIdx++;
     }
 }
