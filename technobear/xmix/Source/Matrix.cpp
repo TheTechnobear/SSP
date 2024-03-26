@@ -3,14 +3,13 @@
 #include "Track.h"
 
 Matrix::Matrix() : modules_(Track::M_MAX){
-    createDefault();
 }
 
 
-void Matrix::createDefault() {
+void Matrix::createDefault(unsigned in1, unsigned in2) {
     // proof of concept only
-    modules_[Track::M_PRE].addRoute(SRC_INPUT, 0, 0);
-    modules_[Track::M_PRE].addRoute(SRC_INPUT, 1, 1);
+    modules_[Track::M_PRE].addRoute(SRC_INPUT, in1, 0);
+    modules_[Track::M_PRE].addRoute(SRC_INPUT, in2, 1);
 
     modules_[Track::M_MAIN].addRoute(SRC_WORK, 0, 0);
     modules_[Track::M_MAIN].addRoute(SRC_WORK, 1, 1);

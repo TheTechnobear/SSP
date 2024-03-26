@@ -87,6 +87,8 @@ public:
     bool requestModuleChange(unsigned t, unsigned m, const std::string &mn);
     void scanPlugins();
 
+    Track& track(unsigned t) { return tracks_[t];}
+
     void rmsLevels(unsigned t, float& lLevel, float& rLevel) { lLevel = rmsData_[t][0].lvl();rLevel = rmsData_[t][1].lvl();}
 
     static constexpr unsigned MAX_TRACKS = 4;

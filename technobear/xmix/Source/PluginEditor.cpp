@@ -3,7 +3,7 @@
 #include "MixerView.h"
 #include "PluginProcessor.h"
 #include "SSPApiEditor.h"
-#include "TrackView.h"
+#include "TrackEditor.h"
 #include "ssp/editors/MultiView.h"
 
 // TODO
@@ -13,8 +13,8 @@
 PluginEditor::PluginEditor(PluginProcessor &p) : base_type(&p, false), processor_(p) {
     mixerView_ = std::make_shared<MixerView>(p);
     mixerViewIdx_ = addView(mixerView_);
-    trackView_ = std::make_shared<TrackView>(p);
-    trackViewIdx_ = addView(trackView_);
+    trackEditor_ = std::make_shared<TrackEditor>(p);
+    trackEditorIdx_ = addView(trackEditor_);
     setView(mixerViewIdx_);
 }
 
@@ -24,8 +24,8 @@ void PluginEditor::eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPr
     if (v == mixerViewIdx_) {
         if (comboBtn == SSP_Up) {
             if (btn < PluginProcessor::MAX_TRACKS) {
-                trackView_->trackIdx(btn);
-                setView(trackViewIdx_);
+                trackEditor_->trackIdx(btn);
+                setView(trackEditorIdx_);
                 return;
             }
         }
@@ -36,7 +36,7 @@ void PluginEditor::eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPr
 
 void PluginEditor::eventUp(bool longPress) {
     auto v = getViewIdx();
-    if (v == trackViewIdx_ && longPress) {
+    if (v == trackEditorIdx_ && longPress) {
         setView(mixerViewIdx_);
         return;
     }

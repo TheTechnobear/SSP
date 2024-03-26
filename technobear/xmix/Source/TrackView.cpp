@@ -1,78 +1,38 @@
 #include "TrackView.h"
 
-#include "LoadView.h"
-#include "ModuleView.h"
-#include "TrackOverviewView.h"
-
-
-TrackView::TrackView(PluginProcessor &p) : base_type(&p, false), processor_(p) {
-
-    trackOverviewView_ = std::make_shared<TrackOverviewView>(processor_);
-    trackOverviewView_->setBounds(0, 0, pluginWidth, pluginHeight);
-    trackOverviewView_->resized();
-    trackOverviewViewIdx_ = addView(trackOverviewView_);
-
-    moduleView_ = std::make_shared<ModuleView>(processor_);
-    moduleView_->setBounds(0, 0, pluginWidth, pluginHeight);
-    moduleView_->resized();
-    moduleViewIdx_ = addView(moduleView_);
-
-    loadView_ = std::make_shared<LoadView>(processor_,true);
-    loadView_->setBounds(0, 0, pluginWidth, pluginHeight);
-    loadView_->resized();
-    loadViewIdx_ = addView(loadView_);
+TrackView::TrackView(PluginProcessor &p) : ssp::MiniBasicView(&p, nullptr), processor_(p) {
+    addButton(0, std::make_shared<ValueButton>("Mod", [&](bool b) {}));
+    addButton(1, std::make_shared<ValueButton>("Pre", [&](bool b) {}));
+    addButton(2, std::make_shared<ValueButton>("Main", [&](bool b) {}));
+    addButton(3, std::make_shared<ValueButton>("Post", [&](bool b) {}));
+    addButton(4, std::make_shared<ValueButton>("Matrix", [&](bool b) {}));
 }
 
 TrackView::~TrackView() {
 }
 
-void TrackView::editorShown() {
-    trackOverviewView_->trackIdx(trackIdx_);
-    setView(trackOverviewViewIdx_);
-}
 
+void TrackView::drawView(Graphics &g) {
+    MiniBasicView::drawView(g);
+    int x = 30;
+    int y = 30;
 
-void TrackView::eventButton(unsigned btn,bool longPress) {
-    auto v = getViewIdx();
-    if(v == trackOverviewViewIdx_) {
-        if(btn < Track::M_MAX) {
-            auto modIdx = btn;
-            moduleView_->moduleIdx(trackIdx_, modIdx);
-            loadView_->moduleIdx(trackIdx_, modIdx);
-            if(longPress==false) {
-                moduleView_->moduleIdx(trackIdx_, modIdx);
-                setView(moduleViewIdx_);
-            } else {
-                setView(loadViewIdx_);
-            }
-            return;
+    g.setColour(Colours::yellow);
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), 20, Font::plain));
+
+    g.drawSingleLineText("Track " + String(trackIdx_ + 1), x, y);
+
+    g.setColour(Colours::white);
+    for (int i = 0; i < Track::M_MAX; i++) {
+        y += 30;
+        String mod;
+        switch (i) {
+            case 0: mod = " (Mod) "; break;
+            case 1: mod = " (Pre) "; break;
+            case 2: mod = " (Main) "; break;
+            case 3: mod = " (Post) "; break;
         }
+        g.drawSingleLineText("Module " + mod, x, y);
+        g.drawSingleLineText(String(" : ") + processor_.getLoadedPlugin(trackIdx_, i), x + 150, y);
     }
-    if(v==loadViewIdx_ && longPress==false) {
-        // return view on load and clear
-        switch(btn) {
-            case 3 :  { // clear 
-                // carry out action 
-                loadView_->eventButton(btn, longPress);
-                // return to overview 
-                setView(moduleViewIdx_);
-                return;
-            }
-            case 7 :  { // clear 
-                // carry out action 
-                loadView_->eventButton(btn, longPress);
-                // return to overview 
-                trackOverviewView_->trackIdx(trackIdx_);
-                setView(trackOverviewViewIdx_);
-                return;
-            }
-        }
-    }
-
-    base_type::eventButton(btn,longPress);
 }
-
-    void TrackView::trackIdx(unsigned t) {
-        trackIdx_ = t;
-        trackOverviewView_->trackIdx(trackIdx_);
-    }

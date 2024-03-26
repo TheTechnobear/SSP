@@ -35,8 +35,8 @@ struct Track {
     static constexpr int MAX_IO_OUT = 2;
     static constexpr int MAX_IO = std::max(MAX_IO_IN, MAX_IO_OUT);
 
-    static constexpr int MAX_MOD_IN = 8;
-    static constexpr int MAX_MOD_OUT = 8;
+    static constexpr int MAX_MOD_IN = 16;
+    static constexpr int MAX_MOD_OUT = 16;
     static constexpr int MAX_MOD_IO = std::max(MAX_MOD_IN, MAX_MOD_OUT);
 
     static constexpr int MAX_WORK_IN = 16;

@@ -11,7 +11,7 @@ public:
 
     ~Matrix() = default;
 
-    void createDefault();
+    void createDefault(unsigned in1, unsigned in2);
 
     enum Src { SRC_INPUT, SRC_MOD, SRC_WORK };
 

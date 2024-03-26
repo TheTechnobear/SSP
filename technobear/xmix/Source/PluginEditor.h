@@ -6,7 +6,7 @@
 #include <memory>
 
 
-class TrackView;
+class TrackEditor;
 class MixerView;
 
 class PluginEditor : public ssp::MultiView<ssp::BaseView> {
@@ -29,8 +29,8 @@ private:
     PluginProcessor &processor_;
 
     std::shared_ptr<MixerView> mixerView_;
-    std::shared_ptr<TrackView> trackView_;
-    unsigned trackViewIdx_, mixerViewIdx_;
+    std::shared_ptr<TrackEditor> trackEditor_;
+    unsigned trackEditorIdx_, mixerViewIdx_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginEditor)
 };

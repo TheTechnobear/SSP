@@ -30,6 +30,9 @@ PluginProcessor::PluginProcessor(const AudioProcessor::BusesProperties &ioLayout
                                  AudioProcessorValueTreeState::ParameterLayout layout)
     : BaseProcessor(ioLayouts, std::move(layout)) {
     init();
+    for(unsigned t = 0;t<MAX_TRACKS;t++) {
+        tracks_[t].matrix_.createDefault(t,t + MAX_TRACKS);
+    }
 }
 
 PluginProcessor::~PluginProcessor() {

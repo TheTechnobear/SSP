@@ -41,12 +41,13 @@ target_sources(XMIX
         Source/PluginProcessor.cpp
 
         Source/PluginEditor.cpp
-        Source/MixerView.cpp
+        Source/TrackEditor.cpp
 
         Source/TrackView.cpp
-        Source/TrackOverviewView.cpp
         Source/ModuleView.cpp
         Source/LoadView.cpp
+        Source/MatrixView.cpp
+        Source/MixerView.cpp
         ${COMMON_SRC}
         )
 

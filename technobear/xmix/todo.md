@@ -1,7 +1,53 @@
+
+# TODO 
+
+
+## milestone 1 - basic functionality
+aim to have everything basically functional
+- rename XMIX to Trax
+- rename DMOD to Dual
+- Matrix view/editor
+- Matrix persistense
+- Matrix editor 
+- rename matrix to -> ?
+- test audio/matrix routing is functional
+- threading of DSP (tracks)
+- test on ssp
+- define first use-case for milestone 2
+
+- clkd/omod mini editor need value button
+
+## milestone 2 - usability test/refine
+- ensure the buttons mappings etc feel comfortable to use
+- UI is clear and rational.
+- start improving UI elements in Trax
+- make a minimum set of usable plugins , aka first-use case
+- start defining what milestone 3 might entail.
+(i.e. what has been 'deferred')
+
+## miletone 3 - refinements
+- more UI refinements to Trax
+- refine available plugins for trax, polish
+- start adding more plugins, considering new use-cases for trax.
+
+
+### considerations
+- what is 'first' use-case
+I think its mixer + fx with modulation?
+with perhaps some 'additions'? (e.g. playing plts via cv)
+
+- later ones?
+scope 
+midi file playback?
+sequencer
+drum machine (w/sequencer)
+
+
+-----------------------------------------------------
+
+
+# Overview
 Basic Plan ! 
-
-
-
 DMOD will be the DUAL module that can use compact UIs
 this could include loading XMIX
 
