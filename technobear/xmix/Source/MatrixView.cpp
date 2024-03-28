@@ -3,7 +3,22 @@
 #include "Matrix.h"
 #include "Track.h"
 
+
 MatrixView::MatrixView(PluginProcessor& p) : ssp::MiniBasicView(&p, nullptr), processor_(p) {
+    addButton(0, std::make_shared<ValueButton>("Mod/Out", [&](bool b) {
+                  if (!b) onListSwitchBtn();
+              }));
+
+    addButton(3, std::make_shared<ValueButton>("Add Rte", [&](bool b) {
+                  if (!b) onAddBtn();
+              }));
+    addButton(7, std::make_shared<ValueButton>("Del Rte", [&](bool b) {
+                  if (!b) onRemoveBtn();
+              }));
+
+
+    addAndMakeVisible(moduleList_);
+    addAndMakeVisible(outputList_);
 }
 
 MatrixView::~MatrixView() {
@@ -60,61 +75,102 @@ String MatrixView::routeAsString(unsigned modIdx, Matrix::Routing& route, bool o
     return str;
 }
 
-void MatrixView::drawView(Graphics& g) {
-    int hGap = 15 * COMPACT_UI_SCALE;
-    int lGap = 10 * COMPACT_UI_SCALE;
-    int txtOffset = 50 * COMPACT_UI_SCALE;
-    int colOffset = 130 * COMPACT_UI_SCALE;
+
+void MatrixView::trackIdx(unsigned t) {
+    trackIdx_ = t;
 
     auto& track = processor_.track(trackIdx_);
     auto& matrix = track.matrix_;
 
-    MiniBasicView::drawView(g);
-    int x = hGap;
-    int y = hGap;
-
-    g.setColour(Colours::yellow);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), 20, Font::plain));
-
-    g.drawSingleLineText("Matrix ( Track " + String(trackIdx_ + 1) + " )", x, y);
-
-    y = hGap * 2;
-    g.setColour(Colours::green);
-    g.drawSingleLineText("Module Routing", x, y);
-
-    g.setColour(Colours::white);
+    moduleList_.clear();
     unsigned modIdx = 0;
     for (auto& m : matrix.modules_) {
-        // String mod;
-        // switch (modIdx) {
-        //     case 0: mod = "Mod"; break;
-        //     case 1: mod = "Pre"; break;
-        //     case 2: mod = "Main"; break;
-        //     case 3: mod = "Post"; break;
-        // }
-
-        // y += lGap;
-        // g.drawSingleLineText(mod, x, y);
-        // g.drawSingleLineText(String(" : ") + processor_.getLoadedPlugin(trackIdx_, modIdx), x + txtOffset, y);
         for (auto& r : m.routes_) {
-            y += lGap;
             String str = routeAsString(modIdx, r, false);
-            g.drawSingleLineText(str, x, y);
+            moduleList_.addItem(str);
         }
         modIdx++;
     }
 
-
-    y = hGap * 2;
-    x += colOffset;
-    g.setColour(Colours::red);
-    g.drawSingleLineText("Output Routing", x, y);
-
-    g.setColour(Colours::white);
+    outputList_.clear();
     auto& out = matrix.output_;
     for (auto& r : out.routes_) {
-        y += lGap;
         String str = routeAsString(Track::M_POST, r, true);
-        g.drawSingleLineText(str, x, y);
+        outputList_.addItem(str);
     }
+
+    outputListSelected_ = false;
+    moduleList_.idx(0);
+    outputList_.idx(-1);
+}
+
+
+void MatrixView::resized() {
+    MiniBasicView::resized();
+    int x = LS;
+    int y = LS * 3;
+    int width = (SSP_COMPACT_WIDTH - (4 * LS)) / 2;
+    int height = SSP_COMPACT_HEIGHT - (5 * LS);
+    moduleList_.setBounds(x, y, width, height);
+    outputList_.setBounds(x + width + (2 * LS), y, width, height);
+}
+
+
+void MatrixView::drawView(Graphics& g) {
+    int x = LS;
+    int y = LS;
+    int width = (SSP_COMPACT_WIDTH - (4 * LS)) / 2;
+
+    g.setColour(Colours::yellow);
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), 20, Font::plain));
+    g.drawSingleLineText("Matrix ( Track " + String(trackIdx_ + 1) + " )", x, y);
+
+    y = LS * 2;
+    g.setColour(Colours::green);
+    g.drawSingleLineText("Module Routing", x, y);
+
+
+    g.setColour(Colours::red);
+    g.drawSingleLineText("Output Routing", x + width + (2 * LS), y);
+
+    MiniBasicView::drawView(g);
+}
+
+void MatrixView::onEncoder(unsigned enc, float v) {
+    if (outputListSelected_) {
+        if (v > 0)
+            outputList_.nextItem();
+        else
+            outputList_.prevItem();
+    }
+
+    if (v > 0)
+        moduleList_.nextItem();
+    else
+        moduleList_.prevItem();
+}
+
+
+void MatrixView::onListSwitchBtn() {
+    outputListSelected_ = !outputListSelected_;
+    moduleList_.idx(outputListSelected_ ? -1 : 0);
+    outputList_.idx(!outputListSelected_ ? -1 : 0);
+}
+
+void MatrixView::onRemoveBtn() {
+    auto& track = processor_.track(trackIdx_);
+    if (outputListSelected_) {
+        if (outputList_.idx() >= 0) {
+            while (!track.requestMatrixOutputRemove(outputList_.idx()));
+            trackIdx(trackIdx_);
+        }
+    } else {
+        if (moduleList_.idx() >= 0) {
+            // while(!track.requestMatrixModuleRemove(moduleList_.idx()));
+            trackIdx(trackIdx_);
+        }
+    }
+}
+
+void MatrixView::onAddBtn() {
 }

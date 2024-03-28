@@ -1,9 +1,8 @@
 #pragma once
 
-#include <vector>
-
-
 #include <juce_core/juce_core.h>
+
+#include <vector>
 
 class Matrix {
 public:
@@ -16,8 +15,7 @@ public:
     enum Src { SRC_INPUT, SRC_MOD, SRC_WORK };
 
     struct Routing {
-        Routing(Src s, unsigned sCh, unsigned dCh)
-            : src_(s), srcChannel_(sCh), destChannel_(dCh) {}
+        Routing(Src s, unsigned sCh, unsigned dCh) : src_(s), srcChannel_(sCh), destChannel_(dCh) {}
 
         Src src_;
         unsigned srcChannel_;
@@ -26,24 +24,30 @@ public:
 
     struct ModuleRouting {
         void clear() { routes_.clear(); }
-        void addRoute(Src s, unsigned sCh,unsigned dCh) {
+        void addRoute(Src s, unsigned sCh, unsigned dCh) {
             for (auto& r : routes_) {
                 // avoid duplications
-                if (s == r.src_ && sCh == r.srcChannel_ &&  dCh == r.destChannel_) { return; }
+                if (s == r.src_ && sCh == r.srcChannel_ && dCh == r.destChannel_) { return; }
             }
-            routes_.push_back(Routing(s,sCh, dCh));
+            routes_.push_back(Routing(s, sCh, dCh));
+        }
+        void removeRoute(unsigned idx) {
+            if (idx < routes_.size()) { routes_.erase(routes_.begin() + idx); }
         }
         std::vector<Routing> routes_;
     };
 
     struct OutputRouting {
         void clear() { routes_.clear(); }
-        void addRoute(Src s, unsigned sCh,unsigned dCh) {
+        void addRoute(Src s, unsigned sCh, unsigned dCh) {
             for (auto& r : routes_) {
                 // avoid duplications
-                if (s == r.src_ && sCh == r.srcChannel_ &&  dCh == r.destChannel_) { return; }
+                if (s == r.src_ && sCh == r.srcChannel_ && dCh == r.destChannel_) { return; }
             }
-            routes_.push_back(Routing(s,sCh, dCh));
+            routes_.push_back(Routing(s, sCh, dCh));
+        }
+        void removeRoute(unsigned idx) {
+            if (idx < routes_.size()) { routes_.erase(routes_.begin() + idx); }
         }
         std::vector<Routing> routes_;
     };
@@ -53,5 +57,4 @@ public:
 
     void getStateInformation(juce::MemoryOutputStream& outStream);
     void setStateInformation(juce::MemoryInputStream& inStream);
-
 };

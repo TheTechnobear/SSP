@@ -28,6 +28,12 @@ struct Track {
     bool requestModuleChange(unsigned midx, const std::string &mn);
     bool loadModule(std::string, Module &m);
 
+
+    bool requestMatrixModuleAdd(unsigned modIdx, Matrix::Src s, unsigned sCh,unsigned dCh);
+    bool requestMatrixModuleRemove(unsigned modIdx, unsigned routeIdx);
+    bool requestMatrixOutputAdd(Matrix::Src s, unsigned sCh,unsigned dCh);
+    bool requestMatrixOutputRemove(unsigned routeIdx);
+
     int sampleRate_ = 0;
     int blockSize_ = 0;
 

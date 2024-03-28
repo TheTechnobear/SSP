@@ -4,12 +4,14 @@
 
 ## milestone 1 - basic functionality
 aim to have everything basically functional
+
+- Matrix persistense
+- Matrix editor - add route
+- save/load preset (dialog, allow outside of host function)
+
+- rename matrix to -> ?
 - rename XMIX to Trax
 - rename DMOD to Dual
-- Matrix view/editor
-- Matrix persistense
-- Matrix editor 
-- rename matrix to -> ?
 - test audio/matrix routing is functional
 - threading of DSP (tracks)
 - test on ssp

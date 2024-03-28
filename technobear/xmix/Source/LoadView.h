@@ -2,11 +2,13 @@
 
 #include "ssp/BaseView.h"
 #include "ssp/controls/ValueButton.h"
+#include "ssp/controls/ListControl.h"
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include "PluginProcessor.h"
 #include "Track.h"
 #include "Module.h"
+
 
 using namespace juce;
 
@@ -38,14 +40,15 @@ private:
     static constexpr unsigned btnTopY = 380 - 1;
     static constexpr unsigned btnSpaceY = 50;
 
-    ValueButton scanBtn_, loadBtn_, clearBtn_, upBtn_, downBtn_, leftBtn_, rightBtn_;
+    ValueButton scanBtn_, loadBtn_, clearBtn_;
 
     void loadModule();
 
     unsigned trackIdx_ = PluginProcessor::MAX_TRACKS;
     unsigned moduleIdx_ = Track::M_MAX;
 
-    int curModNameIdx_ = -1;
     bool moduleUpdated_ = false;
     PluginProcessor &processor_;
+
+    ssp::ListControl<> moduleList_;
 };

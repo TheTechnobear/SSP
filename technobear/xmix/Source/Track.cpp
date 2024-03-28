@@ -153,3 +153,49 @@ void Track::setStateInformation(juce::MemoryInputStream &inStream) {
 
     matrix_.setStateInformation(inStream);
 }
+
+
+bool Track::requestMatrixModuleAdd(unsigned modIdx, Matrix::Src s, unsigned sCh, unsigned dCh) {
+    auto &m = modules_[modIdx];
+    if (!m.lockModule_.test_and_set()) {
+        auto &mR = matrix_.modules_[modIdx];
+        mR.addRoute(s, sCh, dCh);
+
+        m.lockModule_.clear();
+        return true;
+    }
+    return false;
+}
+
+bool Track::requestMatrixModuleRemove(unsigned modIdx, unsigned routeIdx) {
+    auto &m = modules_[modIdx];
+    if (!m.lockModule_.test_and_set()) {
+        auto &mR = matrix_.modules_[modIdx];
+        mR.removeRoute(routeIdx);
+        m.lockModule_.clear();
+        return true;
+    }
+    return false;
+}
+
+bool Track::requestMatrixOutputAdd(Matrix::Src s, unsigned sCh, unsigned dCh) {
+    auto &m = modules_[M_POST];
+    if (!m.lockModule_.test_and_set()) {
+        matrix_.output_.addRoute(s, sCh, dCh);
+
+        m.lockModule_.clear();
+        return true;
+    }
+    return false;
+}
+
+bool Track::requestMatrixOutputRemove(unsigned routeIdx) {
+    auto &m = modules_[M_POST];
+    if (!m.lockModule_.test_and_set()) {
+        matrix_.output_.removeRoute(routeIdx);
+
+        m.lockModule_.clear();
+        return true;
+    }
+    return false;
+}
