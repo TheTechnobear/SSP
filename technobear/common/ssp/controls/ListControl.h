@@ -16,8 +16,8 @@ public:
 
     void nextItem();
     void prevItem();
-    int idx() { return curIdx_; }
-    void idx(int i) { curIdx_ = i; }
+    int idx();
+    void idx(int i);
     int selected();
     void select();
 
@@ -42,28 +42,44 @@ void ListControl<T>::clear() {
     items_.clear();
     curIdx_ = -1;
     selected_ = -1;
+    repaint();
 }
+
+template <class T>
+int ListControl<T>::idx() {
+    return curIdx_;
+}
+template <class T>
+void ListControl<T>::idx(int i) {
+    curIdx_ = i;
+    repaint();
+}
+
 
 template <class T>
 void ListControl<T>::addItem(const juce::String& str) {
     items_.push_back(str);
     if (curIdx_ == -1) curIdx_ = 0;
+    repaint();
 }
 
 
 template <class T>
 void ListControl<T>::nextItem() {
     curIdx_ += curIdx_ < (items_.size() - 1);
+    repaint();
 }
 
 template <class T>
 void ListControl<T>::prevItem() {
     curIdx_ -= curIdx_ != 0;
+    repaint();
 }
 
 template <class T>
 void ListControl<T>::select() {
     selected_ = curIdx_;
+    repaint();
 }
 
 template <class T>
