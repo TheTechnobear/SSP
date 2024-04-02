@@ -166,11 +166,36 @@ void MatrixView::onRemoveBtn() {
         }
     } else {
         if (moduleList_.idx() >= 0) {
-            // while(!track.requestMatrixModuleRemove(moduleList_.idx()));
-            trackIdx(trackIdx_);
+            int modIdx = -1, inIdx = -1;
+            if (listModuleIdx(moduleList_.idx(), modIdx, inIdx)) {
+                while (!track.requestMatrixModuleRemove(modIdx, inIdx));
+                trackIdx(trackIdx_);
+            }
         }
     }
 }
 
 void MatrixView::onAddBtn() {
+}
+
+
+bool MatrixView::listModuleIdx(int listIdx, int& modIdx, int& inIdx) {
+    auto& track = processor_.track(trackIdx_);
+    auto& matrix = track.matrix_;
+
+    modIdx = 0;
+    inIdx = 0;
+    for (auto& m : matrix.modules_) {
+        for (auto& r : m.routes_) {
+            if (listIdx == 0) { return true; }
+            listIdx--;
+            inIdx++;
+        }
+        modIdx++;
+        inIdx = 0;
+    }
+
+    modIdx = -1;
+    inIdx = -1;
+    return false;
 }

@@ -21,6 +21,8 @@ public:
 
 protected:
 private:
+
+    bool listModuleIdx(int listIdx, int& modIdx, int& inIdx);
     static constexpr int FH = 12 * COMPACT_UI_SCALE;
     static constexpr int LS = FH;
     String routeAsString(unsigned modIdx, Matrix::Routing &route, bool output);
