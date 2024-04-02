@@ -47,6 +47,7 @@ target_sources(XMIX
         Source/ModuleView.cpp
         Source/LoadView.cpp
         Source/MatrixView.cpp
+        Source/AddRouteView.cpp
         Source/MixerView.cpp
         ${COMMON_SRC}
         )

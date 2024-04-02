@@ -8,6 +8,7 @@ class ModuleView;
 class LoadView;
 class TrackView;
 class MatrixView;
+class AddRouteView;
 
 
 // this is a 'controller view'
@@ -38,6 +39,7 @@ private:
     std::shared_ptr<ModuleView> moduleView_;
     std::shared_ptr<LoadView> loadView_;
     std::shared_ptr<MatrixView> matrixView_;
+    std::shared_ptr<AddRouteView> addRouteView_;
 
-    unsigned loadViewIdx_, moduleViewIdx_, trackViewIdx_, matrixViewIdx_;
+    unsigned loadViewIdx_, moduleViewIdx_, trackViewIdx_, matrixViewIdx_, addRouteViewIdx_;
 };

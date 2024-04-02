@@ -83,7 +83,7 @@ void LoadView::setButtonBounds(ValueButton &btn, unsigned r, unsigned c) {
 
 
 void LoadView::loadModule() {
-    if (trackIdx_ >= PluginProcessor::MAX_TRACKS || moduleIdx_ >= Track::M_MAX) return;
+    if (trackIdx_ >= PluginProcessor::MAX_TRACKS || moduleIdx_ <= Track::M_IN || moduleIdx_ >= Track::M_OUT) return;
     if (moduleList_.idx() < 0) return;
 
     auto curMod = processor_.getLoadedPlugin(trackIdx_, moduleIdx_);

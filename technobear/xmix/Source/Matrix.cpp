@@ -2,32 +2,26 @@
 
 #include "Track.h"
 
-Matrix::Matrix() : modules_(Track::M_MAX){
+Matrix::Matrix() {
 }
 
 
 void Matrix::createDefault(unsigned in1, unsigned in2) {
     // proof of concept only
-    modules_[Track::M_PRE].addRoute(SRC_INPUT, in1, 0);
-    modules_[Track::M_PRE].addRoute(SRC_INPUT, in2, 1);
-
-    modules_[Track::M_MAIN].addRoute(SRC_WORK, 0, 0);
-    modules_[Track::M_MAIN].addRoute(SRC_WORK, 1, 1);
-
-    modules_[Track::M_POST].addRoute(SRC_WORK, 0, 0);
-    modules_[Track::M_POST].addRoute(SRC_WORK, 1, 1);
-
-    output_.addRoute(SRC_WORK, 0, 0);
-    output_.addRoute(SRC_WORK, 1, 1);
+    connect(Jack(Track::M_IN, in1), Jack(Track::M_USER_1, 0));
+    connect(Jack(Track::M_IN, in2), Jack(Track::M_USER_1, 1));
+    connect(Jack(Track::M_USER_1, 0), Jack(Track::M_USER_2, 0));
+    connect(Jack(Track::M_USER_1, 1), Jack(Track::M_USER_2, 1));
+    connect(Jack(Track::M_USER_2, 0), Jack(Track::M_USER_3, 0));
+    connect(Jack(Track::M_USER_2, 1), Jack(Track::M_USER_3, 1));
+    connect(Jack(Track::M_USER_3, 0), Jack(Track::M_OUT, 0));
+    connect(Jack(Track::M_USER_3, 1), Jack(Track::M_OUT, 1));
 }
 
 
-
-//TODO : persist routing data
+// TODO : persist routing data
 void Matrix::getStateInformation(juce::MemoryOutputStream& outStream) {
-
 }
 
 void Matrix::setStateInformation(juce::MemoryInputStream& inStream) {
-
 }

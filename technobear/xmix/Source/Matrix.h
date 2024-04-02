@@ -12,48 +12,49 @@ public:
 
     void createDefault(unsigned in1, unsigned in2);
 
-    enum Src { SRC_INPUT, SRC_MOD, SRC_WORK };
+    struct Jack {
+        Jack(unsigned mod, unsigned idx) : modIdx_(mod), chIdx(idx) {}
+        unsigned modIdx_;
+        unsigned chIdx;
 
-    struct Routing {
-        Routing(Src s, unsigned sCh, unsigned dCh) : src_(s), srcChannel_(sCh), destChannel_(dCh) {}
-
-        Src src_;
-        unsigned srcChannel_;
-        unsigned destChannel_;
+        int operator==(const Jack& b) {
+            if (modIdx_ == b.modIdx_ && chIdx == b.chIdx) { return 1; }
+            return 0;
+        }
     };
 
-    struct ModuleRouting {
-        void clear() { routes_.clear(); }
-        void addRoute(Src s, unsigned sCh, unsigned dCh) {
-            for (auto& r : routes_) {
-                // avoid duplications
-                if (s == r.src_ && sCh == r.srcChannel_ && dCh == r.destChannel_) { return; }
+    struct Wire {
+        Wire(const Jack& src, const Jack& dest) : src_(src), dest_(dest) {}
+        Jack src_;
+        Jack dest_;
+
+        int operator==(const Wire& b) {
+            if (src_ == b.src_ && dest_ == b.dest_) { return 1; }
+            return 0;
+        }
+    };
+
+
+    void clear() { connections_.clear(); }
+
+    void connect(const Jack& src, const Jack& dest) { connections_.push_back(Wire(src, dest)); }
+
+    void disconnect(const Jack& src, const Jack& dest) {
+        int idx = 0;
+        for (auto& c : connections_) {
+            if (c.src_ == src && c.dest_ == dest) {
+                disconnect(idx);
+                return;
             }
-            routes_.push_back(Routing(s, sCh, dCh));
+            idx++;
         }
-        void removeRoute(unsigned idx) {
-            if (idx < routes_.size()) { routes_.erase(routes_.begin() + idx); }
-        }
-        std::vector<Routing> routes_;
-    };
+    }
 
-    struct OutputRouting {
-        void clear() { routes_.clear(); }
-        void addRoute(Src s, unsigned sCh, unsigned dCh) {
-            for (auto& r : routes_) {
-                // avoid duplications
-                if (s == r.src_ && sCh == r.srcChannel_ && dCh == r.destChannel_) { return; }
-            }
-            routes_.push_back(Routing(s, sCh, dCh));
-        }
-        void removeRoute(unsigned idx) {
-            if (idx < routes_.size()) { routes_.erase(routes_.begin() + idx); }
-        }
-        std::vector<Routing> routes_;
-    };
+    void disconnect(int idx) {
+        if (idx < connections_.size()) { connections_.erase(connections_.begin() + idx); }
+    }
 
-    std::vector<ModuleRouting> modules_;
-    OutputRouting output_;
+    std::vector<Wire> connections_;
 
     void getStateInformation(juce::MemoryOutputStream& outStream);
     void setStateInformation(juce::MemoryInputStream& inStream);

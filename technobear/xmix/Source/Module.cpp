@@ -26,9 +26,12 @@ void Module::alloc(const std::string &pname, SSPExtendedApi::PluginInterface *p,
 
 
 void Module::free() {
-    if (plugin_) delete plugin_;
+    if (dlHandle_) {
+        // do not delete for internal plugins
+        if (plugin_) delete plugin_;
+        dlclose(dlHandle_);
+    }
     if (descriptor_) delete descriptor_;
-    if (dlHandle_) dlclose(dlHandle_);
     plugin_ = nullptr;
     editor_ = nullptr;
     dlHandle_ = nullptr;

@@ -6,9 +6,7 @@
 #include "TrackEditor.h"
 #include "ssp/editors/MultiView.h"
 
-// TODO
-//  - PluginEditorInterface::draw  ... I don't use this, not sure when it would be needed
-
+// TODO - PluginEditorInterface::draw  ... I don't use this, not sure when it would be needed
 
 PluginEditor::PluginEditor(PluginProcessor &p) : base_type(&p, false), processor_(p) {
     mixerView_ = std::make_shared<MixerView>(p);

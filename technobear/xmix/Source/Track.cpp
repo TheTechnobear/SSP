@@ -1,6 +1,14 @@
 #include "Track.h"
 
 
+Track::Track() {
+    trackIn_ = std::make_shared<InputModule::PluginInterface>();
+    modules_[M_IN].alloc("IN", trackIn_.get(), trackIn_->createDescriptor(), nullptr);
+    trackOut_ = std::make_shared<OutputModule::PluginInterface>();
+    modules_[M_OUT].alloc("OUT", trackOut_.get(), trackOut_->createDescriptor(), nullptr);
+}
+
+
 void Track::alloc(int sampleRate, int blockSize) {
     prepare(sampleRate, blockSize);
 }
@@ -24,10 +32,10 @@ void Track::prepare(int sampleRate, int blockSize) {
     if (blockSize_ != blockSize || sampleRate_ != sampleRate) {
         if (blockSize != blockSize_) {
             blockSize_ = blockSize;
-            bufferIO_.setSize(MAX_IO, blockSize_);
-            bufferMod_.setSize(MAX_MOD_IO, blockSize_);
-            bufferWork_[0].setSize(MAX_WORK_IO, blockSize_);
-            bufferWork_[1].setSize(MAX_WORK_IO, blockSize_);
+            for (auto &buf : audioBuffers_) {
+                // FIXME - NUM CH on audiobuffer
+                buf.setSize(MAX_IO, blockSize_);
+            }
         }
         sampleRate_ = sampleRate;
 
@@ -38,67 +46,31 @@ void Track::prepare(int sampleRate, int blockSize) {
 void Track::process(juce::AudioSampleBuffer &ioBuffer) {
     size_t n = blockSize_;
 
-    bufferIO_ = ioBuffer;
-    bufferWork_[0].applyGain(0.f);
-    bufferWork_[1].applyGain(0.f);
+    // FIXME - check this does not alter buffer size
+    // FIXME - ensure channels are in range of plugin and io
+    audioBuffers_[M_IN] = ioBuffer;
 
     unsigned modIdx = 0;
 
     for (auto &m : modules_) {
-        unsigned workIdx = modIdx % 2;
-        auto &moduleBuf = modIdx == Track::M_MOD ? bufferMod_ : bufferWork_[workIdx];
-
-        // prep input
-        for (auto &route : matrix_.modules_[modIdx].routes_) {
-            switch (route.src_) {
-                case Matrix::SRC_INPUT: {
-                    auto &buffer = ioBuffer;
-                    moduleBuf.addFrom(route.destChannel_, 0, buffer, route.srcChannel_, 0, n);
-                    break;
-                }
-                case Matrix::SRC_MOD: {
-                    auto &buffer = bufferMod_;
-                    moduleBuf.addFrom(route.destChannel_, 0, buffer, route.srcChannel_, 0, n);
-                    break;
-                }
-                case Matrix::SRC_WORK: {
-                    unsigned prevWorkIdx = (modIdx + 1) % 2;
-                    auto &buffer = bufferWork_[prevWorkIdx];
-                    moduleBuf.addFrom(route.destChannel_, 0, buffer, route.srcChannel_, 0, n);
-                    break;
-                }
+        auto &moduleBuf = audioBuffers_[modIdx];
+        for (auto &route : matrix_.connections_) {
+            moduleBuf.applyGain(0.0f);
+            if (route.dest_.modIdx_ == modIdx) {
+                auto &srcBuf = audioBuffers_[route.src_.modIdx_];
+                moduleBuf.addFrom(route.dest_.chIdx, 0, srcBuf, route.src_.chIdx, 0, n);
             }
         }
 
-
         if (!m.lockModule_.test_and_set()) {
-            m.process(moduleBuf);
+            // FIXME - process()
+            // m.process(moduleBuf); // FIXME
             m.lockModule_.clear();
         }
         modIdx++;
     }
-
-    // prep output
-    for (auto &route : matrix_.output_.routes_) {
-        switch (route.src_) {
-            case Matrix::SRC_INPUT: {
-                auto &buffer = bufferIO_;
-                ioBuffer.addFrom(route.destChannel_, 0, buffer, route.srcChannel_, 0, n);
-                break;
-            }
-            case Matrix::SRC_MOD: {
-                auto &buffer = bufferMod_;
-                ioBuffer.addFrom(route.destChannel_, 0, buffer, route.srcChannel_, 0, n);
-                break;
-            }
-            case Matrix::SRC_WORK: {
-                unsigned workIdx = (M_MAX - 1) % 2;
-                auto &buffer = bufferWork_[workIdx];
-                ioBuffer.addFrom(route.destChannel_, 0, buffer, route.srcChannel_, 0, n);
-                break;
-            }
-        }
-    }
+    // FIXME - check this does not alter buffer size
+    ioBuffer = audioBuffers_[M_OUT];
 }
 
 static constexpr int checkTrackBytes = 0x1FF2;
@@ -155,11 +127,11 @@ void Track::setStateInformation(juce::MemoryInputStream &inStream) {
 }
 
 
-bool Track::requestMatrixModuleAdd(unsigned modIdx, Matrix::Src s, unsigned sCh, unsigned dCh) {
+bool Track::requestMatrixConnect(const Matrix::Jack &src, const Matrix::Jack &dest) {
+    int modIdx = dest.modIdx_;
     auto &m = modules_[modIdx];
     if (!m.lockModule_.test_and_set()) {
-        auto &mR = matrix_.modules_[modIdx];
-        mR.addRoute(s, sCh, dCh);
+        matrix_.connect(src, dest);
 
         m.lockModule_.clear();
         return true;
@@ -167,33 +139,12 @@ bool Track::requestMatrixModuleAdd(unsigned modIdx, Matrix::Src s, unsigned sCh,
     return false;
 }
 
-bool Track::requestMatrixModuleRemove(unsigned modIdx, unsigned routeIdx) {
+
+bool Track::requestMatrixDisconnect(const Matrix::Jack &src, const Matrix::Jack &dest) {
+    int modIdx = dest.modIdx_;
     auto &m = modules_[modIdx];
     if (!m.lockModule_.test_and_set()) {
-        auto &mR = matrix_.modules_[modIdx];
-        mR.removeRoute(routeIdx);
-        m.lockModule_.clear();
-        return true;
-    }
-    return false;
-}
-
-bool Track::requestMatrixOutputAdd(Matrix::Src s, unsigned sCh, unsigned dCh) {
-    auto &m = modules_[M_POST];
-    if (!m.lockModule_.test_and_set()) {
-        matrix_.output_.addRoute(s, sCh, dCh);
-
-        m.lockModule_.clear();
-        return true;
-    }
-    return false;
-}
-
-bool Track::requestMatrixOutputRemove(unsigned routeIdx) {
-    auto &m = modules_[M_POST];
-    if (!m.lockModule_.test_and_set()) {
-        matrix_.output_.removeRoute(routeIdx);
-
+        matrix_.disconnect(src, dest);
         m.lockModule_.clear();
         return true;
     }
