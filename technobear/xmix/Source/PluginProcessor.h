@@ -47,6 +47,7 @@ public:
 
     static constexpr unsigned I_MAX = 8;
     static constexpr unsigned O_MAX = 2;
+    static constexpr unsigned IO_MAX = std::max(I_MAX,O_MAX);
 
     std::string getLoadedPlugin(unsigned t, unsigned m) {
         if (t >= MAX_TRACKS || m >= Track::M_MAX) return "";
@@ -108,6 +109,8 @@ private:
 
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
+
+    AudioSampleBuffer threadBuffers_[MAX_TRACKS];
 
     ssp::RmsTrack rmsData_[MAX_TRACKS][O_MAX];
 

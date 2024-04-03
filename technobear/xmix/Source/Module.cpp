@@ -1,5 +1,8 @@
 #include "Module.h"
 
+
+#include <algorithm>
+
 #include <dlfcn.h>
 #include <juce_core/juce_core.h>
 
@@ -14,6 +17,13 @@ const char *pluginPath = "/media/BOOT/plugins/";
 
 #endif
 
+
+Module::Module() {
+    // default to 16 channel, with 128 samples
+    // descriptor and host (via prepare) will change this
+    audioBuffer_.setSize(16, 128);
+}
+
 void Module::alloc(const std::string &pname, SSPExtendedApi::PluginInterface *p, SSPExtendedApi::PluginDescriptor *d,
                    void *h) {
     pluginName_ = pname;
@@ -21,7 +31,15 @@ void Module::alloc(const std::string &pname, SSPExtendedApi::PluginInterface *p,
     descriptor_ = d;
     dlHandle_ = h;
     requestedModule_ = pluginName_;
-    if (plugin_ != nullptr) editor_ = (SSPExtendedApi::PluginEditorInterface *)plugin_->getEditor();
+
+    if (plugin_) { editor_ = (SSPExtendedApi::PluginEditorInterface *)plugin_->getEditor(); }
+
+    if (descriptor_) {
+        int inSz = descriptor_->inputChannelNames.size();
+        int outSz = descriptor_->outputChannelNames.size();
+        int nCh = std::max(inSz, outSz);
+        if (nCh != audioBuffer_.getNumChannels()) { audioBuffer_.setSize(nCh, audioBuffer_.getNumSamples()); }
+    }
 }
 
 
@@ -31,7 +49,8 @@ void Module::free() {
         if (plugin_) delete plugin_;
         dlclose(dlHandle_);
     }
-    if (descriptor_) delete descriptor_;
+    if (descriptor_) { delete descriptor_; }
+
     plugin_ = nullptr;
     editor_ = nullptr;
     dlHandle_ = nullptr;
@@ -44,12 +63,18 @@ void Module::free() {
 void Module::prepare(int sampleRate, int blockSize) {
     if (!plugin_) return;
 
-    // prepare for play
-    int inSz = descriptor_->inputChannelNames.size();
-    int outSz = descriptor_->outputChannelNames.size();
+    if (descriptor_) {
+        int inSz = descriptor_->inputChannelNames.size();
+        int outSz = descriptor_->outputChannelNames.size();
+        int nCh = std::max(inSz, outSz);
 
-    int nCh = (inSz > outSz ? inSz : outSz);
-    if (blockSize == 0) blockSize = 128;
+        if (nCh != audioBuffer_.getNumChannels() || blockSize != audioBuffer_.getNumSamples()) {
+            audioBuffer_.setSize(nCh, blockSize);
+        }
+
+    } else {
+        return;
+    }
 
     if (sampleRate != 0) { plugin_->prepare(sampleRate, blockSize); }
 }
@@ -61,7 +86,7 @@ void Module::process(juce::AudioSampleBuffer &buffer) {
     float *const *buffers = buffer.getArrayOfWritePointers();
     // juce has changed, to using a const pointer to float*
     // now inconsistent with ssp sdk, but will work fine
-    plugin_->process((float **)buffers,buffer.getNumChannels(), buffer.getNumSamples());
+    plugin_->process((float **)buffers, buffer.getNumChannels(), buffer.getNumSamples());
 }
 
 std::string Module::getPluginFile(const std::string &mname) {

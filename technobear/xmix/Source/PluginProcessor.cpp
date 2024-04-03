@@ -30,9 +30,7 @@ PluginProcessor::PluginProcessor(const AudioProcessor::BusesProperties &ioLayout
                                  AudioProcessorValueTreeState::ParameterLayout layout)
     : BaseProcessor(ioLayouts, std::move(layout)) {
     init();
-    for(unsigned t = 0;t<MAX_TRACKS;t++) {
-        tracks_[t].matrix_.createDefault(t,t + MAX_TRACKS);
-    }
+    for (unsigned t = 0; t < MAX_TRACKS; t++) { tracks_[t].createDefaultRoute(t, t + MAX_TRACKS); }
 }
 
 PluginProcessor::~PluginProcessor() {
@@ -75,6 +73,7 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
     BaseProcessor::prepareToPlay(sampleRate, samplesPerBlock);
 
+    for (int i = 0; i < MAX_TRACKS; i++) { threadBuffers_[i].setSize(IO_MAX, samplesPerBlock); }
     for (auto &track : tracks_) { prepareTrack(track, sampleRate, samplesPerBlock); }
 }
 
@@ -86,41 +85,32 @@ void PluginProcessor::prepareTrack(Track &track, double sampleRate, int samplesP
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     auto n = buffer.getNumSamples();
 
-    AudioSampleBuffer threadBuffers[4];
-
-    for(auto& tBuf : threadBuffers) {
-        tBuf = buffer;
-    }
-
-
     // process thread
     int trackIdx = 0;
     for (auto &track : tracks_) {
-        auto& threadBuf = threadBuffers[trackIdx];
-        threadBuf = buffer;
-        processTrack(track, threadBuf);
+        auto &tBuf = threadBuffers_[trackIdx];
+        for (int c = 0; c < I_MAX; c++) { tBuf.copyFrom(c, 0, buffer, c, 0, n); }
+        processTrack(track, tBuf);
         trackIdx++;
     }
 
     // pluginprocessr thread
     // once all process done... sum outputs for mix
     buffer.applyGain(0.0f);  // zero it out
-    for (int i = 0; i < O_MAX; i++) {
-        trackIdx = 0;
-        for (auto &track : tracks_) {
-            auto& threadBuf = threadBuffers[trackIdx];
-            threadBuf = buffer;
-
-            rmsData_[trackIdx][i].process(threadBuf, i);
+    trackIdx = 0;
+    for (auto &track : tracks_) {
+        auto &tBuf = threadBuffers_[trackIdx];
+        for (int i = 0; i < O_MAX; i++) {
             static constexpr float MIX_CHANNEL_GAIN = 1.0f / float(MAX_TRACKS);
-            buffer.addFrom(i, 0, threadBuf, i, 0, n, MIX_CHANNEL_GAIN);
-            trackIdx++;
+            rmsData_[trackIdx][i].process(tBuf, i);
+            buffer.addFrom(i, 0, tBuf, i, 0, n, MIX_CHANNEL_GAIN);
         }
+        trackIdx++;
     }
 }
 
 void PluginProcessor::processTrack(Track &track, AudioSampleBuffer &ioBuffer) {
-    for (auto &track : tracks_) { track.process(ioBuffer); }
+   track.process(ioBuffer);
 }
 
 void PluginProcessor::onInputChanged(unsigned i, bool b) {

@@ -31,6 +31,10 @@ void ModuleView::drawView(Graphics &g) {
     drawModulePanel(g);
 }
 
+void ModuleView::onSSPTimer() {
+    if(pComponent_) pComponent_->repaint();
+}
+
 
 void ModuleView::drawModulePanel(Graphics &g) {
     unsigned panelWidth = pluginWidth;

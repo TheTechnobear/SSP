@@ -28,6 +28,8 @@ public:
     void editorShown() override;
 
 
+    void onSSPTimer() override;
+
     void moduleIdx(unsigned t, unsigned m) {
         trackIdx_ = t;
         moduleIdx_ = m;

@@ -5,6 +5,7 @@
 #include "SSPExApi.h"
 
 struct Module {
+    explicit Module();
     void alloc(const std::string &f, SSPExtendedApi::PluginInterface *p, SSPExtendedApi::PluginDescriptor *d, void *h);
     void free();
 
@@ -16,8 +17,7 @@ struct Module {
     static bool checkPlugin(const std::string &f);
     static void scanPlugins(std::vector<std::string>& supportedModules);
 
-    int sampleRate_ = 48000;
-    int blockSize_ = 256;
+    juce::AudioSampleBuffer audioBuffer_;
 
     std::string pluginName_;
     std::string requestedModule_;

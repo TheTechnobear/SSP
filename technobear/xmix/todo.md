@@ -6,11 +6,8 @@
 aim to have everything basically functional
 
 - Matrix persistense
-- Matrix editor - add route
 - save/load preset (dialog, allow outside of host function)
 
-
-- rework matrix, have in/out modules
 - rename matrix to -> ?
 - rename XMIX to Trax
 - rename DMOD to Dual

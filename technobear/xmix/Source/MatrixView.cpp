@@ -20,7 +20,7 @@ MatrixView::~MatrixView() {
 String MatrixView::jackName(bool inOut, const Matrix::Jack& jack) {
     auto& track = processor_.track(trackIdx_);
     auto& module = track.modules_[jack.modIdx_];
-    int ch = jack.chIdx;
+    int ch = jack.chIdx_;
 
     if (module.plugin_ && module.descriptor_) {
         String str = module.pluginName_;
@@ -43,10 +43,11 @@ void MatrixView::trackIdx(unsigned t) {
     trackIdx_ = t;
 
     auto& track = processor_.track(trackIdx_);
-    auto& matrix = track.matrix_;
 
     connectionList_.clear();
-    for (auto& w : matrix.connections_) { connectionList_.addItem(wireAsString(w)); }
+    auto connections = track.connections();
+
+    for (auto& w : connections) { connectionList_.addItem(wireAsString(w)); }
 
     connectionList_.idx(0);
 }
@@ -86,14 +87,14 @@ void MatrixView::onRemoveBtn() {
     auto& track = processor_.track(trackIdx_);
 
     int idx = connectionList_.idx();
+    auto connections = track.connections();
 
-    for (auto& w : track.matrix_.connections_) { 
-        if(idx<=0) {
-            while (!track.requestMatrixDisconnect(w.src_,w.dest_));
-            trackIdx(trackIdx_); // redraw
+    for (auto& w : connections) {
+        if (idx <= 0) {
+            while (!track.requestMatrixDisconnect(w.src_, w.dest_));
+            trackIdx(trackIdx_);  // redraw
             return;
         }
         idx--;
     }
 }
-

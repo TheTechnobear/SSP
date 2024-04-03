@@ -11,7 +11,7 @@ MixerView::MixerView(PluginProcessor &p) : ssp::MiniBasicView(&p, nullptr), proc
     int offset = 5 *COMPACT_UI_SCALE;
 
     for (int t = 0; t < PluginProcessor::MAX_TRACKS; t++) {
-        vuMeters_[t].init("Track " + String(t), false);
+        vuMeters_[t].init("Track " + String(t + 1), false);
         vuMeters_[t].setBounds(x + (offset + w + offset) * t, y, w, h);
         addAndMakeVisible(vuMeters_[t]);
     }
@@ -31,7 +31,7 @@ void MixerView::drawView(Graphics &g) {
 void MixerView::onSSPTimer() {
     for (int t = 0; t < PluginProcessor::MAX_TRACKS; t++) {
         float lLevel = 0.f, rLevel = 0.f;
-        processor_.rmsLevels(0, lLevel, rLevel);
+        processor_.rmsLevels(t, lLevel, rLevel);
         vuMeters_[t].level(lLevel, rLevel);
         vuMeters_[t].repaint();
     }

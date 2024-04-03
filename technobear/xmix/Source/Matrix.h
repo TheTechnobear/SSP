@@ -10,15 +10,13 @@ public:
 
     ~Matrix() = default;
 
-    void createDefault(unsigned in1, unsigned in2);
-
     struct Jack {
-        Jack(unsigned mod, unsigned idx) : modIdx_(mod), chIdx(idx) {}
+        Jack(unsigned mod, unsigned idx) : modIdx_(mod), chIdx_(idx) {}
         unsigned modIdx_;
-        unsigned chIdx;
+        unsigned chIdx_;
 
         int operator==(const Jack& b) {
-            if (modIdx_ == b.modIdx_ && chIdx == b.chIdx) { return 1; }
+            if (modIdx_ == b.modIdx_ && chIdx_ == b.chIdx_) { return 1; }
             return 0;
         }
     };

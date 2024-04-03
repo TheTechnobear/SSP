@@ -9,6 +9,22 @@ Track::Track() {
 }
 
 
+void Track::createDefaultRoute(unsigned in1, unsigned in2) {
+    requestMatrixConnect(Matrix::Jack(M_IN, in1), Matrix::Jack(M_USER_1, 0));
+    requestMatrixConnect(Matrix::Jack(M_IN, in2), Matrix::Jack(M_USER_1, 1));
+    requestMatrixConnect(Matrix::Jack(M_USER_1, 0), Matrix::Jack(M_USER_2, 0));
+    requestMatrixConnect(Matrix::Jack(M_USER_1, 1), Matrix::Jack(M_USER_2, 1));
+    requestMatrixConnect(Matrix::Jack(M_USER_2, 0), Matrix::Jack(M_USER_3, 0));
+    requestMatrixConnect(Matrix::Jack(M_USER_2, 1), Matrix::Jack(M_USER_3, 1));
+    requestMatrixConnect(Matrix::Jack(M_USER_3, 0), Matrix::Jack(M_OUT, 0));
+    requestMatrixConnect(Matrix::Jack(M_USER_3, 1), Matrix::Jack(M_OUT, 1));
+}
+
+std::vector<Matrix::Wire> Track::connections() {
+    return matrix_.connections_;
+}
+
+
 void Track::alloc(int sampleRate, int blockSize) {
     prepare(sampleRate, blockSize);
 }
@@ -21,7 +37,20 @@ bool Track::requestModuleChange(unsigned midx, const std::string &mn) {
     auto &m = modules_[midx];
 
     if (!m.lockModule_.test_and_set()) {
-        if (m.loadModule(mn)) { m.prepare(sampleRate_, blockSize_); }
+        if (m.loadModule(mn)) {
+            if (m.descriptor_ && m.plugin_) {
+                int inSz = m.descriptor_->inputChannelNames.size();
+                for (int c = 0; c < inSz; c++) { m.plugin_->inputEnabled(c, false); }
+                int outSz = m.descriptor_->outputChannelNames.size();
+                for (int c = 0; c < outSz; c++) { m.plugin_->outputEnabled(c, false); }
+
+                for (auto &w : matrix_.connections_) {
+                    if (w.dest_.modIdx_ == midx && w.dest_.chIdx_ < inSz) m.plugin_->inputEnabled(w.dest_.chIdx_, true);
+                    if (w.src_.modIdx_ == midx && w.src_.chIdx_ < outSz) m.plugin_->outputEnabled(w.src_.chIdx_, true);
+                }
+            }
+            m.prepare(sampleRate_, blockSize_);
+        }
         m.lockModule_.clear();
         return true;
     }
@@ -29,48 +58,38 @@ bool Track::requestModuleChange(unsigned midx, const std::string &mn) {
 }
 
 void Track::prepare(int sampleRate, int blockSize) {
-    if (blockSize_ != blockSize || sampleRate_ != sampleRate) {
-        if (blockSize != blockSize_) {
-            blockSize_ = blockSize;
-            for (auto &buf : audioBuffers_) {
-                // FIXME - NUM CH on audiobuffer
-                buf.setSize(MAX_IO, blockSize_);
-            }
-        }
-        sampleRate_ = sampleRate;
+    blockSize_ = blockSize;
+    sampleRate_ = sampleRate;
 
-        for (auto &m : modules_) { m.prepare(sampleRate_, blockSize_); }
-    }
+    for (auto &m : modules_) { m.prepare(sampleRate_, blockSize_); }
 }
 
 void Track::process(juce::AudioSampleBuffer &ioBuffer) {
     size_t n = blockSize_;
 
-    // FIXME - check this does not alter buffer size
-    // FIXME - ensure channels are in range of plugin and io
-    audioBuffers_[M_IN] = ioBuffer;
+    auto &inMod = modules_[M_IN];
+    for (int c = 0; c < MAX_IO_IN; c++) { inMod.audioBuffer_.copyFrom(c, 0, ioBuffer, c, 0, n); }
 
     unsigned modIdx = 0;
 
     for (auto &m : modules_) {
-        auto &moduleBuf = audioBuffers_[modIdx];
+        auto &moduleBuf = m.audioBuffer_;
+        moduleBuf.applyGain(0.0f);
         for (auto &route : matrix_.connections_) {
-            moduleBuf.applyGain(0.0f);
             if (route.dest_.modIdx_ == modIdx) {
-                auto &srcBuf = audioBuffers_[route.src_.modIdx_];
-                moduleBuf.addFrom(route.dest_.chIdx, 0, srcBuf, route.src_.chIdx, 0, n);
+                auto &srcBuf = modules_[route.src_.modIdx_].audioBuffer_;
+                moduleBuf.addFrom(route.dest_.chIdx_, 0, srcBuf, route.src_.chIdx_, 0, n);
             }
         }
 
         if (!m.lockModule_.test_and_set()) {
-            // FIXME - process()
-            // m.process(moduleBuf); // FIXME
+            m.process(moduleBuf);
             m.lockModule_.clear();
         }
         modIdx++;
     }
-    // FIXME - check this does not alter buffer size
-    ioBuffer = audioBuffers_[M_OUT];
+    auto &outMod = modules_[M_OUT];
+    for (int c = 0; c < MAX_IO_OUT; c++) { ioBuffer.copyFrom(c, 0, outMod.audioBuffer_, c, 0, n); }
 }
 
 static constexpr int checkTrackBytes = 0x1FF2;
@@ -128,24 +147,42 @@ void Track::setStateInformation(juce::MemoryInputStream &inStream) {
 
 
 bool Track::requestMatrixConnect(const Matrix::Jack &src, const Matrix::Jack &dest) {
-    int modIdx = dest.modIdx_;
-    auto &m = modules_[modIdx];
-    if (!m.lockModule_.test_and_set()) {
-        matrix_.connect(src, dest);
+    int srcCount = 0;
+    int destCount = 0;
+    for (auto &w : matrix_.connections_) {
+        if (w.src_ == src) srcCount++;
+        if (w.dest_ == dest) destCount++;
+    }
 
-        m.lockModule_.clear();
+    auto &srcMod = modules_[src.modIdx_];
+    auto &destMod = modules_[dest.modIdx_];
+    if (!destMod.lockModule_.test_and_set()) {
+        matrix_.connect(src, dest);
+        if (srcCount == 0 && srcMod.plugin_) srcMod.plugin_->outputEnabled(src.chIdx_, true);
+        if (destCount == 0 && destMod.plugin_) destMod.plugin_->inputEnabled(dest.chIdx_, true);
+        destMod.lockModule_.clear();
         return true;
     }
+
     return false;
 }
 
 
 bool Track::requestMatrixDisconnect(const Matrix::Jack &src, const Matrix::Jack &dest) {
-    int modIdx = dest.modIdx_;
-    auto &m = modules_[modIdx];
-    if (!m.lockModule_.test_and_set()) {
+    int srcCount = 0;
+    int destCount = 0;
+    for (auto &w : matrix_.connections_) {
+        if (w.src_ == src) srcCount++;
+        if (w.dest_ == dest) destCount++;
+    }
+
+    auto &srcMod = modules_[src.modIdx_];
+    auto &destMod = modules_[dest.modIdx_];
+    if (!destMod.lockModule_.test_and_set()) {
         matrix_.disconnect(src, dest);
-        m.lockModule_.clear();
+        if (srcCount == 1 && srcMod.plugin_) srcMod.plugin_->outputEnabled(src.chIdx_, false);
+        if (destCount == 1 && destMod.plugin_) destMod.plugin_->inputEnabled(dest.chIdx_, false);
+        destMod.lockModule_.clear();
         return true;
     }
     return false;
