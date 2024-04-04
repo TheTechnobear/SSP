@@ -1,6 +1,7 @@
 #include "PluginEditor.h"
 
 #include "MixerView.h"
+#include "OptionEditor.h"
 #include "PluginProcessor.h"
 #include "SSPApiEditor.h"
 #include "TrackEditor.h"
@@ -11,6 +12,8 @@ PluginEditor::PluginEditor(PluginProcessor &p) : base_type(&p, false), processor
     mixerViewIdx_ = addView(mixerView_);
     trackEditor_ = std::make_shared<TrackEditor>(p);
     trackEditorIdx_ = addView(trackEditor_);
+    optionEditor_ = std::make_shared<OptionEditor>(p);
+    optionViewIdx_ = addView(optionEditor_);
     setView(mixerViewIdx_);
 }
 
@@ -32,9 +35,12 @@ void PluginEditor::eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPr
 
 void PluginEditor::eventUp(bool longPress) {
     auto v = getViewIdx();
-    if (v == trackEditorIdx_ && longPress) {
-        setView(mixerViewIdx_);
-        return;
+    if (longPress) {
+        if (v == trackEditorIdx_ || v == optionViewIdx_) {
+            setView(mixerViewIdx_);
+        } else if (v == mixerViewIdx_) {
+            setView(optionViewIdx_);
+        }
     }
 
     base_type::eventUp(longPress);

@@ -8,6 +8,7 @@
 
 class TrackEditor;
 class MixerView;
+class OptionEditor;
 
 class PluginEditor : public ssp::MultiView<ssp::BaseView> {
 public:
@@ -30,7 +31,8 @@ private:
 
     std::shared_ptr<MixerView> mixerView_;
     std::shared_ptr<TrackEditor> trackEditor_;
-    unsigned trackEditorIdx_, mixerViewIdx_;
+    std::shared_ptr<OptionEditor> optionEditor_;
+    unsigned trackEditorIdx_, mixerViewIdx_, optionViewIdx_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginEditor)
 };

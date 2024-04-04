@@ -42,6 +42,7 @@ target_sources(XMIX
 
         Source/PluginEditor.cpp
         Source/TrackEditor.cpp
+        Source/OptionEditor.cpp
 
         Source/TrackView.cpp
         Source/ModuleView.cpp
@@ -49,6 +50,7 @@ target_sources(XMIX
         Source/MatrixView.cpp
         Source/AddRouteView.cpp
         Source/MixerView.cpp
+        Source/OptionView.cpp
         ${COMMON_SRC}
         )
 

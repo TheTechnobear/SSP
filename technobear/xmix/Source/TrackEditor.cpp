@@ -1,14 +1,13 @@
 #include "TrackEditor.h"
 
+#include "AddRouteView.h"
 #include "LoadModuleView.h"
+#include "MatrixView.h"
 #include "ModuleView.h"
 #include "TrackView.h"
-#include "MatrixView.h"
-#include "AddRouteView.h"
 
 
 TrackEditor::TrackEditor(PluginProcessor &p) : base_type(&p, false), processor_(p) {
-
     trackView_ = std::make_shared<TrackView>(processor_);
     trackView_->setBounds(0, 0, pluginWidth, pluginHeight);
     trackView_->resized();
@@ -19,7 +18,7 @@ TrackEditor::TrackEditor(PluginProcessor &p) : base_type(&p, false), processor_(
     moduleView_->resized();
     moduleViewIdx_ = addView(moduleView_);
 
-    loadModuleView_ = std::make_shared<LoadModuleView>(processor_,true);
+    loadModuleView_ = std::make_shared<LoadModuleView>(processor_, true);
     loadModuleView_->setBounds(0, 0, pluginWidth, pluginHeight);
     loadModuleView_->resized();
     loadViewIdx_ = addView(loadModuleView_);
@@ -47,41 +46,41 @@ void TrackEditor::editorShown() {
 }
 
 
-void TrackEditor::eventButton(unsigned btn,bool longPress) {
+void TrackEditor::eventButton(unsigned btn, bool longPress) {
     auto v = getViewIdx();
-    if(v == trackViewIdx_) {
-        if(btn < 4) {
+    if (v == trackViewIdx_) {
+        if (btn < 4) {
             auto modIdx = btn;
             moduleView_->moduleIdx(trackIdx_, modIdx + 1);
             loadModuleView_->moduleIdx(trackIdx_, modIdx + 1);
-            if(longPress==false) {
+            if (longPress == false) {
                 moduleView_->moduleIdx(trackIdx_, modIdx + 1);
                 setView(moduleViewIdx_);
             } else {
                 setView(loadViewIdx_);
             }
             return;
-        } else if(btn==4) {
+        } else if (btn == 4) {
             setView(matrixViewIdx_);
-        } else if(btn==5) {
+        } else if (btn == 5) {
             setView(addRouteViewIdx_);
         }
-    } 
+    }
 
-    if(v==loadViewIdx_ && longPress==false) {
+    if (v == loadViewIdx_ && longPress == false) {
         // return view on load and clear
-        switch(btn) {
-            case 3 :  { // clear 
-                // carry out action 
+        switch (btn) {
+            case 3: {  // clear
+                // carry out action
                 loadModuleView_->eventButton(btn, longPress);
-                // return to overview 
+                // return to overview
                 setView(moduleViewIdx_);
                 return;
             }
-            case 7 :  { // clear 
-                // carry out action 
+            case 7: {  // clear
+                // carry out action
                 loadModuleView_->eventButton(btn, longPress);
-                // return to overview 
+                // return to overview
                 trackView_->trackIdx(trackIdx_);
                 setView(trackViewIdx_);
                 return;
@@ -89,12 +88,12 @@ void TrackEditor::eventButton(unsigned btn,bool longPress) {
         }
     }
 
-    base_type::eventButton(btn,longPress);
+    base_type::eventButton(btn, longPress);
 }
 
-    void TrackEditor::trackIdx(unsigned t) {
-        trackIdx_ = t;
-        trackView_->trackIdx(trackIdx_);
-        matrixView_->trackIdx(trackIdx_);
-        addRouteView_->trackIdx(trackIdx_);
-    }
+void TrackEditor::trackIdx(unsigned t) {
+    trackIdx_ = t;
+    trackView_->trackIdx(trackIdx_);
+    matrixView_->trackIdx(trackIdx_);
+    addRouteView_->trackIdx(trackIdx_);
+}
