@@ -5,7 +5,7 @@
 #include "ssp/editors/MultiView.h"
 
 class ModuleView;
-class LoadView;
+class LoadModuleView;
 class TrackView;
 class MatrixView;
 class AddRouteView;
@@ -37,7 +37,7 @@ private:
 
     std::shared_ptr<TrackView> trackView_;
     std::shared_ptr<ModuleView> moduleView_;
-    std::shared_ptr<LoadView> loadView_;
+    std::shared_ptr<LoadModuleView> loadModuleView_;
     std::shared_ptr<MatrixView> matrixView_;
     std::shared_ptr<AddRouteView> addRouteView_;
 

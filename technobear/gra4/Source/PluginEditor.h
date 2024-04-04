@@ -82,7 +82,7 @@ private:
 
     std::shared_ptr<ssp::FileBrowser> fileBrowser_;
     std::shared_ptr<ssp::TextEdit> saveEditor_;
-    ValueButton fileBtn_, saveBtn_, cancelBtn_;
+    ssp::ValueButton fileBtn_, saveBtn_, cancelBtn_;
 
     ssp::WaveDisp<1> scopes_[MAX_LAYERS] = {
         ssp::WaveDisp<1>(false, true),

@@ -1,6 +1,9 @@
 
 #include "ValueButton.h"
 
+
+namespace ssp {
+
 ValueButton::ValueButton(const String &label,
                          std::function<void(bool v)> cb,
                          unsigned fh,
@@ -47,3 +50,4 @@ void ValueButton::paint(Graphics &g) {
     g.drawText(label_, 0, 0, w, h, Justification::centred);
 }
 
+}

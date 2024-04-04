@@ -1,12 +1,12 @@
 #include "TrackView.h"
 
 TrackView::TrackView(PluginProcessor &p) : ssp::MiniBasicView(&p, nullptr), processor_(p) {
-    addButton(0, std::make_shared<ValueButton>("Mod", [&](bool b) {}));
-    addButton(1, std::make_shared<ValueButton>("Pre", [&](bool b) {}));
-    addButton(2, std::make_shared<ValueButton>("Main", [&](bool b) {}));
-    addButton(3, std::make_shared<ValueButton>("Post", [&](bool b) {}));
-    addButton(4, std::make_shared<ValueButton>("Matrix", [&](bool b) {}));
-    addButton(5, std::make_shared<ValueButton>("Add Route", [&](bool b) {}));
+    addButton(0, std::make_shared<ssp::ValueButton>("Mod", [&](bool b) {}));
+    addButton(1, std::make_shared<ssp::ValueButton>("User 1", [&](bool b) {}));
+    addButton(2, std::make_shared<ssp::ValueButton>("User 2", [&](bool b) {}));
+    addButton(3, std::make_shared<ssp::ValueButton>("User 3", [&](bool b) {}));
+    addButton(4, std::make_shared<ssp::ValueButton>("Matrix", [&](bool b) {}));
+    addButton(5, std::make_shared<ssp::ValueButton>("Add Route", [&](bool b) {}));
 }
 
 TrackView::~TrackView() {
@@ -28,12 +28,12 @@ void TrackView::drawView(Graphics &g) {
         y += 30;
         String mod;
         switch (i) {
-            case Track::M_MOD: mod = " (Mod) "; break;
-            case Track::M_USER_1: mod = " (User 1) "; break;
-            case Track::M_USER_2: mod = " (User 2) "; break;
-            case Track::M_USER_3: mod = " (User 3) "; break;
+            case Track::M_MOD: mod = "Mod"; break;
+            case Track::M_USER_1: mod = "User 1"; break;
+            case Track::M_USER_2: mod = "User 2"; break;
+            case Track::M_USER_3: mod = "User 3"; break;
         }
-        g.drawSingleLineText("Module " + mod, x, y);
+        g.drawSingleLineText(mod, x, y);
         g.drawSingleLineText(String(" : ") + processor_.getLoadedPlugin(trackIdx_, i), x + 150, y);
     }
 }

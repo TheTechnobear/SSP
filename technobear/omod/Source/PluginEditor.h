@@ -21,7 +21,7 @@ protected:
     };
 
 private:
-    ValueButton resetButton_;
+    ssp::ValueButton resetButton_;
     PluginProcessor &processor_;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)
 };

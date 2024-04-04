@@ -14,6 +14,6 @@ protected:
 private:
 
     PluginProcessor &processor_;
-    ValueButton runButton_, resetButton_, useTrigsButton_;
+    ssp::ValueButton runButton_, resetButton_, useTrigsButton_;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginMiniEditor)
 };

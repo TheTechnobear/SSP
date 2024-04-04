@@ -21,7 +21,7 @@ struct Module {
 
     std::string pluginName_;
     std::string requestedModule_;
-    std::atomic_flag lockModule_ = ATOMIC_FLAG_INIT;
+    std::atomic_flag lock_ = ATOMIC_FLAG_INIT;
     SSPExtendedApi::PluginInterface *plugin_ = nullptr;
     SSPExtendedApi::PluginEditorInterface *editor_ = nullptr;
     SSPExtendedApi::PluginDescriptor *descriptor_ = nullptr;

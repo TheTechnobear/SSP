@@ -24,7 +24,7 @@ protected:
     void drawView(Graphics &) override;
 
 private:
-    ValueButton runButton_, resetButton_, useTrigsButton_;
+    ssp::ValueButton runButton_, resetButton_, useTrigsButton_;
     PluginProcessor &processor_;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)
 };

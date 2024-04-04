@@ -1,6 +1,6 @@
 #include "TrackEditor.h"
 
-#include "LoadView.h"
+#include "LoadModuleView.h"
 #include "ModuleView.h"
 #include "TrackView.h"
 #include "MatrixView.h"
@@ -19,10 +19,10 @@ TrackEditor::TrackEditor(PluginProcessor &p) : base_type(&p, false), processor_(
     moduleView_->resized();
     moduleViewIdx_ = addView(moduleView_);
 
-    loadView_ = std::make_shared<LoadView>(processor_,true);
-    loadView_->setBounds(0, 0, pluginWidth, pluginHeight);
-    loadView_->resized();
-    loadViewIdx_ = addView(loadView_);
+    loadModuleView_ = std::make_shared<LoadModuleView>(processor_,true);
+    loadModuleView_->setBounds(0, 0, pluginWidth, pluginHeight);
+    loadModuleView_->resized();
+    loadViewIdx_ = addView(loadModuleView_);
 
 
     matrixView_ = std::make_shared<MatrixView>(processor_);
@@ -53,7 +53,7 @@ void TrackEditor::eventButton(unsigned btn,bool longPress) {
         if(btn < 4) {
             auto modIdx = btn;
             moduleView_->moduleIdx(trackIdx_, modIdx + 1);
-            loadView_->moduleIdx(trackIdx_, modIdx + 1);
+            loadModuleView_->moduleIdx(trackIdx_, modIdx + 1);
             if(longPress==false) {
                 moduleView_->moduleIdx(trackIdx_, modIdx + 1);
                 setView(moduleViewIdx_);
@@ -73,14 +73,14 @@ void TrackEditor::eventButton(unsigned btn,bool longPress) {
         switch(btn) {
             case 3 :  { // clear 
                 // carry out action 
-                loadView_->eventButton(btn, longPress);
+                loadModuleView_->eventButton(btn, longPress);
                 // return to overview 
                 setView(moduleViewIdx_);
                 return;
             }
             case 7 :  { // clear 
                 // carry out action 
-                loadView_->eventButton(btn, longPress);
+                loadModuleView_->eventButton(btn, longPress);
                 // return to overview 
                 trackView_->trackIdx(trackIdx_);
                 setView(trackViewIdx_);

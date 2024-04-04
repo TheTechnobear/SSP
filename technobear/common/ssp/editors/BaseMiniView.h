@@ -5,10 +5,12 @@
 using namespace juce;
 
 #include <vector>
+#include<memory>
 
 #include "MultiView.h"
 #include "ssp/controls/ParamButton.h"
 #include "ssp/controls/ParamControl.h"
+#include "ssp/controls/ButtonBox.h"
 
 namespace ssp {
 
@@ -78,8 +80,7 @@ protected:
     using base_type = BaseView;
     void onButton(unsigned int id, bool v) override;
 
-    void drawView(Graphics &) override;
-    void drawButtonBox(Graphics &);
+    // void drawView(Graphics &) override;
 
 private:
     unsigned paramOffset_ = 0;
@@ -91,7 +92,8 @@ private:
     unsigned canvasH_ = 0;
     unsigned canvasW_ = 0;
     unsigned titleH_ = 30;
-    std::shared_ptr<ValueButton> buttons_[maxUserBtns];
+    std::shared_ptr<ssp::ButtonBox> buttonBox_;
+
     ioActivity ioCallback_ = nullptr;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MiniBasicView)

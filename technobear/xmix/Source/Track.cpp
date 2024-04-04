@@ -10,14 +10,14 @@ Track::Track() {
 
 
 void Track::createDefaultRoute(unsigned in1, unsigned in2) {
-    requestMatrixConnect(Matrix::Jack(M_IN, in1), Matrix::Jack(M_USER_1, 0));
-    requestMatrixConnect(Matrix::Jack(M_IN, in2), Matrix::Jack(M_USER_1, 1));
-    requestMatrixConnect(Matrix::Jack(M_USER_1, 0), Matrix::Jack(M_USER_2, 0));
-    requestMatrixConnect(Matrix::Jack(M_USER_1, 1), Matrix::Jack(M_USER_2, 1));
-    requestMatrixConnect(Matrix::Jack(M_USER_2, 0), Matrix::Jack(M_USER_3, 0));
-    requestMatrixConnect(Matrix::Jack(M_USER_2, 1), Matrix::Jack(M_USER_3, 1));
-    requestMatrixConnect(Matrix::Jack(M_USER_3, 0), Matrix::Jack(M_OUT, 0));
-    requestMatrixConnect(Matrix::Jack(M_USER_3, 1), Matrix::Jack(M_OUT, 1));
+    // requestMatrixConnect(Matrix::Jack(M_IN, in1), Matrix::Jack(M_USER_1, 0));
+    // requestMatrixConnect(Matrix::Jack(M_IN, in2), Matrix::Jack(M_USER_1, 1));
+    // requestMatrixConnect(Matrix::Jack(M_USER_1, 0), Matrix::Jack(M_USER_2, 0));
+    // requestMatrixConnect(Matrix::Jack(M_USER_1, 1), Matrix::Jack(M_USER_2, 1));
+    // requestMatrixConnect(Matrix::Jack(M_USER_2, 0), Matrix::Jack(M_USER_3, 0));
+    // requestMatrixConnect(Matrix::Jack(M_USER_2, 1), Matrix::Jack(M_USER_3, 1));
+    // requestMatrixConnect(Matrix::Jack(M_USER_3, 0), Matrix::Jack(M_OUT, 0));
+    // requestMatrixConnect(Matrix::Jack(M_USER_3, 1), Matrix::Jack(M_OUT, 1));
 }
 
 std::vector<Matrix::Wire> Track::connections() {
@@ -25,37 +25,61 @@ std::vector<Matrix::Wire> Track::connections() {
 }
 
 
-void Track::alloc(int sampleRate, int blockSize) {
-    prepare(sampleRate, blockSize);
-}
-
-
-void Track::free() {
-}
-
 bool Track::requestModuleChange(unsigned midx, const std::string &mn) {
     auto &m = modules_[midx];
 
-    if (!m.lockModule_.test_and_set()) {
+    if (!m.lock_.test_and_set()) {
         if (m.loadModule(mn)) {
-            if (m.descriptor_ && m.plugin_) {
-                int inSz = m.descriptor_->inputChannelNames.size();
-                for (int c = 0; c < inSz; c++) { m.plugin_->inputEnabled(c, false); }
-                int outSz = m.descriptor_->outputChannelNames.size();
-                for (int c = 0; c < outSz; c++) { m.plugin_->outputEnabled(c, false); }
-
-                for (auto &w : matrix_.connections_) {
-                    if (w.dest_.modIdx_ == midx && w.dest_.chIdx_ < inSz) m.plugin_->inputEnabled(w.dest_.chIdx_, true);
-                    if (w.src_.modIdx_ == midx && w.src_.chIdx_ < outSz) m.plugin_->outputEnabled(w.src_.chIdx_, true);
-                }
-            }
+            resetModuleConnections(midx);
             m.prepare(sampleRate_, blockSize_);
         }
-        m.lockModule_.clear();
+        m.lock_.clear();
         return true;
     }
     return false;
 }
+
+bool Track::requestMatrixConnect(const Matrix::Jack &src, const Matrix::Jack &dest) {
+    if (!lock_.test_and_set()) {
+        int srcCount = 0;
+        int destCount = 0;
+        for (auto &w : matrix_.connections_) {
+            if (w.src_ == src) srcCount++;
+            if (w.dest_ == dest) destCount++;
+        }
+
+        auto &srcMod = modules_[src.modIdx_];
+        auto &destMod = modules_[dest.modIdx_];
+        matrix_.connect(src, dest);
+        if (srcCount == 0 && srcMod.plugin_) srcMod.plugin_->outputEnabled(src.chIdx_, true);
+        if (destCount == 0 && destMod.plugin_) destMod.plugin_->inputEnabled(dest.chIdx_, true);
+        lock_.clear();
+        return true;
+    }
+    return false;
+}
+
+
+bool Track::requestMatrixDisconnect(const Matrix::Jack &src, const Matrix::Jack &dest) {
+    if (!lock_.test_and_set()) {
+        int srcCount = 0;
+        int destCount = 0;
+        for (auto &w : matrix_.connections_) {
+            if (w.src_ == src) srcCount++;
+            if (w.dest_ == dest) destCount++;
+        }
+
+        auto &srcMod = modules_[src.modIdx_];
+        auto &destMod = modules_[dest.modIdx_];
+        matrix_.disconnect(src, dest);
+        if (srcCount == 1 && srcMod.plugin_) srcMod.plugin_->outputEnabled(src.chIdx_, false);
+        if (destCount == 1 && destMod.plugin_) destMod.plugin_->inputEnabled(dest.chIdx_, false);
+        lock_.clear();
+        return true;
+    }
+    return false;
+}
+
 
 void Track::prepare(int sampleRate, int blockSize) {
     blockSize_ = blockSize;
@@ -65,31 +89,34 @@ void Track::prepare(int sampleRate, int blockSize) {
 }
 
 void Track::process(juce::AudioSampleBuffer &ioBuffer) {
-    size_t n = blockSize_;
+    if (!lock_.test_and_set()) {
+        size_t n = blockSize_;
+        auto &inMod = modules_[M_IN];
+        for (int c = 0; c < MAX_IO_IN; c++) { inMod.audioBuffer_.copyFrom(c, 0, ioBuffer, c, 0, n); }
 
-    auto &inMod = modules_[M_IN];
-    for (int c = 0; c < MAX_IO_IN; c++) { inMod.audioBuffer_.copyFrom(c, 0, ioBuffer, c, 0, n); }
+        unsigned modIdx = 0;
 
-    unsigned modIdx = 0;
-
-    for (auto &m : modules_) {
-        auto &moduleBuf = m.audioBuffer_;
-        moduleBuf.applyGain(0.0f);
-        for (auto &route : matrix_.connections_) {
-            if (route.dest_.modIdx_ == modIdx) {
-                auto &srcBuf = modules_[route.src_.modIdx_].audioBuffer_;
-                moduleBuf.addFrom(route.dest_.chIdx_, 0, srcBuf, route.src_.chIdx_, 0, n);
+        for (auto &m : modules_) {
+            auto &moduleBuf = m.audioBuffer_;
+            moduleBuf.applyGain(0.0f);
+            for (auto &route : matrix_.connections_) {
+                if (route.dest_.modIdx_ == modIdx) {
+                    auto &srcBuf = modules_[route.src_.modIdx_].audioBuffer_;
+                    moduleBuf.addFrom(route.dest_.chIdx_, 0, srcBuf, route.src_.chIdx_, 0, n);
+                }
             }
-        }
 
-        if (!m.lockModule_.test_and_set()) {
-            m.process(moduleBuf);
-            m.lockModule_.clear();
+            if (!m.lock_.test_and_set()) {
+                m.process(moduleBuf);
+                m.lock_.clear();
+            }
+            modIdx++;
         }
-        modIdx++;
+        auto &outMod = modules_[M_OUT];
+        for (int c = 0; c < MAX_IO_OUT; c++) { ioBuffer.copyFrom(c, 0, outMod.audioBuffer_, c, 0, n); }
+
+        lock_.clear();
     }
-    auto &outMod = modules_[M_OUT];
-    for (int c = 0; c < MAX_IO_OUT; c++) { ioBuffer.copyFrom(c, 0, outMod.audioBuffer_, c, 0, n); }
 }
 
 static constexpr int checkTrackBytes = 0x1FF2;
@@ -143,47 +170,29 @@ void Track::setStateInformation(juce::MemoryInputStream &inStream) {
     }
 
     matrix_.setStateInformation(inStream);
+    for (int midx = 0; midx < M_MAX; midx++) { resetModuleConnections(midx); }
 }
 
 
-bool Track::requestMatrixConnect(const Matrix::Jack &src, const Matrix::Jack &dest) {
-    int srcCount = 0;
-    int destCount = 0;
-    for (auto &w : matrix_.connections_) {
-        if (w.src_ == src) srcCount++;
-        if (w.dest_ == dest) destCount++;
-    }
-
-    auto &srcMod = modules_[src.modIdx_];
-    auto &destMod = modules_[dest.modIdx_];
-    if (!destMod.lockModule_.test_and_set()) {
-        matrix_.connect(src, dest);
-        if (srcCount == 0 && srcMod.plugin_) srcMod.plugin_->outputEnabled(src.chIdx_, true);
-        if (destCount == 0 && destMod.plugin_) destMod.plugin_->inputEnabled(dest.chIdx_, true);
-        destMod.lockModule_.clear();
-        return true;
-    }
-
-    return false;
+void Track::alloc(int sampleRate, int blockSize) {
+    prepare(sampleRate, blockSize);
 }
 
 
-bool Track::requestMatrixDisconnect(const Matrix::Jack &src, const Matrix::Jack &dest) {
-    int srcCount = 0;
-    int destCount = 0;
-    for (auto &w : matrix_.connections_) {
-        if (w.src_ == src) srcCount++;
-        if (w.dest_ == dest) destCount++;
-    }
+void Track::free() {
+}
 
-    auto &srcMod = modules_[src.modIdx_];
-    auto &destMod = modules_[dest.modIdx_];
-    if (!destMod.lockModule_.test_and_set()) {
-        matrix_.disconnect(src, dest);
-        if (srcCount == 1 && srcMod.plugin_) srcMod.plugin_->outputEnabled(src.chIdx_, false);
-        if (destCount == 1 && destMod.plugin_) destMod.plugin_->inputEnabled(dest.chIdx_, false);
-        destMod.lockModule_.clear();
-        return true;
+void Track::resetModuleConnections(int midx) {
+    auto &m = modules_[midx];
+    if (m.descriptor_ && m.plugin_) {
+        int inSz = m.descriptor_->inputChannelNames.size();
+        for (int c = 0; c < inSz; c++) { m.plugin_->inputEnabled(c, false); }
+        int outSz = m.descriptor_->outputChannelNames.size();
+        for (int c = 0; c < outSz; c++) { m.plugin_->outputEnabled(c, false); }
+
+        for (auto &w : matrix_.connections_) {
+            if (w.dest_.modIdx_ == midx && w.dest_.chIdx_ < inSz) m.plugin_->inputEnabled(w.dest_.chIdx_, true);
+            if (w.src_.modIdx_ == midx && w.src_.chIdx_ < outSz) m.plugin_->outputEnabled(w.src_.chIdx_, true);
+        }
     }
-    return false;
 }

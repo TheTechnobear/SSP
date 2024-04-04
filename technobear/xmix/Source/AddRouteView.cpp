@@ -5,10 +5,10 @@
 
 
 AddRouteView::AddRouteView(PluginProcessor& p) : ssp::MiniBasicView(&p, nullptr), processor_(p) {
-    addButton(3, std::make_shared<ValueButton>("Prev", [&](bool b) {
+    addButton(3, std::make_shared<ssp::ValueButton>("Prev", [&](bool b) {
                   if (!b) onPrevBtn();
               }));
-    addButton(7, std::make_shared<ValueButton>("Next", [&](bool b) {
+    addButton(7, std::make_shared<ssp::ValueButton>("Next", [&](bool b) {
                   if (!b) onNextBtn();
               }));
     addAndMakeVisible(listCtrl_);

@@ -6,6 +6,9 @@
 
 using namespace juce;
 
+
+namespace ssp {
+
 class ValueButton : public juce::Component {
 public:
     ValueButton(const String &label,
@@ -44,3 +47,5 @@ private:
 
     juce_UseDebuggingNewOperator
 };
+
+}

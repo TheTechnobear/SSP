@@ -106,7 +106,7 @@ void LoadView::drawButtonBox(Graphics &g) {
     }
 }
 
-void LoadView::setButtonBounds(ValueButton &btn, unsigned r, unsigned c) {
+void LoadView::setButtonBounds(ssp::ValueButton &btn, unsigned r, unsigned c) {
     if (!compactUI_) {
         const int w = 100;
         const int h = btnSpaceY;

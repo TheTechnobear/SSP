@@ -1,5 +1,5 @@
 
-#include "LoadView.h"
+#include "LoadModuleView.h"
 
 std::string nicePlugName(const std::string &n) {
     std::string nn = n.substr(n.find_last_of('/') + 1);
@@ -12,7 +12,7 @@ std::string nicePlugName(const std::string &n) {
 }
 
 
-LoadView::LoadView(PluginProcessor &p, bool compactUI)
+LoadModuleView::LoadModuleView(PluginProcessor &p, bool compactUI)
     : ssp::BaseView(&p, compactUI),
       processor_(p),
       scanBtn_("Scan", nullptr, 32, Colours::white, Colours::black),
@@ -25,7 +25,7 @@ LoadView::LoadView(PluginProcessor &p, bool compactUI)
 }
 
 
-void LoadView::drawView(Graphics &g) {
+void LoadModuleView::drawView(Graphics &g) {
     drawButtonBox(g);
 
     unsigned x = 50;
@@ -37,7 +37,7 @@ void LoadView::drawView(Graphics &g) {
     g.drawSingleLineText("Load Module", x, y);
 }
 
-void LoadView::resized() {
+void LoadModuleView::resized() {
     ssp::BaseView::resized();
     setButtonBounds(scanBtn_, 0, 0);
     setButtonBounds(clearBtn_, 1, 3);
@@ -48,7 +48,7 @@ void LoadView::resized() {
     moduleList_.setBounds(x, y + 25, SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT);
 }
 
-void LoadView::drawButtonBox(Graphics &g) {
+void LoadModuleView::drawButtonBox(Graphics &g) {
     static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
     static constexpr unsigned nParamPerPage = 4;
     static constexpr unsigned titleH = 30;
@@ -67,7 +67,7 @@ void LoadView::drawButtonBox(Graphics &g) {
     for (int i = 0; i < 5; i++) { g.drawVerticalLine(butLeftX + (i * bw) - 1, butTopY, butTopY + buttonBarH - 1); }
 }
 
-void LoadView::setButtonBounds(ValueButton &btn, unsigned r, unsigned c) {
+void LoadModuleView::setButtonBounds(ssp::ValueButton &btn, unsigned r, unsigned c) {
     static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
     static constexpr unsigned nParamPerPage = 4;
     static constexpr unsigned titleH = 30;
@@ -82,7 +82,7 @@ void LoadView::setButtonBounds(ValueButton &btn, unsigned r, unsigned c) {
 }
 
 
-void LoadView::loadModule() {
+void LoadModuleView::loadModule() {
     if (trackIdx_ >= PluginProcessor::MAX_TRACKS || moduleIdx_ <= Track::M_IN || moduleIdx_ >= Track::M_OUT) return;
     if (moduleList_.idx() < 0) return;
 
@@ -98,29 +98,29 @@ void LoadView::loadModule() {
     }
 }
 
-void LoadView::eventUp(bool v) {
+void LoadModuleView::eventUp(bool v) {
     if (v) return;
     moduleList_.prevItem();
 }
 
-void LoadView::eventDown(bool v) {
+void LoadModuleView::eventDown(bool v) {
     if (v) return;
     moduleList_.nextItem();
 }
 
-void LoadView::onEncoder(unsigned enc, float v) {
+void LoadModuleView::onEncoder(unsigned enc, float v) {
     if (v > 0)
         moduleList_.nextItem();
     else
         moduleList_.prevItem();
 }
 
-void LoadView::onEncoderSwitch(unsigned enc, bool v) {
+void LoadModuleView::onEncoderSwitch(unsigned enc, bool v) {
     if (v) return;
     loadModule();
 }
 
-void LoadView::eventButton(unsigned int btn, bool v) {
+void LoadModuleView::eventButton(unsigned int btn, bool v) {
     if (v) return;
     switch (btn) {
         case 0: {
@@ -141,7 +141,7 @@ void LoadView::eventButton(unsigned int btn, bool v) {
     }
 }
 
-void LoadView::editorShown() {
+void LoadModuleView::editorShown() {
     moduleUpdated_ = false;
     moduleList_.clear();
     if (moduleIdx_ < Track::M_MAX) {
@@ -157,7 +157,7 @@ void LoadView::editorShown() {
 }
 
 
-void LoadView::moduleIdx(unsigned trackIdx, unsigned mIdx) {
+void LoadModuleView::moduleIdx(unsigned trackIdx, unsigned mIdx) {
     if (trackIdx < PluginProcessor::MAX_TRACKS && mIdx < Track::M_MAX) {
         trackIdx_ = trackIdx;
         moduleIdx_ = mIdx;

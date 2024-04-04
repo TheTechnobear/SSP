@@ -45,7 +45,7 @@ target_sources(XMIX
 
         Source/TrackView.cpp
         Source/ModuleView.cpp
-        Source/LoadView.cpp
+        Source/LoadModuleView.cpp
         Source/MatrixView.cpp
         Source/AddRouteView.cpp
         Source/MixerView.cpp

@@ -28,4 +28,5 @@ set(COMMON_SRC
         ../common/ssp/controls/RmsTrack.cpp
         ../common/ssp/controls/VuMeter.cpp
         ../common/ssp/controls/MiniControl.cpp
+        ../common/ssp/controls/ButtonBox.cpp
 )

@@ -12,9 +12,9 @@
 
 using namespace juce;
 
-class LoadView : public ssp::BaseView {
+class LoadModuleView : public ssp::BaseView {
 public:
-    LoadView(PluginProcessor &p, bool compactUI);
+    explicit LoadModuleView(PluginProcessor &p, bool compactUI);
 
     void onEncoder(unsigned enc, float v) override;
     void onEncoderSwitch(unsigned enc, bool v) override;
@@ -28,7 +28,7 @@ public:
     void editorShown() override;
     void resized() override;
 
-    void setButtonBounds(ValueButton &btn, unsigned r, unsigned c);
+    void setButtonBounds(ssp::ValueButton &btn, unsigned r, unsigned c);
     void drawButtonBox(Graphics &g);
 
     void moduleIdx(unsigned t, unsigned m);
@@ -40,7 +40,7 @@ private:
     static constexpr unsigned btnTopY = 380 - 1;
     static constexpr unsigned btnSpaceY = 50;
 
-    ValueButton scanBtn_, loadBtn_, clearBtn_;
+    ssp::ValueButton scanBtn_, loadBtn_, clearBtn_;
 
     void loadModule();
 
