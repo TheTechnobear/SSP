@@ -29,4 +29,6 @@ set(COMMON_SRC
         ../common/ssp/controls/VuMeter.cpp
         ../common/ssp/controls/MiniControl.cpp
         ../common/ssp/controls/ButtonBox.cpp
+        ../common/ssp/controls/FileSelector.cpp
+        ../common/ssp/controls/TextControl.cpp
 )

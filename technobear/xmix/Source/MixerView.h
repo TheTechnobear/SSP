@@ -13,6 +13,8 @@ public:
 
     void drawView(Graphics &g) override;
     void onSSPTimer() override;
+
+    void resized() override;
 private:
     ssp::StereoVuMeter vuMeters_[4];
 

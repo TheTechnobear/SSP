@@ -110,7 +110,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 }
 
 void PluginProcessor::processTrack(Track &track, AudioSampleBuffer &ioBuffer) {
-   track.process(ioBuffer);
+    track.process(ioBuffer);
 }
 
 void PluginProcessor::onInputChanged(unsigned i, bool b) {
@@ -171,6 +171,32 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
         trackIdx++;
     }
 }
+
+void PluginProcessor::savePreset() {
+    log("savePreset : " + requestedPreset_.toStdString());
+    presetName_ = requestedPreset_;
+    requestPresetSave_ = false;
+
+    File f(presetName_);
+
+    MemoryBlock destData;
+    getStateInformation(destData);
+
+    f.replaceWithData(destData.getData(), destData.getSize());
+}
+
+void PluginProcessor::loadPreset() {
+    log("loadPreset : " + requestedPreset_.toStdString());
+    presetName_ = requestedPreset_;
+    requestPresetLoad_ = false;
+
+    File f(presetName_);
+    if (f.exists()) {
+        MemoryMappedFile mmf(f, MemoryMappedFile::AccessMode::readOnly, false);
+        setStateInformation(mmf.getData(), mmf.getSize());
+    }
+}
+
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
     static constexpr bool useSysEditor = false, defaultDraw = false;

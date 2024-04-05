@@ -5,8 +5,6 @@
 ## milestone 1 - basic functionality
 aim to have everything basically functional
 
-- save/load preset (dialog, allow outside of host function)
-
 - rename matrix to -> ?
 - rename XMIX to Trax
 - rename DMOD to Dual

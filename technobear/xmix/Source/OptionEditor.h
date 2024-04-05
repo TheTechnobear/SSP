@@ -14,13 +14,12 @@ public:
     ~OptionEditor() override;
 
     void editorShown() override;
+    void resized() override;
 
     void eventButton(unsigned btn, bool longPress) override;
 private:
     using base_type = ssp::MultiView<ssp::BaseView>;
 
-    static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
-    static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
     PluginProcessor &processor_;
 
     std::shared_ptr<OptionView> optionView_;

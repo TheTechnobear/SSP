@@ -9,33 +9,35 @@
 
 TrackEditor::TrackEditor(PluginProcessor &p) : base_type(&p, false), processor_(p) {
     trackView_ = std::make_shared<TrackView>(processor_);
-    trackView_->setBounds(0, 0, pluginWidth, pluginHeight);
-    trackView_->resized();
     trackViewIdx_ = addView(trackView_);
 
     moduleView_ = std::make_shared<ModuleView>(processor_);
-    moduleView_->setBounds(0, 0, pluginWidth, pluginHeight);
-    moduleView_->resized();
     moduleViewIdx_ = addView(moduleView_);
 
     loadModuleView_ = std::make_shared<LoadModuleView>(processor_, true);
-    loadModuleView_->setBounds(0, 0, pluginWidth, pluginHeight);
-    loadModuleView_->resized();
     loadViewIdx_ = addView(loadModuleView_);
 
-
     matrixView_ = std::make_shared<MatrixView>(processor_);
-    matrixView_->setBounds(0, 0, pluginWidth, pluginHeight);
-    matrixView_->resized();
     matrixViewIdx_ = addView(matrixView_);
 
     addRouteView_ = std::make_shared<AddRouteView>(processor_);
-    addRouteView_->setBounds(0, 0, pluginWidth, pluginHeight);
-    addRouteView_->resized();
     addRouteViewIdx_ = addView(addRouteView_);
 }
 
 TrackEditor::~TrackEditor() {
+}
+
+
+void TrackEditor::resized() {
+    static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
+    static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
+
+    base_type::resized();
+    trackView_->setBounds(0, 0, pluginWidth, pluginHeight);
+    moduleView_->setBounds(0, 0, pluginWidth, pluginHeight);
+    loadModuleView_->setBounds(0, 0, pluginWidth, pluginHeight);
+    matrixView_->setBounds(0, 0, pluginWidth, pluginHeight);
+    addRouteView_->setBounds(0, 0, pluginWidth, pluginHeight);
 }
 
 void TrackEditor::editorShown() {

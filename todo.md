@@ -30,7 +30,7 @@ SSPUI calls onSSP however, we do not call repaint()
 
 TO DO  - MED PRIO
 ------------------
-- Text Edit... test check working as intended.
+- Text Edit... test check working as intended, see belo (for TextControl)
 - retest all plugins on SSP look for 'oddities'
 - PMIX ... check is not broken, perhaps move to new events - but its complex! 
 
@@ -38,3 +38,19 @@ TO DO  - MED PRIO
 
 TO DO  - LOW PRIO
 ------------------
+
+
+
+OTHER
+------------------
+- FileSelector - either update FileBrowser to use, or updates plugin to use
+- TextControl - either update TextEdit to use, or updates plugin to use
+- FileSelector - support compact and non-compact mode (currently compact only)
+- TextControl - support compact and non-compact mode (currently compact only)
+- ListControl - review if other possible use cases
+- ensure correct background colours for new controls (FileSelector/TextControl/ListControl)
+
+- review Editor / View hierarchies ... reduce number of variations
+
+- review ValueButton vs ParamButton, as this can cause issues missing the types eg. with ButtonBox
+- use ButtonBox control in editor/view (do we need a ParamButtonBox , see above ValueButton vs ParamButton)

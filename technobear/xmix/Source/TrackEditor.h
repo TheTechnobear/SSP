@@ -25,12 +25,9 @@ public:
     void trackIdx(unsigned t);
     void eventButton(unsigned btn, bool longPress) override;
 
-
+    void resized() override;
 private:
     using base_type = ssp::MultiView<ssp::BaseView>;
-
-    static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
-    static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
 
     unsigned trackIdx_;
     PluginProcessor &processor_;

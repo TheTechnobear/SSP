@@ -76,6 +76,7 @@ public:
 
     void addButton(unsigned idx, const std::shared_ptr<ValueButton> &p);
     void resized() override;
+    int  canvasHeight() { return canvasH_;}
 protected:
     using base_type = BaseView;
     void onButton(unsigned int id, bool v) override;

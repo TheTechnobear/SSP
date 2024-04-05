@@ -7,7 +7,6 @@
 #include "SSPExApi.h"
 #include "Track.h"
 #include "ssp/BaseProcessor.h"
-
 #include "ssp/controls/RmsTrack.h"
 
 using namespace juce;
@@ -47,7 +46,7 @@ public:
 
     static constexpr unsigned I_MAX = 8;
     static constexpr unsigned O_MAX = 2;
-    static constexpr unsigned IO_MAX = std::max(I_MAX,O_MAX);
+    static constexpr unsigned IO_MAX = std::max(I_MAX, O_MAX);
 
     std::string getLoadedPlugin(unsigned t, unsigned m) {
         if (t >= MAX_TRACKS || m >= Track::M_MAX) return "";
@@ -88,11 +87,33 @@ public:
     bool requestModuleChange(unsigned t, unsigned m, const std::string &mn);
     void scanPlugins();
 
-    Track& track(unsigned t) { return tracks_[t];}
+    Track &track(unsigned t) { return tracks_[t]; }
 
-    void rmsLevels(unsigned t, float& lLevel, float& rLevel) { lLevel = rmsData_[t][0].lvl();rLevel = rmsData_[t][1].lvl();}
+    void rmsLevels(unsigned t, float &lLevel, float &rLevel) {
+        lLevel = rmsData_[t][0].lvl();
+        rLevel = rmsData_[t][1].lvl();
+    }
 
     static constexpr unsigned MAX_TRACKS = 4;
+
+    void presetName(const String &n) { presetName_ = n; }
+    String presetName() const { return presetName_; }
+
+
+    void presetLoadRequest(const String &n) {
+        requestedPreset_ = n;
+        requestPresetLoad_ = true;
+        loadPreset();
+    }
+
+    void presetSaveRequest(const String &n) {
+        requestedPreset_ = n;
+        requestPresetSave_ = true;
+        savePreset();
+    }
+
+    void savePreset();
+    void loadPreset();
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -113,6 +134,11 @@ private:
     AudioSampleBuffer threadBuffers_[MAX_TRACKS];
 
     ssp::RmsTrack rmsData_[MAX_TRACKS][O_MAX];
+
+    String presetName_;
+    String requestedPreset_;
+    bool requestPresetLoad_ = false;
+    bool requestPresetSave_ = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginProcessor)
 };

@@ -8,8 +8,6 @@ MatrixView::MatrixView(PluginProcessor& p) : ssp::MiniBasicView(&p, nullptr), pr
     addButton(7, std::make_shared<ssp::ValueButton>("Delete", [&](bool b) {
                   if (!b) onRemoveBtn();
               }));
-
-
     addAndMakeVisible(connectionList_);
 }
 

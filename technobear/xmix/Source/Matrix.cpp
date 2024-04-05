@@ -23,6 +23,7 @@ void Matrix::getStateInformation(juce::MemoryOutputStream& outStream) {
 }
 
 void Matrix::setStateInformation(juce::MemoryInputStream& inStream) {
+    connections_.clear();
     int check = inStream.readInt();
     if (check != checkMatrixBytes) return;
 

@@ -301,11 +301,11 @@ void MiniBasicView::onButton(unsigned int id, bool v) {
 void MiniBasicView::resized() {
     base_type::resized();
     static constexpr unsigned gap = 5 * scale;
-    canvasH_ = SSP_COMPACT_HEIGHT;
+    canvasH_ = SSP_COMPACT_HEIGHT - buttonBarH_;
     canvasW_ = SSP_COMPACT_WIDTH;
-    buttonBarH_ = canvasH_ / (nParamPerPage + 3);
+    buttonBarH_ = SSP_COMPACT_HEIGHT / (nParamPerPage + 3);
 
-    buttonBox_->setBounds(0, canvasH_ - buttonBarH_, canvasW_, buttonBarH_);
+    buttonBox_->setBounds(0, canvasH_ , canvasW_, buttonBarH_);
 }
 
 
