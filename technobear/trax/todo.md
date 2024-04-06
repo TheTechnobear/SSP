@@ -2,22 +2,17 @@
 # TODO 
 
 
-## milestone 1 - basic functionality
+## milestone 1 - basic functionality - DONE
 aim to have everything basically functional
 
-- rename matrix to -> ?
-- rename XMIX to Trax
-- rename DMOD to Dual
-- define first use-case for milestone 2
-
-
 ## milestone 2 - usability test/refine
-- clkd/omod mini editor need value button
-- ensure the buttons mappings etc feel comfortable to use
 - UI is clear and rational.
 - start improving UI elements in Trax
+- ensure the buttons mappings etc feel comfortable to use
+- clkd/omod mini editor need value button
 - make a minimum set of usable plugins , aka first-use case
 - consider locking strategy... do we need both track and module?
+- rename matrix to -> ?
 
 ## miletone 3 - refinements
 - more UI refinements to Trax
@@ -50,17 +45,16 @@ with perhaps some 'additions'? (e.g. playing plts via cv)
 
 # Overview
 Basic Plan ! 
-DMOD will be the DUAL module that can use compact UIs
-this could include loading XMIX
+DUAL module that can use compact UIs, this could include loading Trax
 
 
-XMIX is the modular 'mixer'
+Trax is the modular 'mixer'
 it's main focus will be a compact UI, however.. potentially later a large UI could be created.
 (however, it will still have the same behaviour as on xmx, i.e. you use 2 in dmod if you want double!)
 
 
 
-XMIX 
+Trax 
 
 the idea is to have 4 tracks in a mixer
 

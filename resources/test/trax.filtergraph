@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<FILTERGRAPH>
+  <FILTER uid="15" x="0.5" y="0.1">
+    <PLUGIN name="Audio Input" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="JUCE" version="1.0" file="" uid="246006c0" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="0" numOutputs="2"
+            isShell="0"/>
+    <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="disabled"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="L R"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="16" x="0.25" y="0.1">
+    <PLUGIN name="MIDI Input" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="JUCE" version="1.0" file="" uid="a9e4f9eb" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="0" numOutputs="0"
+            isShell="0"/>
+    <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="disabled"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="disabled"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="17" x="0.5" y="0.9">
+    <PLUGIN name="Audio Output" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="JUCE" version="1.0" file="" uid="724248cb" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="2" numOutputs="0"
+            isShell="0"/>
+    <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="L R"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="disabled"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="18" x="0.25" y="0.9">
+    <PLUGIN name="MIDI Output" descriptiveName="" format="Internal" category="I/O devices"
+            manufacturer="JUCE" version="1.0" file="" uid="9d5bbb00" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="0" numOutputs="0"
+            isShell="0"/>
+    <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="disabled"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="disabled"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="22" x="0.3744414655942806" y="0.4621359223300971" uiLastX_Normal="362"
+          uiLastY_Normal="261" uiopen_Normal="1">
+    <PLUGIN name="trax" format="VST3" category="Fx" manufacturer="Technobear"
+            version="1.0.1" file="/Users/kodiak/Library/Audio/Plug-Ins/VST3/trax.vst3"
+            uid="aea9cd19" isInstrument="0" fileTime="18eb3dccab2" infoUpdateTime="18eb3dfd30a"
+            numInputs="8" numOutputs="2" isShell="0"/>
+    <STATE>675.VMjLgno....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9PiLx3xcqDjKtPjKt3hKlIjKt3hKogiUgYWPlIFciEiXtvTahESRF4RZ2EiVpEjKYI2ZGkkKLYTXp0zQt3VQrI1bAYWXygiQY4hKGEldMcjK5kzUXMSPt3hKt3hK3sRPt3BSqbjKt.kTNEjKt3hKt3RdqDjKt3hKt3hKt3RdqDjKt3hKt3hKt3RdqDjKt3hKt3hKt3RdqDjKt3hKt3hKt3RdqDjKtbCUUQUPt3hKt3hK5sRPt3hKt3hKt.kKt3hKtf2JA4hKLsxQt3BTR4TPt3hKt3hK4sRPt3hKt3hKt3hK4sRPt3hKt3hKt3hK4sRPt3hKt3hKt3hK4sRPt3hKt3hKt3hK4sRPt3xMTUEUA4hKt3hKtn2JA4hKt3hKt3hYt3hKt3BdqDjKtvzJG4hKPIkSA4hKt3hKtj2JA4hKt3hKt3hKtj2JA4hKt3hKt3hKtj2JA4hKt3hKt3hKtj2JA4hKt3hKt3hKtj2JA4hK2PUUTEjKt3hKt3hdqDjKt3hKt3hK14hKt3hK3sRPt3BSqbjKt.kTNEjKt3hKt3RdqDjKt3hKt3hKt3RdqDjKt3hKt3hKt3RdqDjKt3hKt3hKt3RdqDjKt3hKt3hKt3RdqDjKtbCUUQUPt3hKt3hK5sRPt3hKt3hKt3hKt3hKt3hKt3hKtQUUCUEQTg2ZrM1YQcUVDUjQicVPP4RPHQEY1UTLhkWPP4RPL4hKi4hKt3hKt3hKtXlTU0DUQAURWoULEYzXqEEUXoWQFwyKIMzasA2atUlaz4COuX0TTMCTrU2Yo41TzEFck4C.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+        <BUS index="2" layout="C"/>
+        <BUS index="3" layout="C"/>
+        <BUS index="4" layout="C"/>
+        <BUS index="5" layout="C"/>
+        <BUS index="6" layout="C"/>
+        <BUS index="7" layout="C"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="C"/>
+        <BUS index="1" layout="C"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+</FILTERGRAPH>

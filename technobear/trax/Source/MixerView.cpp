@@ -29,7 +29,7 @@ void MixerView::drawView(Graphics &g) {
     ssp::MiniBasicView::drawView(g);
     g.setColour(Colours::yellow);
     g.setFont(Font(Font::getDefaultMonospacedFontName(), 20, Font::plain));
-    g.drawSingleLineText("XMix", 10 * COMPACT_UI_SCALE, 10 * COMPACT_UI_SCALE);
+    g.drawSingleLineText("Trax", 10 * COMPACT_UI_SCALE, 10 * COMPACT_UI_SCALE);
 }
 
 
