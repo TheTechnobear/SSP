@@ -99,7 +99,7 @@ std::string Module::getPluginFile(const std::string &mname) {
     }
 
 #else
-    File plugInDir(pluginPath);
+    juce::File plugInDir(pluginPath);
     if (plugInDir.exists()) {
         std::string absPath = plugInDir.getFullPathName().toStdString();
         file = absPath + std::string("/") + mname + ".so";
@@ -182,8 +182,7 @@ void Module::scanPlugins(std::vector<std::string> &supportedModules) {
         }
     }
 #else
-    for (DirectoryEntry entry : RangedDirectoryIterator(File(pluginPath), false, "*.so", File::findFiles)) {
-        // if (!entry.isHidden()) { fileList.push_back(entry.getFile().getFullPathName().toStdString()); }
+    for (juce::DirectoryEntry entry : juce::RangedDirectoryIterator(juce::File(pluginPath), false, "*.so", juce::File::findFiles)) {
         if (!entry.isHidden()) { moduleList.push_back(entry.getFile().getFileNameWithoutExtension().toStdString()); }
     }
 #endif

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <mutex>
 
 #include "Matrix.h"
 #include "Module.h"
@@ -34,6 +35,11 @@ public:
     Module modules_[M_MAX];
 
 
+    std::mutex mutex_;
+    std::condition_variable cv_;
+    bool ready_ = false;
+    bool processed_ = false;
+
 private:
     static constexpr unsigned MAX_MODULES = Track::M_MAX;
     static constexpr int MAX_IO_IN = 8;
@@ -52,4 +58,5 @@ private:
     Matrix matrix_;
     std::atomic_flag lock_ = ATOMIC_FLAG_INIT;
 
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Track)
 };

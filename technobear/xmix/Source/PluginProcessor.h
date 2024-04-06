@@ -125,9 +125,14 @@ private:
 
     std::vector<std::string> supportedModules_;
 
+    bool shouldExit();
+    bool shouldExit_ = false;
+    
 
     Track tracks_[MAX_TRACKS];
-
+    // processing thread for each track
+    std::vector<std::thread> trackThreads_;
+    
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
 

@@ -89,7 +89,7 @@ void Track::prepare(int sampleRate, int blockSize) {
 }
 
 void Track::process(juce::AudioSampleBuffer &ioBuffer) {
-    if (!lock_.test_and_set()) {
+   if (!lock_.test_and_set()) {
         size_t n = blockSize_;
         auto &inMod = modules_[M_IN];
         for (int c = 0; c < MAX_IO_IN; c++) { inMod.audioBuffer_.copyFrom(c, 0, ioBuffer, c, 0, n); }
@@ -114,7 +114,6 @@ void Track::process(juce::AudioSampleBuffer &ioBuffer) {
         }
         auto &outMod = modules_[M_OUT];
         for (int c = 0; c < MAX_IO_OUT; c++) { ioBuffer.copyFrom(c, 0, outMod.audioBuffer_, c, 0, n); }
-
         lock_.clear();
     }
 }

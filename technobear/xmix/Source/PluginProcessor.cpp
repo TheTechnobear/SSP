@@ -30,10 +30,64 @@ PluginProcessor::PluginProcessor(const AudioProcessor::BusesProperties &ioLayout
                                  AudioProcessorValueTreeState::ParameterLayout layout)
     : BaseProcessor(ioLayouts, std::move(layout)) {
     init();
-    for (unsigned t = 0; t < MAX_TRACKS; t++) { tracks_[t].createDefaultRoute(t, t + MAX_TRACKS); }
+
+    int trackIdx = 0;
+    for (auto &track : tracks_) {
+        track.createDefaultRoute(trackIdx, trackIdx + MAX_TRACKS);
+        // create thread for each track, place into trackThreads_
+        trackThreads_.emplace_back([this, trackIdx] {
+            bool running = true;
+            while (running) {
+                std::unique_lock<std::mutex> lk(tracks_[trackIdx].mutex_);
+                tracks_[trackIdx].cv_.wait(lk, [this, trackIdx] { return tracks_[trackIdx].ready_; });
+                tracks_[trackIdx].ready_ = false;
+                if (!shouldExit()) {
+                    processTrack(tracks_[trackIdx], threadBuffers_[trackIdx]);
+                } else {
+                    running = false;
+                }
+                tracks_[trackIdx].processed_ = true;
+                lk.unlock();
+                tracks_[trackIdx].cv_.notify_one();
+            }
+        });
+        trackIdx++;
+    }
+#ifndef __APPLE__
+    for (int i = 0; i < trackThreads_.size(); i++) {
+        cpu_set_t cpuset;
+        CPU_ZERO(&cpuset);
+        int cpu = i % 2 == 0 ? 2 : 3;
+        CPU_SET(cpu, &cpuset);
+        int rc = pthread_setaffinity_np(trackThreads_[i].native_handle(), sizeof(cpu_set_t), &cpuset);
+        if (rc != 0) {
+            log("Trax : Error calling pthread_setaffinity_np: " + std::to_string(rc));
+        } else {
+            log("Trax : Set affinity for dsp thread " + std::to_string(i) + " to CPU " + std::to_string(cpu));
+        }
+    }
+#endif
+
+    for (auto &t : trackThreads_) { t.detach(); }
+}
+
+bool PluginProcessor::shouldExit() {
+    return shouldExit_;
 }
 
 PluginProcessor::~PluginProcessor() {
+    shouldExit_ = true;
+
+    for (auto &track : tracks_) {
+        std::lock_guard lk(track.mutex_);
+        track.ready_ = true;
+        track.cv_.notify_one();
+    }
+
+    for (auto &t : trackThreads_) {
+        if (t.joinable()) t.join();
+    }
+
     for (auto &track : tracks_) {
         for (auto &module : track.modules_) { module.free(); }
     }
@@ -90,8 +144,20 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     for (auto &track : tracks_) {
         auto &tBuf = threadBuffers_[trackIdx];
         for (int c = 0; c < I_MAX; c++) { tBuf.copyFrom(c, 0, buffer, c, 0, n); }
-        processTrack(track, tBuf);
+
+        std::lock_guard lk(track.mutex_);
+        track.processed_ = false;
+        track.ready_ = true;
+        track.cv_.notify_one();
+        // call processTrack in a separate thread
+        // std::thread([this, &track, &tBuf] { processTrack(track, tBuf); }).detach();
+        // processTrack(track, tBuf);
         trackIdx++;
+    }
+
+    for (auto &track : tracks_) {
+        std::unique_lock<std::mutex> lk(track.mutex_);
+        track.cv_.wait(lk, [&track] { return track.processed_; });
     }
 
     // pluginprocessr thread

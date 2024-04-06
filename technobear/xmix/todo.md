@@ -8,11 +8,8 @@ aim to have everything basically functional
 - rename matrix to -> ?
 - rename XMIX to Trax
 - rename DMOD to Dual
-- threading of DSP (tracks)
-- test on ssp
 - define first use-case for milestone 2
 
-- consider locking strategy... do we need both track and module?
 
 ## milestone 2 - usability test/refine
 - clkd/omod mini editor need value button
@@ -20,6 +17,7 @@ aim to have everything basically functional
 - UI is clear and rational.
 - start improving UI elements in Trax
 - make a minimum set of usable plugins , aka first-use case
+- consider locking strategy... do we need both track and module?
 
 ## miletone 3 - refinements
 - more UI refinements to Trax
