@@ -225,14 +225,14 @@ void PluginEditor::onButton(unsigned btn, bool v) {
 }
 
 void PluginEditor::onLeftButton(bool v) {
-    leftBtn_.value(v);
+    leftBtn_.onButton(v);
     if (!v) {
         chgParamPage(-1, true);
     }
 }
 
 void PluginEditor::onRightButton(bool v) {
-    rightBtn_.value(v);
+    rightBtn_.onButton(v);
     if (!v) {
         chgParamPage(1, true);
     }
@@ -240,7 +240,7 @@ void PluginEditor::onRightButton(bool v) {
 
 
 void PluginEditor::onDownButton(bool v) {
-    downBtn_.value(v);
+    downBtn_.onButton(v);
     if (!v) {
         auto &view = views_[view_];
         unsigned bmode = buttonPage_ + 1 >= view.buttonPages_.size() ? 0 : buttonPage_ + 1;

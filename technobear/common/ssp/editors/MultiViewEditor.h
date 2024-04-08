@@ -32,8 +32,6 @@ public:
 
 
 protected:
-    using base_type = BaseEditor;
-
     virtual void chgParamPage(int delta, bool changeVis = false);
     virtual void setParamPage(unsigned p, bool changeVis = false);
     virtual void chgButtonPage(int delta);
@@ -75,6 +73,7 @@ protected:
     unsigned buttonPage_ = 0;
 
 private:
+    using base_type = BaseEditor;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MultiViewEditor)
 };
 

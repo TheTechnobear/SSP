@@ -14,7 +14,6 @@ class SingleViewEditor :
     public BaseEditor {
 
 public:
-    using base_type = BaseEditor;
     explicit SingleViewEditor(BaseProcessor *p);
 
     virtual void onEncoder(unsigned enc, float v);
@@ -53,6 +52,7 @@ protected:
     unsigned buttonPage_ = 0;
 
 private:
+    using base_type = BaseEditor;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SingleViewEditor)
 };
 

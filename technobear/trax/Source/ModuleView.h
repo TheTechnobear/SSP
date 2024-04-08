@@ -36,6 +36,8 @@ public:
     }
 
 private:
+    using base_type = ssp::BaseView;
+    
     static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
     static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
 

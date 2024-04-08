@@ -4,7 +4,7 @@
 #include "Track.h"
 
 
-MatrixView::MatrixView(PluginProcessor& p) : ssp::MiniBasicView(&p, nullptr), processor_(p) {
+MatrixView::MatrixView(PluginProcessor& p) : base_type(&p, nullptr), processor_(p) {
     addButton(7, std::make_shared<ssp::ValueButton>("Delete", [&](bool b) {
                   if (!b) onRemoveBtn();
               }));
@@ -62,6 +62,7 @@ void MatrixView::resized() {
 
 
 void MatrixView::drawView(Graphics& g) {
+    base_type::drawView(g);
     int x = LS;
     int y = LS;
     int width = (SSP_COMPACT_WIDTH - (4 * LS)) / 2;

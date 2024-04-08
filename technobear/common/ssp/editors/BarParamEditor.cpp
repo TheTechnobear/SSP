@@ -77,7 +77,7 @@ BaseEditor::ControlPage BarParamEditor::addParamPage(
 
 
 void BarParamEditor::onUpButton(bool v) {
-    upBtn_.value(v);
+    upBtn_.onButton(v);
 
     if (v) return; // change on button up
 
@@ -85,7 +85,7 @@ void BarParamEditor::onUpButton(bool v) {
 }
 
 void BarParamEditor::onDownButton(bool v) {
-    downBtn_.value(v);
+    downBtn_.onButton(v);
 
     if (v) return; // change on button up
     chgParamPage(1, false);

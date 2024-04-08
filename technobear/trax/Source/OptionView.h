@@ -12,6 +12,7 @@ public:
     void drawView(Graphics &g) override;
 
 private:
+    using base_type = MiniBasicView;
     static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
     static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
 

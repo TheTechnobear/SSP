@@ -41,7 +41,7 @@ void BaseViewEditor::previousView() {
     if (newView >= 0) { setView(newView); }
 }
 
-unsigned  BaseViewEditor::addView(std::shared_ptr<base_view> view) {
+unsigned  BaseViewEditor::addView(std::shared_ptr<view_type> view) {
     views_.push_back(view);
     view->setBounds(0, 0, 1600, 480);
     addChildComponent(view.get());

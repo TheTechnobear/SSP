@@ -13,6 +13,8 @@ aim to have everything basically functional
 - make a minimum set of usable plugins , aka first-use case
 - consider locking strategy... do we need both track and module?
 - rename matrix to -> ?
+- consider stream protocol versioning
+
 
 ## miletone 3 - refinements
 - more UI refinements to Trax

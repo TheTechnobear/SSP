@@ -149,9 +149,6 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         track.processed_ = false;
         track.ready_ = true;
         track.cv_.notify_one();
-        // call processTrack in a separate thread
-        // std::thread([this, &track, &tBuf] { processTrack(track, tBuf); }).detach();
-        // processTrack(track, tBuf);
         trackIdx++;
     }
 

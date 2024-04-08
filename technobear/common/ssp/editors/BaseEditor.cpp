@@ -68,27 +68,27 @@ void BaseEditor::onButton(unsigned btn, bool v) {
 
 
 void BaseEditor::onLeftButton(bool v) {
-    leftBtn_.value(v);
+    leftBtn_.onButton(v);
 }
 
 void BaseEditor::onRightButton(bool v) {
-    rightBtn_.value(v);
+    rightBtn_.onButton(v);
 }
 
 void BaseEditor::onUpButton(bool v) {
-    upBtn_.value(v);
+    upBtn_.onButton(v);
 }
 
 void BaseEditor::onDownButton(bool v) {
-    downBtn_.value(v);
+    downBtn_.onButton(v);
 }
 
 void BaseEditor::onLeftShiftButton(bool v) {
-    leftShiftBtn_.value(v);
+    leftShiftBtn_.onButton(v);
 }
 
 void BaseEditor::onRightShiftButton(bool v) {
-    rightShiftBtn_.value(v);
+    rightShiftBtn_.onButton(v);
 }
 
 }

@@ -17,9 +17,7 @@ public:
     void trackIdx(unsigned t) { trackIdx_ = t; }
 
 private:
-    static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
-    static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
+    using base_type = MiniBasicView;
     unsigned trackIdx_;
-
     PluginProcessor &processor_;
 };

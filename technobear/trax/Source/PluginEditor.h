@@ -16,16 +16,10 @@ public:
     ~PluginEditor() override = default;
 
 protected:
-    using base_type = ssp::MultiView<ssp::BaseView>;
-
-    void eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress) override;
+    void eventButton(unsigned btn,bool longPress) override;
     void eventUp(bool longPress) override;
-
 private:
-
-    static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
-    static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
-
+    using base_type = ssp::MultiView<ssp::BaseView>;
 
     PluginProcessor &processor_;
 

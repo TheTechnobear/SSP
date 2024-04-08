@@ -13,7 +13,7 @@ std::string nicePlugName(const std::string &n) {
 
 
 LoadModuleView::LoadModuleView(PluginProcessor &p, bool compactUI)
-    : ssp::BaseView(&p, compactUI),
+    : base_type(&p, compactUI),
       processor_(p),
       scanBtn_("Scan", nullptr, 32, Colours::white, Colours::black),
       loadBtn_("Load", nullptr, 32, Colours::white, Colours::black),

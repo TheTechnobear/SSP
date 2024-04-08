@@ -9,7 +9,6 @@ public:
     TableParamEditor(BaseProcessor *p);
 
 protected:
-    using base_type=ssp::SingleViewEditor;
 
     void drawView(Graphics &) override;
 
@@ -26,6 +25,7 @@ protected:
     ) override;
 
 private:
+    using base_type=ssp::SingleViewEditor;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TableParamEditor)
 
 };

@@ -18,18 +18,17 @@ PluginEditor::PluginEditor(PluginProcessor &p) : base_type(&p, false), processor
 }
 
 
-void PluginEditor::eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress) {
+void PluginEditor::eventButton(unsigned btn, bool longPress) {
     auto v = getViewIdx();
     if (v == mixerViewIdx_) {
-        if (comboBtn == SSP_Up) {
-            if (btn < PluginProcessor::MAX_TRACKS) {
-                trackEditor_->trackIdx(btn);
-                setView(trackEditorIdx_);
-                return;
-            }
+
+        if (btn >= PluginProcessor::MAX_TRACKS) {
+            trackEditor_->trackIdx(btn - PluginProcessor::MAX_TRACKS);
+            setView(trackEditorIdx_);
+            return;
         }
     }
-    base_type::eventButtonCombo(btn, comboBtn, longPress);
+    base_type::eventButton(btn, longPress);
 }
 
 

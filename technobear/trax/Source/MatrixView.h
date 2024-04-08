@@ -19,15 +19,13 @@ public:
 
 protected:
 private:
-
+    using base_type = ssp::MiniBasicView;
     static constexpr int FH = 12 * COMPACT_UI_SCALE;
     static constexpr int LS = FH;
 
     String jackName(bool inOut, const Matrix::Jack& jack);
     String wireAsString( Matrix::Wire& wire);
 
-    static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
-    static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
     unsigned trackIdx_;
 
     ssp::ListControl<> connectionList_;

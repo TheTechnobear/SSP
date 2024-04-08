@@ -40,9 +40,9 @@ public:
     void eventRight(bool v) override;
 
 protected:
-    using base_type = MultiViewEditor;
 
 private:
+    using base_type = MultiViewEditor;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MultiBarEditor)
 };
 

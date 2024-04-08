@@ -3,24 +3,8 @@
 #include "Module.h"
 
 
-// #ifdef __APPLE__
-// #include <sstream>
-// #include <thread>
-// void mvlog(const std::string &m) {
-//     std::stringstream msg;
-//     msg << std::this_thread::get_id() << " : " << m;
-//     juce::Logger::writeToLog(msg.str());
-// }
-// #else
-// #include <fstream>
-// #include <thread>
-// void mvlog(const std::string &m) {
-//     std::ofstream s("/dev/kmsg");
-//     s << std::this_thread::get_id() << " : " << m << std::endl;
-// }
-// #endif
 
-ModuleView::ModuleView(PluginProcessor &p) : ssp::BaseView(&p, false), processor_(p) {
+ModuleView::ModuleView(PluginProcessor &p) : base_type(&p, false), processor_(p) {
     if (processor_.getSupportedModules().size() == 0) { processor_.scanPlugins(); }
 }
 
@@ -28,11 +12,12 @@ ModuleView::~ModuleView() {
 }
 
 void ModuleView::drawView(Graphics &g) {
+    base_type::drawView(g);
     drawModulePanel(g);
 }
 
 void ModuleView::onSSPTimer() {
-    ssp::BaseView::onSSPTimer();
+    base_type::onSSPTimer();
     if (pComponent_) pComponent_->repaint();
 }
 

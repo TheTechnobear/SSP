@@ -28,6 +28,9 @@ SystemEditor::SystemEditor(BaseProcessor *p) :
     midiOutCtrl_("Midi OUT", [&](float idx, const std::string &str) { midiOutCallback(idx, str); }),
     midiChannelCtrl_("Midi Channel", [&](float idx, const std::string &str) { midiChannelCallback(idx, str); }) {
 
+    learnBtn_.setToggle(true);
+    noteInputBtn_.setToggle(true);
+    
     setButtonBounds(leftShiftBtn_, 0, 4);
     setButtonBounds(upBtn_, 0, 5);
     setButtonBounds(rightShiftBtn_, 0, 6);
@@ -326,15 +329,15 @@ void SystemEditor::onEncoderSwitch(unsigned enc, bool v) {
 void SystemEditor::onButton(unsigned btn, bool v) {
     switch (btn) {
         case 0: {
-            if (!v) learnBtn_.toggle();
+            learnBtn_.onButton(v);
             break;
         }
         case 1: {
-            if (!v) noteInputBtn_.toggle();
+            noteInputBtn_.onButton(v);
             break;
         }
         case 4: {
-            delBtn_.value(v);
+            delBtn_.onButton(v);
             break;
         }
         default:
@@ -344,27 +347,27 @@ void SystemEditor::onButton(unsigned btn, bool v) {
 
 
 void SystemEditor::onLeftButton(bool v) {
-    leftBtn_.value(v);
+    leftBtn_.onButton(v);
 }
 
 void SystemEditor::onRightButton(bool v) {
-    rightBtn_.value(v);
+    rightBtn_.onButton(v);
 }
 
 void SystemEditor::onUpButton(bool v) {
-    upBtn_.value(v);
+    upBtn_.onButton(v);
 }
 
 void SystemEditor::onDownButton(bool v) {
-    downBtn_.value(v);
+    downBtn_.onButton(v);
 }
 
 void SystemEditor::onLeftShiftButton(bool v) {
-    leftShiftBtn_.value(v);
+    leftShiftBtn_.onButton(v);
 }
 
 void SystemEditor::onRightShiftButton(bool v) {
-    rightShiftBtn_.value(v);
+    rightShiftBtn_.onButton(v);
 }
 
 

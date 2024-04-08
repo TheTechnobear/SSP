@@ -30,10 +30,12 @@ public:
     bool requestMatrixConnect(const Matrix::Jack &src, const Matrix::Jack &dest);
     bool requestMatrixDisconnect(const Matrix::Jack &src, const Matrix::Jack &dest);
 
-    enum ModuleIdx { M_IN, M_MOD, M_USER_1, M_USER_2, M_USER_3, M_OUT, M_MAX };
+    enum ModuleIdx { M_IN, M_SLOT_1, M_SLOT_2, M_SLOT_3, M_SLOT_4, M_OUT, M_MAX };
 
     Module modules_[M_MAX];
 
+    void mute(bool m) { mute_ = m; }
+    bool mute() const { return mute_; }
 
     std::mutex mutex_;
     std::condition_variable cv_;
@@ -53,6 +55,9 @@ private:
     void resetModuleConnections(int midx);
     int sampleRate_ = 48000;
     int blockSize_ = 128;
+    bool mute_ = false;
+    float level_ = 1.0f;
+
     std::shared_ptr<InputModule::PluginInterface> trackIn_;
     std::shared_ptr<OutputModule::PluginInterface> trackOut_;
     Matrix matrix_;

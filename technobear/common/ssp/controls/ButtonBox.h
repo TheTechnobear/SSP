@@ -15,6 +15,7 @@ public:
 
     void addButton(unsigned idx, const std::shared_ptr<ValueButton> &p);
     void onButton(unsigned id, bool v);
+    std::shared_ptr<ValueButton>  getButton(unsigned idx);
 
 private:
     void paint(juce::Graphics &g) override;

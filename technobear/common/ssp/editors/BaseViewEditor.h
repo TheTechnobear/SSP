@@ -40,22 +40,22 @@ public:
     void editorHidden() override;
 
 protected:
-    using base_type = BaseEditor;
-    using base_view = BaseEditor;
+    using view_type = BaseEditor;
 
     void drawView(juce::Graphics &g) override;
     void resized() override;
-    unsigned addView(std::shared_ptr<base_view>);
+    unsigned addView(std::shared_ptr<view_type>);
 
     virtual void setView(unsigned newView);
     void nextView();
     void previousView();
 
-    std::vector<std::shared_ptr<base_view>> views_;
+    std::vector<std::shared_ptr<view_type>> views_;
 
     int view_ = -1;
 
 private:
+    using base_type = BaseEditor;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(BaseViewEditor)
 };
 

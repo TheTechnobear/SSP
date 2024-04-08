@@ -8,7 +8,6 @@ class LineParamEditor : public SingleViewEditor {
 public:
     LineParamEditor(BaseProcessor *p);
 
-    using base_type=ssp::SingleViewEditor;
 
     void drawView(juce::Graphics &) override;
 
@@ -24,6 +23,7 @@ protected:
     void setParamBounds(unsigned idx, std::shared_ptr<BaseParamControl>);
 
 private:
+    using base_type=ssp::SingleViewEditor;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LineParamEditor)
 
 };

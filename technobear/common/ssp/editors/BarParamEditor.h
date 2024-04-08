@@ -8,8 +8,6 @@ class BarParamEditor : public LineParamEditor {
 public:
     BarParamEditor(BaseProcessor *p, bool autoColour=true);
 
-    using base_type = ssp::LineParamEditor;
-
     void drawView(Graphics &) override;
 
     void onUpButton(bool v) override;
@@ -22,6 +20,7 @@ public:
     ) override;
 
 protected:
+    using base_type = ssp::LineParamEditor;
     void setParamBounds(unsigned page, unsigned idx, std::shared_ptr<BaseParamControl>);
 
     // colour page parameters using std colour scheme

@@ -232,7 +232,7 @@ void PluginEditor::resized() {
 }
 
 void PluginEditor::onLeftShiftButton(bool v) {
-    leftShiftBtn_.value(v);
+    leftShiftBtn_.onButton(v);
     if (!v) {
         switch (encoderMode_) {
             case E_CV : {
@@ -257,7 +257,7 @@ void PluginEditor::onLeftShiftButton(bool v) {
 }
 
 void PluginEditor::onRightShiftButton(bool v) {
-    rightShiftBtn_.value(v);
+    rightShiftBtn_.onButton(v);
     if (!v) {
         encoderMode_ = (EncoderMode) ((encoderMode_ + 1) % MAX_ENCODER_MODE);
         setView(currentLayer_ + (encoderMode_ == E_CV ? 0 : MAX_LAYERS));
@@ -266,7 +266,7 @@ void PluginEditor::onRightShiftButton(bool v) {
 
 
 void PluginEditor::onUpButton(bool v) {
-    upBtn_.value(v);
+    upBtn_.onButton(v);
     if (!v) {
         chgParamPage(-1);
         unsigned nextP = buttonPage_;
@@ -277,7 +277,7 @@ void PluginEditor::onUpButton(bool v) {
 }
 
 void PluginEditor::onDownButton(bool v) {
-    downBtn_.value(v);
+    downBtn_.onButton(v);
     if (!v) {
         chgParamPage(1);
         unsigned nextP = buttonPage_;
@@ -289,7 +289,7 @@ void PluginEditor::onDownButton(bool v) {
 }
 
 void PluginEditor::onLeftButton(bool v) {
-    leftBtn_.value(v);
+    leftBtn_.onButton(v);
     if (!v) {
         if (currentLayer_ > 0) {
             currentLayer_--;
@@ -299,7 +299,7 @@ void PluginEditor::onLeftButton(bool v) {
 }
 
 void PluginEditor::onRightButton(bool v) {
-    rightBtn_.value(v);
+    rightBtn_.onButton(v);
     if (!v) {
         if (currentLayer_ < (MAX_LAYERS - 1)) {
             currentLayer_++;

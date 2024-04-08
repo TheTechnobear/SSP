@@ -83,11 +83,11 @@ BaseEditor::ControlPage TableParamEditor::addParamPage(
 
 
 void TableParamEditor::onUpButton(bool v) {
-    upBtn_.value(v);
+    upBtn_.onButton(v);
 }
 
 void TableParamEditor::onDownButton(bool v) {
-    downBtn_.value(v);
+    downBtn_.onButton(v);
 }
 
 

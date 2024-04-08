@@ -115,6 +115,16 @@ public:
     void savePreset();
     void loadPreset();
 
+    void muteTrack(unsigned t, bool mute) {
+        if (t >= MAX_TRACKS) return;
+        tracks_[t].mute(mute);
+    }
+
+    bool muteTrack(unsigned t) {
+        if (t >= MAX_TRACKS) return false;
+        return tracks_[t].mute();
+    }
+
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 

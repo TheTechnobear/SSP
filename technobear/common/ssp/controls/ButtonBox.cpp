@@ -55,10 +55,15 @@ void ButtonBox::addButton(unsigned idx, const std::shared_ptr<ValueButton> &p) {
     }
 }
 
+std::shared_ptr<ValueButton> ButtonBox::getButton(unsigned idx) {
+    if (idx < maxUserBtns) return buttons_[idx];
+    return nullptr;
+}
+
 void ButtonBox::onButton(unsigned id, bool v) {
     if (id >= maxUserBtns || buttons_[id] == nullptr) return;
     auto &btn = buttons_[id];
-    btn->valueChanged(v);
+    btn->onButton(v);
 }
 
 }  // namespace ssp

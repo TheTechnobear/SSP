@@ -75,15 +75,17 @@ public:
     ~MiniBasicView() = default;
 
     void addButton(unsigned idx, const std::shared_ptr<ValueButton> &p);
+    std::shared_ptr<ValueButton> getButton(unsigned idx);
     void resized() override;
+    
     int  canvasHeight() { return canvasH_;}
 protected:
-    using base_type = BaseView;
     void onButton(unsigned int id, bool v) override;
 
     // void drawView(Graphics &) override;
 
 private:
+    using base_type = BaseView;
     unsigned paramOffset_ = 0;
     static constexpr unsigned nParamPerPage = 4;
     static constexpr unsigned scale = COMPACT_UI_SCALE;
@@ -107,9 +109,8 @@ public:
     explicit BaseMiniView(BaseProcessor *p);
     ~BaseMiniView() = default;
 
-    using base_type = MultiView<BaseView>;
-
 private:
+    using base_type = MultiView<BaseView>;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(BaseMiniView)
 };
 

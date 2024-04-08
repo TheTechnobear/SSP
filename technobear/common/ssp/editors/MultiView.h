@@ -43,7 +43,6 @@ public:
 
     void onSSPTimer() override;
 protected:
-    using base_type = BaseView;
 
     void drawView(juce::Graphics &g) override;
     void resized() override;
@@ -58,6 +57,7 @@ protected:
     int view_ = -1;
 
 private:
+    using base_type = BaseView;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MultiView)
 };
 

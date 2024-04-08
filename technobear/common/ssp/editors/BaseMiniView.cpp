@@ -297,6 +297,10 @@ void MiniBasicView::onButton(unsigned int id, bool v) {
     buttonBox_->onButton(id, v);
 }
 
+std::shared_ptr<ValueButton> MiniBasicView::getButton(unsigned idx) {
+    return buttonBox_->getButton(idx);
+}
+
 
 void MiniBasicView::resized() {
     base_type::resized();

@@ -88,7 +88,7 @@ private:
 
 void PluginEditor::onFileButton(bool v) {
     if (fileBtn_.value() == v) return;
-    fileBtn_.value(v);
+    fileBtn_.onButton(v);
     if (!v) {
         switch (viewMode_) {
             case M_REC :
@@ -118,7 +118,7 @@ void PluginEditor::onFileButton(bool v) {
 
 void PluginEditor::onSaveButton(bool v) {
     if (saveBtn_.value() == v) return;
-    saveBtn_.value(v);
+    saveBtn_.onButton(v);
     if (!v) {
         switch (viewMode_) {
             case M_REC :
@@ -161,7 +161,7 @@ void PluginEditor::onSaveButton(bool v) {
 
 void PluginEditor::onCancelButton(bool v) {
     if (cancelBtn_.value() == v) return;
-    cancelBtn_.value(v);
+    cancelBtn_.onButton(v);
     if (!v) {
         switch (viewMode_) {
             case M_FILE :
@@ -369,7 +369,7 @@ void PluginEditor::onLeftButton(bool v) {
         return;
     }
 
-    leftBtn_.value(v);
+    leftBtn_.onButton(v);
     if (!v) {
         auto &p = processor_.params_.recParams_->layer_;
         int nLayer = normValue(p) - 1.0f;
@@ -393,7 +393,7 @@ void PluginEditor::onRightButton(bool v) {
         return;
     }
 
-    rightBtn_.value(v);
+    rightBtn_.onButton(v);
     if (!v) {
         auto &p = processor_.params_.recParams_->layer_;
         int nLayer = normValue(p) + 1.0f;

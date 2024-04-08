@@ -10,7 +10,7 @@
 
 class LoadPresetView : public ssp::MiniBasicView {
 public:
-    LoadPresetView(PluginProcessor &p, const String& defDir) : ssp::MiniBasicView(&p), processor_(p) {
+    LoadPresetView(PluginProcessor &p, const String& defDir) : base_type(&p), processor_(p) {
         fileControl_ = std::make_shared<ssp::FileSelector>(defDir);
         addAndMakeVisible(fileControl_.get());
         addButton(7, std::make_shared<ssp::ValueButton>("Load", [&](bool b) {
@@ -46,18 +46,19 @@ public:
     }
 
     void editorShown() override {
-        ssp::MiniBasicView::editorShown();
+        base_type::editorShown();
         String fn = fileControl_->baseDir() + File::getSeparatorChar() + processor_.presetName();
         fileControl_->setFile(fn);
     }
 
     void resized() override {
-        ssp::MiniBasicView::resized();
+        base_type::resized();
         fileControl_->setBounds(0, 0, getWidth(), canvasHeight());
     }
 
 
 private:
+    using base_type = ssp::MiniBasicView;
     PluginProcessor &processor_;
     std::shared_ptr<ssp::FileSelector> fileControl_;
 };
@@ -101,7 +102,7 @@ public:
     }
 
     void editorShown() override {
-        ssp::MiniBasicView::editorShown();
+        base_type::editorShown();
         File f(processor_.presetName());
         if(f.exists()) {
             textControl_->setText(f.getFileName().toStdString());
@@ -111,12 +112,12 @@ public:
         }
     }
     void resized() override {
-        ssp::MiniBasicView::resized();
+        base_type::resized();
         textControl_->setBounds(0, 0, getWidth(), canvasHeight());
     }
 
 private:
-    // static constexpr int BB_H = 60;
+    using base_type = ssp::MiniBasicView;
 
     PluginProcessor &processor_;
     std::shared_ptr<ssp::TextControl> textControl_;

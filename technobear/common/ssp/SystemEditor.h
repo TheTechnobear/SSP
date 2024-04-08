@@ -36,8 +36,6 @@ public:
     void deleteAutomation(bool b);
     void noteInput(bool b);
 protected:
-//    using base_type = juce::AudioProcessorEditor;
-
     void paint(Graphics &g) override;
     virtual void drawView(Graphics &g);
 

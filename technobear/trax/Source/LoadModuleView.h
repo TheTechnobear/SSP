@@ -37,6 +37,7 @@ public:
 
     bool moduleUpdated() { return moduleUpdated_;}
 private:
+    using base_type = ssp::BaseView;
     static constexpr unsigned btnTopY = 380 - 1;
     static constexpr unsigned btnSpaceY = 50;
 

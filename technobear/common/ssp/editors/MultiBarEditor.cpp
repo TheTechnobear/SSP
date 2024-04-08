@@ -107,11 +107,11 @@ void MultiBarEditor::setView(unsigned v) {
 }
 
 void MultiBarEditor::onUpButton(bool v) {
-    upBtn_.value(v);
+    upBtn_.onButton(v);
 }
 
 void MultiBarEditor::onDownButton(bool v) {
-    downBtn_.value(v);
+    downBtn_.onButton(v);
 }
 
 

@@ -4,11 +4,8 @@
 
 namespace ssp {
 
-ValueButton::ValueButton(const String &label,
-                         std::function<void(bool v)> cb,
-                         unsigned fh,
-                         const Colour fg, const Colour bg,
-                         bool def)
+ValueButton::ValueButton(const String &label, std::function<void(bool v)> cb, unsigned fh, const Colour fg,
+                         const Colour bg, bool def)
     : label_(label), value_(def), callback_(cb), fh_(fh), fg_(fg), bg_(bg) {
 }
 
@@ -18,16 +15,10 @@ void ValueButton::valueChanged(bool b) {
 }
 
 void ValueButton::value(bool v) {
-    if (v != value_) {
+    if(value_ != v) {
         value_ = v;
         valueChanged(value_);
     }
-
-}
-
-bool ValueButton::toggle() {
-    value(!value_);
-    return value_;
 }
 
 
@@ -50,4 +41,4 @@ void ValueButton::paint(Graphics &g) {
     g.drawText(label_, 0, 0, w, h, Justification::centred);
 }
 
-}
+}  // namespace ssp

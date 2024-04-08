@@ -15,11 +15,11 @@ public:
     void onSSPTimer() override;
 
     void resized() override;
+    void editorShown() override;
+    
 private:
+    using base_type = ssp::MiniBasicView;
+
     ssp::StereoVuMeter vuMeters_[4];
-
-    static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
-    static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
-
     PluginProcessor &processor_;
 };
