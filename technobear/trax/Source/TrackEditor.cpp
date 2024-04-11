@@ -1,6 +1,5 @@
 #include "TrackEditor.h"
 
-#include "AddRouteView.h"
 #include "LoadModuleView.h"
 #include "MatrixView.h"
 #include "ModuleView.h"
@@ -19,10 +18,8 @@ TrackEditor::TrackEditor(PluginProcessor &p) : base_type(&p, false), processor_(
 
     matrixView_ = std::make_shared<MatrixView>(processor_);
     matrixViewIdx_ = addView(matrixView_);
-
-    addRouteView_ = std::make_shared<AddRouteView>(processor_);
-    addRouteViewIdx_ = addView(addRouteView_);
 }
+
 
 TrackEditor::~TrackEditor() {
 }
@@ -37,14 +34,20 @@ void TrackEditor::resized() {
     moduleView_->setBounds(0, 0, pluginWidth, pluginHeight);
     loadModuleView_->setBounds(0, 0, pluginWidth, pluginHeight);
     matrixView_->setBounds(0, 0, pluginWidth, pluginHeight);
-    addRouteView_->setBounds(0, 0, pluginWidth, pluginHeight);
 }
 
 void TrackEditor::editorShown() {
     trackView_->trackIdx(trackIdx_);
-    matrixView_->trackIdx(trackIdx_);
-    addRouteView_->trackIdx(trackIdx_);
     setView(trackViewIdx_);
+}
+
+void TrackEditor::eventUp(bool longpress) {
+    auto v = getViewIdx();
+
+    if (!longpress) {
+        if (v == matrixViewIdx_ || v == loadViewIdx_) { setView(trackViewIdx_); }
+    }
+    base_type::eventUp(longpress);
 }
 
 
@@ -62,10 +65,12 @@ void TrackEditor::eventButton(unsigned btn, bool longPress) {
                 setView(loadViewIdx_);
             }
             return;
-        } else if (btn == 4) {
+        } else if (btn >= 4) {
+            auto modIdx = btn - 4;
+            matrixView_->moduleIdx(trackIdx_, modIdx + 1);
             setView(matrixViewIdx_);
-        } else if (btn == 5) {
-            setView(addRouteViewIdx_);
+            // } else if (btn == 5) {
+            //     setView(addRouteViewIdx_);
         }
     }
 
@@ -96,6 +101,4 @@ void TrackEditor::eventButton(unsigned btn, bool longPress) {
 void TrackEditor::trackIdx(unsigned t) {
     trackIdx_ = t;
     trackView_->trackIdx(trackIdx_);
-    matrixView_->trackIdx(trackIdx_);
-    addRouteView_->trackIdx(trackIdx_);
 }

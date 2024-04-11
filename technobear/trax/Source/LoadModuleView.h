@@ -20,9 +20,6 @@ public:
     void onEncoderSwitch(unsigned enc, bool v) override;
 
     void eventButton(unsigned btn, bool v) override;
-    void eventUp(bool v) override;
-    void eventDown(bool v) override;
-
 
     void drawView(Graphics &g) override;
     void editorShown() override;

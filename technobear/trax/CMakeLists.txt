@@ -48,7 +48,6 @@ target_sources(TRAX
         Source/ModuleView.cpp
         Source/LoadModuleView.cpp
         Source/MatrixView.cpp
-        Source/AddRouteView.cpp
         Source/MixerView.cpp
         Source/OptionView.cpp
         ${COMMON_SRC}

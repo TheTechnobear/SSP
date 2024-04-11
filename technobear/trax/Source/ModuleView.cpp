@@ -47,7 +47,6 @@ void ModuleView::editorShown() {
         pComponent_ = editor_->editorComponent();
         addChildComponent(pComponent_);
         pComponent_->setBounds(0, 0, pluginWidth, pluginHeight);
-        pComponent_->resized();
         // juce crashes if we let mouse events go to components
         // possibly something to do with AudioProcessorEditor and us using 'its' component!
         pComponent_->setInterceptsMouseClicks(false, false);

@@ -98,15 +98,6 @@ void LoadModuleView::loadModule() {
     }
 }
 
-void LoadModuleView::eventUp(bool v) {
-    if (v) return;
-    moduleList_.prevItem();
-}
-
-void LoadModuleView::eventDown(bool v) {
-    if (v) return;
-    moduleList_.nextItem();
-}
 
 void LoadModuleView::onEncoder(unsigned enc, float v) {
     if (v > 0)

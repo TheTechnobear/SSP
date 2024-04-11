@@ -2,12 +2,13 @@
 
 TrackView::TrackView(PluginProcessor &p) : base_type(&p, nullptr), processor_(p) {
     for (int i = Track::M_SLOT_1; i <= Track::M_SLOT_4; i++) {
-        auto btn = std::make_shared<ssp::ValueButton>("Slot " + String(i), [&](bool b) {});
-        addButton(i - Track::M_SLOT_1, btn);
+        auto pbtn = std::make_shared<ssp::ValueButton>("Slot " + String(i), [&](bool b) {});
+        addButton(i - Track::M_SLOT_1, pbtn);
+
+        auto sbtn = std::make_shared<ssp::ValueButton>("Route", [&](bool b) {});
+        addButton(i + Track::M_SLOT_4 - 1, sbtn);
     }
 
-    addButton(4, std::make_shared<ssp::ValueButton>("Matrix", [&](bool b) {}));
-    addButton(5, std::make_shared<ssp::ValueButton>("Add Route", [&](bool b) {}));
 }
 
 TrackView::~TrackView() {

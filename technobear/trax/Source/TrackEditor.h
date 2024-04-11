@@ -23,6 +23,7 @@ public:
     void editorShown() override;
 
     void trackIdx(unsigned t);
+    void eventUp(bool longpress) override;
     void eventButton(unsigned btn, bool longPress) override;
 
     void resized() override;

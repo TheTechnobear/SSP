@@ -11,16 +11,13 @@ namespace ssp {
 template <class T = juce::String>
 class ListControl : public juce::Component {
 public:
-    explicit ListControl() = default;
+    explicit ListControl(std::function<bool(unsigned)> isSelected = nullptr);
     ~ListControl() = default;
 
     void nextItem();
     void prevItem();
     int idx();
     void idx(int i);
-    int selected();
-    void select();
-
     void clear();
     void addItem(const juce::String& str);
 
@@ -28,20 +25,23 @@ private:
     int curIdx_ = -1;
     int offset_ = 0;
     int nLines_ = 0;
-    int selected_ = -1;
     void paint(juce::Graphics& g) override;
     void resized() override;
 
     static constexpr int FH = 10 * COMPACT_UI_SCALE;
     static constexpr int LS = FH;
     std::vector<juce::String> items_;
+    std::function<bool(unsigned)> isSelected_ = nullptr;
 };
+
+template <class T>
+ListControl<T>::ListControl(std::function<bool(unsigned)> isSelected) : isSelected_(isSelected) {
+}
 
 template <class T>
 void ListControl<T>::clear() {
     items_.clear();
     curIdx_ = -1;
-    selected_ = -1;
     repaint();
 }
 
@@ -76,17 +76,6 @@ void ListControl<T>::prevItem() {
     repaint();
 }
 
-template <class T>
-void ListControl<T>::select() {
-    selected_ = curIdx_;
-    repaint();
-}
-
-template <class T>
-int ListControl<T>::selected() {
-    return selected_;
-}
-
 
 template <class T>
 void ListControl<T>::paint(juce::Graphics& g) {
@@ -104,7 +93,7 @@ void ListControl<T>::paint(juce::Graphics& g) {
         }
 
         juce::String str = items_[i];
-        if (i == selected_) { str = String("[") + str + String("]"); }
+        if (isSelected_ && isSelected_(i)) { str = str + String("*"); }
 
         g.drawSingleLineText(str, x, y);
         y += LS;
