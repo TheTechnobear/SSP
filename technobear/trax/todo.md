@@ -6,9 +6,13 @@
 aim to have everything basically functional
 
 ## milestone 2 - usability test/refine
+general goals:
 - UI is clear and rational.
 - start improving UI elements in Trax
 - ensure the buttons mappings etc feel comfortable to use
+
+
+specific tasks:
 - clkd/omod mini editor need value button
 - make a minimum set of usable plugins , aka first-use case
 - consider locking strategy... do we need both track and module?

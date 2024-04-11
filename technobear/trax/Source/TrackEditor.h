@@ -23,6 +23,8 @@ public:
     void editorShown() override;
 
     void trackIdx(unsigned t);
+
+    void onEncoderSwitch(unsigned enc, bool v) override;
     void eventUp(bool longpress) override;
     void eventButton(unsigned btn, bool longPress) override;
 

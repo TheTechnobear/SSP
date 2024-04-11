@@ -140,32 +140,32 @@ void MatrixView::onEncoderSwitch(unsigned enc, bool v) {
 
     switch (enc) {
         case 0: {
-            // chASelected_[channelA_.idx()] = !chASelected_[channelA_.idx()];
-            // update which channel B are selected
-            repaint();
+            // repaint();
             break;
         }
         case 1: {
-            // if (chASelected_[channelA_.idx()]) { moduleBSelected_[moduleB_.idx()] =
-            // !moduleBSelected_[moduleB_.idx()]; }
-            repaint();
+            // repaint();
             break;
         }
         case 2: {
             // for now, do not allow connections to self
-            if(moduleIdx_ == moduleB_.idx()) return;
+            if (moduleIdx_ == moduleB_.idx()) return;
 
-            if (channelA_.idx() >= 0 && moduleB_.idx() >= 0 ) {
-                // if (chASelected_[channelA_.idx()] && moduleBSelected_[moduleB_.idx()]) {
-                // we assume select is toggling selections
+            if (channelA_.idx() >= 0 && moduleB_.idx() >= 0 && channelB_.idx() >= 0) {
+                Matrix::Jack jackA(moduleIdx_, channelA_.idx());
+                Matrix::Jack jackB(moduleB_.idx(), channelB_.idx());
                 if (!chBSelected_[channelB_.idx()]) {
                     // add new connection
-                    while (!processor_.track(trackIdx_).requestMatrixConnect(
-                        Matrix::Jack(moduleIdx_, channelA_.idx()), Matrix::Jack(moduleB_.idx(), channelB_.idx())));
+                    if (isOutput_)
+                        while (!processor_.track(trackIdx_).requestMatrixConnect(jackA, jackB));
+                    else
+                        while (!processor_.track(trackIdx_).requestMatrixConnect(jackB, jackA));
                 } else {
                     // remove connection.
-                    while (!processor_.track(trackIdx_).requestMatrixDisconnect(
-                        Matrix::Jack(moduleIdx_, channelA_.idx()), Matrix::Jack(moduleB_.idx(), channelB_.idx())));
+                    if (isOutput_)
+                        while (!processor_.track(trackIdx_).requestMatrixDisconnect(jackA, jackB));
+                    else
+                        while (!processor_.track(trackIdx_).requestMatrixDisconnect(jackB, jackA));
                 }
                 refreshSelected();
             }

@@ -51,26 +51,36 @@ void TrackEditor::eventUp(bool longpress) {
 }
 
 
+void TrackEditor::onEncoderSwitch(unsigned enc, bool v) {
+    if (v) return;
+
+    if (getViewIdx() == trackViewIdx_) {
+        auto modIdx = enc;
+        moduleView_->moduleIdx(trackIdx_, modIdx + 1);
+        setView(moduleViewIdx_);
+        return;
+    }
+
+    base_type::onEncoderSwitch(enc, v);
+}
+
 void TrackEditor::eventButton(unsigned btn, bool longPress) {
     auto v = getViewIdx();
     if (v == trackViewIdx_) {
         if (btn < 4) {
             auto modIdx = btn;
-            moduleView_->moduleIdx(trackIdx_, modIdx + 1);
             loadModuleView_->moduleIdx(trackIdx_, modIdx + 1);
-            if (longPress == false) {
-                moduleView_->moduleIdx(trackIdx_, modIdx + 1);
-                setView(moduleViewIdx_);
-            } else {
-                setView(loadViewIdx_);
-            }
+            matrixView_->moduleIdx(trackIdx_, modIdx + 1);
+            moduleView_->moduleIdx(trackIdx_, modIdx + 1);
+            setView(loadViewIdx_);
             return;
         } else if (btn >= 4) {
             auto modIdx = btn - 4;
+            loadModuleView_->moduleIdx(trackIdx_, modIdx + 1);
             matrixView_->moduleIdx(trackIdx_, modIdx + 1);
+            moduleView_->moduleIdx(trackIdx_, modIdx + 1);
             setView(matrixViewIdx_);
-            // } else if (btn == 5) {
-            //     setView(addRouteViewIdx_);
+            return;
         }
     }
 
