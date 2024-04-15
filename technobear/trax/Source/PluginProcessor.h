@@ -125,6 +125,17 @@ public:
         return tracks_[t].mute();
     }
 
+    void gainTrack(unsigned t, float gain) {
+        if (t >= MAX_TRACKS) return;
+        tracks_[t].level(gain);
+    }   
+
+    float gainTrack(unsigned t) {
+        if (t >= MAX_TRACKS) return 0.f;
+        return tracks_[t].level();
+    }
+
+
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
@@ -140,6 +151,7 @@ private:
     
 
     Track tracks_[MAX_TRACKS];
+    float lastGain_[MAX_TRACKS] = { 0.f, 0.f, 0.f, 0.f };
     // processing thread for each track
     std::vector<std::thread> trackThreads_;
     

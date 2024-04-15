@@ -37,6 +37,9 @@ public:
     void mute(bool m) { mute_ = m; }
     bool mute() const { return mute_; }
 
+    void level(float l) { level_ = l; }
+    float level() const { return level_; }
+
     std::mutex mutex_;
     std::condition_variable cv_;
     bool ready_ = false;

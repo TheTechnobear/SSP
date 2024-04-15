@@ -3,7 +3,7 @@
 
 MixerView::MixerView(PluginProcessor &p) : base_type(&p, nullptr), processor_(p) {
     for (int t = 0; t < PluginProcessor::MAX_TRACKS; t++) {
-        vuMeters_[t].init("Track " + String(t + 1), false);
+        vuMeters_[t].init("Track " + String(t + 1), true);
         addAndMakeVisible(vuMeters_[t]);
     }
 
@@ -55,10 +55,29 @@ void MixerView::drawView(Graphics &g) {
 
 void MixerView::onSSPTimer() {
     base_type::onSSPTimer();
-    for (int t = 0; t < PluginProcessor::MAX_TRACKS; t++) {
+    for (unsigned t = 0; t < PluginProcessor::MAX_TRACKS; t++) {
         float lLevel = 0.f, rLevel = 0.f;
+        float gainLevel = processor_.gainTrack(t);
         processor_.rmsLevels(t, lLevel, rLevel);
         vuMeters_[t].level(lLevel, rLevel);
+        vuMeters_[t].gainLevel(gainLevel, gainLevel);
         vuMeters_[t].repaint();
     }
+}
+
+void MixerView::onEncoder(unsigned enc, float diff) {
+    unsigned trackIdx = enc;
+    float diffGain = diff * (0.1f * (encDown_[enc] ? 0.1f : 1.0f));
+    float newGain = processor_.gainTrack(trackIdx) + diffGain;
+    newGain = std::max(std::min(2.0f, newGain), 0.0f);
+    processor_.gainTrack(trackIdx, newGain);
+    encFine_[enc] = encDown_[enc];
+}
+
+void MixerView::onEncoderSwitch(unsigned enc, bool v) {
+    unsigned trackIdx = enc;
+    float newGain =1.0f;
+    if(!v && !encFine_[enc]) processor_.gainTrack(trackIdx, newGain);
+    encDown_[enc] = v;
+    encFine_[enc] = false;
 }

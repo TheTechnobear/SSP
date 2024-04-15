@@ -160,14 +160,18 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     // pluginprocessr thread
     // once all process done... sum outputs for mix
     buffer.applyGain(0.0f);  // zero it out
+    static constexpr float MIX_CHANNEL_GAIN = 1.0f / float(MAX_TRACKS);
     trackIdx = 0;
     for (auto &track : tracks_) {
         auto &tBuf = threadBuffers_[trackIdx];
+        float gain = track.level();
+
         for (int i = 0; i < O_MAX; i++) {
-            static constexpr float MIX_CHANNEL_GAIN = 1.0f / float(MAX_TRACKS);
+            tBuf.applyGainRamp(i, 0,n,lastGain_[trackIdx],gain);
             rmsData_[trackIdx][i].process(tBuf, i);
             buffer.addFrom(i, 0, tBuf, i, 0, n, MIX_CHANNEL_GAIN);
         }
+        lastGain_[trackIdx] = gain;
         trackIdx++;
     }
 }
