@@ -108,6 +108,7 @@ void MatrixView::onEncoder(unsigned enc, float v) {
                 channelA_.nextItem();
             else
                 channelA_.prevItem();
+            refreshSelected();
             break;
         }
         case 1: {
@@ -278,6 +279,7 @@ void MatrixView::refreshSelected() {
             if (w.dest_ == jackA && w.src_.modIdx_ == moduleB_.idx()) { chBSelected_[w.src_.chIdx_] = true; }
         }
     }
+    repaint();
 }
 
 
