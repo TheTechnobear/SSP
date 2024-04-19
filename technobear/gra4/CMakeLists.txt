@@ -59,7 +59,7 @@ juce_add_plugin(GRA4
         # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
         # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
         # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
-        COPY_PLUGIN_AFTER_BUILD TRUE                # Should the plugin be installed to a default location after building?
+        COPY_PLUGIN_AFTER_BUILD FALSE                # Should the plugin be installed to a default location after building?
         PLUGIN_MANUFACTURER_CODE TB00               # A four-character manufacturer id with at least one upper-case character
         PLUGIN_CODE GRA4                            # A unique four-character plugin id with at least one upper-case character
         FORMATS VST3                                # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
@@ -125,3 +125,6 @@ target_link_libraries(GRA4 PRIVATE
 #set_target_properties(${PROJECT_NAME}_VST PROPERTIES PREFIX "")
 set_target_properties(${PROJECT_NAME}_VST3 PROPERTIES PREFIX "")
 
+if(APPLE)
+    juce_enable_copy_plugin_step(${PROJECT_NAME})
+endif()

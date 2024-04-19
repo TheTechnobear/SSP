@@ -92,9 +92,6 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::vca, "VCA", 0.0f, 100.0f, 50.0f));
 
     bool enableIO[2] = {false,false};
-#ifdef TARGET_QSP
-    enableIO[0] = true;
-#endif
     params.add(std::make_unique<ssp::BaseBoolParameter>(ID::enable_trig, "Trig", enableIO[0]));
     params.add(std::make_unique<ssp::BaseBoolParameter>(ID::enable_level, "Level", enableIO[1]));
 
@@ -146,7 +143,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     bool trigEn = inputEnabled[I_TRIG] || params_.enable_trig.getValue() > 0.5;
     bool levelEn = inputEnabled[I_LEVEL] || params_.enable_level.getValue() > 0.5;;
 
-#ifdef TARGET_QSP
+#ifdef TARGET_XMX
     // these all have attenuators so can be enabled with functional changes?!
     fmEn=true;
     timbeEn=true;

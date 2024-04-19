@@ -55,7 +55,7 @@ juce_add_plugin(RNGS
         # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
         # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
         # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
-        COPY_PLUGIN_AFTER_BUILD TRUE                # Should the plugin be installed to a default location after building?
+        COPY_PLUGIN_AFTER_BUILD FALSE                # Should the plugin be installed to a default location after building?
         PLUGIN_MANUFACTURER_CODE TB00               # A four-character manufacturer id with at least one upper-case character
         PLUGIN_CODE RNGS                            # A unique four-character plugin id with at least one upper-case character
         FORMATS VST3                                # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
@@ -71,6 +71,11 @@ juce_add_plugin(RNGS
 
 if (APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D TEST")
+elseif (UNIX)
+    if (${CMAKE_SYSTEM_PROCESSOR} MATCHES "^armv8a") 
+        message("disable MI 32bit optmisation  for armv8a")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D TEST")
+    endif()   
 endif ()
 
 set(MI_SRC
@@ -137,3 +142,6 @@ target_link_libraries(RNGS PRIVATE
 #set_target_properties(${PROJECT_NAME}_VST PROPERTIES PREFIX "")
 set_target_properties(${PROJECT_NAME}_VST3 PROPERTIES PREFIX "")
 
+if(APPLE)
+    juce_enable_copy_plugin_step(${PROJECT_NAME})
+endif()

@@ -54,14 +54,12 @@ juce_add_plugin(HARM
         # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
         # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
         # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
-        COPY_PLUGIN_AFTER_BUILD TRUE                # Should the plugin be installed to a default location after building?
+        COPY_PLUGIN_AFTER_BUILD FALSE                # Should the plugin be installed to a default location after building?
         PLUGIN_MANUFACTURER_CODE TB00               # A four-character manufacturer id with at least one upper-case character
         PLUGIN_CODE HARM                            # A unique four-character plugin id with at least one upper-case character
         FORMATS VST3                                # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
         PRODUCT_NAME "harm")                        # The name of the final executable, which can differ from the target name
 
-
-        
 
 # `target_sources` adds source files to a target. We pass the target that needs the sources as the
 # first argument, then a visibility parameter for the sources (PRIVATE is normally best practice,
@@ -121,3 +119,6 @@ target_link_libraries(HARM PRIVATE
 #set_target_properties(${PROJECT_NAME}_VST PROPERTIES PREFIX "")
 set_target_properties(${PROJECT_NAME}_VST3 PROPERTIES PREFIX "")
 
+if(APPLE)
+    juce_enable_copy_plugin_step(${PROJECT_NAME})
+endif()

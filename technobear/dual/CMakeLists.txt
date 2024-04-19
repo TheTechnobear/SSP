@@ -20,7 +20,7 @@ juce_add_plugin(DUAL
         # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
         # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
         # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
-        COPY_PLUGIN_AFTER_BUILD TRUE                # Should the plugin be installed to a default location after building?
+        COPY_PLUGIN_AFTER_BUILD FALSE                # Should the plugin be installed to a default location after building?
         PLUGIN_MANUFACTURER_CODE TB00               # A four-character manufacturer id with at least one upper-case character
         PLUGIN_CODE DUAL                            # A unique four-character plugin id with at least one upper-case character
         FORMATS VST3                                # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
@@ -51,6 +51,9 @@ target_compile_definitions(DUAL
         JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
         JUCE_VST3_CAN_REPLACE_VST2=0)
 
+if(APPLE)
+    juce_enable_copy_plugin_step(DUAL)
+endif()
 
 target_link_libraries(DUAL PRIVATE
         # AudioPluginData           # If we'd created a binary data target, we'd link to it here
@@ -59,3 +62,6 @@ target_link_libraries(DUAL PRIVATE
 
 set_target_properties(${PROJECT_NAME}_VST3 PROPERTIES PREFIX "")
 
+if(APPLE)
+    juce_enable_copy_plugin_step(${PROJECT_NAME})
+endif()

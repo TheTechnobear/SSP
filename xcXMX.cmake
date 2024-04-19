@@ -36,7 +36,7 @@ message("using SYSROOT    :  ${CMAKE_SYSROOT}")
 set(GCCROOT ${BUILDROOT}/lib/gcc/aarch64-rockchip-linux-gnu/8.4.0)
 
 set(CMAKE_SYSTEM_NAME Linux)
-set(CMAKE_SYSTEM_PROCESSOR armv7l)
+set(CMAKE_SYSTEM_PROCESSOR armv8a)
 set(triple aarch64-rockchip-linux-gnu)
 set(CMAKE_C_COMPILER ${TOOLSROOT}/clang)
 set(CMAKE_CXX_COMPILER ${TOOLSROOT}/clang++)

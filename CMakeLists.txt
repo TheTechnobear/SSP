@@ -18,16 +18,6 @@ endif ()
 
 add_subdirectory(juce)
 
-#if (DEFINED ENV{VSTSDK})
-#    set(VSTSDK $ENV{VSTSDK})
-#else ()
-#    set(VSTSDK "$ENV{HOME}/SDKs/vst3-sdk")
-#endif ()
-
-#message("using VSTSDK  :  ${VSTSDK}")
-
-#juce_set_vst2_sdk_path(${VSTSDK})
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DJUCE_DISABLE_JUCE_VERSION_PRINTING=1")
 
 if (DEFINED ENV{ALWAYS_COMPACT_UI})
@@ -45,8 +35,8 @@ if (DEFINED ENV{TARGET_SSP})
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DTARGET_SSP=1")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCOMPACT_UI_SCALE=2")
 elseif (DEFINED ENV{TARGET_QSP})
-    message("target : QSP")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DTARGET_QSP=1")
+    message("target : XMX")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DTARGET_XMX=1")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCOMPACT_UI_SCALE=1")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFORCE_COMPACT_UI=1")
 else()

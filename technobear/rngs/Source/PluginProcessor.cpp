@@ -88,9 +88,6 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::in_gain, "In Gain", 0.0f, 100.0f, 0.0f));
 
     bool enableIO[3] = {false,false,false};
-#ifdef TARGET_QSP
-    enableIO[1] = true;
-#endif
     params.add(std::make_unique<ssp::BaseBoolParameter>(ID::enable_in, "In", enableIO[0]));
     params.add(std::make_unique<ssp::BaseBoolParameter>(ID::enable_strum, "Strum", enableIO[1]));
     params.add(std::make_unique<ssp::BaseBoolParameter>(ID::enable_voct, "VOct", enableIO[2]));

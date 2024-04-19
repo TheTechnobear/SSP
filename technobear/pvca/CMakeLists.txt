@@ -11,7 +11,7 @@ juce_add_plugin(PVCA
         COMPANY_WEBSITE "www.technobear.com"
         COMPANY_EMAIL "mharris@technobear.com"
         DESCRIPTION "panning vca"
-        COPY_PLUGIN_AFTER_BUILD TRUE                
+        COPY_PLUGIN_AFTER_BUILD FALSE                
         PLUGIN_MANUFACTURER_CODE TB00               
         PLUGIN_CODE PVCA                            
         FORMATS VST3                                
@@ -42,3 +42,6 @@ target_link_libraries(PVCA PRIVATE
 
 set_target_properties(${PROJECT_NAME}_VST3 PROPERTIES PREFIX "")
 
+if(APPLE)
+    juce_enable_copy_plugin_step(${PROJECT_NAME})
+endif()
