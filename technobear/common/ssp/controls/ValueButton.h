@@ -11,7 +11,7 @@ namespace ssp {
 
 class ValueButton : public juce::Component {
 public:
-    ValueButton(const String &label, std::function<void(bool v)> cb, unsigned fh = 32,
+    ValueButton(const String &label, std::function<void(bool v)> cb, unsigned fh = 16 * COMPACT_UI_SCALE,
                 const juce::Colour fg = juce::Colours::white, const juce::Colour bg = juce::Colours::black,
                 bool def = false);
 
@@ -44,7 +44,7 @@ private:
     bool isToggle_ = false;
     String label_;
     bool active_ = false;
-    int fh_ = 36;
+    int fh_ = 16 * COMPACT_UI_SCALE;
     juce::Colour fg_ = juce::Colours::white;
     juce::Colour bg_ = juce::Colours::black;
 

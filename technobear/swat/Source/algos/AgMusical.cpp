@@ -66,7 +66,7 @@ void AgTranspose::process(
 void AgTranspose::paint (Graphics& g) {
     Algo::paint(g);
     unsigned space = 32;
-    unsigned fh = 32;
+    unsigned fh = 16 * COMPACT_UI_SCALE;
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);
@@ -140,7 +140,7 @@ void AgComparatorN::process(
 void AgComparatorN::paint (Graphics& g) {
     Algo::paint(g);
     unsigned space = 32;
-    unsigned fh = 32;
+    unsigned fh = 16 * COMPACT_UI_SCALE;
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);
@@ -214,7 +214,7 @@ void AgMapNV::process(
 void AgMapNV::paint (Graphics& g) {
     Algo::paint(g);
     unsigned space = 32;
-    unsigned fh = 32;
+    unsigned fh = 16 * COMPACT_UI_SCALE;
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);
@@ -290,7 +290,7 @@ void AgMapNN::process(
 void AgMapNN::paint (Graphics& g) {
     Algo::paint(g);
     unsigned space = 32;
-    unsigned fh = 32;
+    unsigned fh = 16 * COMPACT_UI_SCALE;
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);

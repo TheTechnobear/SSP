@@ -32,7 +32,7 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 void PluginEditor::drawGrid(Graphics &g) {
     int startX = 1000;
     int y = 30;
-    int fh = 18;
+    int fh = 9 * COMPACT_UI_SCALE;
     int lsz = 75;;
 
     int szx = fh * 4;

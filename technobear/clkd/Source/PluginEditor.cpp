@@ -11,9 +11,9 @@ using bcontrol_type = ssp::ParamButton;
 
 PluginEditor::PluginEditor(PluginProcessor &p)
     : base_type(&p), processor_(p),
-      runButton_("Run", nullptr, 32, Colours::green),
-      resetButton_("Reset", nullptr, 32, Colours::yellow),
-      useTrigsButton_("TrigSync", nullptr, 20, Colours::cyan) {
+      runButton_("Run", nullptr, 16 * COMPACT_UI_SCALE, Colours::green),
+      resetButton_("Reset", nullptr, 16 * COMPACT_UI_SCALE, Colours::yellow),
+      useTrigsButton_("TrigSync", nullptr, 10 * COMPACT_UI_SCALE, Colours::cyan) {
 
     addParamPage(
         std::make_shared<pcontrol_type>(processor_.params_.source, 1.0f, 1.0f),
@@ -72,7 +72,7 @@ void PluginEditor::drawView(Graphics &g) {
     const int sp = 10;
     const int gw = 25;
 
-    g.setFont(30);
+    g.setFont(15 * COMPACT_UI_SCALE);
     static const char *running = "Running";
     static const char *stopped = "Stopped";
     const char *runTxt;
@@ -85,7 +85,7 @@ void PluginEditor::drawView(Graphics &g) {
     }
     g.drawText(runTxt, tstartX, startY - (sp / 2), 150, gw + sp, Justification::centredLeft);
 
-    g.setFont(20);
+    g.setFont(10 * COMPACT_UI_SCALE);
     // draw current values
     for (int i = 0; i < PluginProcessor::MAX_CLK_OUT; i++) {
         bool gate = clockStates[i];

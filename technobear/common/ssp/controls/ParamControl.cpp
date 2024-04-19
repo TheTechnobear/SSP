@@ -80,7 +80,7 @@ void SimpleParamControl::reset() {
 }
 
 void SimpleParamControl::paint(juce::Graphics &g) {
-    static constexpr unsigned fh = 36;
+    static constexpr unsigned fh = 18 * COMPACT_UI_SCALE;
     int h = getHeight();
     int w = getWidth();
 
@@ -102,7 +102,7 @@ LineParamControl::LineParamControl(Parameter &p, float coarse, float fine, juce:
       };
 
 void LineParamControl::paint(juce::Graphics &g) {
-    static constexpr unsigned fh = 32;
+    static constexpr unsigned fh = 16 * COMPACT_UI_SCALE;
     int h = getHeight();
     int w = getWidth();
 
@@ -125,7 +125,7 @@ BarParamControl::BarParamControl(Parameter &p, float coarse, float fine, juce::C
       };
 
 void BarParamControl::paint(juce::Graphics &g) {
-    static constexpr unsigned fh = 28;
+    static constexpr unsigned fh = 14 * COMPACT_UI_SCALE;
     int h = getHeight();
     int w = getWidth();
 

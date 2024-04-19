@@ -113,7 +113,7 @@ void AgDelay::process(
 void AgDelay::paint(Graphics &g) {
     Algo::paint(g);
     unsigned space = 32;
-    unsigned fh = 32;
+    unsigned fh = 16 * COMPACT_UI_SCALE;
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);
@@ -237,7 +237,7 @@ void AgSDelay::process(
 void AgSDelay::paint(Graphics &g) {
     Algo::paint(g);
     unsigned space = 32;
-    unsigned fh = 32;
+    unsigned fh = 16 * COMPACT_UI_SCALE;
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);

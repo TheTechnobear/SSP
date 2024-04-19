@@ -7,7 +7,7 @@ namespace ssp {
 class ParamButton : public juce::Component {
 public:
     using Parameter = juce::RangedAudioParameter;
-    ParamButton(Parameter &p, unsigned fh = 36, const juce::Colour fg = juce::Colours::white,
+    ParamButton(Parameter &p, unsigned fh = 18 * COMPACT_UI_SCALE, const juce::Colour fg = juce::Colours::white,
                 const juce::Colour bg = juce::Colours::black, bool momentary = false);
     virtual ~ParamButton() = default;
 
@@ -26,7 +26,7 @@ protected:
     void paint(juce::Graphics &g) override;
 
 private:
-    unsigned fh_ = 36;
+    unsigned fh_ = 18 * COMPACT_UI_SCALE;
     juce::Colour fg_ = juce::Colours::white;
     juce::Colour bg_ = juce::Colours::black;
     bool momentary_ = true;

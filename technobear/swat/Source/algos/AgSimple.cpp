@@ -264,7 +264,7 @@ void AgComparatorW::process(
 void AgComparatorW::paint (Graphics& g) {
     Algo::paint(g);
     unsigned space = 32;
-    unsigned fh = 32;
+    unsigned fh = 16 * COMPACT_UI_SCALE;
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);
@@ -333,7 +333,7 @@ void AgMapVV::process(
 void AgMapVV::paint (Graphics& g) {
     Algo::paint(g);
     unsigned space = 32;
-    unsigned fh = 32;
+    unsigned fh = 16 * COMPACT_UI_SCALE;
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);
@@ -414,7 +414,7 @@ void AgCounter::process(
 void AgCounter::paint (Graphics& g) {
     Algo::paint(g);
     unsigned space = 32;
-    unsigned fh = 32;
+    unsigned fh = 16 * COMPACT_UI_SCALE;
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);

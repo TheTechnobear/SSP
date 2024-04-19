@@ -64,7 +64,7 @@ private:
 
         for (unsigned sigN = 0; sigN < N; sigN++) {
             if (legend_) {
-                static constexpr unsigned fh = 16;
+                static constexpr unsigned fh = 8 * COMPACT_UI_SCALE;
                 Font f(Font::getDefaultMonospacedFontName(), fh, Font::plain);
                 g.setFont(f);
                 g.setColour(colour_);

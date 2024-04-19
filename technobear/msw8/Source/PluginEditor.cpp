@@ -20,8 +20,8 @@ PluginEditor::PluginEditor(PluginProcessor &p)
     );
 
     addButtonPage(
-        std::make_shared<bcontrol_type>(processor_.params_.active, 24, Colours::lightskyblue),
-        std::make_shared<bcontrol_type>(processor_.params_.soft, 24, Colours::orange),
+        std::make_shared<bcontrol_type>(processor_.params_.active, 12 * COMPACT_UI_SCALE, Colours::lightskyblue),
+        std::make_shared<bcontrol_type>(processor_.params_.soft, 12 * COMPACT_UI_SCALE, Colours::orange),
         nullptr,
         nullptr,
         nullptr,
@@ -39,7 +39,7 @@ void PluginEditor::drawGrid(Graphics &g) {
     int x = 275;
     int y = 50;
     int lx = 100;
-    int fh = 18;
+    int fh = 9 * COMPACT_UI_SCALE;
     int sz = fh;
     int sp = fh;
 

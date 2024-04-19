@@ -45,8 +45,8 @@ void ModuleView::drawModulePanel(Graphics &g) {
         int x = pluginWidth / 2;
         g.setColour(Colours::white);
 
-        g.setFont(Font(Font::getDefaultMonospacedFontName(), 20, Font::plain));
-        g.drawSingleLineText("No Module Loaded", x - 40, getHeight() / 2 - 20);
+        g.setFont(Font(Font::getDefaultMonospacedFontName(), 10 * COMPACT_UI_SCALE, Font::plain));
+        g.drawSingleLineText("No Module Loaded", x - 40, getHeight() / 2 - (10 * COMPACT_UI_SCALE));
         return;
     }
 }
@@ -73,7 +73,7 @@ void ModuleView::drawIO(Graphics &g) {
 
     unsigned x = panelX + 50;
     unsigned y = 100;
-    static constexpr unsigned fh = 18;
+    static constexpr unsigned fh = 9 * COMPACT_UI_SCALE;
     static constexpr unsigned h = fh + 5;
     g.setColour(Colours::yellow);
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));

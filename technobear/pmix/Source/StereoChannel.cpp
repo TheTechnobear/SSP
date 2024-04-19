@@ -10,7 +10,7 @@ inline float normValue(RangedAudioParameter &p) {
 }
 
 void StereoChannel::paint(Graphics &g) {
-    static constexpr int fh = 16;
+    static constexpr int fh = 8 * COMPACT_UI_SCALE;
     int h = getHeight();
     int w = getWidth();
 

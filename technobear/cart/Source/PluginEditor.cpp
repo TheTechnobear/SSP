@@ -324,7 +324,7 @@ void PluginEditor::drawView(Graphics &g) {
     const int sp = 50;
     const int bw = 100, gw = 30;
 
-    g.setFont(20);
+    g.setFont(10 * COMPACT_UI_SCALE);
     g.setColour(LAYER_COLOURS[0]);
     g.drawText("X", tstartX, startY, 30, sp, Justification::centredLeft);
     g.setColour(LAYER_COLOURS[1]);

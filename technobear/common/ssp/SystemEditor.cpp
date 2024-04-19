@@ -18,12 +18,12 @@ inline bool isInternalMidi(const String &name) {
 
 SystemEditor::SystemEditor(BaseProcessor *p) :
     baseProcessor_(p),
-    learnBtn_("Learn", [&](bool b) { midiLearn(b); }, 24),
-    delBtn_("Delete", [&](bool b) { deleteAutomation(b); }, 24, Colours::yellow),
-    noteInputBtn_("Note In", [&](bool b) { noteInput(b); }, 24, Colours::lightskyblue),
-    leftBtn_("PG-", nullptr, 32, Colours::red), rightBtn_("PG+", nullptr, 32, Colours::red),
-    upBtn_("EN-", nullptr, 32, Colours::red), downBtn_("EN+", nullptr, 32, Colours::red),
-    leftShiftBtn_("LS", nullptr, 32, Colours::grey, Colours::black), rightShiftBtn_("RS", nullptr, 32, Colours::grey, Colours::black),
+    learnBtn_("Learn", [&](bool b) { midiLearn(b); }, 12 * COMPACT_UI_SCALE, Colours::yellow),
+    delBtn_("Delete", [&](bool b) { deleteAutomation(b); }, 12 * COMPACT_UI_SCALE, Colours::yellow),
+    noteInputBtn_("Note In", [&](bool b) { noteInput(b); }, 12 * COMPACT_UI_SCALE, Colours::lightskyblue),
+    leftBtn_("PG-", nullptr, 32, Colours::red), rightBtn_("PG+", nullptr, 16 * COMPACT_UI_SCALE, Colours::red),
+    upBtn_("EN-", nullptr, 32, Colours::red), downBtn_("EN+", nullptr, 16 * COMPACT_UI_SCALE, Colours::red),
+    leftShiftBtn_("LS", nullptr, 32, Colours::grey, Colours::black), rightShiftBtn_("RS", nullptr, 16 * COMPACT_UI_SCALE, Colours::grey, Colours::black),
     midiInCtrl_("Midi IN", [&](float idx, const std::string &str) { midiInCallback(idx, str); }),
     midiOutCtrl_("Midi OUT", [&](float idx, const std::string &str) { midiOutCallback(idx, str); }),
     midiChannelCtrl_("Midi Channel", [&](float idx, const std::string &str) { midiChannelCallback(idx, str); }) {
@@ -156,7 +156,7 @@ void SystemEditor::drawView(Graphics &g) {
     drawLabel(g, "Midi Out", 3);
 
 
-    const int fh = 24;
+    const int fh = 12 * COMPACT_UI_SCALE;
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
     g.setColour(Colours::white);
     int y = 60;
@@ -222,7 +222,7 @@ static constexpr unsigned paramSpaceY = 50;
 
 
 void SystemEditor::drawLabel(Graphics &g, const std::string &str, unsigned int idx) {
-    const int fh = 32;
+    const int fh = 16 * COMPACT_UI_SCALE;
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
     g.setColour(Colours::red);
 

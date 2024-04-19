@@ -143,13 +143,6 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     bool trigEn = inputEnabled[I_TRIG] || params_.enable_trig.getValue() > 0.5;
     bool levelEn = inputEnabled[I_LEVEL] || params_.enable_level.getValue() > 0.5;;
 
-#ifdef TARGET_XMX
-    // these all have attenuators so can be enabled with functional changes?!
-    fmEn=true;
-    timbeEn=true;
-    morphEn=true;
-#endif
-
     for (int bidx = 0; bidx < buffer.getNumSamples(); bidx += n) {
         bool trig = false;
         for (int i = 0; i < n; i++) {

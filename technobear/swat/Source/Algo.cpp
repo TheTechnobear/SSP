@@ -3,7 +3,7 @@
 // Helper /////////////////////////////////////////////////////////////////////
 void drawAB(juce::Graphics &g, float A, float B) {
     unsigned space = 32;
-    unsigned fh = 32;
+    unsigned fh = 16 * COMPACT_UI_SCALE;
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);
@@ -53,11 +53,11 @@ void Algo::drawHelp(juce::Graphics &g) {
     unsigned space = 30;
     unsigned yText = y + space;
     g.setColour(juce::Colours::yellow);
-    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), 40, juce::Font::plain));
+    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), 20 * COMPACT_UI_SCALE, juce::Font::plain));
     g.drawSingleLineText(name(), x, y);
 
     y = yText;
-    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), 18, juce::Font::plain));
+    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), 9 * COMPACT_UI_SCALE, juce::Font::plain));
     g.setColour(juce::Colours::white);
 
     std::string::size_type pos = 0;

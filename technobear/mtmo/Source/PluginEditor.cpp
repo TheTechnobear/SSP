@@ -77,7 +77,7 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 void PluginEditor::drawView(Graphics &g) {
     base_type::drawView(g);
 
-    const int fh = 24;
+    const int fh = 12 * COMPACT_UI_SCALE;
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
 
     int y = 60;

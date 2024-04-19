@@ -224,7 +224,7 @@ String getNoteValue(float f) {
 
 void PluginEditor::drawValueDisplay(Graphics &g) {
     unsigned space = 32;
-    unsigned fh = 24;
+    unsigned fh = 12 * COMPACT_UI_SCALE;
     int x = 1000;
     int y = 50;
     unsigned fldw = 600 / 5;

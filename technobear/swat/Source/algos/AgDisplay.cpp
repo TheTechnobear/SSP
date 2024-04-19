@@ -56,7 +56,7 @@ void AgDisplay::paint(Graphics &g) {
     Algo::paint(g);
 
     unsigned space = 32;
-    unsigned fh = 32;
+    unsigned fh = 16 * COMPACT_UI_SCALE;
     unsigned x = space;
     unsigned y = 100;
 

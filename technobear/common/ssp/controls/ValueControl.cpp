@@ -81,7 +81,7 @@ LineValueControl::LineValueControl(const std::string &name, const std::string &l
 };
 
 void LineValueControl::paint(juce::Graphics &g) {
-    static constexpr unsigned fh = 32;
+    static constexpr unsigned fh = 16 * COMPACT_UI_SCALE;
     int h = getHeight();
     int w = getWidth();
 
@@ -104,7 +104,7 @@ BarValueControl::BarValueControl(const std::string &name, const std::string &lab
 };
 
 void BarValueControl::paint(juce::Graphics &g) {
-    static constexpr unsigned fh = 28;
+    static constexpr unsigned fh = 14 * COMPACT_UI_SCALE;
     int h = getHeight();
     int w = getWidth();
 
@@ -179,7 +179,7 @@ void ListValueControl::valueChanged(float nv) {
 }
 
 void ListValueControl::paint(juce::Graphics &g) {
-    static constexpr unsigned fh = 36;
+    static constexpr unsigned fh = 18 * COMPACT_UI_SCALE;
     int h = getHeight();
     int w = getWidth();
 

@@ -11,7 +11,7 @@ inline float normValue(RangedAudioParameter &p) {
 
 
 void MonoChannel::paint(Graphics &g) {
-    static constexpr int fh = 16;
+    static constexpr int fh = 8 * COMPACT_UI_SCALE;
     int w = getWidth();
 
     float lvl = data_->rms_.lvl();

@@ -43,7 +43,7 @@ PluginEditor::PluginEditor(PluginProcessor &p)
 void PluginEditor::drawView(Graphics &g) {
     base_type::drawView(g);
     if (processor_.params_.quant.getValue() > 0) {
-        unsigned fh = 48;
+        unsigned fh = 24 * COMPACT_UI_SCALE;
         g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
         g.setColour(Colours::red);
         String root = processor_.params_.root.getCurrentValueAsText();

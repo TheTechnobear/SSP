@@ -70,3 +70,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${BUILDROOT}/aarch64-rockchip-linux-gn
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mcpu=cortex-a35")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -funwind-tables -fno-omit-frame-pointer  ")
 
+set(ALWAYS_COMPACT_UI 1)
+set(TARGET_XMX 1)
