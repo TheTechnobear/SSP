@@ -6,11 +6,11 @@ endif()
 
 if (DEFINED ENV{BUILDROOT})
     set(BUILDROOT $ENV{BUILDROOT})
-    set(CMAKE_SYSROOT ${BUILDROOT}/arm-rockchip-linux-gnueabihf/sysroot)
+    set(CMAKE_SYSROOT ${BUILDROOT}/aarch64-rockchip-linux-gnu/sysroot)
 else ()
     message("warning: BUILDROOT environment variable assuming in $ENV{HOME}/buildroot")
-    set(BUILDROOT "$ENV{HOME}/buildroot/arm-rockchip-linux-gnueabihf_sdk-buildroot")
-    set(CMAKE_SYSROOT ${BUILDROOT}/arm-rockchip-linux-gnueabihf/sysroot)
+    set(BUILDROOT "$ENV{HOME}/buildroot/aarch64-rockchip-linux-gnu_sdk-buildroot")
+    set(CMAKE_SYSROOT ${BUILDROOT}/aarch64-rockchip-linux-gnu/sysroot)
 endif ()
 
 if (DEFINED ENV{TOOLSROOT})
@@ -33,14 +33,15 @@ message("using TOOLSROOT  :  ${TOOLSROOT}")
 message("using BUILDROOT  :  ${BUILDROOT}")
 message("using SYSROOT    :  ${CMAKE_SYSROOT}")
 
-set(GCCROOT ${BUILDROOT}/lib/gcc/arm-rockchip-linux-gnueabihf/8.4.0)
+set(GCCROOT ${BUILDROOT}/lib/gcc/aarch64-rockchip-linux-gnu/8.4.0)
 
 set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR armv7l)
-set(triple arm-linux-gnueabihf)
+set(triple aarch64-rockchip-linux-gnu)
 set(CMAKE_C_COMPILER ${TOOLSROOT}/clang)
 set(CMAKE_CXX_COMPILER ${TOOLSROOT}/clang++)
 add_link_options("-fuse-ld=lld")
+
 
 set(CMAKE_C_COMPILER_TARGET ${triple})
 set(CMAKE_CXX_COMPILER_TARGET ${triple})
@@ -61,11 +62,11 @@ set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} 	${SSP_LINK_FLAGS}")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} 	${SSP_LINK_FLAGS}")
 
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -mcpu=cortex-a17 -mfloat-abi=hard -mfpu=neon-vfpv4")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -mcpu=cortex-a35")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DJUCE_CHECK_MEMORY_LEAKS=0")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${BUILDROOT}/arm-rockchip-linux-gnueabihf/include/c++/8.4.0 ")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${BUILDROOT}/arm-rockchip-linux-gnueabihf/include/c++/8.4.0/arm-rockchip-linux-gnueabihf")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mcpu=cortex-a17 -mfloat-abi=hard -mfpu=neon-vfpv4")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${BUILDROOT}/aarch64-rockchip-linux-gnu/include/c++/8.4.0 ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${BUILDROOT}/aarch64-rockchip-linux-gnu/include/c++/8.4.0/aarch64-rockchip-linux-gnu")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mcpu=cortex-a35")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -funwind-tables -fno-omit-frame-pointer  ")
 
