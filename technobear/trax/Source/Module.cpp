@@ -7,16 +7,24 @@
 #include <juce_core/juce_core.h>
 
 
+#include "Log.h"
+
+
 #ifdef __APPLE__
 const static int dlopenmode = RTLD_LOCAL | RTLD_NOW;
-const char *pluginPath = "~/Library/Audio/Plug-Ins/VST3/";
 const char *pluginSuffix = ".vst3/Contents/MacOS/";
+
+#ifdef FORCE_COMPACT_UI
+const char *pluginPath = "plugins/";
+#else  // use full UI
+const char *pluginPath = "~/Library/Audio/Plug-Ins/VST3/";
+#endif // FORCE_COMPACT_UI
+
 #else
+// linux
 const static int dlopenmode = RTLD_LOCAL | RTLD_NOW | RTLD_DEEPBIND;
-const char *pluginPath = "/media/BOOT/plugins/";
-
+const char *pluginPath = "plugins/";
 #endif
-
 
 Module::Module() {
     // default to 16 channel, with 128 samples
@@ -182,17 +190,19 @@ void Module::scanPlugins(std::vector<std::string> &supportedModules) {
         }
     }
 #else
+    // log(std::string("Checking plugin dir : ") + pluginPath);
     for (juce::DirectoryEntry entry : juce::RangedDirectoryIterator(juce::File(pluginPath), false, "*.so", juce::File::findFiles)) {
         if (!entry.isHidden()) { moduleList.push_back(entry.getFile().getFileNameWithoutExtension().toStdString()); }
     }
 #endif
     // check for modules supporting compact ui
     for (const auto &mname : moduleList) {
+        // log(std::string("Checking plugin : " + mname));
         if (checkPlugin(mname)) { supportedModules.push_back(mname); }
     }
 
     // log("plugin scan : COMPLETED");
     for (const auto &module : supportedModules) {
-        // log(module);
+        // log(std::string("supported plugin : " + module));
     }
 }

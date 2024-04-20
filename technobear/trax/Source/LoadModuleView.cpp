@@ -15,9 +15,9 @@ std::string nicePlugName(const std::string &n) {
 LoadModuleView::LoadModuleView(PluginProcessor &p, bool compactUI)
     : base_type(&p, compactUI),
       processor_(p),
-      scanBtn_("Scan", nullptr, 32, Colours::white, Colours::black),
-      loadBtn_("Load", nullptr, 32, Colours::white, Colours::black),
-      clearBtn_("Clear", nullptr, 32, Colours::white, Colours::black) {
+      scanBtn_("Scan", nullptr, 16 * COMPACT_UI_SCALE, Colours::white, Colours::black),
+      loadBtn_("Load", nullptr, 16 * COMPACT_UI_SCALE, Colours::white, Colours::black),
+      clearBtn_("Clear", nullptr, 16 * COMPACT_UI_SCALE, Colours::white, Colours::black) {
     addAndMakeVisible(scanBtn_);
     addAndMakeVisible(clearBtn_);
     addAndMakeVisible(loadBtn_);
@@ -28,9 +28,9 @@ LoadModuleView::LoadModuleView(PluginProcessor &p, bool compactUI)
 void LoadModuleView::drawView(Graphics &g) {
     drawButtonBox(g);
 
-    unsigned x = 50;
-    unsigned y = 24;
-    static constexpr unsigned fh = 24;
+    unsigned x = 25 * COMPACT_UI_SCALE;
+    unsigned y = 12 * COMPACT_UI_SCALE;
+    static constexpr unsigned fh = 12 * COMPACT_UI_SCALE;
     static constexpr unsigned h = fh + 5;
     g.setColour(Colours::yellow);
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
@@ -43,15 +43,15 @@ void LoadModuleView::resized() {
     setButtonBounds(clearBtn_, 1, 3);
     setButtonBounds(loadBtn_, 0, 3);
 
-    unsigned x = 50;
-    unsigned y = 24;
-    moduleList_.setBounds(x, y + 25, SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT);
+    unsigned x = 25 * COMPACT_UI_SCALE;
+    unsigned y = 12 * COMPACT_UI_SCALE;
+    moduleList_.setBounds(x, y + (25 * COMPACT_UI_SCALE), SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT);
 }
 
 void LoadModuleView::drawButtonBox(Graphics &g) {
     static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
     static constexpr unsigned nParamPerPage = 4;
-    static constexpr unsigned titleH = 30;
+    static constexpr unsigned titleH = 12 * COMPACT_UI_SCALE;
     unsigned canvasH = SSP_COMPACT_HEIGHT - titleH;
     unsigned canvasW = SSP_COMPACT_WIDTH - (gap * 2);
     unsigned buttonBarH = canvasH / (nParamPerPage + 3);
@@ -70,7 +70,7 @@ void LoadModuleView::drawButtonBox(Graphics &g) {
 void LoadModuleView::setButtonBounds(ssp::ValueButton &btn, unsigned r, unsigned c) {
     static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
     static constexpr unsigned nParamPerPage = 4;
-    static constexpr unsigned titleH = 30;
+    static constexpr unsigned titleH = 12 * COMPACT_UI_SCALE;
     unsigned canvasH = SSP_COMPACT_HEIGHT - titleH;
     unsigned canvasW = SSP_COMPACT_WIDTH - (gap * 2);
     unsigned buttonBarH = canvasH / (nParamPerPage + 3);
