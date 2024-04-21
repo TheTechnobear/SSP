@@ -23,6 +23,7 @@ void ModuleView::onSSPTimer() {
 
 
 void ModuleView::drawModulePanel(Graphics &g) {
+    int fh = 14 * COMPACT_UI_SCALE;
     unsigned panelWidth = pluginWidth;
     // unsigned panelHeight = pluginHeight;
 
@@ -31,7 +32,7 @@ void ModuleView::drawModulePanel(Graphics &g) {
         int x = pluginWidth / 2;
         g.setColour(Colours::white);
 
-        g.setFont(Font(Font::getDefaultMonospacedFontName(), 20, Font::plain));
+        g.setFont(Font(Font::getDefaultMonospacedFontName(), fh * 2, Font::plain));
         g.drawSingleLineText("No Module Loaded", x - 40, getHeight() / 2 - 20);
         return;
     }

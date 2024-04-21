@@ -28,7 +28,7 @@ private:
     void paint(juce::Graphics& g) override;
     void resized() override;
 
-    static constexpr int FH = 10 * COMPACT_UI_SCALE;
+    static constexpr int FH = 14 * COMPACT_UI_SCALE;
     static constexpr int LS = FH;
     std::vector<juce::String> items_;
     std::function<bool(unsigned)> isSelected_ = nullptr;

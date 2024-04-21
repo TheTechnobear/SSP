@@ -76,8 +76,8 @@ String MatrixView::channelAsString(unsigned midx, unsigned ch, bool inOut) {
 void MatrixView::resized() {
     base_type::resized();
     static constexpr int gap = 4 * COMPACT_UI_SCALE;
-    static constexpr int x = gap;
-    static constexpr int y = LS * 3;
+    static constexpr int x = LS;
+    static constexpr int y = LS * 2;
     static constexpr int height = SSP_COMPACT_HEIGHT - (5 * LS);
     static constexpr int width = (SSP_COMPACT_WIDTH - gap) / 3;
 
@@ -91,10 +91,11 @@ void MatrixView::drawView(Graphics& g) {
     base_type::drawView(g);
     int x = LS;
     int y = LS;
+    int fh = 14 * COMPACT_UI_SCALE;
     int width = (SSP_COMPACT_WIDTH - (4 * LS)) / 2;
 
     g.setColour(Colours::yellow);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), 20, Font::plain));
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
     g.drawSingleLineText("Matrix ( Track " + String(trackIdx_ + 1) + " , Slot " + moduleAsString(moduleIdx_) + " )", x,
                          y);
 

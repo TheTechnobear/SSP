@@ -52,16 +52,20 @@ void TrackEditor::eventUp(bool longpress) {
 
 
 void TrackEditor::onEncoderSwitch(unsigned enc, bool v) {
-    if (v) return;
-
     if (getViewIdx() == trackViewIdx_) {
-        auto modIdx = enc;
-        moduleView_->moduleIdx(trackIdx_, modIdx + 1);
-        setView(moduleViewIdx_);
+        if (!v) {
+            auto modIdx = enc;
+            moduleView_->moduleIdx(trackIdx_, modIdx + 1);
+            setView(moduleViewIdx_);
+        }
         return;
     }
 
     base_type::onEncoderSwitch(enc, v);
+    if (getViewIdx() == loadViewIdx_ && enc == 0 && loadModuleView_->moduleUpdated()) {
+        trackView_->trackIdx(trackIdx_);
+        setView(trackViewIdx_);
+    }
 }
 
 void TrackEditor::eventButton(unsigned btn, bool longPress) {
@@ -87,11 +91,12 @@ void TrackEditor::eventButton(unsigned btn, bool longPress) {
     if (v == loadViewIdx_ && longPress == false) {
         // return view on load and clear
         switch (btn) {
-            case 3: {  // clear
+            case 3: {  // load
                 // carry out action
                 loadModuleView_->eventButton(btn, longPress);
                 // return to overview
-                setView(moduleViewIdx_);
+                trackView_->trackIdx(trackIdx_);
+                setView(trackViewIdx_);
                 return;
             }
             case 7: {  // clear

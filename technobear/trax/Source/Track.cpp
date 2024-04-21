@@ -89,16 +89,16 @@ void Track::prepare(int sampleRate, int blockSize) {
 }
 
 void Track::process(juce::AudioSampleBuffer &ioBuffer) {
-   if (!lock_.test_and_set()) {
+    if (!lock_.test_and_set()) {
         size_t n = blockSize_;
         auto &inMod = modules_[M_IN];
         for (int c = 0; c < MAX_IO_IN; c++) { inMod.audioBuffer_.copyFrom(c, 0, ioBuffer, c, 0, n); }
 
-        if(!mute()) {
+        if (!mute()) {
             unsigned modIdx = 0;
             for (auto &m : modules_) {
                 auto &moduleBuf = m.audioBuffer_;
-                moduleBuf.applyGain(0.0f);
+                if (modIdx > 0) moduleBuf.applyGain(0.0f);
                 for (auto &route : matrix_.connections_) {
                     if (route.dest_.modIdx_ == modIdx) {
                         auto &srcBuf = modules_[route.src_.modIdx_].audioBuffer_;
@@ -130,7 +130,7 @@ void Track::getStateInformation(juce::MemoryOutputStream &outStream) {
     outStream.writeInt(checkTrackBytes);
     outStream.writeBool(mute_);
     outStream.writeFloat(level_);
-    
+
     for (auto &m : modules_) {
         outStream.writeInt(checkModuleBytes);
         auto &plugin = m.plugin_;
@@ -160,7 +160,6 @@ void Track::setStateInformation(juce::MemoryInputStream &inStream) {
 
 
     for (int m = 0; m < Track::M_MAX; m++) {
-
         int check = inStream.readInt();
         if (check != checkModuleBytes) { return; }
 

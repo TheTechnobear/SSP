@@ -17,8 +17,8 @@ TrackView::~TrackView() {
 
 void TrackView::drawView(Graphics &g) {
     base_type::drawView(g);
+    int fh = 14 * COMPACT_UI_SCALE;
     int space = 40 * COMPACT_UI_SCALE;
-    int fh = 10 * COMPACT_UI_SCALE;
     int x = 15 * COMPACT_UI_SCALE;
     int y = 15 * COMPACT_UI_SCALE;
 

@@ -45,11 +45,11 @@ void MixerView::editorShown() {
 
 void MixerView::drawView(Graphics &g) {
     base_type::drawView(g);
-    static constexpr unsigned fh = 10 * COMPACT_UI_SCALE;
+    static constexpr unsigned fh = 14 * COMPACT_UI_SCALE;
     g.setColour(Colours::yellow);
 
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
-    g.drawSingleLineText("Trax", 5 * COMPACT_UI_SCALE, COMPACT_UI_SCALE + fh);
+    g.drawSingleLineText("Trax", (SSP_COMPACT_WIDTH / 2) - (1.5f * float(fh)), COMPACT_UI_SCALE + fh);
 }
 
 
@@ -76,8 +76,8 @@ void MixerView::onEncoder(unsigned enc, float diff) {
 
 void MixerView::onEncoderSwitch(unsigned enc, bool v) {
     unsigned trackIdx = enc;
-    float newGain =1.0f;
-    if(!v && !encFine_[enc]) processor_.gainTrack(trackIdx, newGain);
+    float newGain = 1.0f;
+    if (!v && !encFine_[enc]) processor_.gainTrack(trackIdx, newGain);
     encDown_[enc] = v;
     encFine_[enc] = false;
 }
