@@ -27,7 +27,7 @@ EditorHost::EditorHost(BaseProcessor *p, BaseView *e, bool compactUI, bool enabl
     setWantsKeyboardFocus(true);
     addChildComponent(editor_);
     if (compactUI_) {
-        enableSysEditor = false;
+        // enableSysEditor = false;
         drawDefaults_ = false;
     }
 
@@ -66,7 +66,7 @@ EditorHost::EditorHost(BaseProcessor *p, BaseView *e, bool compactUI, bool enabl
         setSize(SSP_FULL_WIDTH, SSP_FULL_HEIGHT + uih);
     } else {
         editor_->setBounds(0, 0, SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT);
-        system_ = nullptr;
+        if(system_) system_->setBounds(0, 0, SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT);
         setSize(SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT);
     }
 }
@@ -270,6 +270,10 @@ void EditorHost::eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPres
         system_->eventButtonCombo(btn, comboBtn, longPress);
     else
         editor_->eventButtonCombo(btn, comboBtn, longPress);
+
+    if(longPress && comboBtn == SSP_Up && btn == SSP_Down ) {
+        sysEditor();
+    }
 }
 
 

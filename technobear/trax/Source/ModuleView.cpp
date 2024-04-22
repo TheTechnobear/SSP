@@ -18,7 +18,12 @@ void ModuleView::drawView(Graphics &g) {
 
 void ModuleView::onSSPTimer() {
     base_type::onSSPTimer();
-    if (pComponent_) pComponent_->repaint();
+    auto editor = processor_.getEditor(trackIdx_, moduleIdx_);
+    if( editor) { 
+        editor->frameStart();
+        auto pComponent = editor->editorComponent();
+        pComponent->repaint();
+    }
 }
 
 
@@ -36,70 +41,15 @@ void ModuleView::drawModulePanel(Graphics &g) {
         g.drawSingleLineText("No Module Loaded", x - 40, getHeight() / 2 - 20);
         return;
     }
+
+    auto pComponent = editor->editorComponent();
+    if(pComponent) {
+        pComponent->paintEntireComponent(g, true);
+    }
+
 }
 
 void ModuleView::editorShown() {
-    if (pComponent_ != nullptr) removeChildComponent(pComponent_);
-
-    editor_ = processor_.getEditor(trackIdx_, moduleIdx_);
-    if (editor_ != nullptr) {
-        // we are currently using editorhost->baseview, this is because editorshost is AudioProcessorEditor
-        // and it appears AudioProcessorEditor has special handling for resizing etc.
-        pComponent_ = editor_->editorComponent();
-        addChildComponent(pComponent_);
-        pComponent_->setBounds(0, 0, pluginWidth, pluginHeight);
-        // juce crashes if we let mouse events go to components
-        // possibly something to do with AudioProcessorEditor and us using 'its' component!
-        pComponent_->setInterceptsMouseClicks(false, false);
-    } else {
-        // no editor
-        pComponent_ = nullptr;
-    }
-}
-
-
-/// not currenly used. but we may do !
-void ModuleView::drawIO(Graphics &g) {
-    unsigned panelWidth = SSP_FULL_WIDTH / 2;
-    unsigned panelX = 0;
-
-    unsigned x = panelX + 50;
-    unsigned y = 100;
-    static constexpr unsigned fh = 18;
-    static constexpr unsigned h = fh + 5;
-    g.setColour(Colours::yellow);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
-
-    auto desc = processor_.getDescriptor(trackIdx_, moduleIdx_);
-    if (desc) {
-        g.setColour(Colours::yellow);
-        g.drawSingleLineText("Inputs", x, y);
-        y += h;
-
-        g.setColour(Colours::white);
-        int i = 8;  // max 8 inputs
-        const auto &inputs = desc->inputChannelNames;
-        for (const auto &n : inputs) {
-            g.drawSingleLineText(n, x, y);
-            y += h;
-            i--;
-            if (i == 0) break;
-        }
-        y += i * h;
-        y += h;
-
-        g.setColour(Colours::yellow);
-        g.drawSingleLineText("Outputs", x, y);
-        y += h;
-        i = 2;  // max 2 outputs
-        g.setColour(Colours::white);
-        const auto &outputs = desc->outputChannelNames;
-        for (const auto &n : outputs) {
-            g.drawSingleLineText(n, x, y);
-            y += h;
-            if (i == 0) break;
-        }
-    }
 }
 
 

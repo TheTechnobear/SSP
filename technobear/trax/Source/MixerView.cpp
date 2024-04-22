@@ -13,7 +13,7 @@ MixerView::MixerView(PluginProcessor &p) : base_type(&p, nullptr), processor_(p)
         mutebtn->setToggle(true);
         addButton(t, mutebtn);
 
-        auto tracksel = std::make_shared<ssp::ValueButton>("Modules", [this, t](bool v) {});
+        auto tracksel = std::make_shared<ssp::ValueButton>("Track", [this, t](bool v) {});
         addButton(t + PluginProcessor::MAX_TRACKS, tracksel);
     }
 }

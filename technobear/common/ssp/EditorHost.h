@@ -51,7 +51,12 @@ public:
     bool keyStateChanged(bool isKeyDown) override;
     void modifierKeysChanged(const ModifierKeys &modifiers) override;
 
-    BaseView *getEditorView() { return editor_; }
+    juce::Component *getEditorComponent() { 
+        if(sysActive_ && system_ != nullptr) {
+            return system_;
+        } 
+        return editor_; 
+    }
 
     bool isCompactUI(){ return compactUI_;}
 

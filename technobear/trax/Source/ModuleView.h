@@ -44,7 +44,4 @@ private:
     unsigned trackIdx_ = PluginProcessor::MAX_TRACKS;
     unsigned moduleIdx_ = Track::M_MAX;
     PluginProcessor &processor_;
-
-    SSPExtendedApi::PluginEditorInterface* editor_ = nullptr;
-    Component *pComponent_ = nullptr;
 };

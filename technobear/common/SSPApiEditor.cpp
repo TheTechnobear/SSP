@@ -99,6 +99,8 @@ void SSP_PluginEditorInterface::encoderTurned(int n, int val) {
 
 
 void SSP_PluginEditorInterface::generateButtenEvents(int n, bool val) {
+    static constexpr unsigned LONG_PRESS_COUNT = 10;
+
     if (buttonState_[n] == val) return;
     // only look at transitions
 
@@ -114,6 +116,19 @@ void SSP_PluginEditorInterface::generateButtenEvents(int n, bool val) {
 
     // on release...
     bool longPress = buttonCounter_[n] == 0;
+
+    for (int i = 0; i < SSP_LastBtn; i++) {
+        if (i == n) continue;
+        if (buttonState_[i])  {
+            // consume combo
+            buttonCounter_[i] = 0;
+            buttonState_[i] = false;
+            actions_->eventButtonCombo(n, i, longPress);
+            return;
+        }
+    }
+
+
     switch (n) {
         case SSP_Soft_1:
         case SSP_Soft_2:
@@ -123,18 +138,7 @@ void SSP_PluginEditorInterface::generateButtenEvents(int n, bool val) {
         case SSP_Soft_6:
         case SSP_Soft_7:
         case SSP_Soft_8: {
-            bool evtSent = false;
-            for (int i = 0; i < SSP_LastBtn && !evtSent; i++) {
-                if (i == n) continue;
-                if (buttonState_[i])  {
-                    // consume combo
-                    buttonCounter_[i] = 0;
-                    buttonState_[i] = false;
-                    actions_->eventButtonCombo(n, i, longPress);
-                    evtSent = true;
-                }
-            }
-            if (!evtSent) { actions_->eventButton(n, longPress); }
+            actions_->eventButton(n, longPress);
             break;
         }
         case SSP_Left: {
