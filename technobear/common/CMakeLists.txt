@@ -7,6 +7,8 @@ set(COMMON_SRC
         ../common/ssp/BaseView.cpp
         ../common/ssp/BaseProcessor.cpp
         ../common/ssp/SystemEditor.cpp
+        ../common/ssp/SystemFullEditor.cpp
+        ../common/ssp/SystemMiniEditor.cpp
         ../common/ssp/EditorHost.cpp
         ../common/ssp/SSPUI.cpp
         ../common/SSPApiEditor.cpp

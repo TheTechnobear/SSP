@@ -74,6 +74,7 @@ public:
     virtual void midiNoteInput(unsigned note, unsigned velocity) { ; }
 
     void noteInput(bool b) { noteInput_ = b; }
+    bool noteInput() const { return noteInput_; }   
 
     void midiChannel(unsigned ch) { midiChannel_ = ch; }
 
@@ -81,6 +82,41 @@ public:
 
     void useCompactUI(bool b) { compactEditor_ = b; }
     bool useCompactUI() const { return compactEditor_; }
+
+
+
+
+    struct MidiAutomation {
+        int paramIdx_ = -1;
+        float scale_ = 1.0f;
+        float offset_ = 0.0f;
+        struct Midi {
+            int channel_ = 0;
+            int num_ = 0; // note num, cc , if applicable
+            enum Type {
+                T_CC,
+                T_PRESSURE,
+                T_NOTE,
+                T_MAX
+            } type_ = T_MAX;
+        } midi_;
+
+        void reset() {
+            paramIdx_ = -1;
+            scale_ = 1.0f;
+            offset_ = 0.0f;
+            midi_.channel_ = 0;
+            midi_.num_ = 0;
+            midi_.type_ = Midi::T_MAX;
+        }
+
+        bool valid() const { return paramIdx_ >= 0 && midi_.type_ != Midi::T_MAX; }
+
+        void store(juce::XmlElement *);
+        void recall(juce::XmlElement *);
+    };
+
+
 
 protected:
     friend class BaseEditor;
@@ -119,36 +155,6 @@ protected:
     void handleIncomingMidiMessage(juce::MidiInput *source, const juce::MidiMessage &message) override;
 
     void handleMidi(const juce::MidiMessage &message);
-
-    struct MidiAutomation {
-        int paramIdx_ = -1;
-        float scale_ = 1.0f;
-        float offset_ = 0.0f;
-        struct Midi {
-            int channel_ = 0;
-            int num_ = 0; // note num, cc , if applicable
-            enum Type {
-                T_CC,
-                T_PRESSURE,
-                T_NOTE,
-                T_MAX
-            } type_ = T_MAX;
-        } midi_;
-
-        void reset() {
-            paramIdx_ = -1;
-            scale_ = 1.0f;
-            offset_ = 0.0f;
-            midi_.channel_ = 0;
-            midi_.num_ = 0;
-            midi_.type_ = Midi::T_MAX;
-        }
-
-        bool valid() const { return paramIdx_ >= 0 && midi_.type_ != Midi::T_MAX; }
-
-        void store(juce::XmlElement *);
-        void recall(juce::XmlElement *);
-    };
 
     void automateParam(int idx, const MidiAutomation &a, const juce::MidiMessage &msg);
 

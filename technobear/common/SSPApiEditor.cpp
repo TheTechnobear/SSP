@@ -97,9 +97,8 @@ void SSP_PluginEditorInterface::encoderTurned(int n, int val) {
     editor_->onEncoder(n, (float)val);
 }
 
-
 void SSP_PluginEditorInterface::generateButtenEvents(int n, bool val) {
-    static constexpr unsigned LONG_PRESS_COUNT = 10;
+    static constexpr unsigned LONG_PRESS_COUNT = 5;
 
     if (buttonState_[n] == val) return;
     // only look at transitions

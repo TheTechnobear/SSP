@@ -144,10 +144,11 @@ void BarValueControl::paint(juce::Graphics &g) {
 
 ListValueControl::ListValueControl(const std::string &name,
                                    std::function<void(float idx, const std::string &str)> cb,
-                                   std::vector<std::string> values, float def)
+                                   std::vector<std::string> values, float def, int fh)
     : BaseValueControl(name, "", values.empty() ? 0 : 1, values.size(), values.empty() ? 0 : def),
       callback_(cb),
-      values_(values) {
+      values_(values),
+      fh_(fh) {
 }
 
 void ListValueControl::inc(bool coarse) {
@@ -179,20 +180,19 @@ void ListValueControl::valueChanged(float nv) {
 }
 
 void ListValueControl::paint(juce::Graphics &g) {
-    static constexpr unsigned fh = 18 * COMPACT_UI_SCALE;
     int h = getHeight();
     int w = getWidth();
 
-    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain));
+    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh_, juce::Font::plain));
 
     g.setColour(fg_);
-    g.drawText(name_, 0, 0, w, fh, juce::Justification::centred);
+    g.drawText(name_, 0, 0, w, fh_, juce::Justification::centred);
 
     juce::String val;
     if (!values_.empty()) val = values_[(unsigned) value_];
     if (!label_.empty()) { val = val + " " + label_; }
     g.setColour(juce::Colours::white);
-    g.drawText(val, 0, h / 2, w, fh, juce::Justification::centred);
+    g.drawText(val, 0, h / 2, w, fh_, juce::Justification::centred);
 }
 
 } //namespace ssp

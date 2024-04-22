@@ -92,7 +92,8 @@ public:
     ListValueControl(const std::string &name,
                      std::function<void(float idx, const std::string &str)> cb,
                      std::vector<std::string> values = std::vector<std::string>(),
-                     float def = 0.0f);
+                     float def = 0.0f, 
+                     int fh = 18 * COMPACT_UI_SCALE);
     void inc(bool coarse) override;
     void dec(bool coarse) override;
     void reset() override;
@@ -102,10 +103,12 @@ public:
     std::vector<std::string> &values() { return values_; }
 
     void setValues(std::vector<std::string> &v, int selIdx = -1);
+    void setFontHeight(int fh) { fh_ = fh; }
 protected:
     void paint(juce::Graphics &g) override;
 
 private:
+    int fh_ = 18 * COMPACT_UI_SCALE;
     std::vector<std::string> values_;
     std::function<void(float idx, const std::string &str)> callback_;
     juce_UseDebuggingNewOperator

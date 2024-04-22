@@ -26,17 +26,19 @@ EditorHost::EditorHost(BaseProcessor *p, BaseView *e, bool compactUI, bool enabl
       recBtn_("R", nullptr, 32, Colours::red) {
     setWantsKeyboardFocus(true);
     addChildComponent(editor_);
-    if (compactUI_) {
-        // enableSysEditor = false;
-        drawDefaults_ = false;
-    }
+    if (compactUI_) { drawDefaults_ = false; }
 
 
     if (enableSysEditor) {
-        system_ = new SystemEditor(p);
+        if (compactUI_) {
+            system_ = new SystemMiniEditor(p);
+            system_->setBounds(0, 0, SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT);
+        } else {
+            system_ = new SystemFullEditor(p);
+            system_->setBounds(0, 0, SSP_FULL_WIDTH, SSP_FULL_HEIGHT);
+        }
         setVisible(sysActive_);
         addChildComponent(system_);
-        system_->setBounds(0, 0, SSP_FULL_WIDTH, SSP_FULL_HEIGHT);
     }
 
     if (drawDefaults_) {
@@ -66,7 +68,7 @@ EditorHost::EditorHost(BaseProcessor *p, BaseView *e, bool compactUI, bool enabl
         setSize(SSP_FULL_WIDTH, SSP_FULL_HEIGHT + uih);
     } else {
         editor_->setBounds(0, 0, SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT);
-        if(system_) system_->setBounds(0, 0, SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT);
+        if (system_) system_->setBounds(0, 0, SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT);
         setSize(SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT);
     }
 }
@@ -271,8 +273,8 @@ void EditorHost::eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPres
     else
         editor_->eventButtonCombo(btn, comboBtn, longPress);
 
-    if(longPress && comboBtn == SSP_Up && btn == SSP_Down ) {
-        sysEditor();
+    if(compactUI_) {
+        if ((comboBtn == SSP_Up && btn == SSP_Down) || (comboBtn == SSP_Down && btn == SSP_Up)) { sysEditor(); }
     }
 }
 
