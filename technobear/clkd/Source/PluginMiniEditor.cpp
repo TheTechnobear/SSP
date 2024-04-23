@@ -12,8 +12,7 @@ PluginMiniEditor::PluginMiniEditor(PluginProcessor &p)
       runButton_("Run", nullptr, 32, Colours::green),
       resetButton_("Reset", nullptr, 32, Colours::yellow),
       useTrigsButton_("TrigSync", nullptr, 20, Colours::cyan) {
-
-    //TODO, value buttons support and IO activity?
+    // TODO, value buttons support and IO activity?
     auto view = std::make_shared<ssp::MiniParamView>(&p);
     // std::make_shared<ssp::MiniParamView>(&p, [&](bool io, int bus) { return p.ioActivity(io, bus); });
 

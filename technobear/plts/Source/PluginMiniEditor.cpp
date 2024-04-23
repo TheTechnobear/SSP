@@ -1,19 +1,14 @@
 #include "PluginMiniEditor.h"
 
 #include "PluginProcessor.h"
-
 #include "ssp/controls/MiniControl.h"
 
 using pcontrol_type = ssp::MiniControl;
 using bcontrol_type = ssp::ParamButton;
 
 
-PluginMiniEditor::PluginMiniEditor(PluginProcessor &p) :
-    base_type(&p),
-    processor_(p) {
-
-    auto view =
-        std::make_shared<ssp::MiniParamView>(&p, [&](bool io, int bus) { return p.ioActivity(io, bus); });
+PluginMiniEditor::PluginMiniEditor(PluginProcessor &p) : base_type(&p), processor_(p) {
+    auto view = std::make_shared<ssp::MiniParamView>(&p, [&](bool io, int bus) { return p.ioActivity(io, bus); });
     view->addParam(std::make_shared<pcontrol_type>(processor_.params_.pitch));
     view->addParam(std::make_shared<pcontrol_type>(processor_.params_.harmonics));
     view->addParam(std::make_shared<pcontrol_type>(processor_.params_.timbre));

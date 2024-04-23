@@ -62,6 +62,7 @@ target_link_libraries(DUAL PRIVATE
 
 set_target_properties(${PROJECT_NAME}_VST3 PROPERTIES PREFIX "")
 
-if(APPLE)
+if(INSTALL_PLUGIN)
     juce_enable_copy_plugin_step(${PROJECT_NAME})
 endif()
+

@@ -13,7 +13,7 @@ general goals:
 
 
 specific tasks:
-- clkd/omod mini editor need value button
+- add mini editor to existing plugins - see below
 - make a minimum set of usable plugins , aka first-use case
 - consider locking strategy... do we need both track and module?
 - rename matrix to -> ?
@@ -44,6 +44,62 @@ with perhaps some 'additions'? (e.g. playing plts via cv)
 
 
 
+## existing plugin coversion
+### NOT STARTED 
+
+
+shq - use list control?, so native, but we may be able to use param?
+
+mtmo - native ui, but looks trivial
+logi - bit of native ui, but should be ok?
+msw8 - not just param based, but should be easy enough
+mmx4 - not just param based, but should be easy enough
+
+
+data - bit of ui work, but worth it
+cart - quite a bit of ui work, but worth it!
+
+gra4 - consider rnbo, do we regenerate code?
+loop - consider rnbo, do we regenerate code?
+
+
+### DO NOT SUPPORT?
+pmix - not required? perhaps a smaller version?
+dual - only valid for full screen
+swat - low priority?
+
+vost 
+a lot of parameters... 10 pages/layers each with 16 voltages
+feels like a variation, or a change to vost would be better... not sure how to name... 
+e.g.
+we could change to 8 layers, and then use buttons to select layer
+thus we only get 4 pages for each layer
+... we have an issue with select, but we could remove this and just have as CV input!?
+
+
+## IN PROGRESS / PARTIAL
+
+clkd - value button add?
+omod - value button add?
+
+### DONE
+clds 
+plts
+rngs
+pvca
+dlyd
+srvb
+comp
+harm
+trax
+mtin
+mtot
+mttr
+drum - has been reduce to 4 params per drum, its probaly going to need some kind of page labelling!
+ldrf
+attn
+sfft - generic rnbo
+sflt - generic rnbo
 
 
 -----------------------------------------------------

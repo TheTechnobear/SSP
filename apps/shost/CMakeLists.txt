@@ -7,14 +7,7 @@
 # The first line of any CMake project should be a call to `cmake_minimum_required`, which checks
 # that the installed CMake will be able to understand the following CMakeLists, and ensures that
 # CMake's behaviour is compatible with the named version. This is a standard CMake command, so more
-# information can be found in the CMake docs.
-
-cmake_minimum_required(VERSION 3.15)
-
-# The top-level CMakeLists.txt file for a project must contain a literal, direct call to the
-# `project()` command. `project()` sets up some helpful variables that describe source/binary
-# directories, and the current project version. This is a standard CMake command.
-
+# information can be found in the CMake docs.cmake_minimum_required(VERSION 3.15)
 project(SimpleHost VERSION 0.0.1)
 
 # If you've installed JUCE somehow (via a package manager, or directly using the CMake install
@@ -62,12 +55,6 @@ target_sources(SimpleHost
         Main.cpp
         MainComponent.cpp)
 
-# `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer
-# project, these might be passed in the 'Preprocessor Definitions' field. JUCE modules also make use
-# of compile definitions to switch certain features on/off, so if there's a particular feature you
-# need that's not on by default, check the module header for the correct flag to set here. These
-# definitions will be visible both to your code, and also the JUCE module code, so for new
-# definitions, pick unique names that are unlikely to collide! This is a standard CMake command.
 
 target_compile_definitions(SimpleHost
     PRIVATE

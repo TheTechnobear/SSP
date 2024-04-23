@@ -66,10 +66,9 @@ target_link_libraries(TRAX PRIVATE
         # AudioPluginData           # If we'd created a binary data target, we'd link to it here
         juce::juce_audio_utils)
 
-
-#set_target_properties(${PROJECT_NAME}_VST PROPERTIES PREFIX "")
 set_target_properties(${PROJECT_NAME}_VST3 PROPERTIES PREFIX "")
 
-if(APPLE)
+if(INSTALL_PLUGIN)
     juce_enable_copy_plugin_step(${PROJECT_NAME})
 endif()
+

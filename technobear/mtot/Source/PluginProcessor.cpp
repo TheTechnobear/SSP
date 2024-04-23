@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "PluginMiniEditor.h"
 #include "ssp/EditorHost.h"
 
 
@@ -188,9 +189,17 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     }
 }
 
-
 AudioProcessorEditor *PluginProcessor::createEditor() {
-    return new ssp::EditorHost(this, new PluginEditor(*this));
+#ifdef FORCE_COMPACT_UI
+    return new ssp::EditorHost(this, new PluginMiniEditor(*this),true);
+#else
+    if (useCompactUI()) {
+        return new ssp::EditorHost(this, new PluginMiniEditor(*this), useCompactUI());
+
+    } else {
+        return new ssp::EditorHost(this, new PluginEditor(*this), useCompactUI());
+    }
+#endif
 }
 
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {
