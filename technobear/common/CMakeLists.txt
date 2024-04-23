@@ -4,6 +4,8 @@ include_directories("${PROJECT_SOURCE_DIR}/../../external/readerwriterqueue")
 
 set(COMMON_SRC
         ../common/SSP.cpp
+        ../common/SSPApiEditor.cpp
+
         ../common/ssp/BaseView.cpp
         ../common/ssp/BaseProcessor.cpp
         ../common/ssp/SystemEditor.cpp
@@ -11,7 +13,8 @@ set(COMMON_SRC
         ../common/ssp/SystemMiniEditor.cpp
         ../common/ssp/EditorHost.cpp
         ../common/ssp/SSPUI.cpp
-        ../common/SSPApiEditor.cpp
+        ../common/ssp/Log.cpp
+
         ../common/ssp/editors/BaseEditor.cpp
         ../common/ssp/editors/BaseViewEditor.cpp
         ../common/ssp/editors/BaseMiniView.cpp
@@ -23,6 +26,7 @@ set(COMMON_SRC
         ../common/ssp/editors/BarParamEditor.cpp
         ../common/ssp/editors/FileBrowser.cpp
         ../common/ssp/editors/TextEdit.cpp
+        
         ../common/ssp/controls/ParamControl.cpp
         ../common/ssp/controls/ParamButton.cpp
         ../common/ssp/controls/ValueControl.cpp

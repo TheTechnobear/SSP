@@ -7,7 +7,7 @@
 #include <juce_core/juce_core.h>
 
 
-#include "Log.h"
+#include "ssp/Log.h"
 
 
 #ifdef __APPLE__
@@ -157,7 +157,7 @@ bool Module::loadModule(std::string mn) {
 bool Module::checkPlugin(const std::string &mn) {
     bool supported = false;
     std::string f = getPluginFile(mn);
-    // log(f);
+    // ssp::log(f);
     auto fHandle = dlopen(f.c_str(), dlopenmode);  // macOS does now have deepbind
     if (fHandle) {
         auto fnApiExtension = (SSPExtendedApi::apiExtensionFun)dlsym(fHandle, SSPExtendedApi::apiExtensionsName);

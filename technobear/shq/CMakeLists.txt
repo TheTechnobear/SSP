@@ -51,6 +51,7 @@ target_sources(SHQ
         Source/SSPApi.cpp
         PRIVATE
         Source/PluginEditor.cpp
+        Source/PluginMiniEditor.cpp
         Source/PluginProcessor.cpp
         Source/Quantizer.cpp
         ${COMMON_SRC}

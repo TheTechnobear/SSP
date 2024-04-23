@@ -47,25 +47,20 @@ with perhaps some 'additions'? (e.g. playing plts via cv)
 ## existing plugin coversion
 ### NOT STARTED 
 
-
-shq - use list control?, so native, but we may be able to use param?
-
-mtmo - native ui, but looks trivial
-logi - bit of native ui, but should be ok?
-msw8 - not just param based, but should be easy enough
-mmx4 - not just param based, but should be easy enough
-
+logi - uses params but also has custom graphics, should fit ok
+msw8 - custom grid, should git, but has parameters on bottom.
+mmx4 - custom grid, with params.. but I possibly could not display params, just use grid (hilite row)
 
 data - bit of ui work, but worth it
 cart - quite a bit of ui work, but worth it!
 gra4 - needs new ui - update wavedisp, use new save/load dialogs?
-loop - needs new ui  - update wavedisp, use new save/load dialogs?
+loop - needs new ui - update wavedisp, use new save/load dialogs?
 
 
 ### DO NOT SUPPORT?
 pmix - not required? perhaps a smaller version?
 dual - only valid for full screen
-swat - low priority?
+swat - low priority - not used much, also algos paint directly, so alot of work
 
 vost 
 a lot of parameters... 10 pages/layers each with 16 voltages
@@ -99,6 +94,8 @@ ldrf
 attn
 sfft - generic rnbo
 sflt - generic rnbo
+shq
+mtmo - uses basic view to implement ui
 
 
 -----------------------------------------------------

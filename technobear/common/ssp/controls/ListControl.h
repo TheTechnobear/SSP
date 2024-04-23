@@ -52,6 +52,7 @@ int ListControl<T>::idx() {
 template <class T>
 void ListControl<T>::idx(int i) {
     curIdx_ = i;
+    if (curIdx_ >= (offset_ + nLines_)) { offset_ = curIdx_ - nLines_ + 1; }
     repaint();
 }
 
@@ -67,12 +68,14 @@ void ListControl<T>::addItem(const juce::String& str) {
 template <class T>
 void ListControl<T>::nextItem() {
     curIdx_ += curIdx_ < (items_.size() - 1);
+    if (curIdx_ >= (offset_ + nLines_)) offset_++;
     repaint();
 }
 
 template <class T>
 void ListControl<T>::prevItem() {
     curIdx_ -= curIdx_ != 0;
+    if(curIdx_ < offset_) offset_ = curIdx_;
     repaint();
 }
 

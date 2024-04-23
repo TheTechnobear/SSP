@@ -1,17 +1,17 @@
-
-#include "PluginEditor.h"
+#include "PluginMiniEditor.h"
 
 #include "PluginProcessor.h"
-#include "ssp/controls/ParamButton.h"
-#include "ssp/controls/ParamControl.h"
+#include "ssp/editors/BaseMiniView.h"
+
+PluginMiniEditor::PluginMiniEditor(PluginProcessor &p) : base_type(&p,true), processor_(p) {
+}
 
 
-void PluginEditor::onSSPTimer() {
+void PluginMiniEditor::onSSPTimer() {
     base_type::onSSPTimer();
     clock_ = false;
     MidiMessage msg;
     while (processor_.messageQueue().try_dequeue(msg)) {
-        //        Logger::writeToLog("timerCallback -> " + msg.getDescription());
         auto &data = dataBuf_[wrPos_];
 
         if (msg.isNoteOn(false)) {
@@ -66,25 +66,33 @@ void PluginEditor::onSSPTimer() {
     }
 }
 
-
-PluginEditor::PluginEditor(PluginProcessor &p) : base_type(&p), processor_(p) {
-    setSize(1600, 480);
-}
-
-void PluginEditor::drawView(Graphics &g) {
+void PluginMiniEditor::drawView(Graphics &g) {
     base_type::drawView(g);
+
+    static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), 10 * COMPACT_UI_SCALE, Font::plain));
+
+    g.setColour(Colours::yellow);
+    g.drawSingleLineText(String(JucePlugin_Name) + ":" + String(JucePlugin_Desc) + String(" @ thetechnobear"), gap,
+                         gap * 2);
+
 
     const int fh = 12 * COMPACT_UI_SCALE;
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
 
-    int y = 60;
+    int y = fh * 3;
     g.setColour(Colours::green);
-    g.drawSingleLineText("Ch", 20, y);
-    g.drawSingleLineText("Msg", 80, y);
-    g.drawSingleLineText("Num", 180, y);
-    g.drawSingleLineText("Value", 240, y);
+    int chX = 5 * COMPACT_UI_SCALE;
+    int msgX = chX + (fh * 2);
+    int numX = msgX + (fh * 5);
+    int valX = numX + (fh * 4);
 
-    int x = 1400;
+    g.drawSingleLineText("Ch", chX, y);
+    g.drawSingleLineText("Msg", msgX, y);
+    g.drawSingleLineText("Num", numX, y);
+    g.drawSingleLineText("Value", valX, y);
+
+    int x = SSP_COMPACT_WIDTH - fh * 10;
     g.drawSingleLineText("Clock", x, y);
     g.setColour(Colours::yellow);
     if (clock_) {
@@ -97,14 +105,15 @@ void PluginEditor::drawView(Graphics &g) {
 
     g.setColour(Colours::white);
 
-    for (int i = 16; i > 0; i--) {
+    static const int MAX_LINES = 15;
+    for (int i = MAX_LINES; i > 0; i--) {
         int idx = (wrPos_ + MAX_DATA - i) % MAX_DATA;
         auto data = dataBuf_[idx];
         if (data.active_) {
-            g.drawSingleLineText(data.channel_, 20, y);
-            g.drawSingleLineText(data.type_, 80, y);
-            if (data.dispNum_) g.drawSingleLineText(data.num_, 180, y);
-            g.drawSingleLineText(data.value_, 240, y);
+            g.drawSingleLineText(data.channel_, chX, y);
+            g.drawSingleLineText(data.type_, msgX, y);
+            if (data.dispNum_) g.drawSingleLineText(data.num_, numX, y);
+            g.drawSingleLineText(data.value_, valX, y);
             y += fh;
         }
     }

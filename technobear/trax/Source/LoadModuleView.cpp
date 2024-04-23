@@ -44,7 +44,7 @@ void LoadModuleView::resized() {
 
     unsigned x = 25 * COMPACT_UI_SCALE;
     unsigned y = 12 * COMPACT_UI_SCALE;
-    moduleList_.setBounds(x, y + (5 * COMPACT_UI_SCALE), SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT);
+    moduleList_.setBounds(x, y + (5 * COMPACT_UI_SCALE), SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT - (80 * COMPACT_UI_SCALE));
 }
 
 void LoadModuleView::drawButtonBox(Graphics &g) {

@@ -5,23 +5,7 @@
 static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
 static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
 
-
-// #ifdef __APPLE__
-// #include <sstream>
-// #include <thread>
-// void mvlog(const std::string &m) {
-//     std::stringstream msg;
-//     msg << std::this_thread::get_id() << " : " << m;
-//     juce::Logger::writeToLog(msg.str());
-// }
-// #else
-// #include <fstream>
-// #include <thread>
-// void mvlog(const std::string &m) {
-//     std::ofstream s("/dev/kmsg");
-//     s << std::this_thread::get_id() << " : " << m << std::endl;
-// }
-// #endif
+#include "ssp/Log.h"
 
 ModuleView::ModuleView(PluginProcessor &p, unsigned moduleIdx)
     : ssp::BaseView(&p, false), moduleIdx_(moduleIdx), processor_(p) {

@@ -5,7 +5,7 @@
 #include "PluginEditor.h"
 #include "ssp/EditorHost.h"
 
-#include "Log.h"
+#include "ssp/Log.h"
 
 PluginProcessor::PluginProcessor() : PluginProcessor(getBusesProperties(), createParameterLayout()) {
 }
@@ -86,10 +86,10 @@ bool PluginProcessor::requestModuleChange(unsigned t, unsigned m, const std::str
 
 
 void PluginProcessor::scanPlugins() {
-    log("plugin scan - start");
+    ssp::log("plugin scan - start");
     Module::scanPlugins(supportedModules_);
-    for (auto m : supportedModules_) { log("module: " + m); }
-    log("plugin scan - send");
+    for (auto m : supportedModules_) { ssp::log("module: " + m); }
+    ssp::log("plugin scan - send");
 }
 
 
@@ -224,7 +224,7 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
 }
 
 void PluginProcessor::savePreset() {
-    log("savePreset : " + requestedPreset_.toStdString());
+    ssp::log("savePreset : " + requestedPreset_.toStdString());
     presetName_ = requestedPreset_;
     requestPresetSave_ = false;
 
@@ -237,7 +237,7 @@ void PluginProcessor::savePreset() {
 }
 
 void PluginProcessor::loadPreset() {
-    log("loadPreset : " + requestedPreset_.toStdString());
+    ssp::log("loadPreset : " + requestedPreset_.toStdString());
     presetName_ = requestedPreset_;
     requestPresetLoad_ = false;
 

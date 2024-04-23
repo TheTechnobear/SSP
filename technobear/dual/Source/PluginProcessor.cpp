@@ -8,15 +8,7 @@
 #include "PluginEditor.h"
 #include "ssp/EditorHost.h"
 
-void log(const std::string &m) {
-#ifdef __APPLE__
-    juce::Logger::writeToLog(m);
-#else
-    std::ofstream s("/dev/kmsg");
-    s << m << std::endl;
-#endif
-}
-
+#include "ssp/Log.h"
 
 #ifdef __APPLE__
 const static int dlopenmode = RTLD_LOCAL | RTLD_NOW;
@@ -124,7 +116,7 @@ bool PluginProcessor::loadModule(std::string mn, PluginProcessor::Module &m) {
                 auto desc = fnCreateExDescriptor();
                 bool supported = desc->supportCompactUI_;
                 if (supported) {
-                    log(std::string("Loaded modulule : " + mn));
+                    ssp::log(std::string("Loaded modulule : " + mn));
                     auto pluginInterace = fnCreateInterface();
                     auto *plugin = (SSPExtendedApi::PluginInterface *)pluginInterace;
                     plugin->useCompactUI(true);
@@ -154,7 +146,7 @@ bool PluginProcessor::loadModule(std::string mn, PluginProcessor::Module &m) {
 bool PluginProcessor::checkPlugin(const std::string &mn) {
     bool supported = false;
     std::string f = getPluginFile(mn);
-    log(f);
+    ssp::log(f);
     auto fHandle = dlopen(f.c_str(), dlopenmode);  // macOS does now have deepbind
     if (fHandle) {
         auto fnApiExtension = (SSPExtendedApi::apiExtensionFun)dlsym(fHandle, SSPExtendedApi::apiExtensionsName);
@@ -175,7 +167,7 @@ bool PluginProcessor::checkPlugin(const std::string &mn) {
 
 
 void PluginProcessor::scanPlugins() {
-    log("plugin scan : STARTED");
+    ssp::log("plugin scan : STARTED");
     supportedModules_.clear();
     // Logger::writeToLog("plugin scan : STARTED");
 
@@ -201,10 +193,10 @@ void PluginProcessor::scanPlugins() {
     }
 
     // Logger::writeToLog("plugin scan : COMPLETED");
-    log("plugin scan : COMPLETED");
+    ssp::log("plugin scan : COMPLETED");
     for (const auto &module : supportedModules_) {
         // Logger::writeToLog(module);
-        log(module);
+        ssp::log(module);
     }
 }
 

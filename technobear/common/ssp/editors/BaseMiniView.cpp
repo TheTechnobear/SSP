@@ -167,7 +167,7 @@ void MiniParamView::resized() {
     canvasH_ = getHeight() - titleH_;
     canvasW_ = getWidth() - (gap * 2);
     buttonBarH_ = canvasH_ / (nParamPerPage + 3);
-    ioW_ = 60 * scale;
+    ioW_ = ioCallback_ ? 60 * scale : gap;
 
     // size buttons
     unsigned butTopY = getHeight() - buttonBarH_;
@@ -201,6 +201,8 @@ void MiniParamView::resized() {
 }
 
 void MiniParamView::drawIO(Graphics &g) {
+    if (!ioCallback_) return;
+
     static constexpr unsigned gap = 5 * scale;
     int box = scale * 7;
     unsigned tx = gap + (box * 2);
@@ -226,14 +228,12 @@ void MiniParamView::drawIO(Graphics &g) {
         if (bus) {
             g.setColour(Colours::white);
             g.drawSingleLineText(bus->getName(), tx, y);
-            if (ioCallback_) {
-                float v = ioCallback_(true, i);
-                Colour clr = v > 0.001f ? Colours::green : (v < -0.001f ? Colours::red : Colours::black);
-                float aMod = ((v > 0.0f ? v : -v) * alphaMult) + alphaOffset;
-                clr = clr.withMultipliedAlpha(aMod);
-                g.setColour(clr);
-                g.fillRect(gap, y - box, box, box);
-            }
+            float v = ioCallback_(true, i);
+            Colour clr = v > 0.001f ? Colours::green : (v < -0.001f ? Colours::red : Colours::black);
+            float aMod = ((v > 0.0f ? v : -v) * alphaMult) + alphaOffset;
+            clr = clr.withMultipliedAlpha(aMod);
+            g.setColour(clr);
+            g.fillRect(gap, y - box, box, box);
         }
         y += h;
     }
@@ -250,19 +250,16 @@ void MiniParamView::drawIO(Graphics &g) {
         if (bus) {
             g.setColour(Colours::white);
             g.drawSingleLineText(bus->getName(), tx, y);
-            if (ioCallback_) {
-                float v = ioCallback_(false, i);
-                Colour clr = v > 0.01f ? Colours::green : (v < -0.01f ? Colours::red : Colours::black);
-                float aMod = ((v > 0.0f ? v : -v) * alphaMult) + alphaOffset;
-                clr = clr.withMultipliedAlpha(aMod);
-                g.setColour(clr);
-                g.fillRect(gap, y - box, box, box);
-            }
+            float v = ioCallback_(false, i);
+            Colour clr = v > 0.01f ? Colours::green : (v < -0.01f ? Colours::red : Colours::black);
+            float aMod = ((v > 0.0f ? v : -v) * alphaMult) + alphaOffset;
+            clr = clr.withMultipliedAlpha(aMod);
+            g.setColour(clr);
+            g.fillRect(gap, y - box, box, box);
         }
         y += h;
     }
 }
-
 
 
 void MiniParamView::drawButtonBox(Graphics &g) {
@@ -277,7 +274,6 @@ void MiniParamView::drawButtonBox(Graphics &g) {
     g.drawHorizontalLine((butTopY + buttonBarH_ - 1), butLeftX, gap + canvasW_ - 1);
     for (int i = 0; i < 5; i++) { g.drawVerticalLine(butLeftX + (i * bw) - 1, butTopY, butTopY + buttonBarH_ - 1); }
 }
-
 
 
 ///////MiniBasicView
@@ -309,7 +305,7 @@ void MiniBasicView::resized() {
     canvasW_ = SSP_COMPACT_WIDTH;
     buttonBarH_ = SSP_COMPACT_HEIGHT / (nParamPerPage + 3);
 
-    buttonBox_->setBounds(0, canvasH_ , canvasW_, buttonBarH_);
+    buttonBox_->setBounds(0, canvasH_, canvasW_, buttonBarH_);
 }
 
 

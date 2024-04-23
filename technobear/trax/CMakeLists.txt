@@ -50,7 +50,6 @@ target_sources(TRAX
         Source/MatrixView.cpp
         Source/MixerView.cpp
         Source/OptionView.cpp
-        Source/Log.cpp
         ${COMMON_SRC}
         )
 
