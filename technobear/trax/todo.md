@@ -58,9 +58,8 @@ mmx4 - not just param based, but should be easy enough
 
 data - bit of ui work, but worth it
 cart - quite a bit of ui work, but worth it!
-
-gra4 - consider rnbo, do we regenerate code?
-loop - consider rnbo, do we regenerate code?
+gra4 - needs new ui - update wavedisp, use new save/load dialogs?
+loop - needs new ui  - update wavedisp, use new save/load dialogs?
 
 
 ### DO NOT SUPPORT?
