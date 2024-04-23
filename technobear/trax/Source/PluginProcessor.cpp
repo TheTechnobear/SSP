@@ -45,9 +45,9 @@ PluginProcessor::PluginProcessor(const AudioProcessor::BusesProperties &ioLayout
         CPU_SET(cpu, &cpuset);
         int rc = pthread_setaffinity_np(trackThreads_[i].native_handle(), sizeof(cpu_set_t), &cpuset);
         if (rc != 0) {
-            log("Trax : Error calling pthread_setaffinity_np: " + std::to_string(rc));
+            ssp::log("Trax : Error calling pthread_setaffinity_np: " + std::to_string(rc));
         } else {
-            log("Trax : Set affinity for dsp thread " + std::to_string(i) + " to CPU " + std::to_string(cpu));
+            ssp::log("Trax : Set affinity for dsp thread " + std::to_string(i) + " to CPU " + std::to_string(cpu));
         }
     }
 #endif
