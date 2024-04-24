@@ -19,3 +19,18 @@ Percussa::SSP::PluginInterface *createInstance() {
 
 }
 
+// Supports thetechnobear extensions
+extern "C" __attribute__ ((visibility("default")))
+bool apiExtensions() {
+    return true;
+}
+
+extern "C" __attribute__ ((visibility("default")))
+Percussa::SSP::PluginDescriptor *createExtendedDescriptor() {
+    auto desc = new SSPExtendedApi::PluginDescriptor;
+    SSP_defaultDescriptor(desc);
+    desc->colour = Colours::green.getARGB();
+    desc->supportCompactUI_ = true;
+    return desc;
+}
+

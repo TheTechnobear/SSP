@@ -43,15 +43,30 @@ with perhaps some 'additions'? (e.g. playing plts via cv)
 -- drum machine (w/sequencer)
 
 
+code refactor... the views need refactoring... too much code duplication
+essence of the issue is variation between valuebutton and parambutton
+also some editors needing buttons which switch base on page, others not
+really need to consider the various use cases
+
+possibly going the route of more components e.g. like button box, 
+so that the code is not all built into the views/editors
+
+
 
 ## existing plugin coversion
 ### NOT STARTED 
+
+!!!!! BUTTON WIDTH is wrong in BaseMiniDisplay!
+button width needs to based on full width with spacing !
+we can see drawHorizontal line is incorrect ... using compact width + gap !
+(this might be down to some code refactring )
+
+
 
 logi - uses params but also has custom graphics, should fit ok
 msw8 - custom grid, should git, but has parameters on bottom.
 mmx4 - custom grid, with params.. but I possibly could not display params, just use grid (hilite row)
 
-data - bit of ui work, but worth it
 cart - quite a bit of ui work, but worth it!
 gra4 - needs new ui - update wavedisp, use new save/load dialogs?
 loop - needs new ui - update wavedisp, use new save/load dialogs?
@@ -96,6 +111,7 @@ sfft - generic rnbo
 sflt - generic rnbo
 shq
 mtmo - uses basic view to implement ui
+data - bit of ui work, but worth it
 
 
 -----------------------------------------------------

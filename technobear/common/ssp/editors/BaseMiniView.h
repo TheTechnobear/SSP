@@ -4,16 +4,18 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 using namespace juce;
 
+#include <memory>
 #include <vector>
-#include<memory>
 
 #include "MultiView.h"
+#include "ssp/controls/ButtonBox.h"
 #include "ssp/controls/ParamButton.h"
 #include "ssp/controls/ParamControl.h"
-#include "ssp/controls/ButtonBox.h"
 
 namespace ssp {
 
+
+// MiniParamView is a view that displays parameters and buttons
 class MiniParamView : public BaseView {
 public:
     typedef std::function<float(bool io, unsigned ch)> ioActivity;
@@ -25,6 +27,7 @@ public:
     void addButton(const std::shared_ptr<ParamButton> &p);
 
     void resized() override;
+
 protected:
     using base_type = BaseView;
 
@@ -39,6 +42,11 @@ protected:
 
     void drawView(Graphics &) override;
 
+    virtual int canvasHeight() { return canvasH; }
+    virtual int canvasWidth() { return canvasW - ioW_; }
+    virtual int canvasX() { return ioW_; }
+    virtual int canvasY() { return titleH; }
+
 private:
     void prevPage();
     void nextPage();
@@ -49,24 +57,27 @@ private:
     bool encoderFine_[4] = { false, false, false, false };
     bool encoderState_[4] = { false, false, false, false };
 
-    std::vector<std::shared_ptr<BaseParamControl> > params_;
-    std::vector<std::shared_ptr<ParamButton> > buttons_;
+    std::vector<std::shared_ptr<BaseParamControl>> params_;
+    std::vector<std::shared_ptr<ParamButton>> buttons_;
     unsigned paramOffset_ = 0;
     static constexpr unsigned nParamPerPage = 4;
-    static constexpr unsigned scale = COMPACT_UI_SCALE;
     static constexpr unsigned maxUserBtns = 8;
 
-    unsigned buttonBarH_ = 0;
+    static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
+    static constexpr unsigned buttonBarH = 32 * COMPACT_UI_SCALE;
+    static constexpr unsigned titleH = 15 * COMPACT_UI_SCALE;
+    static constexpr unsigned canvasH = SSP_COMPACT_HEIGHT - buttonBarH - titleH;
+    static constexpr unsigned canvasW = SSP_COMPACT_WIDTH;
+
     unsigned ioW_ = 0;
-    unsigned canvasH_ = 0;
-    unsigned canvasW_ = 0;
-    unsigned titleH_ = 30;
 
     ioActivity ioCallback_ = nullptr;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MiniParamView)
 };
 
+
+// MiniBasicView is a view that displays just displays button
 class MiniBasicView : public BaseView {
 public:
     typedef std::function<float(bool io, unsigned ch)> ioActivity;
@@ -77,8 +88,12 @@ public:
     void addButton(unsigned idx, const std::shared_ptr<ValueButton> &p);
     std::shared_ptr<ValueButton> getButton(unsigned idx);
     void resized() override;
-    
-    int  canvasHeight() { return canvasH_;}
+
+    virtual int canvasHeight() { return canvasH; }
+    virtual int canvasWidth() { return canvasW - ioW_; }
+    virtual int canvasX() { return ioW_; }
+    virtual int canvasY() { return titleH; }
+
 protected:
     void onButton(unsigned int id, bool v) override;
 
@@ -86,24 +101,23 @@ protected:
 
 private:
     using base_type = BaseView;
-    unsigned paramOffset_ = 0;
-    static constexpr unsigned nParamPerPage = 4;
-    static constexpr unsigned scale = COMPACT_UI_SCALE;
-    static constexpr unsigned maxUserBtns = 8;
-    unsigned buttonBarH_ = 0;
+    static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
+    static constexpr unsigned buttonBarH = 32 * COMPACT_UI_SCALE;
+    static constexpr unsigned titleH = 15 * COMPACT_UI_SCALE;
+    static constexpr unsigned canvasH = SSP_COMPACT_HEIGHT - buttonBarH - titleH;
+    static constexpr unsigned canvasW = SSP_COMPACT_WIDTH;
+
     unsigned ioW_ = 0;
-    unsigned canvasH_ = 0;
-    unsigned canvasW_ = 0;
-    unsigned titleH_ = 30;
+    static constexpr unsigned maxUserBtns = 8;
     std::shared_ptr<ssp::ButtonBox> buttonBox_;
 
     ioActivity ioCallback_ = nullptr;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MiniBasicView)
-
 };
 
 
+// BaseMiniView is a multi-view
 class BaseMiniView : public MultiView<BaseView> {
 public:
     explicit BaseMiniView(BaseProcessor *p);
@@ -114,5 +128,69 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(BaseMiniView)
 };
 
+
+// LineMiniEditor is a mini editor that has buttons and display parameters on single line
+class LineMiniEditor : public BaseView {
+public:
+    LineMiniEditor(BaseProcessor *p);
+
+    void addButton(const std::shared_ptr<ParamButton> &p);
+
+    virtual int canvasHeight() { return canvasH - paramHeight;; }
+    virtual int canvasWidth() { return canvasW; }
+    virtual int canvasX() { return 0; }
+    virtual int canvasY() { return titleH; }
+protected:
+    using base_type = BaseView;
+
+    void resized() override;
+    void onEncoder(unsigned id, float v) override;
+    void onEncoderSwitch(unsigned id, bool v) override;
+
+    void onButton(unsigned int id, bool v) override;
+
+    void eventButton(unsigned int id, bool longPress) override;
+    void eventUp(bool longPress) override;
+    void eventDown(bool longPress) override;
+
+    void drawView(Graphics &) override;
+
+    void addParamPage(std::shared_ptr<BaseParamControl> c1, std::shared_ptr<BaseParamControl> c2,
+                      std::shared_ptr<BaseParamControl> c3, std::shared_ptr<BaseParamControl> c4);
+
+protected:
+    void setParamBounds(unsigned idx, std::shared_ptr<BaseParamControl>);
+
+    void chgParamPage(int inc, bool changeVis);
+
+    void drawButtonBox(Graphics &);
+
+private:
+    static constexpr unsigned paramHeight = 32 * COMPACT_UI_SCALE;
+    static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
+    static constexpr unsigned buttonBarH = 32 * COMPACT_UI_SCALE;
+    static constexpr unsigned titleH = 15 * COMPACT_UI_SCALE;
+    static constexpr unsigned canvasH = SSP_COMPACT_HEIGHT - buttonBarH - titleH;
+    static constexpr unsigned canvasW = SSP_COMPACT_WIDTH;
+
+
+    static constexpr unsigned nParamPerPage = 4;
+    static constexpr unsigned maxUserBtns = 8;
+
+
+    bool encoderFine_[4] = { false, false, false, false };
+    bool encoderState_[4] = { false, false, false, false };
+
+
+    struct ControlPage {
+        std::shared_ptr<BaseParamControl> control_[4] = { nullptr, nullptr, nullptr, nullptr };
+    };
+    std::vector<std::shared_ptr<ControlPage>> controlPages_;
+    int paramPage_ = 0;
+
+    std::vector<std::shared_ptr<ParamButton>> buttons_;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LineMiniEditor)
+};
 
 }  // namespace ssp

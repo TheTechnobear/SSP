@@ -1,26 +1,26 @@
 #pragma once
 
 #include "PluginProcessor.h"
-#include "ssp/editors/LineParamEditor.h"
+#include "ssp/editors/BaseMiniView.h"
 #include "ssp/controls/LineScope.h"
 #include "ssp/controls/XYScope.h"
 
 using namespace juce;
 
 
-class PluginEditor : public ssp::LineParamEditor {
+class PluginMiniEditor : public ssp::LineMiniEditor {
 public:
-    explicit PluginEditor(PluginProcessor &);
-    ~PluginEditor() override = default;
+    explicit PluginMiniEditor(PluginProcessor &);
+    ~PluginMiniEditor() override = default;
 
 protected:
-    using base_type = ssp::LineParamEditor;
+    using base_type = ssp::LineMiniEditor;
 
     void drawView(Graphics &) override;
     void onSSPTimer() override;
     void resized() override;
 
-    ssp::BaseEditor::ControlPage addParamPage(
+    void addParamPage(
         std::shared_ptr<ssp::BaseParamControl> c1,
         std::shared_ptr<ssp::BaseParamControl> c2,
         std::shared_ptr<ssp::BaseParamControl> c3,
@@ -30,10 +30,6 @@ protected:
 
 
 private:
-
-    void drawValueDisplay(Graphics &);
-    String getNoteValue(float f) const;
-
     PluginProcessor &processor_;
 
     static constexpr unsigned MAX_SIG = PluginProcessor::MAX_SIG_IN;
@@ -48,7 +44,7 @@ private:
     unsigned wrPos_ = 0;
     unsigned syncPos_ = 0;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginMiniEditor)
 };
 
 

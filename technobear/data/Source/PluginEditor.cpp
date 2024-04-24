@@ -104,6 +104,8 @@ ssp::BaseEditor::ControlPage PluginEditor::addParamPage(
 
 
 void PluginEditor::onSSPTimer() {
+    base_type::onSSPTimer();
+    
     PluginProcessor::DataMsg msg;
     while (processor_.messageQueue().try_dequeue(msg)) {
         for (int i = 0; i < MAX_SIG; i++) {
@@ -207,7 +209,7 @@ static const char tonics[MAX_TONICS][3] = {
     "B ",
 };
 
-String getNoteValue(float f) {
+String  PluginEditor::getNoteValue(float f) const {
     float voct = cv2Pitch(f) + 60.0f; // -5v = 0
     voct += 0.005f; // so we round up fractions of cent
     int oct = voct / 12;
