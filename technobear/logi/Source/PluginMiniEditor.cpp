@@ -1,52 +1,41 @@
 
+#include "PluginMiniEditor.h"
 #include "PluginProcessor.h"
-#include "PluginEditor.h"
-
-#include "ssp/controls/ParamControl.h"
 #include "ssp/controls/ParamButton.h"
+#include "ssp/controls/ParamControl.h"
 
 using pcontrol_type = ssp::BarParamControl;
 using bcontrol_type = ssp::ParamButton;
 
-PluginEditor::PluginEditor(PluginProcessor &p)
-    : base_type(&p),
-      processor_(p) {
+PluginMiniEditor::PluginMiniEditor(PluginProcessor &p) : base_type(&p), processor_(p) {
+    addParamPage(std::make_shared<pcontrol_type>(processor_.params_.oper, 1.0f, 1.0f),
+                 std::make_shared<pcontrol_type>(processor_.params_.triglevel, 0.1, 0.01f), nullptr, nullptr);
 
-    upBtn_.setVisible(false);
-    downBtn_.setVisible(false);
-
-    addParamPage(
-        std::make_shared<pcontrol_type>(processor_.params_.oper, 1.0f, 1.0f),
-        std::make_shared<pcontrol_type>(processor_.params_.triglevel, 0.1, 0.01f),
-        nullptr,
-        nullptr
-    );
-
-    addButtonPage(
-        std::make_shared<bcontrol_type>(processor_.params_.gateparams_[0]->inv, 24, Colours::lightskyblue),
-        std::make_shared<bcontrol_type>(processor_.params_.gateparams_[1]->inv, 24, Colours::lightskyblue),
-        std::make_shared<bcontrol_type>(processor_.params_.gateparams_[2]->inv, 24, Colours::lightskyblue),
-        std::make_shared<bcontrol_type>(processor_.params_.gateparams_[3]->inv, 24, Colours::lightskyblue),
-        std::make_shared<bcontrol_type>(processor_.params_.gateparams_[4]->inv, 24, Colours::lightskyblue),
-        std::make_shared<bcontrol_type>(processor_.params_.gateparams_[5]->inv, 24, Colours::lightskyblue),
-        std::make_shared<bcontrol_type>(processor_.params_.gateparams_[6]->inv, 24, Colours::lightskyblue),
-        std::make_shared<bcontrol_type>(processor_.params_.gateparams_[7]->inv, 24, Colours::lightskyblue)
-    );
-
-    setSize(1600, 480);
+    static constexpr unsigned fh = 12 * COMPACT_UI_SCALE;
+    addButton(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[0]->inv, fh, Colours::lightskyblue));
+    addButton(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[1]->inv, fh, Colours::lightskyblue));
+    addButton(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[2]->inv, fh, Colours::lightskyblue));
+    addButton(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[3]->inv, fh, Colours::lightskyblue));
+    addButton(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[4]->inv, fh, Colours::lightskyblue));
+    addButton(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[5]->inv, fh, Colours::lightskyblue));
+    addButton(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[6]->inv, fh, Colours::lightskyblue));
+    addButton(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[7]->inv, fh, Colours::lightskyblue));
 }
 
 
-void PluginEditor::drawView(Graphics &g) {
+void PluginMiniEditor::drawView(Graphics &g) {
     base_type::drawView(g);
 
     float inputs[PluginProcessor::I_MAX];
     bool outputs[PluginProcessor::O_MAX];
     processor_.getValues(inputs, outputs);
+    
 
-    const int tstartX = 1225, startX = tstartX + 30, startY = 50;
-    const int sp = 40;
-    const int gw = 25, bw = 100;
+
+    const int sp = 20 * COMPACT_UI_SCALE;
+    const int gw = 12 * COMPACT_UI_SCALE;
+    const int bw = 50 * COMPACT_UI_SCALE;
+    const int tstartX = canvasX(), startX = tstartX + 15 * COMPACT_UI_SCALE, startY = canvasY();
 
     for (unsigned i = 0; i < PluginProcessor::I_MAX; i++) {
         int y = startY + (sp * i);
@@ -68,7 +57,7 @@ void PluginEditor::drawView(Graphics &g) {
                 g.setColour(Colours::red);
             }
             g.fillRect(xb + 1, yb + 1, w, sp - 20 - 2);
-        } // inputs
+        }  // inputs
 
 
         if (i + 1 < PluginProcessor::O_MAX) {
@@ -81,7 +70,7 @@ void PluginEditor::drawView(Graphics &g) {
             } else {
                 g.drawRect(xb, yb, gw - 1, sp - 20);
             }
-        } // outputs
+        }  // outputs
     }
 
     {
@@ -94,5 +83,5 @@ void PluginEditor::drawView(Graphics &g) {
         } else {
             g.drawRect(xb, yb, gw - 1, sp - 20);
         }
-    } // main out
+    }  // main out
 }

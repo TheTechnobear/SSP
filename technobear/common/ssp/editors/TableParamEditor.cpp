@@ -90,11 +90,9 @@ void TableParamEditor::onDownButton(bool v) {
     downBtn_.onButton(v);
 }
 
-
-
 void TableParamEditor::eventUp(bool v) {
     if (v) return; // change on button up
-    chgParamPage(-11,false);
+    chgParamPage(-1,false);
 }
 
 void TableParamEditor::eventDown(bool v) {

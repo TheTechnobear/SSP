@@ -56,11 +56,6 @@ so that the code is not all built into the views/editors
 ## existing plugin coversion
 ### NOT STARTED 
 
-
-logi - uses params but also has custom graphics, should fit ok
-msw8 - custom grid, should git, but has parameters on bottom.
-mmx4 - custom grid, with params.. but I possibly could not display params, just use grid (hilite row)
-
 cart - quite a bit of ui work, but worth it!
 gra4 - needs new ui - update wavedisp, use new save/load dialogs?
 loop - needs new ui - update wavedisp, use new save/load dialogs?
@@ -106,6 +101,9 @@ sflt - generic rnbo
 shq
 mtmo - uses basic view to implement ui
 data - bit of ui work, but worth it
+logi - uses params but also has custom graphics, should fit ok
+msw8 - custom grid, should git, but has parameters on bottom.
+mmx4 - custom grid, with params.. but I possibly could not display params, just use grid (hilite row)
 
 
 -----------------------------------------------------

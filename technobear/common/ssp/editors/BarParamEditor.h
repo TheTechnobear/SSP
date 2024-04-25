@@ -12,6 +12,9 @@ public:
 
     void onUpButton(bool v) override;
     void onDownButton(bool v) override;
+    void eventUp(bool v) override;
+    void eventDown(bool v) override;
+
     ControlPage addParamPage(
         std::shared_ptr<BaseParamControl> c1,
         std::shared_ptr<BaseParamControl> c2,

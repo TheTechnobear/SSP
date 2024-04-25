@@ -6,17 +6,16 @@ namespace ssp {
 
 static constexpr unsigned paramSpaceY = 34;
 
-BarParamEditor::BarParamEditor(BaseProcessor *p,bool autoColour)
-    : base_type(p), autoColour_(autoColour) {
+BarParamEditor::BarParamEditor(BaseProcessor* p, bool autoColour) : base_type(p), autoColour_(autoColour) {
     ;
 }
 
 
-void BarParamEditor::drawView(Graphics &g) {
+void BarParamEditor::drawView(Graphics& g) {
     base_type::drawView(g);
 
-    if(autoColour_) {
-        static juce::Colour clrs[4] = {Colours::red, Colours::blue, Colours::yellow, Colours::green};
+    if (autoColour_) {
+        static juce::Colour clrs[4] = { Colours::red, Colours::blue, Colours::yellow, Colours::green };
         g.setColour(clrs[paramPage_ % 4]);
 
         int x = 0;
@@ -42,12 +41,10 @@ void BarParamEditor::setParamBounds(unsigned page, unsigned idx, std::shared_ptr
 }
 
 
-BaseEditor::ControlPage BarParamEditor::addParamPage(
-    std::shared_ptr<BaseParamControl> c1,
-    std::shared_ptr<BaseParamControl> c2,
-    std::shared_ptr<BaseParamControl> c3,
-    std::shared_ptr<BaseParamControl> c4
-) {
+BaseEditor::ControlPage BarParamEditor::addParamPage(std::shared_ptr<BaseParamControl> c1,
+                                                     std::shared_ptr<BaseParamControl> c2,
+                                                     std::shared_ptr<BaseParamControl> c3,
+                                                     std::shared_ptr<BaseParamControl> c4) {
     auto page = base_type::addParamPage(c1, c2, c3, c4);
     unsigned pageN = controlPages_.size() - 1;
 
@@ -56,12 +53,10 @@ BaseEditor::ControlPage BarParamEditor::addParamPage(
     setParamBounds(pageN, 2, c3);
     setParamBounds(pageN, 3, c4);
 
-    if(autoColour_) {
-        static juce::Colour clrs[4] = {Colours::red, Colours::blue, Colours::yellow, Colours::green};
+    if (autoColour_) {
+        static juce::Colour clrs[4] = { Colours::red, Colours::blue, Colours::yellow, Colours::green };
         for (const auto& c : page.control_) {
-            if (c) {
-                c->fg(clrs[pageN % 4]);
-            }
+            if (c) { c->fg(clrs[pageN % 4]); }
         }
     }
 
@@ -78,17 +73,21 @@ BaseEditor::ControlPage BarParamEditor::addParamPage(
 
 void BarParamEditor::onUpButton(bool v) {
     upBtn_.onButton(v);
-
-    if (v) return; // change on button up
-
-    chgParamPage(-1, false);
 }
 
 void BarParamEditor::onDownButton(bool v) {
     downBtn_.onButton(v);
+}
 
-    if (v) return; // change on button up
+
+void BarParamEditor::eventUp(bool v) {
+    if (v) return;  // change on button up
+    chgParamPage(-1, false);
+}
+
+void BarParamEditor::eventDown(bool v) {
+    if (v) return;  // change on button up
     chgParamPage(1, false);
 }
 
-} // namespace
+}  // namespace ssp
