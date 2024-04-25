@@ -57,6 +57,21 @@ so that the code is not all built into the views/editors
 ### NOT STARTED 
 
 cart - quite a bit of ui work, but worth it!
+the main grid display shows all layers, so could be used as main part of display.
+we could use single param line as we have on msw8 etc, just steppig thru them all, 
+using different colours for layers, issue is currently label is just CV 
+(we'd need cv1-16 )
+
+what we dont have....
+we use the buttons to set gate/access then glide. (Rigthshift) 
+it be hard to switch between these... could exclude glicde?
+but, also currently lineminieditor does not support button pages! (just one page of buttons)
+we need gate for every step for every layer.
+
+note: doing this, there is going to be a LOT of stepping around to get to parameters!
+perhap we could use long press DOWN = switch layer?
+
+
 gra4 - needs new ui - update wavedisp, use new save/load dialogs?
 loop - needs new ui - update wavedisp, use new save/load dialogs?
 

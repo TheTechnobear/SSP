@@ -18,12 +18,12 @@ protected:
     void drawView(Graphics &) override;
     void resized() override;
 
-    void onLeftShiftButton(bool v) override;
-    void onRightShiftButton(bool v) override;
-    void onUpButton(bool v) override;
-    void onDownButton(bool v) override;
-    void onLeftButton(bool v) override;
-    void onRightButton(bool v) override;
+    void eventLeftShift(bool v) override;
+    void eventRightShift(bool v) override;
+    void eventUp(bool v) override;
+    void eventDown(bool v) override;
+    void eventLeft(bool v) override;
+    void eventRight(bool v) override;
 private:
 
     class SeqCell : public Component {
