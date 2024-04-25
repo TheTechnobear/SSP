@@ -4,6 +4,7 @@
 
 namespace ssp {
 
+
 BaseMiniView::BaseMiniView(BaseProcessor *p) : base_type(p, true) {
 }
 
@@ -31,7 +32,7 @@ void MiniParamView::addParam(const std::shared_ptr<BaseParamControl> &p) {
     params_.push_back(p);
     addChildComponent(p.get());
 
-    bool act = params_.size() <= (paramOffset_ + nParamPerPage);
+    bool act = params_.size() <= (paramOffset_ + nParamsPerPage);
     p->active(act);
 }
 
@@ -121,16 +122,16 @@ void MiniParamView::eventDown(bool longPress) {
 
 
 void MiniParamView::prevPage() {
-    unsigned nPages = (params_.size() / nParamPerPage);
+    unsigned nPages = (params_.size() / nParamsPerPage);
     nPages += (params_.size() % 4) > 0;
-    if ((int(paramOffset_) - int(nParamPerPage)) >= 0) {
-        paramOffset_ -= nParamPerPage;
+    if ((int(paramOffset_) - int(nParamsPerPage)) >= 0) {
+        paramOffset_ -= nParamsPerPage;
     } else {
         return;
     }
     unsigned pidx = 0;
     unsigned pStart = paramOffset_;
-    unsigned pEnd = paramOffset_ + nParamPerPage;
+    unsigned pEnd = paramOffset_ + nParamsPerPage;
     for (auto p : params_) {
         bool act = pidx >= pStart && pidx < pEnd;
         p->active(act);
@@ -141,10 +142,10 @@ void MiniParamView::prevPage() {
 
 
 void MiniParamView::nextPage() {
-    unsigned nPages = (params_.size() / nParamPerPage);
+    unsigned nPages = (params_.size() / nParamsPerPage);
     nPages += (params_.size() % 4) > 0;
-    if ((paramOffset_ + nParamPerPage) < ((nPages * nParamPerPage))) {
-        paramOffset_ += nParamPerPage;
+    if ((paramOffset_ + nParamsPerPage) < ((nPages * nParamsPerPage))) {
+        paramOffset_ += nParamsPerPage;
     } else {
         return;
         // // cycle around
@@ -152,7 +153,7 @@ void MiniParamView::nextPage() {
     }
     unsigned pidx = 0;
     unsigned pStart = paramOffset_;
-    unsigned pEnd = paramOffset_ + nParamPerPage;
+    unsigned pEnd = paramOffset_ + nParamsPerPage;
     for (auto p : params_) {
         bool act = pidx >= pStart && pidx < pEnd;
         p->active(act);
@@ -167,31 +168,33 @@ void MiniParamView::resized() {
     ioW_ = ioCallback_ ? 60 * COMPACT_UI_SCALE : gap;
 
     // size buttons
-    unsigned butTopY = SSP_COMPACT_HEIGHT - buttonBarH;
-    unsigned butLeftX = gap;
-    unsigned bw = (canvasW) / 4;
     unsigned bidx = 0;
     for (auto p : buttons_) {
         if (bidx < maxUserBtns) {
+            int offset = gap + (gap / 2); 
             unsigned r = bidx / 4;
             unsigned c = bidx % 4;
-            p->setBounds(butLeftX + (c * bw), butTopY + r * (buttonBarH / 2), bw, buttonBarH / 2);
+            int w = paramWidth;
+            int h = buttonBarH / 2;
+            int x = offset + ( c * gridW);
+            int y = SSP_COMPACT_HEIGHT - buttonBarH + (r * h);
+            if (p) p->setBounds(x, y, w, h);
         }
         bidx++;
     }
 
     // size parameters
-    unsigned paramW = canvasW - ioW_ - gap;
-    unsigned paramH = canvasH - gap;
+    unsigned paramW = canvasW - ioW_ - (2 * gap);
+    unsigned paramH = (canvasH - (5 * gap)) / nParamsPerPage;
     unsigned paramX = gap + ioW_;
     unsigned paramY = titleH;
     unsigned pidx = 0;
     for (auto p : params_) {
-        float pos = (pidx % nParamPerPage);
-        bool act = pidx >= paramOffset_ && pidx < paramOffset_ + nParamPerPage;
-        unsigned w = paramW - 1;
-        unsigned h = paramH / 4;
-        p->setBounds(paramX, (pos * h) + paramY, w, h);
+        float pos = (pidx % nParamsPerPage);
+        bool act = pidx >= paramOffset_ && pidx < paramOffset_ + nParamsPerPage;
+        unsigned w = paramW;
+        unsigned h = paramH;
+        p->setBounds(paramX, (pos * h) + paramY, paramW, paramH);
         p->setVisible(act);
         pidx++;
     }
@@ -259,16 +262,16 @@ void MiniParamView::drawIO(Graphics &g) {
 
 
 void MiniParamView::drawButtonBox(Graphics &g) {
-    static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
-    unsigned butTopY = SSP_COMPACT_HEIGHT - buttonBarH;
-    unsigned butLeftX = gap;
-    unsigned bw = canvasW / 4;
-
     g.setColour(Colours::grey);
-    g.drawHorizontalLine(butTopY, butLeftX, gap + canvasW - 1);
-    g.drawHorizontalLine(butTopY + (buttonBarH) / 2, butLeftX, gap + canvasW - 1);
-    g.drawHorizontalLine((butTopY + buttonBarH - 1), butLeftX, gap + canvasW - 1);
-    for (int i = 0; i < 5; i++) { g.drawVerticalLine(butLeftX + (i * bw) - 1, butTopY, butTopY + buttonBarH - 1); }
+    unsigned singleButtonH = buttonBarH / 2;
+    g.drawHorizontalLine(SSP_COMPACT_HEIGHT - buttonBarH - 1, gap, SSP_COMPACT_WIDTH - gap);
+    g.drawHorizontalLine(SSP_COMPACT_HEIGHT - singleButtonH - 1, gap, SSP_COMPACT_WIDTH - gap);
+    g.drawHorizontalLine(SSP_COMPACT_HEIGHT - 1, gap, SSP_COMPACT_WIDTH - gap);
+
+    for (int i = 0; i < nParamsPerPage + 1; i++) {
+        unsigned x= gap + (i * gridW);
+        g.drawVerticalLine(x, SSP_COMPACT_HEIGHT - buttonBarH, SSP_COMPACT_HEIGHT - 1);
+    }
 }
 
 
@@ -297,7 +300,7 @@ std::shared_ptr<ValueButton> MiniBasicView::getButton(unsigned idx) {
 void MiniBasicView::resized() {
     base_type::resized();
 
-    buttonBox_->setBounds(0, canvasH, canvasW, buttonBarH);
+    buttonBox_->setBounds(gap, SSP_COMPACT_HEIGHT - buttonBarH, canvasW, buttonBarH);
 }
 
 
@@ -323,47 +326,46 @@ void LineMiniEditor::drawView(Graphics &g) {
 
 void LineMiniEditor::resized() {
     base_type::resized();
-    int bidx = 0;
-    for (auto btn : buttons_) {
+    unsigned bidx = 0;
+    for (auto p : buttons_) {
         if (bidx < maxUserBtns) {
+            int offset = gap + (gap / 2); 
             unsigned r = bidx / 4;
             unsigned c = bidx % 4;
-            unsigned bw = canvasW / 4;
-            unsigned bh = buttonBarH / 2;
-            unsigned x = gap + (c * bw);
-            unsigned y = SSP_COMPACT_HEIGHT - buttonBarH + (r * bh);
-            unsigned w = bw;
-            unsigned h = bh;
-            if (btn) btn->setBounds(x, y, w, h);
+            int w = paramWidth;
+            int h = buttonBarH / 2;
+            int x = offset + ( c * gridW);
+            int y = SSP_COMPACT_HEIGHT - buttonBarH + (r * h);
+            if (p) p->setBounds(x, y, w, h);
         }
         bidx++;
     }
 }
 
 void LineMiniEditor::drawButtonBox(Graphics &g) {
-    static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
-    unsigned butTopY = SSP_COMPACT_HEIGHT - buttonBarH;
-    unsigned butLeftX = gap;
-    unsigned bw = canvasW / 4;
-
     g.setColour(Colours::grey);
-    g.drawHorizontalLine(butTopY, butLeftX, gap + canvasW - 1);
-    g.drawHorizontalLine(butTopY + (buttonBarH) / 2, butLeftX, gap + canvasW - 1);
-    g.drawHorizontalLine((butTopY + buttonBarH - 1), butLeftX, gap + canvasW - 1);
-    for (int i = 0; i < 5; i++) { g.drawVerticalLine(butLeftX + (i * bw) - 1, butTopY, butTopY + buttonBarH - 1); }
+    unsigned singleButtonH = buttonBarH / 2;
+    g.drawHorizontalLine(SSP_COMPACT_HEIGHT - buttonBarH - 1, gap, SSP_COMPACT_WIDTH - gap);
+    g.drawHorizontalLine(SSP_COMPACT_HEIGHT - singleButtonH - 1, gap, SSP_COMPACT_WIDTH - gap);
+    g.drawHorizontalLine(SSP_COMPACT_HEIGHT - 1, gap, SSP_COMPACT_WIDTH - gap);
+
+    for (int i = 0; i < nParamsPerPage + 1; i++) {
+        unsigned x= gap + (i * gridW);
+        g.drawVerticalLine(x, SSP_COMPACT_HEIGHT - buttonBarH, SSP_COMPACT_HEIGHT - 1);
+    }
 }
 
 
-void LineMiniEditor::setParamBounds(unsigned idx, std::shared_ptr<BaseParamControl> c) {
-    if (c == nullptr) return;
+void LineMiniEditor::setParamBounds(unsigned idx, std::shared_ptr<BaseParamControl> p) {
+    if (p == nullptr) return;
 
-    unsigned sp = 2 * COMPACT_UI_SCALE;
-    unsigned h = paramHeight;
-    unsigned w = ((canvasW - gap * 2) / nParamPerPage);
-
-    unsigned x = gap + (idx * w);
-    unsigned y = SSP_COMPACT_HEIGHT - buttonBarH - paramHeight;
-    c->setBounds(x + sp, y, w - (2 * sp), h);
+    int offset = gap + (gap / 2); 
+    unsigned c = idx % 4;
+    int w = paramWidth;
+    int h = paramHeight;
+    int x = offset + ( c * gridW);
+    int y = SSP_COMPACT_HEIGHT - buttonBarH - paramHeight;
+    p->setBounds(x, y, w, h);
 }
 
 void LineMiniEditor::addParamPage(std::shared_ptr<BaseParamControl> c1, std::shared_ptr<BaseParamControl> c2,
@@ -413,7 +415,7 @@ void LineMiniEditor::chgParamPage(int inc, bool changeVis) {
 
     if (newPage != paramPage_ && changeVis) {
         auto &opage = controlPages_[paramPage_];
-        for (auto i = 0; i < nParamPerPage; i++) {
+        for (auto i = 0; i < nParamsPerPage; i++) {
             auto c = opage->control_[i];
             if (c) {
                 c->active(false);
@@ -421,7 +423,7 @@ void LineMiniEditor::chgParamPage(int inc, bool changeVis) {
             }
         }
         auto npage = controlPages_[newPage];
-        for (auto i = 0; i < nParamPerPage; i++) {
+        for (auto i = 0; i < nParamsPerPage; i++) {
             auto c = npage->control_[i];
             if (c) {
                 c->active(true);

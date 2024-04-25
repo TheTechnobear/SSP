@@ -24,23 +24,14 @@ PluginMiniEditor::PluginMiniEditor(PluginProcessor &p)
                      nullptr, clrs_[sig]);
     }
 
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.freeze, 24, Colours::lightskyblue));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.ab_xy, 24, clrs_[0]));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.cd_xy, 24, clrs_[2]));
+    addButton(std::make_shared<bcontrol_type>(processor_.params_.freeze, 12 * COMPACT_UI_SCALE, Colours::lightskyblue));
+    addButton(std::make_shared<bcontrol_type>(processor_.params_.ab_xy, 12 * COMPACT_UI_SCALE, clrs_[0]));
+    addButton(std::make_shared<bcontrol_type>(processor_.params_.cd_xy, 12 * COMPACT_UI_SCALE, clrs_[2]));
     addButton(nullptr);
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.sigparams_[0]->show, 24, clrs_[0]));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.sigparams_[1]->show, 24, clrs_[1]));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.sigparams_[2]->show, 24, clrs_[2]));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.sigparams_[3]->show, 24, clrs_[3]));
-
-
-    // addButtonPage(std::make_shared<bcontrol_type>(processor_.params_.freeze, 24, Colours::lightskyblue), nullptr,
-    //               std::make_shared<bcontrol_type>(processor_.params_.ab_xy, 24, clrs_[0]),
-    //               std::make_shared<bcontrol_type>(processor_.params_.cd_xy, 24, clrs_[2]),
-    //               std::make_shared<bcontrol_type>(processor_.params_.sigparams_[0]->show, 24, clrs_[0]),
-    //               std::make_shared<bcontrol_type>(processor_.params_.sigparams_[1]->show, 24, clrs_[1]),
-    //               std::make_shared<bcontrol_type>(processor_.params_.sigparams_[2]->show, 24, clrs_[2]),
-    //               std::make_shared<bcontrol_type>(processor_.params_.sigparams_[3]->show, 24, clrs_[3]));
+    addButton(std::make_shared<bcontrol_type>(processor_.params_.sigparams_[0]->show, 12 * COMPACT_UI_SCALE, clrs_[0]));
+    addButton(std::make_shared<bcontrol_type>(processor_.params_.sigparams_[1]->show, 12 * COMPACT_UI_SCALE, clrs_[1]));
+    addButton(std::make_shared<bcontrol_type>(processor_.params_.sigparams_[2]->show, 12 * COMPACT_UI_SCALE, clrs_[2]));
+    addButton(std::make_shared<bcontrol_type>(processor_.params_.sigparams_[3]->show, 12 * COMPACT_UI_SCALE, clrs_[3]));
 
     {
         // clear queue, when we create a new editor
@@ -164,15 +155,15 @@ void PluginMiniEditor::drawView(Graphics &g) {
 void PluginMiniEditor::resized() {
     base_type::resized();
     static constexpr int gap = 5 * COMPACT_UI_SCALE;
-    int x = canvasX() + gap;
+    int x = canvasX();
     int y = canvasY() + gap;
-    int w = canvasWidth() - 2 * gap;
+    int w = canvasWidth();
     int h = canvasHeight() - 2 * gap;
 
     mainScope_.setBounds(x, y, w, h);
 
     // replace main scope
-    //  with miniscope or xyscope is displayed
+    // with miniscope or xyscope is displayed
     unsigned sp = 10 * COMPACT_UI_SCALE;
     unsigned xy_w = h;
     unsigned ms_w = w - xy_w - sp;

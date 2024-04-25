@@ -15,37 +15,37 @@ void ButtonBox::paint(juce::Graphics &g) {
 
 void ButtonBox::resized() {
     juce::Component::resized();
-    static constexpr unsigned gap = 5 * scale;
+    static constexpr unsigned gap = 4 * scale;
     unsigned butTopY = 0;
-    unsigned butLeftX = gap;
-    unsigned barW = getWidth() - (gap * 2);
+    unsigned butLeftX = (gap / 2);
+    unsigned barW = getWidth();
     unsigned barH = getHeight();
-    unsigned bw = barW / 4;
+    unsigned gw = barW / 4;
+    unsigned bw = gw - gap;
 
     unsigned bidx = 0;
     for (auto p : buttons_) {
         if (bidx < maxUserBtns) {
             unsigned r = bidx / 4;
             unsigned c = bidx % 4;
-            if (p) p->setBounds(butLeftX + (c * bw), butTopY + r * (barH / 2), bw, barH / 2);
+            if (p) p->setBounds(butLeftX + (c * gw), butTopY + r * (barH / 2), bw, barH / 2);
         }
         bidx++;
     }
 }
 
 void ButtonBox::drawButtonBox(juce::Graphics &g) {
-    static constexpr unsigned gap = 5 * scale;
-    unsigned butTopY = 0;
-    unsigned butLeftX = gap;
-    unsigned barW = getWidth() - (gap * 2);
+    static constexpr unsigned gap = 4 * scale;
+    unsigned barW = getWidth();
     unsigned barH = getHeight();
-    unsigned bw = barW / 4;
+    unsigned gw = barW / 4;
 
     g.setColour(juce::Colours::grey);
-    g.drawHorizontalLine(butTopY, butLeftX, barW + gap);
-    g.drawHorizontalLine(butTopY + (barH / 2), butLeftX, barW + gap);
-    g.drawHorizontalLine((butTopY + barH - 1), butLeftX, barW + gap);
-    for (int i = 0; i < 5; i++) { g.drawVerticalLine(butLeftX + (i * bw) - 1, butTopY, butTopY + barH - 1); }
+    g.drawHorizontalLine(0, 0, barW - 1);
+    g.drawHorizontalLine(barH / 2, 0, barW - 1);
+    g.drawHorizontalLine(barH - 1, 0, barW - 1);
+
+    for (int i = 0; i < 5; i++) { g.drawVerticalLine(i * gw - (i > 0 ? 1 : 0), 0, barH - 1); }
 }
 
 void ButtonBox::addButton(unsigned idx, const std::shared_ptr<ValueButton> &p) {

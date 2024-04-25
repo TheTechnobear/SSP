@@ -26,7 +26,6 @@ public:
     void addParam(const std::shared_ptr<BaseParamControl> &p);
     void addButton(const std::shared_ptr<ParamButton> &p);
 
-    void resized() override;
 
 protected:
     using base_type = BaseView;
@@ -47,10 +46,12 @@ protected:
     virtual int canvasX() { return ioW_; }
     virtual int canvasY() { return titleH; }
 
+    void resized() override;
+    void drawButtonBox(Graphics &);
+
 private:
     void prevPage();
     void nextPage();
-    void drawButtonBox(Graphics &);
     void drawIO(Graphics &);
 
 
@@ -60,14 +61,18 @@ private:
     std::vector<std::shared_ptr<BaseParamControl>> params_;
     std::vector<std::shared_ptr<ParamButton>> buttons_;
     unsigned paramOffset_ = 0;
-    static constexpr unsigned nParamPerPage = 4;
     static constexpr unsigned maxUserBtns = 8;
 
-    static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
+    static constexpr unsigned gap = 4 * COMPACT_UI_SCALE;
     static constexpr unsigned buttonBarH = 32 * COMPACT_UI_SCALE;
     static constexpr unsigned titleH = 15 * COMPACT_UI_SCALE;
+    static constexpr unsigned canvasW = SSP_COMPACT_WIDTH - 2 * gap;
     static constexpr unsigned canvasH = SSP_COMPACT_HEIGHT - buttonBarH - titleH;
-    static constexpr unsigned canvasW = SSP_COMPACT_WIDTH;
+
+    static constexpr unsigned nParamsPerPage = 4;
+    static constexpr unsigned gridW = canvasW / nParamsPerPage;
+    static constexpr unsigned paramWidth = gridW - gap;
+    static constexpr unsigned paramHeight = 32 * COMPACT_UI_SCALE;
 
     unsigned ioW_ = 0;
 
@@ -91,7 +96,7 @@ public:
 
     virtual int canvasHeight() { return canvasH; }
     virtual int canvasWidth() { return canvasW - ioW_; }
-    virtual int canvasX() { return ioW_; }
+    virtual int canvasX() { return gap + ioW_; }
     virtual int canvasY() { return titleH; }
 
 protected:
@@ -101,11 +106,16 @@ protected:
 
 private:
     using base_type = BaseView;
-    static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
+    static constexpr unsigned gap = 4 * COMPACT_UI_SCALE;
     static constexpr unsigned buttonBarH = 32 * COMPACT_UI_SCALE;
     static constexpr unsigned titleH = 15 * COMPACT_UI_SCALE;
+    static constexpr unsigned canvasW = SSP_COMPACT_WIDTH - 2 * gap;
     static constexpr unsigned canvasH = SSP_COMPACT_HEIGHT - buttonBarH - titleH;
-    static constexpr unsigned canvasW = SSP_COMPACT_WIDTH;
+
+    static constexpr unsigned nParamsPerPage = 4;
+    static constexpr unsigned gridW = canvasW / nParamsPerPage;
+    static constexpr unsigned paramWidth = gridW - gap;
+    static constexpr unsigned paramHeight = 32 * COMPACT_UI_SCALE;
 
     unsigned ioW_ = 0;
     static constexpr unsigned maxUserBtns = 8;
@@ -136,9 +146,9 @@ public:
 
     void addButton(const std::shared_ptr<ParamButton> &p);
 
-    virtual int canvasHeight() { return canvasH - paramHeight;; }
+    virtual int canvasHeight() { return canvasH - paramHeight; }
     virtual int canvasWidth() { return canvasW; }
-    virtual int canvasX() { return 0; }
+    virtual int canvasX() { return gap; }
     virtual int canvasY() { return titleH; }
 protected:
     using base_type = BaseView;
@@ -166,15 +176,17 @@ protected:
     void drawButtonBox(Graphics &);
 
 private:
-    static constexpr unsigned paramHeight = 32 * COMPACT_UI_SCALE;
-    static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
+    static constexpr unsigned gap = 4 * COMPACT_UI_SCALE;
     static constexpr unsigned buttonBarH = 32 * COMPACT_UI_SCALE;
     static constexpr unsigned titleH = 15 * COMPACT_UI_SCALE;
+    static constexpr unsigned canvasW = SSP_COMPACT_WIDTH - 2 * gap;
     static constexpr unsigned canvasH = SSP_COMPACT_HEIGHT - buttonBarH - titleH;
-    static constexpr unsigned canvasW = SSP_COMPACT_WIDTH;
 
+    static constexpr unsigned nParamsPerPage = 4;
+    static constexpr unsigned gridW = canvasW / nParamsPerPage;
+    static constexpr unsigned paramWidth = gridW - gap;
+    static constexpr unsigned paramHeight = 32 * COMPACT_UI_SCALE;
 
-    static constexpr unsigned nParamPerPage = 4;
     static constexpr unsigned maxUserBtns = 8;
 
 

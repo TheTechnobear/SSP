@@ -56,12 +56,6 @@ so that the code is not all built into the views/editors
 ## existing plugin coversion
 ### NOT STARTED 
 
-!!!!! BUTTON WIDTH is wrong in BaseMiniDisplay!
-button width needs to based on full width with spacing !
-we can see drawHorizontal line is incorrect ... using compact width + gap !
-(this might be down to some code refactring )
-
-
 
 logi - uses params but also has custom graphics, should fit ok
 msw8 - custom grid, should git, but has parameters on bottom.

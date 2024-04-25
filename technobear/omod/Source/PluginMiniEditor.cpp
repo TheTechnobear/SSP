@@ -23,7 +23,7 @@ PluginMiniEditor::PluginMiniEditor(PluginProcessor &p)
         view->addParam(std::make_shared<pcontrol_type>(op.phase, 10.0f, 0.1));
     }
 
-    view->addButton(std::make_shared<bcontrol_type>(processor_.params_.lfo, 32, Colours::lightskyblue));
+    view->addButton(std::make_shared<bcontrol_type>(processor_.params_.lfo, 12 * COMPACT_UI_SCALE, Colours::lightskyblue));
 
     addView(view);
     setView(0);
