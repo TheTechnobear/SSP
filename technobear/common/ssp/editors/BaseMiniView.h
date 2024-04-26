@@ -26,6 +26,7 @@ public:
     void addParam(const std::shared_ptr<BaseParamControl> &p);
     void addButton(const std::shared_ptr<ParamButton> &p);
 
+    void setButtonBounds(unsigned idx, juce::Component *c);
 
 protected:
     using base_type = BaseView;
@@ -48,6 +49,7 @@ protected:
 
     void resized() override;
     void drawButtonBox(Graphics &);
+
 
 private:
     void prevPage();

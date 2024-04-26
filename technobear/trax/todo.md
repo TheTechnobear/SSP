@@ -92,8 +92,6 @@ thus we only get 4 pages for each layer
 
 ## IN PROGRESS / PARTIAL
 
-clkd - value button add?
-omod - value button add?
 
 ### DONE
 clds 
@@ -117,8 +115,10 @@ shq
 mtmo - uses basic view to implement ui
 data - bit of ui work, but worth it
 logi - uses params but also has custom graphics, should fit ok
-msw8 - custom grid, should git, but has parameters on bottom.
-mmx4 - custom grid, with params.. but I possibly could not display params, just use grid (hilite row)
+msw8 - custom grid ui , with single line param
+mmx4 - custom grid ui , with single line param
+omod 
+clkd 
 
 
 -----------------------------------------------------

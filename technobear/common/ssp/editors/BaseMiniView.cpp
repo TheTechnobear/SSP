@@ -85,6 +85,7 @@ void MiniParamView::onButton(unsigned int id, bool v) {
     unsigned bidx = (r * 4) + c;
     if (bidx < buttons_.size()) {
         auto &btn = buttons_[bidx];
+        if(!btn) return;
         if (v)
             btn->onDown();
         else
@@ -103,7 +104,7 @@ void MiniParamView::eventButton(unsigned int id, bool longPress) {
     unsigned bidx = (r * 4) + c;
     if (bidx < buttons_.size()) {
         auto &btn = buttons_[bidx];
-        btn->onClick();
+        if(btn) btn->onClick();
     }
 }
 
@@ -162,6 +163,19 @@ void MiniParamView::nextPage() {
     }
 }
 
+void MiniParamView::setButtonBounds(unsigned bidx, juce::Component *btn) {
+    if (!btn) return;
+
+    int offset = gap + (gap / 2);
+    unsigned r = bidx / 4;
+    unsigned c = bidx % 4;
+    int w = paramWidth;
+    int h = buttonBarH / 2;
+    int x = offset + (c * gridW);
+    int y = SSP_COMPACT_HEIGHT - buttonBarH + (r * h);
+    btn->setBounds(x, y, w, h);
+}
+
 void MiniParamView::resized() {
     base_type::resized();
     static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
@@ -171,14 +185,7 @@ void MiniParamView::resized() {
     unsigned bidx = 0;
     for (auto p : buttons_) {
         if (bidx < maxUserBtns) {
-            int offset = gap + (gap / 2); 
-            unsigned r = bidx / 4;
-            unsigned c = bidx % 4;
-            int w = paramWidth;
-            int h = buttonBarH / 2;
-            int x = offset + ( c * gridW);
-            int y = SSP_COMPACT_HEIGHT - buttonBarH + (r * h);
-            if (p) p->setBounds(x, y, w, h);
+            if (p) setButtonBounds(bidx, p.get());
         }
         bidx++;
     }
@@ -269,7 +276,7 @@ void MiniParamView::drawButtonBox(Graphics &g) {
     g.drawHorizontalLine(SSP_COMPACT_HEIGHT - 1, gap, SSP_COMPACT_WIDTH - gap);
 
     for (int i = 0; i < nParamsPerPage + 1; i++) {
-        unsigned x= gap + (i * gridW);
+        unsigned x = gap + (i * gridW);
         g.drawVerticalLine(x, SSP_COMPACT_HEIGHT - buttonBarH, SSP_COMPACT_HEIGHT - 1);
     }
 }
@@ -329,12 +336,12 @@ void LineMiniEditor::resized() {
     unsigned bidx = 0;
     for (auto p : buttons_) {
         if (bidx < maxUserBtns) {
-            int offset = gap + (gap / 2); 
+            int offset = gap + (gap / 2);
             unsigned r = bidx / 4;
             unsigned c = bidx % 4;
             int w = paramWidth;
             int h = buttonBarH / 2;
-            int x = offset + ( c * gridW);
+            int x = offset + (c * gridW);
             int y = SSP_COMPACT_HEIGHT - buttonBarH + (r * h);
             if (p) p->setBounds(x, y, w, h);
         }
@@ -350,7 +357,7 @@ void LineMiniEditor::drawButtonBox(Graphics &g) {
     g.drawHorizontalLine(SSP_COMPACT_HEIGHT - 1, gap, SSP_COMPACT_WIDTH - gap);
 
     for (int i = 0; i < nParamsPerPage + 1; i++) {
-        unsigned x= gap + (i * gridW);
+        unsigned x = gap + (i * gridW);
         g.drawVerticalLine(x, SSP_COMPACT_HEIGHT - buttonBarH, SSP_COMPACT_HEIGHT - 1);
     }
 }
@@ -359,11 +366,11 @@ void LineMiniEditor::drawButtonBox(Graphics &g) {
 void LineMiniEditor::setParamBounds(unsigned idx, std::shared_ptr<BaseParamControl> p) {
     if (p == nullptr) return;
 
-    int offset = gap + (gap / 2); 
+    int offset = gap + (gap / 2);
     unsigned c = idx % 4;
     int w = paramWidth;
     int h = paramHeight;
-    int x = offset + ( c * gridW);
+    int x = offset + (c * gridW);
     int y = SSP_COMPACT_HEIGHT - buttonBarH - paramHeight;
     p->setBounds(x, y, w, h);
 }
