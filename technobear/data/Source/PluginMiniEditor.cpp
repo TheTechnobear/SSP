@@ -24,15 +24,16 @@ PluginMiniEditor::PluginMiniEditor(PluginProcessor &p)
                      nullptr, clrs_[sig]);
     }
 
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.freeze, 12 * COMPACT_UI_SCALE, Colours::lightskyblue));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.ab_xy, 12 * COMPACT_UI_SCALE, clrs_[0]));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.cd_xy, 12 * COMPACT_UI_SCALE, clrs_[2]));
-    addButton(nullptr);
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.sigparams_[0]->show, 12 * COMPACT_UI_SCALE, clrs_[0]));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.sigparams_[1]->show, 12 * COMPACT_UI_SCALE, clrs_[1]));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.sigparams_[2]->show, 12 * COMPACT_UI_SCALE, clrs_[2]));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.sigparams_[3]->show, 12 * COMPACT_UI_SCALE, clrs_[3]));
-
+    addButtonPage(
+        std::make_shared<bcontrol_type>(processor_.params_.freeze, 12 * COMPACT_UI_SCALE, Colours::lightskyblue),
+        std::make_shared<bcontrol_type>(processor_.params_.ab_xy, 12 * COMPACT_UI_SCALE, clrs_[0]),
+        std::make_shared<bcontrol_type>(processor_.params_.cd_xy, 12 * COMPACT_UI_SCALE, clrs_[2]), 
+        nullptr,
+        std::make_shared<bcontrol_type>(processor_.params_.sigparams_[0]->show, 12 * COMPACT_UI_SCALE, clrs_[0]),
+        std::make_shared<bcontrol_type>(processor_.params_.sigparams_[1]->show, 12 * COMPACT_UI_SCALE, clrs_[1]),
+        std::make_shared<bcontrol_type>(processor_.params_.sigparams_[2]->show, 12 * COMPACT_UI_SCALE, clrs_[2]),
+        std::make_shared<bcontrol_type>(processor_.params_.sigparams_[3]->show, 12 * COMPACT_UI_SCALE, clrs_[3]));
+        
     {
         // clear queue, when we create a new editor
         PluginProcessor::DataMsg msg;
@@ -87,7 +88,7 @@ void PluginMiniEditor::addParamPage(std::shared_ptr<ssp::BaseParamControl> c1,
 
 void PluginMiniEditor::onSSPTimer() {
     base_type::onSSPTimer();
-    
+
     PluginProcessor::DataMsg msg;
     while (processor_.messageQueue().try_dequeue(msg)) {
         for (int i = 0; i < MAX_SIG; i++) { dataBuf_[i][wrPos_] = msg.sample_[i]; }

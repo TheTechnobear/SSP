@@ -1,5 +1,6 @@
 
 #include "PluginMiniEditor.h"
+
 #include "PluginProcessor.h"
 #include "ssp/controls/ParamButton.h"
 #include "ssp/controls/ParamControl.h"
@@ -12,14 +13,14 @@ PluginMiniEditor::PluginMiniEditor(PluginProcessor &p) : base_type(&p), processo
                  std::make_shared<pcontrol_type>(processor_.params_.triglevel, 0.1, 0.01f), nullptr, nullptr);
 
     static constexpr unsigned fh = 12 * COMPACT_UI_SCALE;
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[0]->inv, fh, Colours::lightskyblue));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[1]->inv, fh, Colours::lightskyblue));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[2]->inv, fh, Colours::lightskyblue));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[3]->inv, fh, Colours::lightskyblue));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[4]->inv, fh, Colours::lightskyblue));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[5]->inv, fh, Colours::lightskyblue));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[6]->inv, fh, Colours::lightskyblue));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[7]->inv, fh, Colours::lightskyblue));
+    addButtonPage(std::make_shared<bcontrol_type>(processor_.params_.gateparams_[0]->inv, fh, Colours::lightskyblue),
+                  std::make_shared<bcontrol_type>(processor_.params_.gateparams_[1]->inv, fh, Colours::lightskyblue),
+                  std::make_shared<bcontrol_type>(processor_.params_.gateparams_[2]->inv, fh, Colours::lightskyblue),
+                  std::make_shared<bcontrol_type>(processor_.params_.gateparams_[3]->inv, fh, Colours::lightskyblue),
+                  std::make_shared<bcontrol_type>(processor_.params_.gateparams_[4]->inv, fh, Colours::lightskyblue),
+                  std::make_shared<bcontrol_type>(processor_.params_.gateparams_[5]->inv, fh, Colours::lightskyblue),
+                  std::make_shared<bcontrol_type>(processor_.params_.gateparams_[6]->inv, fh, Colours::lightskyblue),
+                  std::make_shared<bcontrol_type>(processor_.params_.gateparams_[7]->inv, fh, Colours::lightskyblue));
 }
 
 
@@ -29,7 +30,6 @@ void PluginMiniEditor::drawView(Graphics &g) {
     float inputs[PluginProcessor::I_MAX];
     bool outputs[PluginProcessor::O_MAX];
     processor_.getValues(inputs, outputs);
-    
 
 
     const int sp = 20 * COMPACT_UI_SCALE;

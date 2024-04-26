@@ -1,5 +1,6 @@
 
 #include "PluginMiniEditor.h"
+
 #include "PluginProcessor.h"
 #include "ssp/controls/ParamButton.h"
 #include "ssp/controls/ParamControl.h"
@@ -11,14 +12,16 @@ PluginMiniEditor::PluginMiniEditor(PluginProcessor &p) : base_type(&p), processo
     addParamPage(std::make_shared<pcontrol_type>(processor_.params_.inSel, 0.25),
                  std::make_shared<pcontrol_type>(processor_.params_.outSel, 0.25), nullptr, nullptr);
 
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.active, 12 * COMPACT_UI_SCALE, Colours::lightskyblue));
-    addButton(std::make_shared<bcontrol_type>(processor_.params_.soft, 12 * COMPACT_UI_SCALE, Colours::orange));
+    addButtonPage(
+        std::make_shared<bcontrol_type>(processor_.params_.active, 12 * COMPACT_UI_SCALE, Colours::lightskyblue),
+        std::make_shared<bcontrol_type>(processor_.params_.soft, 12 * COMPACT_UI_SCALE, Colours::orange), 
+        nullptr,nullptr, nullptr, nullptr, nullptr, nullptr);
 }
 
 void PluginMiniEditor::drawGrid(Graphics &g) {
     //    int x = 40;
     //    int y = 40;
-    int x = canvasX()  + 40 * COMPACT_UI_SCALE;
+    int x = canvasX() + 40 * COMPACT_UI_SCALE;
     int y = canvasY();
     int lx = 50 * COMPACT_UI_SCALE;
     int fh = 9 * COMPACT_UI_SCALE;

@@ -5,13 +5,13 @@
 #include "ssp/editors/MultiBarEditor.h"
 
 using namespace juce;
+class SeqCellComponent;
 
 class PluginEditor : public ssp::MultiBarEditor {
 public:
     explicit PluginEditor(PluginProcessor &);
     ~PluginEditor() override = default;
 
-    bool useNotesForSteps(unsigned layer);
 protected:
     using base_type = ssp::MultiBarEditor;
 
@@ -26,25 +26,9 @@ protected:
     void eventRight(bool v) override;
 private:
 
-    class SeqCell : public Component {
-    public:
-        using Parameter = juce::RangedAudioParameter;
-
-        SeqCell(PluginProcessor::PluginParams &params, unsigned step);
-        void activeStep(unsigned xP, unsigned yP, unsigned cP);
-
-        void paint(Graphics &g);
-
-    private:
-        unsigned step_;
-        bool activeX_, activeY_, activeC_;
-        PluginProcessor::PluginParams &params_;
-    };
-
-
-    PluginProcessor &processor_;
-
     static constexpr unsigned L_CLRS = 3;
+    static juce::Colour LAYER_COLOURS[L_CLRS];
+    PluginProcessor &processor_;
 
     unsigned currentLayer_ = 0;
 
@@ -61,9 +45,7 @@ private:
     } encoderMode_;
 
 
-    juce::Colour clrs_[L_CLRS];
-
-    std::vector<std::shared_ptr<SeqCell>> cells_;
+    std::vector<std::shared_ptr<SeqCellComponent>> cells_;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)
 };
 

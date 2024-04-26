@@ -146,8 +146,6 @@ class LineMiniEditor : public BaseView {
 public:
     LineMiniEditor(BaseProcessor *p);
 
-    void addButton(const std::shared_ptr<ParamButton> &p);
-
     virtual int canvasHeight() { return canvasH - paramHeight; }
     virtual int canvasWidth() { return canvasW; }
     virtual int canvasX() { return gap; }
@@ -170,8 +168,15 @@ protected:
     void addParamPage(std::shared_ptr<BaseParamControl> c1, std::shared_ptr<BaseParamControl> c2,
                       std::shared_ptr<BaseParamControl> c3, std::shared_ptr<BaseParamControl> c4);
 
+    void addButtonPage(std::shared_ptr<ParamButton> c1, std::shared_ptr<ParamButton> c2,
+                      std::shared_ptr<ParamButton> c3, std::shared_ptr<ParamButton> c4,
+                      std::shared_ptr<ParamButton> c5, std::shared_ptr<ParamButton> c6,
+                      std::shared_ptr<ParamButton> c7, std::shared_ptr<ParamButton> c8
+                      );
+
 protected:
-    void setParamBounds(unsigned idx, std::shared_ptr<BaseParamControl>);
+    void setParamBounds(unsigned idx,  juce::Component* p);
+    void setButtonBounds(unsigned idx,  juce::Component* p);
 
     void chgParamPage(int inc, bool changeVis);
 
@@ -189,20 +194,22 @@ private:
     static constexpr unsigned paramWidth = gridW - gap;
     static constexpr unsigned paramHeight = 32 * COMPACT_UI_SCALE;
 
-    static constexpr unsigned maxUserBtns = 8;
 
-
-    bool encoderFine_[4] = { false, false, false, false };
-    bool encoderState_[4] = { false, false, false, false };
-
+    bool encoderFine_[nParamsPerPage] = { false, false, false, false };
+    bool encoderState_[nParamsPerPage] = { false, false, false, false };
 
     struct ControlPage {
-        std::shared_ptr<BaseParamControl> control_[4] = { nullptr, nullptr, nullptr, nullptr };
+        std::shared_ptr<BaseParamControl> control_[nParamsPerPage] = { nullptr, nullptr, nullptr, nullptr };
     };
-    std::vector<std::shared_ptr<ControlPage>> controlPages_;
-    int paramPage_ = 0;
 
-    std::vector<std::shared_ptr<ParamButton>> buttons_;
+    static constexpr unsigned maxUserBtns = 8;
+    struct ButtonPage {
+        std::shared_ptr<ParamButton> control_[maxUserBtns] = { nullptr, nullptr, nullptr, nullptr,nullptr, nullptr, nullptr, nullptr};
+    };
+
+    std::vector<std::shared_ptr<ControlPage>> controlPages_;
+    std::vector<std::shared_ptr<ButtonPage>> buttonPages_;
+    int paramPage_ = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LineMiniEditor)
 };

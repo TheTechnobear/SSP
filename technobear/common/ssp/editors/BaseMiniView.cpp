@@ -324,19 +324,13 @@ void LineMiniEditor::drawView(Graphics &g) {
 
 void LineMiniEditor::resized() {
     base_type::resized();
-    unsigned bidx = 0;
-    for (auto p : buttons_) {
-        if (bidx < maxUserBtns) {
-            int offset = gap + (gap / 2);
-            unsigned r = bidx / 4;
-            unsigned c = bidx % 4;
-            int w = paramWidth;
-            int h = buttonBarH / 2;
-            int x = offset + (c * gridW);
-            int y = SSP_COMPACT_HEIGHT - buttonBarH + (r * h);
-            if (p) p->setBounds(x, y, w, h);
+
+    for (auto &btnPage : buttonPages_) {
+        int bidx = 0;
+        for (auto &b : btnPage->control_) {
+            if (b) setButtonBounds(bidx, b.get());
+            bidx++;
         }
-        bidx++;
     }
 }
 
@@ -354,7 +348,7 @@ void LineMiniEditor::drawButtonBox(Graphics &g) {
 }
 
 
-void LineMiniEditor::setParamBounds(unsigned idx, std::shared_ptr<BaseParamControl> p) {
+void LineMiniEditor::setParamBounds(unsigned idx, juce::Component *p) {
     if (p == nullptr) return;
 
     int offset = gap + (gap / 2);
@@ -366,6 +360,20 @@ void LineMiniEditor::setParamBounds(unsigned idx, std::shared_ptr<BaseParamContr
     p->setBounds(x, y, w, h);
 }
 
+void LineMiniEditor::setButtonBounds(unsigned bidx, juce::Component *p) {
+    if (p == nullptr) return;
+
+    int offset = gap + (gap / 2);
+    unsigned r = bidx / 4;
+    unsigned c = bidx % 4;
+    int w = paramWidth;
+    int h = buttonBarH / 2;
+    int x = offset + (c * gridW);
+    int y = SSP_COMPACT_HEIGHT - buttonBarH + (r * h);
+    if (p) p->setBounds(x, y, w, h);
+}
+
+
 void LineMiniEditor::addParamPage(std::shared_ptr<BaseParamControl> c1, std::shared_ptr<BaseParamControl> c2,
                                   std::shared_ptr<BaseParamControl> c3, std::shared_ptr<BaseParamControl> c4) {
     auto page = std::make_shared<ControlPage>();
@@ -375,10 +383,7 @@ void LineMiniEditor::addParamPage(std::shared_ptr<BaseParamControl> c1, std::sha
     page->control_[3] = c4;
     controlPages_.push_back(page);
 
-    setParamBounds(0, c1);
-    setParamBounds(1, c2);
-    setParamBounds(2, c3);
-    setParamBounds(3, c4);
+    for (int i = 0; i < nParamsPerPage; i++) { setParamBounds(i, page->control_[i].get()); }
 
     if (paramPage_ == controlPages_.size() - 1) {
         for (auto i = 0; i < 4; i++) {
@@ -399,10 +404,45 @@ void LineMiniEditor::addParamPage(std::shared_ptr<BaseParamControl> c1, std::sha
     }
 }
 
-void LineMiniEditor::addButton(const std::shared_ptr<ParamButton> &p) {
-    buttons_.push_back(p);
-    if (p) addAndMakeVisible(p.get());
+void LineMiniEditor::addButtonPage(std::shared_ptr<ParamButton> c1, std::shared_ptr<ParamButton> c2,
+                                   std::shared_ptr<ParamButton> c3, std::shared_ptr<ParamButton> c4,
+                                   std::shared_ptr<ParamButton> c5, std::shared_ptr<ParamButton> c6,
+                                   std::shared_ptr<ParamButton> c7, std::shared_ptr<ParamButton> c8) {
+    auto page = std::make_shared<ButtonPage>();
+    page->control_[0] = c1;
+    page->control_[1] = c2;
+    page->control_[2] = c3;
+    page->control_[3] = c4;
+    page->control_[4] = c5;
+    page->control_[5] = c6;
+    page->control_[6] = c7;
+    page->control_[7] = c8;
+    buttonPages_.push_back(page);
+
+    for (int i = 0; i < maxUserBtns; i++) {
+        auto c = page->control_[i];
+        if (c) { setButtonBounds(i, c.get()); }
+    }
+
+    if (paramPage_ == buttonPages_.size() - 1) {
+        for (auto i = 0; i < maxUserBtns; i++) {
+            auto c = page->control_[i];
+            if (c) {
+                addAndMakeVisible(c.get());
+                // c->active(true);
+            }
+        }
+    } else {
+        for (auto i = 0; i < maxUserBtns; i++) {
+            auto c = page->control_[i];
+            if (c) {
+                addChildComponent(c.get());
+                // c->active(false);
+            }
+        }
+    }
 }
+
 
 void LineMiniEditor::chgParamPage(int inc, bool changeVis) {
     if (controlPages_.empty()) return;
@@ -420,7 +460,18 @@ void LineMiniEditor::chgParamPage(int inc, bool changeVis) {
                 c->setVisible(false);
             }
         }
-        auto npage = controlPages_[newPage];
+        if (paramPage_ < buttonPages_.size()) {
+            for (auto i = 0; i < maxUserBtns; i++) {
+                auto b = buttonPages_[paramPage_]->control_[i];
+                if (b) {
+                    // b->active(false);
+                    b->setVisible(false);
+                }
+            }
+        }
+        // setup new page
+        paramPage_ = newPage;
+        auto npage = controlPages_[paramPage_];
         for (auto i = 0; i < nParamsPerPage; i++) {
             auto c = npage->control_[i];
             if (c) {
@@ -428,8 +479,26 @@ void LineMiniEditor::chgParamPage(int inc, bool changeVis) {
                 c->setVisible(true);
             }
         }
-    }
 
+        if (paramPage_ < buttonPages_.size()) {
+            for (auto i = 0; i < maxUserBtns; i++) {
+                auto b = buttonPages_[paramPage_]->control_[i];
+                if (b) {
+                    // b->active(false);
+                    b->setVisible(true);
+                }
+            }
+        } else {
+            if (buttonPages_.size() == 1)
+                for (auto i = 0; i < maxUserBtns; i++) {
+                    auto b = buttonPages_[0]->control_[i];
+                    if (b) {
+                        // b->active(false);
+                        b->setVisible(true);
+                    }
+                }
+        }
+    }
     paramPage_ = newPage;
 }
 
@@ -482,13 +551,16 @@ void LineMiniEditor::onEncoderSwitch(unsigned enc, bool v) {
 void LineMiniEditor::onButton(unsigned int bidx, bool v) {
     base_type::onButton(bidx, v);
 
-    if (bidx < buttons_.size()) {
-        auto &btn = buttons_[bidx];
-        if (!btn) return;
-        if (v)
-            btn->onDown();
-        else
-            btn->onUp();
+    int page = buttonPages_.size() > 1 ? paramPage_ : 0;
+    auto &btnPage = buttonPages_[page];
+    if (btnPage) {
+        auto &btn = btnPage->control_[bidx];
+        if (btn) {
+            if (v)
+                btn->onDown();
+            else
+                btn->onUp();
+        }
     }
 }
 
@@ -497,10 +569,11 @@ void LineMiniEditor::eventButton(unsigned int bidx, bool longPress) {
     base_type::eventButton(bidx, longPress);
     if (longPress) return;
 
-    if (bidx < buttons_.size()) {
-        auto &btn = buttons_[bidx];
-        if (!btn) return;
-        btn->onClick();
+    int page = buttonPages_.size() > 1 ? paramPage_ : 0;
+    auto &btnPage = buttonPages_[page];
+    if (btnPage) {
+        auto &btn = btnPage->control_[bidx];
+        if (btn) btn->onClick();
     }
 }
 

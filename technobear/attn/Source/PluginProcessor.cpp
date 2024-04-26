@@ -156,6 +156,7 @@ AudioProcessorEditor *PluginProcessor::createEditor() {
     }
 #endif
 }
+
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {
     return new PluginProcessor();
 }

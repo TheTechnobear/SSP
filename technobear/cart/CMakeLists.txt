@@ -30,9 +30,13 @@ target_sources(CART
         Source/SSPApi.cpp
         PRIVATE
         Source/PluginEditor.cpp
+        Source/PluginMiniEditor.cpp
         Source/PluginProcessor.cpp
         Source/PluginProcessorXY.cpp
         Source/PluginProcessorCart.cpp
+        Source/SeqCellComponent.cpp
+        Source/SeqStepControl.cpp
+        Source/UIStringFunc.cpp
         Source/Snakes.cpp
         Source/Quantizer.cpp
         ${COMMON_SRC}
