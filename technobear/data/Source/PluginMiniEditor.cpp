@@ -144,8 +144,6 @@ void PluginMiniEditor::onSSPTimer() {
 
     xyScope_[0].pos(syncPos_);
     xyScope_[1].pos(syncPos_);
-
-    base_type::onSSPTimer();
 }
 
 

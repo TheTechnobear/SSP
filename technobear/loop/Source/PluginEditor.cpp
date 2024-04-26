@@ -5,7 +5,6 @@
 #include "ssp/controls/ParamButton.h"
 
 
-//#include "ssp/SingleViewEditor.h"
 #include "ssp/editors/BarParamEditor.h"
 
 
@@ -244,7 +243,7 @@ void PluginEditor::onButton(unsigned int id, bool v) {
 PluginEditor::PluginEditor(PluginProcessor &p)
     : base_type(&p),
       processor_(p),
-      clrs_{Colours::green, Colours::blue, Colours::red, Colours::yellow},
+      clrs_{Colours::green, Colours::blue, Colours::orange, Colours::yellow},
       fileBtn_("Load", [&](bool b) { onFileButton(b); }, 24, Colours::cyan),
       saveBtn_("Save", [&](bool b) { onSaveButton(b); }, 24, Colours::yellow),
       cancelBtn_("Cancel", [&](bool b) { onCancelButton(b); }, 24, Colours::white) {
@@ -265,7 +264,7 @@ PluginEditor::PluginEditor(PluginProcessor &p)
         addView(pView);
     }
 
-    auto clr = Colours::cyan;
+    auto clr = Colours::red;
     auto pView = std::make_shared<RecordView>(p, clr);
     addView(pView);
 

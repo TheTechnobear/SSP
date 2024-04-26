@@ -62,6 +62,7 @@ target_sources(LOOP
         Source/SSPApi.cpp
         PRIVATE
         Source/PluginEditor.cpp
+        Source/PluginMiniEditor.cpp
         Source/PluginProcessor.cpp
         rnbo-export/loop.cpp
         rnbo-export/rnbo/RNBO.cpp

@@ -116,13 +116,13 @@ private:
             g.setFont(f);
             g.setColour(layer.colour_);
 
-            if (!layer.label_.empty()) g.drawText(layer.label_, 0, (sigN * (fh + 10)), w, fh, Justification::bottomLeft);
+            if (!layer.label_.empty()) g.drawText(layer.label_, 0, (sigN * (fh + (COMPACT_UI_SCALE * 5))), w, fh, Justification::bottomLeft);
         }
 
         if (!layer.buffer_) return;
 
         float val = 0.00f, y = 0.0f, x = 0.0f;
-        static constexpr float sp = 2.0f;
+        static constexpr float sp = COMPACT_UI_SCALE;
 
         // draw scope
         g.setColour(layer.colour_);
@@ -136,7 +136,7 @@ private:
             y = (1.0f - (val + 1.0f) * 0.5f) * h;
             x = t * stepW;
             if (t > 0) {
-                g.drawLine(lastX, lastY, x, y, 2.0f);
+                g.drawLine(lastX, lastY, x, y, COMPACT_UI_SCALE);
             }
             lastX = x;
             lastY = y;

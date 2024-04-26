@@ -100,7 +100,7 @@ private:
             y = (1.0f - (val + 1.0f) * 0.5f) * h;
             x = t * stepW;
             if (t > 0) {
-                g.drawLine(lastX, lastY, x, y, 2.0f);
+                g.drawLine(lastX, lastY, x, y, COMPACT_UI_SCALE);
             }
             lastX = x;
             lastY = y;

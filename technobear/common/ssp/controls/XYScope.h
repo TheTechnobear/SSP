@@ -88,7 +88,7 @@ private:
             x = (1.0f - (valX + 1.0f) * 0.5f) * w;
             y = (1.0f - (valY + 1.0f) * 0.5f) * h;
             if (t > 0) {
-                g.drawLine(lastX, lastY, x, y, 2.0f);
+                g.drawLine(lastX, lastY, x, y, COMPACT_UI_SCALE);
             }
             lastX = x;
             lastY = y;

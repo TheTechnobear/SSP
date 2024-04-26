@@ -1,7 +1,6 @@
 
 # TODO 
 
-
 ## milestone 1 - basic functionality - DONE
 aim to have everything basically functional
 
@@ -13,24 +12,26 @@ general goals:
 
 
 specific tasks:
-- add mini editor to existing plugins - see below
-- make a minimum set of usable plugins , aka first-use case
-- consider locking strategy... do we need both track and module?
-- rename matrix to -> ?
-- consider stream protocol versioning
+- add mini editor to existing plugins - see below - DONE
+- make a minimum set of usable plugins , aka first-use case - DONE?
+- consider locking strategy... do we need both track and module? - POSTPONE
+- rename matrix to -> ? - DONE , called routing in UI
+- consider stream protocol versioning - NEED TO CONSIDER
 
 
 ## miletone 3 - refinements
-- more UI refinements to Trax
+- more UI refinements to Trax  
 - refine available plugins for trax, polish
 - start adding more plugins, considering new use-cases for trax.
+
+------------------------------------------
 
 
 ## other tasks
 - review code and tidy up certain parts
 - should matrix be renamed? review other nomenclature.
 - review editors and views... getting very confusing!
-- rationalise button box drawing esp with value buttons
+- rationalise button box drawing esp with value buttons - DONE
 
 - what is 'first' use-case?
 I think its mixer + fx with modulation?
@@ -42,22 +43,66 @@ with perhaps some 'additions'? (e.g. playing plts via cv)
 -- sequencer
 -- drum machine (w/sequencer)
 
+## wire offset/scaling
+scaling of signal... we could add to route screen
+use encoder 4 to allow for scaling (normal turn) or offset (press + turn)
 
+## bugs/ thoughts? (high priorty)
+- should we remove connections (wires) when we remove modules
+(currently you end up with wires you cannot edit, since Empty has no connections!)
+
+- ui concerns
+not sure I like the preset TRACK button, then encoder for plugin
+... doesn't feel right... 
+its likely the issue is the 'track screen', its not very intuitive whats on each track
+
+- keyboard for save 
+input field needs to be bigger
+perhaps use second encode for up/down 
+ability to delete characters?
+
+- close of 'dialog views'
+I dont like the way the editor, has to know about the buttons used.
+it'd be better to have a isClosed function checked in SSP Timer?
+or some kind of callback function... to notify parent view to switch back.
+
+- not really liking the hold UP button to close module windw.
+but really there is no other choice, I can think of... as we use up/down to go thru sets of parameters
+
+
+
+## performance interface?
+idea is to allow a parameters to be moved to a 'central' performance window.
+so you dont have to dig into to individual plugins to alter.
+ideally this be across ALL tracks
+note: 
+parameters would need to be added to plugin descrition in extended api
+we would also need get/set in the plugin processor api
+(shouldn't be an issue to implement on plugin side, as we already automate to some extent)
+
+
+
+# view/editor refactoring - lower priority - post demo/release?
 code refactor... the views need refactoring... too much code duplication
-essence of the issue is variation between valuebutton and parambutton
-also some editors needing buttons which switch base on page, others not
-really need to consider the various use cases
+too many variations possible, around how much of the UI and editor wants to draw, or just default 'and work'
+this includes if buttons are parameters, or are just ui elements.
+also perhaps there is an over use of 'multi views' to allow for switching'
 
-possibly going the route of more components e.g. like button box, 
-so that the code is not all built into the views/editors
+I think a better approach is using more components. 
+I recently introduced button box... 
+the idea is the editor can then just include particular components it needs, 
+and then manage the connection between these and buttons presses with minimal code.
 
+needs to be thought thru though, e.g. do we have pages of buttons and paramters do they get linked.
+the potentially issue being, we just end up movin the 'mess' from the view to components ;) 
 
 
 ## existing plugin coversion
-### NOT STARTED 
+## restrictions - later enhancements?
+- add save/load to GRA4/LOOP
+- add glide to CART
 
-gra4 - needs new ui - update wavedisp, use new save/load dialogs?
-loop - needs new ui - update wavedisp, use new save/load dialogs?
+### NOT STARTED 
 
 
 ### DO NOT SUPPORT?
@@ -72,7 +117,6 @@ e.g.
 we could change to 8 layers, and then use buttons to select layer
 thus we only get 4 pages for each layer
 ... we have an issue with select, but we could remove this and just have as CV input!?
-
 
 ## IN PROGRESS / PARTIAL
 
@@ -104,10 +148,13 @@ mmx4 - custom grid ui , with single line param
 omod 
 clkd 
 cart - quite a bit of ui work, but worth it!
+gra4 - needs new ui - update wavedisp,
+loop - needs new ui - update wavedisp,
 
 
 
------------------------------------------------------
+-------------------------------------------------------------------
+
 
 
 # Overview

@@ -62,6 +62,7 @@ target_sources(GRA4
         Source/SSPApi.cpp
         PRIVATE
         Source/PluginEditor.cpp
+        Source/PluginMiniEditor.cpp
         Source/PluginProcessor.cpp
         rnbo-export/gra4.cpp
         rnbo-export/rnbo/RNBO.cpp
