@@ -76,16 +76,11 @@ void MiniParamView::onEncoderSwitch(unsigned enc, bool v) {
     encoderFine_[enc] = false;
 }
 
-void MiniParamView::onButton(unsigned int id, bool v) {
-    base_type::onButton(id, v);
-
-    unsigned r = id / 4;
-    unsigned c = id % 4;
-
-    unsigned bidx = (r * 4) + c;
+void MiniParamView::onButton(unsigned int bidx, bool v) {
+    base_type::onButton(bidx, v);
     if (bidx < buttons_.size()) {
         auto &btn = buttons_[bidx];
-        if(!btn) return;
+        if (!btn) return;
         if (v)
             btn->onDown();
         else
@@ -94,17 +89,13 @@ void MiniParamView::onButton(unsigned int id, bool v) {
 }
 
 
-void MiniParamView::eventButton(unsigned int id, bool longPress) {
-    base_type::eventButton(id, longPress);
+void MiniParamView::eventButton(unsigned int bidx, bool longPress) {
+    base_type::eventButton(bidx, longPress);
     if (longPress) return;
 
-    unsigned r = id / 4;
-    unsigned c = id % 4;
-
-    unsigned bidx = (r * 4) + c;
     if (bidx < buttons_.size()) {
         auto &btn = buttons_[bidx];
-        if(btn) btn->onClick();
+        if (btn) btn->onClick();
     }
 }
 
