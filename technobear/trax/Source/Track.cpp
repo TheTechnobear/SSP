@@ -8,27 +8,16 @@ Track::Track() {
     modules_[M_OUT].alloc("OUT", trackOut_.get(), trackOut_->createDescriptor(), nullptr);
 }
 
-
-void Track::createDefaultRoute(unsigned in1, unsigned in2) {
-    // requestMatrixConnect(Matrix::Jack(M_IN, in1), Matrix::Jack(M_USER_1, 0));
-    // requestMatrixConnect(Matrix::Jack(M_IN, in2), Matrix::Jack(M_USER_1, 1));
-    // requestMatrixConnect(Matrix::Jack(M_USER_1, 0), Matrix::Jack(M_USER_2, 0));
-    // requestMatrixConnect(Matrix::Jack(M_USER_1, 1), Matrix::Jack(M_USER_2, 1));
-    // requestMatrixConnect(Matrix::Jack(M_USER_2, 0), Matrix::Jack(M_USER_3, 0));
-    // requestMatrixConnect(Matrix::Jack(M_USER_2, 1), Matrix::Jack(M_USER_3, 1));
-    // requestMatrixConnect(Matrix::Jack(M_USER_3, 0), Matrix::Jack(M_OUT, 0));
-    // requestMatrixConnect(Matrix::Jack(M_USER_3, 1), Matrix::Jack(M_OUT, 1));
-}
-
 std::vector<Matrix::Wire> Track::connections() {
     return matrix_.connections_;
 }
-
 
 bool Track::requestModuleChange(unsigned midx, const std::string &mn) {
     auto &m = modules_[midx];
 
     if (!m.lock_.test_and_set()) {
+        clearModuleConnections(midx);
+
         if (m.loadModule(mn)) {
             resetModuleConnections(midx);
             m.prepare(sampleRate_, blockSize_);
@@ -204,4 +193,13 @@ void Track::resetModuleConnections(int midx) {
             if (w.src_.modIdx_ == midx && w.src_.chIdx_ < outSz) m.plugin_->outputEnabled(w.src_.chIdx_, true);
         }
     }
+}
+
+
+void Track::clearModuleConnections(int midx) {
+    auto &wires = matrix_.connections_;
+    wires.erase(
+        std::remove_if(wires.begin(), wires.end(),
+                       [&](const Matrix::Wire &w) { return w.src_.modIdx_ == midx || w.dest_.modIdx_ == midx; }),
+        wires.end());
 }

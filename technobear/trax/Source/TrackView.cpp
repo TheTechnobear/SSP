@@ -2,12 +2,8 @@
 
 TrackView::TrackView(PluginProcessor &p) : base_type(&p, nullptr), processor_(p) {
     for (int i = Track::M_SLOT_1; i <= Track::M_SLOT_4; i++) {
-        auto pbtn = std::make_shared<ssp::ValueButton>("Edit ", [&](bool b) {});
-        addButton(i - Track::M_SLOT_1, pbtn);
-
-
         auto sbtn = std::make_shared<ssp::ValueButton>("View", [&](bool b) {});
-        addButton(i + Track::M_SLOT_4 - 1, sbtn);
+        addButton(i - Track::M_SLOT_1, sbtn);
     }
 
     for (int i = 0; i < Track::MAX_MODULES; i++) {
@@ -19,7 +15,6 @@ TrackView::TrackView(PluginProcessor &p) : base_type(&p, nullptr), processor_(p)
 
 TrackView::~TrackView() {
 }
-
 
 void TrackView::resized() {
     base_type::resized();

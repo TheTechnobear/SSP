@@ -21,9 +21,9 @@ PluginEditor::PluginEditor(PluginProcessor &p) : base_type(&p, false), processor
 void PluginEditor::eventButton(unsigned btn, bool longPress) {
     auto v = getViewIdx();
     if (v == mixerViewIdx_) {
-
-        if (btn >= PluginProcessor::MAX_TRACKS) {
-            trackEditor_->trackIdx(btn - PluginProcessor::MAX_TRACKS);
+        int modIdx = btn;
+        if (btn < PluginProcessor::MAX_TRACKS) {
+            trackEditor_->trackIdx(modIdx);
             setView(trackEditorIdx_);
             return;
         }

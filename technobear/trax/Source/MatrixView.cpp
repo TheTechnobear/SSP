@@ -19,24 +19,29 @@
 
 
 MatrixView::MatrixView(PluginProcessor& p)
-    : base_type(&p, nullptr), processor_(p), moduleA_(p, 0, 0), moduleB_(p, 0, 0) {
-    //   channelA_([&](unsigned idx) { return isChASelected(idx); }),
-    //   moduleB_([&](unsigned idx) { return isModuleBSelected(idx); }),
-    //   channelB_([&](unsigned idx) { return isChBSelected(idx); }) {
+    : base_type(&p, nullptr),
+      processor_(p),
+      moduleA_(p, 0, 0),
+      moduleB_(p, 0, 0),
+      channelA_([&](unsigned idx) { return isChASelected(idx); }),
+      channelB_([&](unsigned idx) { return isChBSelected(idx); }) {
     addAndMakeVisible(moduleA_);
     addAndMakeVisible(channelA_);
-
-
     addAndMakeVisible(moduleB_);
     addAndMakeVisible(channelB_);
 
 
-    auto inBtn = std::make_shared<ssp::ValueButton>("Inputs", [&](bool b) {
+    // load is done in track editor!
+    auto loadBtn = std::make_shared<ssp::ValueButton>("Load", [&](bool b) {
+    });
+    addButton(0, loadBtn);
+
+    auto inBtn = std::make_shared<ssp::ValueButton>("Flip IO", [&](bool b) {
         isOutput_ = !b;
         refreshView();
     });
     inBtn->setToggle(true);
-    addButton(7, inBtn);
+    addButton(3, inBtn);
 }
 
 MatrixView::~MatrixView() {
@@ -85,16 +90,8 @@ void MatrixView::resized() {
 
 void MatrixView::drawView(Graphics& g) {
     base_type::drawView(g);
-    int fh = 14 * COMPACT_UI_SCALE;
 
-    g.setColour(Colours::yellow);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
-    // g.drawSingleLineText("Matrix ( Track " + String(trackIdx_ + 1) + " , Slot " + moduleAsString(moduleIdx_) + " )",
-    // x,
-    //                      y);
-
-    MiniBasicView::drawView(g);
-
+    g.setColour(juce::Colours::yellow);
     int gap = 5 * COMPACT_UI_SCALE;
     int x = canvasX();
     int y = canvasY();
@@ -128,23 +125,22 @@ void MatrixView::onEncoder(unsigned enc, float v) {
         }
         case 1: {
             if (v > 0) {
-                if (moduleBIdx_ < (Track::MAX_MODULES - 1)) {
-                    moduleBIdx_++;
+                int modB = moduleBIdx_ + 1;
+                modB += moduleAIdx_ == modB;
+                if (modB < Track::MAX_MODULES) {
+                    moduleBIdx_ = modB;
                     moduleB_.slotIdx(moduleBIdx_);
                     refreshModuleB();
                 }
             } else {
+                int modB = moduleBIdx_ - 1;
+                modB -= moduleAIdx_ == modB;
                 if (moduleBIdx_ > 0) {
-                    moduleBIdx_--;
+                    moduleBIdx_ = modB;
                     moduleB_.slotIdx(moduleBIdx_);
                     refreshModuleB();
                 }
             }
-            // if (v > 0)
-            //     moduleB_.nextItem();
-            // else
-            //     moduleB_.prevItem();
-            // refreshModuleB();
             break;
         }
         case 2: {
@@ -169,33 +165,32 @@ void MatrixView::onEncoderSwitch(unsigned enc, bool v) {
 
     switch (enc) {
         case 0: {
-            // repaint();
             break;
         }
         case 1: {
-            // repaint();
             break;
         }
         case 2: {
             // for now, do not allow connections to self
             if (moduleAIdx_ == moduleBIdx_) return;
+            if (chASelected_.size() <= 0 || chBSelected_.size() <= 0) return;
 
             if (channelA_.idx() >= 0 && moduleBIdx_ >= 0 && channelB_.idx() >= 0) {
                 Matrix::Jack jackA(moduleAIdx_, channelA_.idx());
                 Matrix::Jack jackB(moduleBIdx_, channelB_.idx());
-                // if (!chBSelected_[channelB_.idx()]) {
-                //     // add new connection
-                //     if (isOutput_)
-                //         while (!processor_.track(trackIdx_).requestMatrixConnect(jackA, jackB));
-                //     else
-                //         while (!processor_.track(trackIdx_).requestMatrixConnect(jackB, jackA));
-                // } else {
-                //     // remove connection.
-                //     if (isOutput_)
-                //         while (!processor_.track(trackIdx_).requestMatrixDisconnect(jackA, jackB));
-                //     else
-                //         while (!processor_.track(trackIdx_).requestMatrixDisconnect(jackB, jackA));
-                // }
+                if (!chBSelected_[channelB_.idx()]) {
+                    // add new connection
+                    if (isOutput_)
+                        while (!processor_.track(trackIdx_).requestMatrixConnect(jackA, jackB));
+                    else
+                        while (!processor_.track(trackIdx_).requestMatrixConnect(jackB, jackA));
+                } else {
+                    // remove connection.
+                    if (isOutput_)
+                        while (!processor_.track(trackIdx_).requestMatrixDisconnect(jackA, jackB));
+                    else
+                        while (!processor_.track(trackIdx_).requestMatrixDisconnect(jackB, jackA));
+                }
                 refreshSelected();
             }
             repaint();
@@ -216,11 +211,8 @@ void MatrixView::editorShown() {
 }
 
 void MatrixView::refreshView() {
-    // channelA_.clear();
-    // chASelected_.clear();
-    // moduleB_.clear();
-    // moduleBSelected_.clear();
-    // moduleBIdx_ = -1;
+    channelA_.clear();
+    chASelected_.clear();
 
     auto& track = processor_.track(trackIdx_);
     auto& module = track.modules_[moduleAIdx_];
@@ -232,37 +224,22 @@ void MatrixView::refreshView() {
             auto& outputs = module.descriptor_->outputChannelNames;
             for (int i = 0; i < outputs.size(); i++) {
                 channelA_.addItem(channelAsString(moduleAIdx_, i, isOutput_));
-                // chASelected_.push_back(false);
+                chASelected_.push_back(false);
             }
         } else {
             auto& inputs = module.descriptor_->inputChannelNames;
             for (int i = 0; i < inputs.size(); i++) {
                 channelA_.addItem(channelAsString(moduleAIdx_, i, isOutput_));
-                // chASelected_.push_back(false);
+                chASelected_.push_back(false);
             }
         }
     }
-
-
-    //     // module B
-    //     for (int i = 0; i < Track::M_MAX; i++) {
-    //         moduleB_.addItem(moduleAsString(i));
-    //         moduleBSelected_.push_back(false);
-    //     }
-
-    //     // moduleB_.idx(0);
     refreshModuleB();
-    //     refreshSelected();
-    // }
 }
 
 void MatrixView::refreshModuleB() {
-    // int moduleBIdx = moduleB_.idx();
-    // if (moduleBIdx_ == moduleBIdx) { return; }
-
-    // moduleBIdx_ = moduleBIdx;
     channelB_.clear();
-    // chBSelected_.clear();
+    chBSelected_.clear();
 
 
     if (moduleBIdx_ >= 0 && moduleBIdx_ < Track::M_MAX) {
@@ -274,14 +251,14 @@ void MatrixView::refreshModuleB() {
             auto& inputs = moduleB.descriptor_->inputChannelNames;
             for (int i = 0; i < inputs.size(); i++) {
                 channelB_.addItem(channelAsString(moduleBIdx_, i, !isOutput_));
-                // chBSelected_.push_back(false);
+                chBSelected_.push_back(false);
             }
 
         } else {
             auto& outputs = moduleB.descriptor_->outputChannelNames;
             for (int i = 0; i < outputs.size(); i++) {
                 channelB_.addItem(channelAsString(moduleBIdx_, i, !isOutput_));
-                // chBSelected_.push_back(false);
+                chBSelected_.push_back(false);
             }
         }
 
@@ -291,37 +268,31 @@ void MatrixView::refreshModuleB() {
 
 
 void MatrixView::refreshSelected() {
-    // auto& track = processor_.track(trackIdx_);
+    auto& track = processor_.track(trackIdx_);
 
-    // // reset all selected vectors
-    // for (unsigned i = 0; i < chASelected_.size(); i++) { chASelected_[i] = false; }
-    // for (unsigned i = 0; i < moduleBSelected_.size(); i++) { moduleBSelected_[i] = false; }
-    // for (unsigned i = 0; i < chBSelected_.size(); i++) { chBSelected_[i] = false; }
+    // reset all selected vectors
+    for (unsigned i = 0; i < chASelected_.size(); i++) { chASelected_[i] = false; }
+    for (unsigned i = 0; i < chBSelected_.size(); i++) { chBSelected_[i] = false; }
 
-    // for (auto& w : track.connections()) {
-    //     Matrix::Jack jackA(moduleIdx_, channelA_.idx());
-    //     if (isOutput_) {
-    //         if (w.src_.modIdx_ == moduleIdx_) { chASelected_[w.src_.chIdx_] = true; }
-    //         if (w.src_ == jackA) { moduleBSelected_[w.dest_.modIdx_] = true; }
-    //         if (w.src_ == jackA && w.dest_.modIdx_ == moduleB_.idx()) { chBSelected_[w.dest_.chIdx_] = true; }
-    //     } else {
-    //         if (w.dest_.modIdx_ == moduleIdx_) { chASelected_[w.dest_.chIdx_] = true; }
-    //         if (w.dest_ == jackA) { moduleBSelected_[w.src_.modIdx_] = true; }
-    //         if (w.dest_ == jackA && w.src_.modIdx_ == moduleB_.idx()) { chBSelected_[w.src_.chIdx_] = true; }
-    //     }
-    // }
-    // repaint();
+    for (auto& w : track.connections()) {
+        Matrix::Jack jackA(moduleAIdx_, channelA_.idx());
+        if (isOutput_) {
+            if (w.src_.modIdx_ == moduleAIdx_) { chASelected_[w.src_.chIdx_] = true; }
+            if (w.src_ == jackA && w.dest_.modIdx_ == moduleBIdx_) { chBSelected_[w.dest_.chIdx_] = true; }
+        } else {
+            if (w.dest_.modIdx_ == moduleAIdx_) { chASelected_[w.dest_.chIdx_] = true; }
+            if (w.dest_ == jackA && w.src_.modIdx_ == moduleBIdx_) { chBSelected_[w.src_.chIdx_] = true; }
+        }
+    }
+    repaint();
 }
 
 
-// bool MatrixView::isChASelected(unsigned idx) {
-//     return idx < chASelected_.size() && chASelected_[idx];
-// }
+bool MatrixView::isChASelected(unsigned idx) {
+    return idx < chASelected_.size() && chASelected_[idx];
+}
 
-// bool MatrixView::isModuleBSelected(unsigned idx) {
-//     return idx < moduleBSelected_.size() && moduleBSelected_[idx];
-// }
 
-// bool MatrixView::isChBSelected(unsigned idx) {
-//     return idx < chBSelected_.size() && chBSelected_[idx];
-// }
+bool MatrixView::isChBSelected(unsigned idx) {
+    return idx < chBSelected_.size() && chBSelected_[idx];
+}

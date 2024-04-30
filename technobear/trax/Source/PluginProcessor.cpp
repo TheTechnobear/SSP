@@ -16,7 +16,6 @@ PluginProcessor::PluginProcessor(const AudioProcessor::BusesProperties &ioLayout
 
     int trackIdx = 0;
     for (auto &track : tracks_) {
-        track.createDefaultRoute(trackIdx, trackIdx + MAX_TRACKS);
         // create thread for each track, place into trackThreads_
         trackThreads_.emplace_back([this, trackIdx] {
             bool running = true;

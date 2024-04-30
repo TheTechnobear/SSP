@@ -29,6 +29,9 @@ public:
         refreshView();
     }
 
+    unsigned  trackIdx() { return trackIdx_;}
+    unsigned  moduleIdx() { return moduleAIdx_;}
+
 protected:
     void editorShown() override;
 
@@ -37,7 +40,6 @@ private:
     static constexpr int FH = 12 * COMPACT_UI_SCALE;
     static constexpr int LS = FH;
 
-    // String moduleAsString(unsigned idx);
     String channelAsString(unsigned midx, unsigned ch, bool inOut);
 
     void refreshView();
@@ -52,15 +54,13 @@ private:
     int moduleBIdx_;
     ssp::ListControl<> channelB_;
 
-    // std::vector<bool> chASelected_;
-    // std::vector<bool> moduleBSelected_;
-    // std::vector<bool> chBSelected_;
+    std::vector<bool> chASelected_;
+    std::vector<bool> chBSelected_;
 
     bool isOutput_ = true;
 
-    // bool isChASelected(unsigned idx);
-    // bool isModuleBSelected(unsigned idx);
-    // bool isChBSelected(unsigned idx);
+    bool isChASelected(unsigned idx);
+    bool isChBSelected(unsigned idx);
 
     ModuleComponent moduleA_;
     ModuleComponent moduleB_;

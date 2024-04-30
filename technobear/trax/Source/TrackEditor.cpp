@@ -55,8 +55,6 @@ void TrackEditor::onEncoderSwitch(unsigned enc, bool v) {
     if (getViewIdx() == trackViewIdx_) {
         if (!v) {
             auto modIdx = enc;
-            // moduleView_->moduleIdx(trackIdx_, modIdx + 1);
-            // setView(moduleViewIdx_);
             loadModuleView_->moduleIdx(trackIdx_, modIdx + 1);
             matrixView_->moduleIdx(trackIdx_, modIdx + 1);
             moduleView_->moduleIdx(trackIdx_, modIdx + 1);
@@ -77,48 +75,35 @@ void TrackEditor::eventButton(unsigned btn, bool longPress) {
     if (v == trackViewIdx_) {
         if (btn < 4) {
             auto modIdx = btn;
-            loadModuleView_->moduleIdx(trackIdx_, modIdx + 1);
-            matrixView_->moduleIdx(trackIdx_, modIdx + 1);
-            moduleView_->moduleIdx(trackIdx_, modIdx + 1);
-            setView(loadViewIdx_);
-            return;
-        } else if (btn >= 4) {
-            auto modIdx = btn - 4;
-            // loadModuleView_->moduleIdx(trackIdx_, modIdx + 1);
-            // matrixView_->moduleIdx(trackIdx_, modIdx + 1);
-            // moduleView_->moduleIdx(trackIdx_, modIdx + 1);
-            // setView(matrixViewIdx_);
             moduleView_->moduleIdx(trackIdx_, modIdx + 1);
             setView(moduleViewIdx_);
-
             return;
         }
-    }
-
-    if (v == loadViewIdx_ && longPress == false) {
+    } else if (v == loadViewIdx_ && longPress == false) {
         // return view on load and clear
         switch (btn) {
-            case 3: {  // load
-                // carry out action
-                loadModuleView_->eventButton(btn, longPress);
-                // return to overview
-                trackView_->trackIdx(trackIdx_);
-                setView(trackViewIdx_);
-                return;
-            }
+            case 3:    // load
             case 7: {  // clear
                 // carry out action
                 loadModuleView_->eventButton(btn, longPress);
-                // return to overview
-                trackView_->trackIdx(trackIdx_);
-                setView(trackViewIdx_);
+                // return to matrix view
+                matrixView_->moduleIdx(matrixView_->trackIdx(), matrixView_->moduleIdx());
+                setView(matrixViewIdx_);
+                return;
+            }
+        }
+    } else if (v == matrixViewIdx_ && longPress == false) {
+        switch (btn) {
+            case 0: {
+                loadModuleView_->moduleIdx(matrixView_->trackIdx(), matrixView_->moduleIdx());
+                setView(loadViewIdx_);
                 return;
             }
         }
     }
-
     base_type::eventButton(btn, longPress);
 }
+
 
 void TrackEditor::trackIdx(unsigned t) {
     trackIdx_ = t;

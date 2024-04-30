@@ -10,6 +10,9 @@ MixerView::MixerView(PluginProcessor& p) : base_type(&p, nullptr), processor_(p)
     }
 
     for (unsigned t = 0; t < PluginProcessor::MAX_TRACKS; t++) {
+        auto tracksel = std::make_shared<ssp::ValueButton>("Track", [this, t](bool v) {});
+        addButton(t, tracksel);
+
         auto mutebtn = std::make_shared<ssp::ValueButton>("Mute", [this, t](bool v) {
             processor_.muteTrack(t, v);
             bool muted = processor_.muteTrack(t);
@@ -18,10 +21,7 @@ MixerView::MixerView(PluginProcessor& p) : base_type(&p, nullptr), processor_(p)
         });
         mutebtn->value(processor_.muteTrack(t));
         mutebtn->setToggle(true);
-        addButton(t, mutebtn);
-
-        auto tracksel = std::make_shared<ssp::ValueButton>("Track", [this, t](bool v) {});
-        addButton(t + PluginProcessor::MAX_TRACKS, tracksel);
+        addButton(t + PluginProcessor::MAX_TRACKS, mutebtn);
     }
 }
 

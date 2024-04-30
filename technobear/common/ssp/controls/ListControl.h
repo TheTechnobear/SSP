@@ -41,7 +41,7 @@ ListControl<T>::ListControl(std::function<bool(unsigned)> isSelected) : isSelect
 template <class T>
 void ListControl<T>::clear() {
     items_.clear();
-    curIdx_ = -1;
+    curIdx_ = 0;
     repaint();
 }
 
@@ -60,7 +60,6 @@ void ListControl<T>::idx(int i) {
 template <class T>
 void ListControl<T>::addItem(const juce::String& str) {
     items_.push_back(str);
-    if (curIdx_ == -1) curIdx_ = 0;
     repaint();
 }
 
@@ -74,7 +73,7 @@ void ListControl<T>::nextItem() {
 
 template <class T>
 void ListControl<T>::prevItem() {
-    curIdx_ -= curIdx_ != 0;
+    curIdx_ -= curIdx_ > 0 ? 1 : 0;
     if(curIdx_ < offset_) offset_ = curIdx_;
     repaint();
 }

@@ -17,7 +17,6 @@ class Track {
 public:
     explicit Track();
 
-    void createDefaultRoute(unsigned in1, unsigned in2);
     std::vector<Matrix::Wire> connections();
 
     void prepare(int sampleRate, int blockSize);
@@ -56,6 +55,7 @@ private:
     void free();
 
     void resetModuleConnections(int midx);
+    void clearModuleConnections(int midx);
     int sampleRate_ = 48000;
     int blockSize_ = 128;
     bool mute_ = false;
