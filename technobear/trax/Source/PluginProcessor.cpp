@@ -4,7 +4,6 @@
 #include "Matrix.h"
 #include "PluginEditor.h"
 #include "ssp/EditorHost.h"
-
 #include "ssp/Log.h"
 
 PluginProcessor::PluginProcessor() : PluginProcessor(getBusesProperties(), createParameterLayout()) {
@@ -151,7 +150,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         float gain = track.level();
 
         for (int i = 0; i < O_MAX; i++) {
-            tBuf.applyGainRamp(i, 0,n,lastGain_[trackIdx],gain);
+            tBuf.applyGainRamp(i, 0, n, lastGain_[trackIdx], gain);
             rmsData_[trackIdx][i].process(tBuf, i);
             buffer.addFrom(i, 0, tBuf, i, 0, n, MIX_CHANNEL_GAIN);
         }
@@ -251,7 +250,11 @@ void PluginProcessor::loadPreset() {
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
     static constexpr bool useSysEditor = false, defaultDraw = false;
+#ifdef FORCE_COMPACT_UI
+    return new ssp::EditorHost(this, new PluginEditor(*this), true, useSysEditor, defaultDraw);
+#else
     return new ssp::EditorHost(this, new PluginEditor(*this), useCompactUI(), useSysEditor, defaultDraw);
+#endif
 }
 
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {

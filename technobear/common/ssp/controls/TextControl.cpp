@@ -18,12 +18,12 @@ public:
     void selected(bool a) { selected_ = a; }
 
     void paint(juce::Graphics &g) {
-        float gap = 2.f * COMPACT_UI_SCALE;
+        unsigned gap = 2 * COMPACT_UI_SCALE;
         g.setColour(active_ ? fg_ : bg_);
         g.fillRect(0, 0, getWidth(), getHeight());
 
         g.setColour(!active_ ? fg_ : bg_);
-        g.drawRect(0, 0, getWidth(), getHeight(), 1 + (selected_ * COMPACT_UI_SCALE));
+        g.drawRect(0, 0, getWidth(), getHeight(), 1 + (selected_ * 2 * COMPACT_UI_SCALE));
 
         g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh_, juce::Font::plain));
         g.drawText(k_, gap, gap, getWidth() - (gap * 2.f), getHeight() - (gap * 2.f), juce::Justification::centred);
@@ -34,7 +34,7 @@ public:
 private:
     std::string k_;
     std::string kv_;
-    unsigned fh_;
+    int fh_;
     juce::Colour fg_ = juce::Colours::red;
     juce::Colour bg_ = juce::Colours::black;
     bool selected_ = false;
@@ -43,8 +43,8 @@ private:
 
 
 TextControl::TextControl() {
-    float w = 30.f * COMPACT_UI_SCALE;
-    float h = 25.f * COMPACT_UI_SCALE;
+    int w = 15 * COMPACT_UI_SCALE;
+    int h = 25 * COMPACT_UI_SCALE;
 
     int i;
     std::string charset = "1234567890abcdefghijklmnopqrstuvwxyz-_:";
@@ -56,7 +56,7 @@ TextControl::TextControl() {
     }
 
     {
-        auto key = std::make_shared<TextKey>("Spc", " ", w / 3);
+        auto key = std::make_shared<TextKey>("SP", " ", w / 2);
         keys_.push_back(key);
         addAndMakeVisible(*key);
     }
@@ -68,17 +68,17 @@ TextControl::~TextControl() {
 
 void TextControl::resized() {
     Component::resized();
-    float w = 30.f * COMPACT_UI_SCALE;
-    float h = 25.f * COMPACT_UI_SCALE;
+    unsigned w = 30 * COMPACT_UI_SCALE;
+    unsigned h = 25 * COMPACT_UI_SCALE;
 
-    float x = 5.f * COMPACT_UI_SCALE;
-    float y = 30.f * COMPACT_UI_SCALE;
+    unsigned x = 5 * COMPACT_UI_SCALE;
+    unsigned y = 75 * COMPACT_UI_SCALE;
 
     int i = 0;
     for (auto &key : keys_) {
         float r = i / nCols_;
         float c = i % nCols_;
-        key->setBounds((c * (w + 2)) + x, (r * (h + 2)) + y, w, h);
+        key->setBounds((c * (w + COMPACT_UI_SCALE)) + x, (r * (h + COMPACT_UI_SCALE)) + y, w, h);
         i++;
     }
 }
@@ -95,19 +95,22 @@ void TextControl::setText(const std::string &txt) {
 }
 
 void TextControl::paint(juce::Graphics &g) {
-    float x = 5.f * COMPACT_UI_SCALE;
-    float y = 5.f * COMPACT_UI_SCALE;
-    float w = getWidth();
-    float h = getHeight();
-    float fh = 12.f * COMPACT_UI_SCALE;
+    int gap = 5 * COMPACT_UI_SCALE;
+    int x = gap;
+    int y = gap;
+    int w = getWidth() - gap * 2;
+    int h = getHeight() - gap * 2;
+    int fh = 18 * COMPACT_UI_SCALE;
+    int smallSp = 2 * COMPACT_UI_SCALE;
+
 
     juce::Font font(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain);
     g.setColour(bg_);
     g.fillRect(x, y, w, h);
     g.setColour(fg_);
     g.setFont(font);
-    g.drawRect(x, y, w, fh * 1.4f);
-    g.drawText(text_, x + 2, y, w - 4, fh * 1.4f, juce::Justification::left);
+    g.drawRect(x, y, w, fh * 2);
+    g.drawText(text_, x + smallSp, y, w - smallSp * 2, fh * 2, juce::Justification::left);
 
     static constexpr int duty = 30;
     static constexpr int halfduty = duty / 2;
@@ -118,8 +121,8 @@ void TextControl::paint(juce::Graphics &g) {
     } else {
         g.setColour(bg_);
     }
-    float fpos = font.getStringWidthFloat(text_);
-    g.fillRect(x + 2.f + fpos + 2.f, y + 4.f, 4.f, fh - 2.0f);
+    int fpos = font.getStringWidthFloat(text_);
+    g.fillRect(x + smallSp + fpos + smallSp, y + smallSp * 4, smallSp * 2, fh - smallSp);
 }
 
 void TextControl::onDelete() {
@@ -137,19 +140,27 @@ void TextControl::onSelect() {
 }
 
 
-void TextControl::prevKey() {
+void TextControl::prevKey(int n) {
     if (selected_ > 0) {
         keys_[selected_]->selected(false);
-        selected_--;
+        if (selected_ - n < 0)
+            selected_ = 0;
+        else
+            selected_ -= n;
+
         keys_[selected_]->selected(true);
         repaint();
     }
 }
 
-void TextControl::nextKey() {
+void TextControl::nextKey(int n) {
     if (selected_ + 1 < keys_.size()) {
         keys_[selected_]->selected(false);
-        selected_++;
+        if (selected_ + n >= keys_.size())
+            selected_ = keys_.size() - 1;
+        else
+            selected_ += n;
+
         keys_[selected_]->selected(true);
         repaint();
     }

@@ -1,0 +1,81 @@
+[
+  {
+    "name": "sfilter",
+    "preset": {
+      "__sps": {
+        "f1": {
+          "bin": {
+            "value": 0
+          },
+          "width": {
+            "value": 14
+          }
+        },
+        "f2": {
+          "bin": {
+            "value": 0
+          },
+          "width": {
+            "value": 0
+          }
+        },
+        "f22": {
+          "bin": {
+            "value": 0
+          },
+          "width": {
+            "value": 12
+          }
+        },
+        "f3": {
+          "bin": {
+            "value": 0
+          },
+          "width": {
+            "value": 0
+          }
+        },
+        "f4": {
+          "bin": {
+            "value": 0
+          },
+          "width": {
+            "value": 0
+          }
+        },
+        "f5": {
+          "bin": {
+            "value": 0
+          },
+          "width": {
+            "value": 0
+          }
+        },
+        "f6": {
+          "bin": {
+            "value": 0
+          },
+          "width": {
+            "value": 0
+          }
+        },
+        "f7": {
+          "bin": {
+            "value": 0
+          },
+          "width": {
+            "value": 0
+          }
+        },
+        "f8": {
+          "bin": {
+            "value": 0
+          },
+          "width": {
+            "value": 0
+          }
+        }
+      }
+    }
+  }
+]

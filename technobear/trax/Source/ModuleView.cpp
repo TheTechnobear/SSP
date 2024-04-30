@@ -38,7 +38,7 @@ void ModuleView::drawModulePanel(Graphics &g) {
         g.setColour(Colours::white);
 
         g.setFont(Font(Font::getDefaultMonospacedFontName(), fh * 2, Font::plain));
-        g.drawSingleLineText("No Module Loaded", x - 40, getHeight() / 2 - 20);
+        g.drawSingleLineText("No Module Loaded", x - fh * 8, getHeight() / 2 - (20 * COMPACT_UI_SCALE));
         return;
     }
 

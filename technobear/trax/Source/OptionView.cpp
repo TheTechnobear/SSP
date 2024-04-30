@@ -17,7 +17,8 @@ void OptionView::drawView(Graphics &g) {
     int y = 30;
 
     g.setColour(Colours::yellow);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), 20, Font::plain));
+    static constexpr unsigned fh = 14 * COMPACT_UI_SCALE;
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
 
     g.drawSingleLineText("Settings", x, y);
 }

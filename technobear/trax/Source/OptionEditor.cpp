@@ -10,7 +10,7 @@
 
 class LoadPresetView : public ssp::MiniBasicView {
 public:
-    LoadPresetView(PluginProcessor &p, const String& defDir) : base_type(&p), processor_(p) {
+    LoadPresetView(PluginProcessor &p, const String &defDir) : base_type(&p), processor_(p) {
         fileControl_ = std::make_shared<ssp::FileSelector>(defDir);
         addAndMakeVisible(fileControl_.get());
         addButton(7, std::make_shared<ssp::ValueButton>("Load", [&](bool b) {
@@ -18,9 +18,7 @@ public:
                   }));
     }
 
-    void onLoad() {
-        processor_.presetLoadRequest(fileControl_->selectedFile());
-    }
+    void onLoad() { processor_.presetLoadRequest(fileControl_->selectedFile()); }
 
 
     void eventUp(bool longPress) override {
@@ -66,7 +64,7 @@ private:
 
 class SavePresetView : public ssp::MiniBasicView {
 public:
-    SavePresetView(PluginProcessor &p, const String& defDir) : ssp::MiniBasicView(&p), processor_(p), baseDir_(defDir) {
+    SavePresetView(PluginProcessor &p, const String &defDir) : ssp::MiniBasicView(&p), processor_(p), baseDir_(defDir) {
         textControl_ = std::make_shared<ssp::TextControl>();
         addAndMakeVisible(textControl_.get());
         addButton(7, std::make_shared<ssp::ValueButton>("Save", [&](bool b) {
@@ -74,9 +72,7 @@ public:
                   }));
     }
 
-    void onSave() {
-        processor_.presetSaveRequest(baseDir_ + File::getSeparatorChar() + textControl_->getText());
-    }
+    void onSave() { processor_.presetSaveRequest(baseDir_ + File::getSeparatorChar() + textControl_->getText()); }
 
     void eventUp(bool longPress) override {
         if (!longPress) { textControl_->prevKey(); }
@@ -87,11 +83,22 @@ public:
     }
 
     void onEncoder(unsigned id, float v) override {
-        if (id == 0) {
-            if (v > 0) {
-                textControl_->nextKey();
-            } else {
-                textControl_->prevKey();
+        switch (id) {
+            case 0: {
+                if (v > 0) {
+                    textControl_->nextKey();
+                } else {
+                    textControl_->prevKey();
+                }
+                break;
+            }
+            case 1: {
+                if (v > 0) {
+                    textControl_->nextKey(textControl_->nCols());
+                } else {
+                    textControl_->prevKey(textControl_->nCols());
+                }
+                break;
             }
         }
     }
@@ -104,10 +111,9 @@ public:
     void editorShown() override {
         base_type::editorShown();
         File f(processor_.presetName());
-        if(f.exists()) {
+        if (f.exists()) {
             textControl_->setText(f.getFileName().toStdString());
-        }
-        else {
+        } else {
             textControl_->setText("");
         }
     }
@@ -121,7 +127,7 @@ private:
 
     PluginProcessor &processor_;
     std::shared_ptr<ssp::TextControl> textControl_;
-    String baseDir_="~";
+    String baseDir_ = "~";
 };
 
 

@@ -20,15 +20,6 @@ protected:
     void onSSPTimer() override;
     void resized() override;
 
-    void addParamPage(
-        std::shared_ptr<ssp::BaseParamControl> c1,
-        std::shared_ptr<ssp::BaseParamControl> c2,
-        std::shared_ptr<ssp::BaseParamControl> c3,
-        std::shared_ptr<ssp::BaseParamControl> c4,
-        juce::Colour clr
-    );
-
-
 private:
     PluginProcessor &processor_;
 

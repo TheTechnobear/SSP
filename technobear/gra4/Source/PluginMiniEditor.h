@@ -17,6 +17,7 @@ protected:
 
     void drawView(Graphics &) override;
     void resized() override;
+    void onSSPTimer() override;
 
 private:
     static const constexpr unsigned MAX_LAYERS = PluginProcessor::MAX_LAYERS;

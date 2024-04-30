@@ -27,13 +27,6 @@ LoadModuleView::LoadModuleView(PluginProcessor &p, bool compactUI)
 
 void LoadModuleView::drawView(Graphics &g) {
     drawButtonBox(g);
-    static constexpr unsigned fh = 14 * COMPACT_UI_SCALE;
-    unsigned x = 25 * COMPACT_UI_SCALE;
-    unsigned y = 12 * COMPACT_UI_SCALE;
-    static constexpr unsigned h = fh + 5;
-    g.setColour(Colours::yellow);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
-    g.drawSingleLineText("Load Module", x, y);
 }
 
 void LoadModuleView::resized() {
@@ -42,9 +35,11 @@ void LoadModuleView::resized() {
     setButtonBounds(clearBtn_, 1, 3);
     setButtonBounds(loadBtn_, 0, 3);
 
-    unsigned x = 25 * COMPACT_UI_SCALE;
-    unsigned y = 12 * COMPACT_UI_SCALE;
-    moduleList_.setBounds(x, y + (5 * COMPACT_UI_SCALE), SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT - (80 * COMPACT_UI_SCALE));
+    unsigned gap = 5 * COMPACT_UI_SCALE;
+    unsigned x = gap;
+    unsigned y = gap;
+    moduleList_.setBounds(x, y, SSP_COMPACT_WIDTH - 2* gap, SSP_COMPACT_HEIGHT - (80 * COMPACT_UI_SCALE));
+    // moduleList_.setBounds(canvasX(),canvasY(), canvasWidth(),canvasHeight());
 }
 
 void LoadModuleView::drawButtonBox(Graphics &g) {

@@ -24,10 +24,12 @@ public:
 
     void paste() { setText(copyBuffer_); }
 
-    void nextKey();
-    void prevKey();
+    void nextKey(int n = 1);
+    void prevKey(int n = 1);
     void onDelete();
     void onSelect();
+
+    int nCols() { return nCols_;}
 
 private:
     void resized() override;

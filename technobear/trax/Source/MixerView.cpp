@@ -1,14 +1,21 @@
 #include "MixerView.h"
 
 
-MixerView::MixerView(PluginProcessor &p) : base_type(&p, nullptr), processor_(p) {
+MixerView::MixerView(PluginProcessor& p) : base_type(&p, nullptr), processor_(p) {
     for (int t = 0; t < PluginProcessor::MAX_TRACKS; t++) {
-        vuMeters_[t].init("Track " + String(t + 1), true);
-        addAndMakeVisible(vuMeters_[t]);
+        auto& meter = vuMeters_[t];
+        meter.init("Track " + String(t + 1), true);
+        meter.enabled(!processor_.muteTrack(t));
+        addAndMakeVisible(meter);
     }
 
     for (unsigned t = 0; t < PluginProcessor::MAX_TRACKS; t++) {
-        auto mutebtn = std::make_shared<ssp::ValueButton>("Mute", [this, t](bool v) { processor_.muteTrack(t, v); });
+        auto mutebtn = std::make_shared<ssp::ValueButton>("Mute", [this, t](bool v) {
+            processor_.muteTrack(t, v);
+            bool muted = processor_.muteTrack(t);
+            auto& meter = vuMeters_[t];
+            meter.enabled(!muted);
+        });
         mutebtn->value(processor_.muteTrack(t));
         mutebtn->setToggle(true);
         addButton(t, mutebtn);
@@ -23,27 +30,32 @@ MixerView::~MixerView() {
 
 void MixerView::resized() {
     base_type::resized();
-    int x = 10 * COMPACT_UI_SCALE;
-    int y = (10 * COMPACT_UI_SCALE) * 2;
+    int gap = 2 * COMPACT_UI_SCALE;
+    int h = canvasHeight() - 4 * gap;
+    int gw = canvasWidth() / PluginProcessor::MAX_TRACKS;
+    int w =  gw - 2* gap;
 
-    int h = 150 * COMPACT_UI_SCALE;
-    int w = 65 * COMPACT_UI_SCALE;
-    int offset = 5 * COMPACT_UI_SCALE;
+    int x = canvasX();
+    int y = canvasY() + 2 * gap;
 
     for (int t = 0; t < PluginProcessor::MAX_TRACKS; t++) {
-        vuMeters_[t].setBounds(x + (offset + w + offset) * t, y, w, h);
+        vuMeters_[t].setBounds(x + (gw * t) + gap, y, w, h);
     }
 }
 
 void MixerView::editorShown() {
     base_type::editorShown();
     for (int t = 0; t < PluginProcessor::MAX_TRACKS; t++) {
+        bool muted = processor_.muteTrack(t);
         auto btn = getButton(t);
-        if (btn != nullptr) { btn->value(processor_.muteTrack(t)); }
+        if (btn != nullptr) { btn->value(muted); }
+
+        auto& meter = vuMeters_[t];
+        meter.enabled(!muted);
     }
 }
 
-void MixerView::drawView(Graphics &g) {
+void MixerView::drawView(Graphics& g) {
     base_type::drawView(g);
     static constexpr unsigned fh = 14 * COMPACT_UI_SCALE;
     g.setColour(Colours::yellow);

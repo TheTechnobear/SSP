@@ -56,6 +56,7 @@ public:
 protected:
     BaseProcessor *baseProcessor_;
 
+
     juce::Colour defaultBg_=  juce::Colour(0xff111111);
     bool compactUI_=false;
 

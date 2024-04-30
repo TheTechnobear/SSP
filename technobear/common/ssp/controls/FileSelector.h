@@ -31,7 +31,7 @@ private:
     int selected_ = -1;
     int offset_ = 0;
 
-    juce::Colour fg_ = juce::Colours::red;
+    juce::Colour fg_ = juce::Colours::white;
     juce::Colour bg_ = juce::Colours::black;
     static constexpr int nFilePerCol = 15;
     static constexpr int nMaxCols = 2;

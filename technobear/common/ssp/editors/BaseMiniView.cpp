@@ -4,6 +4,8 @@
 
 namespace ssp {
 
+static constexpr unsigned titleFH = 12 * COMPACT_UI_SCALE;
+
 
 BaseMiniView::BaseMiniView(BaseProcessor *p) : base_type(p, true) {
 }
@@ -13,8 +15,7 @@ MiniParamView::MiniParamView(BaseProcessor *p, ioActivity cb) : base_type(p, tru
 }
 
 void MiniParamView::drawView(Graphics &g) {
-    static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), 10 * COMPACT_UI_SCALE, Font::plain));
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), titleFH, Font::plain));
 
     g.setColour(Colours::yellow);
     g.drawSingleLineText(String(JucePlugin_Name) + ":" + String(JucePlugin_Desc) + String(" @ thetechnobear"), gap,
@@ -24,11 +25,12 @@ void MiniParamView::drawView(Graphics &g) {
     g.drawSingleLineText("v " + String(JucePlugin_VersionString), 270 * COMPACT_UI_SCALE, gap * 2);
 
     drawButtonBox(g);
-    drawIO(g);
+    // drawIO(g);
 }
 
 
-void MiniParamView::addParam(const std::shared_ptr<BaseParamControl> &p) {
+void MiniParamView::addParam(const std::shared_ptr<BaseParamControl> &p, const juce::Colour &fg) {
+    p->fg(fg);
     params_.push_back(p);
     addChildComponent(p.get());
 
@@ -170,7 +172,8 @@ void MiniParamView::setButtonBounds(unsigned bidx, juce::Component *btn) {
 void MiniParamView::resized() {
     base_type::resized();
     static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
-    ioW_ = ioCallback_ ? 60 * COMPACT_UI_SCALE : gap;
+    // ioW_ = ioCallback_ ? 60 * COMPACT_UI_SCALE : 0;
+    ioW_ = 0;
 
     // size buttons
     unsigned bidx = 0;
@@ -260,7 +263,7 @@ void MiniParamView::drawIO(Graphics &g) {
 
 
 void MiniParamView::drawButtonBox(Graphics &g) {
-    g.setColour(Colours::grey);
+    g.setColour(Colours::darkgrey);
     unsigned singleButtonH = buttonBarH / 2;
     g.drawHorizontalLine(SSP_COMPACT_HEIGHT - buttonBarH - 1, gap, SSP_COMPACT_WIDTH - gap);
     g.drawHorizontalLine(SSP_COMPACT_HEIGHT - singleButtonH - 1, gap, SSP_COMPACT_WIDTH - gap);
@@ -310,7 +313,7 @@ LineMiniEditor::LineMiniEditor(BaseProcessor *p) : base_type(p, true) {
 
 void LineMiniEditor::drawView(Graphics &g) {
     base_type::drawView(g);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), 10 * COMPACT_UI_SCALE, Font::plain));
+    g.setFont(Font(Font::getDefaultMonospacedFontName(), titleFH, Font::plain));
 
     g.setColour(Colours::yellow);
     g.drawSingleLineText(String(JucePlugin_Name) + ":" + String(JucePlugin_Desc) + String(" @ thetechnobear"), gap,
@@ -335,7 +338,7 @@ void LineMiniEditor::resized() {
 }
 
 void LineMiniEditor::drawButtonBox(Graphics &g) {
-    g.setColour(Colours::grey);
+    g.setColour(Colours::darkgrey);
     unsigned singleButtonH = buttonBarH / 2;
     g.drawHorizontalLine(SSP_COMPACT_HEIGHT - buttonBarH - 1, gap, SSP_COMPACT_WIDTH - gap);
     g.drawHorizontalLine(SSP_COMPACT_HEIGHT - singleButtonH - 1, gap, SSP_COMPACT_WIDTH - gap);
@@ -375,7 +378,8 @@ void LineMiniEditor::setButtonBounds(unsigned bidx, juce::Component *p) {
 
 
 void LineMiniEditor::addParamPage(std::shared_ptr<BaseParamControl> c1, std::shared_ptr<BaseParamControl> c2,
-                                  std::shared_ptr<BaseParamControl> c3, std::shared_ptr<BaseParamControl> c4) {
+                                  std::shared_ptr<BaseParamControl> c3, std::shared_ptr<BaseParamControl> c4,
+                                  const juce::Colour &fg) {
     auto page = std::make_shared<ControlPage>();
     page->control_[0] = c1;
     page->control_[1] = c2;
@@ -383,7 +387,13 @@ void LineMiniEditor::addParamPage(std::shared_ptr<BaseParamControl> c1, std::sha
     page->control_[3] = c4;
     controlPages_.push_back(page);
 
-    for (int i = 0; i < nParamsPerPage; i++) { setParamBounds(i, page->control_[i].get()); }
+    for (int i = 0; i < nParamsPerPage; i++) {
+        auto c = page->control_[i];
+        if (c) {
+            c->fg(fg);
+            setParamBounds(i, c.get());
+        }
+    }
 
     if (paramPage_ == controlPages_.size() - 1) {
         for (auto i = 0; i < 4; i++) {
@@ -394,7 +404,7 @@ void LineMiniEditor::addParamPage(std::shared_ptr<BaseParamControl> c1, std::sha
             }
         }
     } else {
-        for (auto i = 0; i < 4; i++) {
+        for (auto i = 0; i < nParamsPerPage; i++) {
             auto c = page->control_[i];
             if (c) {
                 addChildComponent(c.get());

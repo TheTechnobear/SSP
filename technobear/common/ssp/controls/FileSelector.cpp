@@ -114,7 +114,8 @@ void FileSelector::scanDir() {
 
 
 void FileSelector::paint(juce::Graphics &g) {
-    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), 9 * COMPACT_UI_SCALE, juce::Font::plain));
+    static constexpr unsigned fh = 16 * COMPACT_UI_SCALE;
+    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain));
     int idx = 0;
     for (auto iter : fileList_) {
         juce::String name = iter.first;
@@ -126,8 +127,9 @@ void FileSelector::paint(juce::Graphics &g) {
 
 
 void FileSelector::drawEntry(juce::Graphics &g, unsigned fidx, bool selected, const juce::String &name, bool isDir) {
-    float w = 200;
-    float h = 25;
+    float w = (getWidth() - 30 * COMPACT_UI_SCALE)  / nMaxCols;
+    float h = ( getHeight() - 10 * COMPACT_UI_SCALE) / nFilePerCol;
+
 
     if (fidx < offset_ || fidx > (offset_ + (nFilePerCol * nMaxCols))) return;
 
@@ -138,8 +140,8 @@ void FileSelector::drawEntry(juce::Graphics &g, unsigned fidx, bool selected, co
 
     if (c >= nMaxCols) return;
 
-    float y = (r * h) + 50;
-    float x = (c * w) + 20;
+    float y = (r * h) + ( 5 * COMPACT_UI_SCALE);
+    float x = (c * w) +  (20 * COMPACT_UI_SCALE);
     if (!selected) {
         g.setColour(bg_);
         g.fillRect(x, y, w, h);
@@ -153,7 +155,7 @@ void FileSelector::drawEntry(juce::Graphics &g, unsigned fidx, bool selected, co
     juce::String fname = name;
     if (fidx < fileList_.size()) {
         if (isDir) { fname = "[" + name + "]"; }
-        g.drawText(fname, x + 2, y + 2, w - 4, h - 4, juce::Justification::bottomLeft);
+        g.drawText(fname, x + COMPACT_UI_SCALE, y + COMPACT_UI_SCALE, w - COMPACT_UI_SCALE * 2, h - COMPACT_UI_SCALE * 2, juce::Justification::centredLeft);
     }
 }
 

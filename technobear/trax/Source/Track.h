@@ -44,9 +44,9 @@ public:
     std::condition_variable cv_;
     bool ready_ = false;
     bool processed_ = false;
+    static constexpr unsigned MAX_MODULES = Track::M_MAX;
 
 private:
-    static constexpr unsigned MAX_MODULES = Track::M_MAX;
     static constexpr int MAX_IO_IN = 8;
     static constexpr int MAX_IO_OUT = 2;
     static constexpr int MAX_IO = std::max(MAX_IO_IN, MAX_IO_OUT);

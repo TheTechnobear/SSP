@@ -19,9 +19,9 @@ PluginMiniEditor::PluginMiniEditor(PluginProcessor &p)
         juce::Colour clr = Colours::red;
         auto &reclayer = processor_.params_.recParams_;
 
-        addParamPage(std::make_shared<pcontrol_type>(reclayer->layer_, inc, inc, clr),
-                     std::make_shared<pcontrol_type>(reclayer->gain_, inc, finc, clr),
-                     std::make_shared<pcontrol_type>(reclayer->mon_, inc, finc, clr), nullptr);
+        addParamPage(std::make_shared<pcontrol_type>(reclayer->layer_, inc, inc),
+                     std::make_shared<pcontrol_type>(reclayer->gain_, inc, finc),
+                     std::make_shared<pcontrol_type>(reclayer->mon_, inc, finc), nullptr, clr);
 
         addButtonPage(std::make_shared<bcontrol_type>(reclayer->mode_, fh, Colours::red),
                       std::make_shared<bcontrol_type>(reclayer->loop_, fh, Colours::yellow), nullptr, nullptr, nullptr,
@@ -32,19 +32,13 @@ PluginMiniEditor::PluginMiniEditor(PluginProcessor &p)
     for (int lidx = 0; lidx < MAX_LAYERS; lidx++) {
         juce::Colour clr = clrs_[lidx];
         auto &layer = processor_.params_.layers_[lidx];
-        addParamPage(
-            std::make_shared<pcontrol_type>(layer->start_, 0.1, 0.01, clr),
-            std::make_shared<pcontrol_type>(layer->length_, 0.1, 0.01, clr),
-            std::make_shared<pcontrol_type>(layer->rate_, 0.1f, 0.01, clr),
-            std::make_shared<pcontrol_type>(layer->pan_, 0.1, 0.01, clr)
-        );
+        addParamPage(std::make_shared<pcontrol_type>(layer->start_, 0.1, 0.01),
+                     std::make_shared<pcontrol_type>(layer->length_, 0.1, 0.01),
+                     std::make_shared<pcontrol_type>(layer->rate_, 0.1f, 0.01),
+                     std::make_shared<pcontrol_type>(layer->pan_, 0.1, 0.01), clr);
         addButtonPage(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
-        addParamPage(
-            std::make_shared<pcontrol_type>(layer->gain_, inc, finc, clr),
-            std::make_shared<pcontrol_type>(layer->size_, 1.0, 1.0, clr),
-            nullptr,
-            nullptr
-        );
+        addParamPage(std::make_shared<pcontrol_type>(layer->gain_, inc, finc),
+                     std::make_shared<pcontrol_type>(layer->size_, 1.0, 1.0), nullptr, nullptr, clr);
         addButtonPage(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
     }
 
@@ -56,9 +50,8 @@ PluginMiniEditor::PluginMiniEditor(PluginProcessor &p)
     }
 }
 
-void PluginMiniEditor::drawView(Graphics &g) {
-    base_type::drawView(g);
-
+void PluginMiniEditor::onSSPTimer() {
+    base_type::onSSPTimer();
     for (int i = 0; i < MAX_LAYERS; i++) {
         auto &layer = layer_[i];
         processor_.fillLayerData(i, layer.dataBuf_, DATA_POINTS, layer.curPos_, layer.beginPos_, layer.endPos_,
@@ -66,15 +59,24 @@ void PluginMiniEditor::drawView(Graphics &g) {
         scopes_[i].setPosition(0, layer.curPos_, layer.beginPos_, layer.endPos_);
         scopes_[i].setRecPosition(0, layer.isRec_, layer.recPos_);
         scopes_[i].label(0, processor_.getLayerFile(i));
+    }
+}
 
+void PluginMiniEditor::drawView(Graphics &g) {
+    base_type::drawView(g);
+    const juce::Colour bg(0xff111111);
+
+    for (int i = 0; i < MAX_LAYERS; i++) {
+        auto &layer = layer_[i];
         if (layer.isRec_) {
-            const unsigned h = 37 * COMPACT_UI_SCALE;
-            const unsigned w = DATA_POINTS;
-            const unsigned sp = 2 * COMPACT_UI_SCALE;
-            unsigned y = canvasY();
-            unsigned x = canvasX() + 10 * COMPACT_UI_SCALE;
-            g.setColour(Colours::darkgrey);
-            g.drawRect(x - COMPACT_UI_SCALE, (i * (h + sp)) + y - COMPACT_UI_SCALE, w + COMPACT_UI_SCALE * 2, h + COMPACT_UI_SCALE +2, COMPACT_UI_SCALE);
+            const int h = 37 * COMPACT_UI_SCALE;
+            const int w = DATA_POINTS;
+            const int sp = 2 * COMPACT_UI_SCALE;
+            int y = canvasY();
+            int x = canvasX() + 10 * COMPACT_UI_SCALE;
+
+            g.setColour(bg);
+            g.fillRect(x, (i * (h + sp)) + y, w, h);
         }
     }
 }

@@ -15,7 +15,7 @@ void ButtonBox::paint(juce::Graphics &g) {
 
 void ButtonBox::resized() {
     juce::Component::resized();
-    static constexpr unsigned gap = 4 * scale;
+    static constexpr unsigned gap = 5 * scale;
     unsigned butTopY = 0;
     unsigned butLeftX = (gap / 2);
     unsigned barW = getWidth();
@@ -35,12 +35,12 @@ void ButtonBox::resized() {
 }
 
 void ButtonBox::drawButtonBox(juce::Graphics &g) {
-    static constexpr unsigned gap = 4 * scale;
+    static constexpr unsigned gap = 5 * scale;
     unsigned barW = getWidth();
     unsigned barH = getHeight();
     unsigned gw = barW / 4;
 
-    g.setColour(juce::Colours::grey);
+    g.setColour(Colours::darkgrey);
     g.drawHorizontalLine(0, 0, barW - 1);
     g.drawHorizontalLine(barH / 2, 0, barW - 1);
     g.drawHorizontalLine(barH - 1, 0, barW - 1);

@@ -28,6 +28,10 @@ EditorHost::EditorHost(BaseProcessor *p, BaseView *e, bool compactUI, bool enabl
     addChildComponent(editor_);
     if (compactUI_) { drawDefaults_ = false; }
 
+    if (compactUI_){
+        defaultBg_ = Colours::black;
+    }
+
 
     if (enableSysEditor) {
         if (compactUI_) {
@@ -94,7 +98,7 @@ void EditorHost::setMenuBounds(ValueButton &btn, unsigned r) {
 }
 
 void EditorHost::drawBasicPanel(Graphics &g) {
-    g.fillAll(Colour(0xff111111));
+    g.fillAll(defaultBg_);
 
 
     if (drawDefaults_) {

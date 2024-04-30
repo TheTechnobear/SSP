@@ -22,7 +22,7 @@ void VuMeter::paint(Graphics &g) {
     static constexpr float lvlRed = rescale(dbRed, dbMin, dbMax, 0.0f, 1.0f);
     static constexpr float lvlYellow = rescale(dbYellow, dbMin, dbMax, 0.0f, 1.0f);
 
-    static constexpr int fh = 16;
+    static constexpr int fh = 8 * COMPACT_UI_SCALE;
     int h = getHeight();
     int w = getWidth();
     int tbh = h - (fh * 2);
@@ -112,7 +112,7 @@ MonoVuMeter::MonoVuMeter() {
 }
 
 void MonoVuMeter::paint(Graphics &g) {
-    static constexpr int fh = 16;
+    static constexpr int fh = 8 * COMPACT_UI_SCALE;
     int h = getHeight();
     int w = getWidth();
 
@@ -159,7 +159,7 @@ StereoVuMeter::StereoVuMeter() {
 }
 
 void StereoVuMeter::paint(Graphics &g) {
-    static constexpr int fh = 16;
+    static constexpr int fh = 8 * COMPACT_UI_SCALE;
     int h = getHeight();
     int w = getWidth();
 

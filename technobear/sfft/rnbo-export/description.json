@@ -1,0 +1,355 @@
+{
+  "parameters": [
+    {
+      "type": "ParameterTypeBang",
+      "index": 0,
+      "name": "button_01_bangval",
+      "paramId": "button_obj-43/bangval",
+      "minimum": 0,
+      "maximum": 1,
+      "exponent": 1,
+      "steps": 0,
+      "initialValue": 0,
+      "isEnum": false,
+      "enumValues": [],
+      "displayName": "",
+      "unit": "",
+      "order": 0,
+      "displayorder": "-",
+      "sendinit": 0,
+      "initialized": false,
+      "debug": false,
+      "saveable": true,
+      "transmittable": true,
+      "visible": false,
+      "signalIndex": null,
+      "ioType": "IOTypeUndefined",
+      "serialId": "button_s01"
+    },
+    {
+      "type": "ParameterTypeBang",
+      "index": 1,
+      "name": "message_01_bangval",
+      "paramId": "message_obj-29/bangval",
+      "minimum": 0,
+      "maximum": 1,
+      "exponent": 1,
+      "steps": 0,
+      "initialValue": 0,
+      "isEnum": false,
+      "enumValues": [],
+      "displayName": "",
+      "unit": "",
+      "order": 0,
+      "displayorder": "-",
+      "sendinit": 0,
+      "initialized": false,
+      "debug": false,
+      "saveable": true,
+      "transmittable": true,
+      "visible": false,
+      "signalIndex": null,
+      "ioType": "IOTypeUndefined",
+      "serialId": "message_s01"
+    }
+  ],
+  "numParameters": 2,
+  "numSignalInParameters": 0,
+  "numSignalOutParameters": 0,
+  "numInputChannels": 1,
+  "numOutputChannels": 16,
+  "numMidiInputPorts": 0,
+  "numMidiOutputPorts": 0,
+  "externalDataRefs": [
+    {
+      "id": "RNBODefaultFftWindow",
+      "type": "Float32Buffer"
+    }
+  ],
+  "patcherSerial": 0,
+  "inports": [],
+  "outports": [],
+  "inlets": [
+    {
+      "type": "signal",
+      "index": 1,
+      "tag": "in1",
+      "meta": ""
+    }
+  ],
+  "outlets": [
+    {
+      "type": "signal",
+      "index": 1,
+      "tag": "out1",
+      "meta": "",
+      "comment": "voct-1"
+    },
+    {
+      "type": "signal",
+      "index": 2,
+      "tag": "out2",
+      "meta": "",
+      "comment": "amp-1"
+    },
+    {
+      "type": "signal",
+      "index": 3,
+      "tag": "out3",
+      "meta": "",
+      "comment": "voct-2"
+    },
+    {
+      "type": "signal",
+      "index": 4,
+      "tag": "out4",
+      "meta": "",
+      "comment": "amp-2"
+    },
+    {
+      "type": "signal",
+      "index": 5,
+      "tag": "out5",
+      "meta": "",
+      "comment": "voct-3"
+    },
+    {
+      "type": "signal",
+      "index": 6,
+      "tag": "out6",
+      "meta": "",
+      "comment": "amp-3"
+    },
+    {
+      "type": "signal",
+      "index": 7,
+      "tag": "out7",
+      "meta": "",
+      "comment": "voct-4"
+    },
+    {
+      "type": "signal",
+      "index": 8,
+      "tag": "out8",
+      "meta": "",
+      "comment": "amp-4"
+    },
+    {
+      "type": "signal",
+      "index": 9,
+      "tag": "out9",
+      "meta": "",
+      "comment": "voct-5"
+    },
+    {
+      "type": "signal",
+      "index": 10,
+      "tag": "out10",
+      "meta": "",
+      "comment": "amp-5"
+    },
+    {
+      "type": "signal",
+      "index": 11,
+      "tag": "out11",
+      "meta": "",
+      "comment": "voct-6"
+    },
+    {
+      "type": "signal",
+      "index": 12,
+      "tag": "out12",
+      "meta": "",
+      "comment": "amp-6"
+    },
+    {
+      "type": "signal",
+      "index": 13,
+      "tag": "out13",
+      "meta": "",
+      "comment": "voct-7"
+    },
+    {
+      "type": "signal",
+      "index": 14,
+      "tag": "out14",
+      "meta": "",
+      "comment": "amp-7"
+    },
+    {
+      "type": "signal",
+      "index": 15,
+      "tag": "out15",
+      "meta": "",
+      "comment": "voct-8"
+    },
+    {
+      "type": "signal",
+      "index": 16,
+      "tag": "out16",
+      "meta": "",
+      "comment": "amp-8"
+    }
+  ],
+  "paramConversion": {
+    "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+    "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        index -= 2;\n\n        if (index < this.p_01.getNumParameters())\n            return this.p_01.convertToNormalizedParameterValue(index, value);\n\n        index -= this.p_01.getNumParameters();\n\n        if (index < this.p_02.getNumParameters())\n            return this.p_02.convertToNormalizedParameterValue(index, value);\n\n        index -= this.p_02.getNumParameters();\n\n        if (index < this.p_03.getNumParameters())\n            return this.p_03.convertToNormalizedParameterValue(index, value);\n\n        index -= this.p_03.getNumParameters();\n\n        if (index < this.p_04.getNumParameters())\n            return this.p_04.convertToNormalizedParameterValue(index, value);\n\n        index -= this.p_04.getNumParameters();\n\n        if (index < this.p_05.getNumParameters())\n            return this.p_05.convertToNormalizedParameterValue(index, value);\n\n        index -= this.p_05.getNumParameters();\n\n        if (index < this.p_06.getNumParameters())\n            return this.p_06.convertToNormalizedParameterValue(index, value);\n\n        index -= this.p_06.getNumParameters();\n\n        if (index < this.p_07.getNumParameters())\n            return this.p_07.convertToNormalizedParameterValue(index, value);\n\n        index -= this.p_07.getNumParameters();\n\n        if (index < this.p_08.getNumParameters())\n            return this.p_08.convertToNormalizedParameterValue(index, value);\n\n        index -= this.p_08.getNumParameters();\n\n        if (index < this.p_09.getNumParameters())\n            return this.p_09.convertToNormalizedParameterValue(index, value);\n\n        index -= this.p_09.getNumParameters();\n\n        if (index < this.p_10.getNumParameters())\n            return this.p_10.convertToNormalizedParameterValue(index, value);\n\n        index -= this.p_10.getNumParameters();\n\n        if (index < this.p_11.getNumParameters())\n            return this.p_11.convertToNormalizedParameterValue(index, value);\n\n        index -= this.p_11.getNumParameters();\n\n        if (index < this.p_12.getNumParameters())\n            return this.p_12.convertToNormalizedParameterValue(index, value);\n\n        index -= this.p_12.getNumParameters();\n\n        if (index < this.p_13.getNumParameters())\n            return this.p_13.convertToNormalizedParameterValue(index, value);\n\n        index -= this.p_13.getNumParameters();\n\n        if (index < this.p_14.getNumParameters())\n            return this.p_14.convertToNormalizedParameterValue(index, value);\n\n        index -= this.p_14.getNumParameters();\n\n        if (index < this.p_15.getNumParameters())\n            return this.p_15.convertToNormalizedParameterValue(index, value);\n\n        index -= this.p_15.getNumParameters();\n\n        if (index < this.p_16.getNumParameters())\n            return this.p_16.convertToNormalizedParameterValue(index, value);\n\n        return value;\n    }\n}",
+    "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        index -= 2;\n\n        if (index < this.p_01.getNumParameters())\n            return this.p_01.convertFromNormalizedParameterValue(index, value);\n\n        index -= this.p_01.getNumParameters();\n\n        if (index < this.p_02.getNumParameters())\n            return this.p_02.convertFromNormalizedParameterValue(index, value);\n\n        index -= this.p_02.getNumParameters();\n\n        if (index < this.p_03.getNumParameters())\n            return this.p_03.convertFromNormalizedParameterValue(index, value);\n\n        index -= this.p_03.getNumParameters();\n\n        if (index < this.p_04.getNumParameters())\n            return this.p_04.convertFromNormalizedParameterValue(index, value);\n\n        index -= this.p_04.getNumParameters();\n\n        if (index < this.p_05.getNumParameters())\n            return this.p_05.convertFromNormalizedParameterValue(index, value);\n\n        index -= this.p_05.getNumParameters();\n\n        if (index < this.p_06.getNumParameters())\n            return this.p_06.convertFromNormalizedParameterValue(index, value);\n\n        index -= this.p_06.getNumParameters();\n\n        if (index < this.p_07.getNumParameters())\n            return this.p_07.convertFromNormalizedParameterValue(index, value);\n\n        index -= this.p_07.getNumParameters();\n\n        if (index < this.p_08.getNumParameters())\n            return this.p_08.convertFromNormalizedParameterValue(index, value);\n\n        index -= this.p_08.getNumParameters();\n\n        if (index < this.p_09.getNumParameters())\n            return this.p_09.convertFromNormalizedParameterValue(index, value);\n\n        index -= this.p_09.getNumParameters();\n\n        if (index < this.p_10.getNumParameters())\n            return this.p_10.convertFromNormalizedParameterValue(index, value);\n\n        index -= this.p_10.getNumParameters();\n\n        if (index < this.p_11.getNumParameters())\n            return this.p_11.convertFromNormalizedParameterValue(index, value);\n\n        index -= this.p_11.getNumParameters();\n\n        if (index < this.p_12.getNumParameters())\n            return this.p_12.convertFromNormalizedParameterValue(index, value);\n\n        index -= this.p_12.getNumParameters();\n\n        if (index < this.p_13.getNumParameters())\n            return this.p_13.convertFromNormalizedParameterValue(index, value);\n\n        index -= this.p_13.getNumParameters();\n\n        if (index < this.p_14.getNumParameters())\n            return this.p_14.convertFromNormalizedParameterValue(index, value);\n\n        index -= this.p_14.getNumParameters();\n\n        if (index < this.p_15.getNumParameters())\n            return this.p_15.convertFromNormalizedParameterValue(index, value);\n\n        index -= this.p_15.getNumParameters();\n\n        if (index < this.p_16.getNumParameters())\n            return this.p_16.convertFromNormalizedParameterValue(index, value);\n\n        return value;\n    }\n}",
+    "getNumParameters": "function getNumParameters() {\n    return 2 + this.p_01.getNumParameters() + this.p_02.getNumParameters() + this.p_03.getNumParameters() + this.p_04.getNumParameters() + this.p_05.getNumParameters() + this.p_06.getNumParameters() + this.p_07.getNumParameters() + this.p_08.getNumParameters() + this.p_09.getNumParameters() + this.p_10.getNumParameters() + this.p_11.getNumParameters() + this.p_12.getNumParameters() + this.p_13.getNumParameters() + this.p_14.getNumParameters() + this.p_15.getNumParameters() + this.p_16.getNumParameters();\n}",
+    "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        index -= 2;\n\n        if (index < this.p_01.getNumParameters())\n            return this.p_01.constrainParameterValue(index, value);\n\n        index -= this.p_01.getNumParameters();\n\n        if (index < this.p_02.getNumParameters())\n            return this.p_02.constrainParameterValue(index, value);\n\n        index -= this.p_02.getNumParameters();\n\n        if (index < this.p_03.getNumParameters())\n            return this.p_03.constrainParameterValue(index, value);\n\n        index -= this.p_03.getNumParameters();\n\n        if (index < this.p_04.getNumParameters())\n            return this.p_04.constrainParameterValue(index, value);\n\n        index -= this.p_04.getNumParameters();\n\n        if (index < this.p_05.getNumParameters())\n            return this.p_05.constrainParameterValue(index, value);\n\n        index -= this.p_05.getNumParameters();\n\n        if (index < this.p_06.getNumParameters())\n            return this.p_06.constrainParameterValue(index, value);\n\n        index -= this.p_06.getNumParameters();\n\n        if (index < this.p_07.getNumParameters())\n            return this.p_07.constrainParameterValue(index, value);\n\n        index -= this.p_07.getNumParameters();\n\n        if (index < this.p_08.getNumParameters())\n            return this.p_08.constrainParameterValue(index, value);\n\n        index -= this.p_08.getNumParameters();\n\n        if (index < this.p_09.getNumParameters())\n            return this.p_09.constrainParameterValue(index, value);\n\n        index -= this.p_09.getNumParameters();\n\n        if (index < this.p_10.getNumParameters())\n            return this.p_10.constrainParameterValue(index, value);\n\n        index -= this.p_10.getNumParameters();\n\n        if (index < this.p_11.getNumParameters())\n            return this.p_11.constrainParameterValue(index, value);\n\n        index -= this.p_11.getNumParameters();\n\n        if (index < this.p_12.getNumParameters())\n            return this.p_12.constrainParameterValue(index, value);\n\n        index -= this.p_12.getNumParameters();\n\n        if (index < this.p_13.getNumParameters())\n            return this.p_13.constrainParameterValue(index, value);\n\n        index -= this.p_13.getNumParameters();\n\n        if (index < this.p_14.getNumParameters())\n            return this.p_14.constrainParameterValue(index, value);\n\n        index -= this.p_14.getNumParameters();\n\n        if (index < this.p_15.getNumParameters())\n            return this.p_15.constrainParameterValue(index, value);\n\n        index -= this.p_15.getNumParameters();\n\n        if (index < this.p_16.getNumParameters())\n            return this.p_16.constrainParameterValue(index, value);\n\n        return value;\n    }\n}",
+    "subpatches": {
+      "p_01": {
+        "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 0;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "subpatches": {},
+        "isPolyphonic": false
+      },
+      "p_02": {
+        "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 0;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "subpatches": {},
+        "isPolyphonic": false
+      },
+      "p_03": {
+        "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 0;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "subpatches": {},
+        "isPolyphonic": false
+      },
+      "p_04": {
+        "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 0;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "subpatches": {},
+        "isPolyphonic": false
+      },
+      "p_05": {
+        "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 0;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "subpatches": {},
+        "isPolyphonic": false
+      },
+      "p_06": {
+        "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 0;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "subpatches": {},
+        "isPolyphonic": false
+      },
+      "p_07": {
+        "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 0;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "subpatches": {},
+        "isPolyphonic": false
+      },
+      "p_08": {
+        "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 0;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "subpatches": {},
+        "isPolyphonic": false
+      },
+      "p_09": {
+        "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 0;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "subpatches": {},
+        "isPolyphonic": false
+      },
+      "p_10": {
+        "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 0;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "subpatches": {},
+        "isPolyphonic": false
+      },
+      "p_11": {
+        "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 0;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "subpatches": {},
+        "isPolyphonic": false
+      },
+      "p_12": {
+        "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 0;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "subpatches": {},
+        "isPolyphonic": false
+      },
+      "p_13": {
+        "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 0;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "subpatches": {},
+        "isPolyphonic": false
+      },
+      "p_14": {
+        "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 0;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "subpatches": {},
+        "isPolyphonic": false
+      },
+      "p_15": {
+        "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 0;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "subpatches": {},
+        "isPolyphonic": false
+      },
+      "p_16": {
+        "applyStepsToNormalizedParameterValue": "function applyStepsToNormalizedParameterValue(normalizedValue, steps) {\n    if (steps == 1) {\n        if (normalizedValue > 0) {\n            normalizedValue = 1.;\n        }\n    } else {\n        let oneStep = 1. / (steps - 1);\n        let numberOfSteps = rnbo_fround(normalizedValue / oneStep * 1 / 1) * 1;\n        normalizedValue = numberOfSteps * oneStep;\n    }\n\n    return normalizedValue;\n}",
+        "convertToNormalizedParameterValue": "function convertToNormalizedParameterValue(index, value) {\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "convertFromNormalizedParameterValue": "function convertFromNormalizedParameterValue(index, value) {\n    value = (value < 0 ? 0 : (value > 1 ? 1 : value));\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "getNumParameters": "function getNumParameters() {\n    return 0;\n}",
+        "constrainParameterValue": "function constrainParameterValue(index, value) {\n    var v = value;\n\n    switch (index) {\n    default:\n        return value;\n    }\n}",
+        "subpatches": {},
+        "isPolyphonic": false
+      }
+    },
+    "isPolyphonic": false
+  },
+  "presetid": "rnbo",
+  "meta": {
+    "architecture": "x64",
+    "filename": "simplefft.maxpat",
+    "maxversion": "8.5.2",
+    "rnboversion": "1.0.2"
+  }
+}

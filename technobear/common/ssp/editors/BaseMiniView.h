@@ -23,7 +23,7 @@ public:
     explicit MiniParamView(BaseProcessor *p, ioActivity callback = nullptr);
     ~MiniParamView() = default;
 
-    void addParam(const std::shared_ptr<BaseParamControl> &p);
+    void addParam(const std::shared_ptr<BaseParamControl> &p, const juce::Colour& fg = juce::Colours::white);
     void addButton(const std::shared_ptr<ParamButton> &p);
 
     void setButtonBounds(unsigned idx, juce::Component *c);
@@ -65,7 +65,7 @@ private:
     unsigned paramOffset_ = 0;
     static constexpr unsigned maxUserBtns = 8;
 
-    static constexpr unsigned gap = 4 * COMPACT_UI_SCALE;
+    static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
     static constexpr unsigned buttonBarH = 32 * COMPACT_UI_SCALE;
     static constexpr unsigned titleH = 15 * COMPACT_UI_SCALE;
     static constexpr unsigned canvasW = SSP_COMPACT_WIDTH - 2 * gap;
@@ -108,7 +108,7 @@ protected:
 
 private:
     using base_type = BaseView;
-    static constexpr unsigned gap = 4 * COMPACT_UI_SCALE;
+    static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
     static constexpr unsigned buttonBarH = 32 * COMPACT_UI_SCALE;
     static constexpr unsigned titleH = 15 * COMPACT_UI_SCALE;
     static constexpr unsigned canvasW = SSP_COMPACT_WIDTH - 2 * gap;
@@ -166,7 +166,8 @@ protected:
     void drawView(Graphics &) override;
 
     void addParamPage(std::shared_ptr<BaseParamControl> c1, std::shared_ptr<BaseParamControl> c2,
-                      std::shared_ptr<BaseParamControl> c3, std::shared_ptr<BaseParamControl> c4);
+                      std::shared_ptr<BaseParamControl> c3, std::shared_ptr<BaseParamControl> c4, 
+                      const juce::Colour& fg=juce::Colours::white);
 
     void addButtonPage(std::shared_ptr<ParamButton> c1, std::shared_ptr<ParamButton> c2,
                       std::shared_ptr<ParamButton> c3, std::shared_ptr<ParamButton> c4,
@@ -183,7 +184,7 @@ protected:
     void drawButtonBox(Graphics &);
 
 private:
-    static constexpr unsigned gap = 4 * COMPACT_UI_SCALE;
+    static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
     static constexpr unsigned buttonBarH = 32 * COMPACT_UI_SCALE;
     static constexpr unsigned titleH = 15 * COMPACT_UI_SCALE;
     static constexpr unsigned canvasW = SSP_COMPACT_WIDTH - 2 * gap;

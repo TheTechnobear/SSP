@@ -6,7 +6,7 @@
 using pcontrol_type = ssp::MiniControl;
 
 PluginMiniEditor::PluginMiniEditor(PluginProcessor &p)
-    : base_type(&p), processor_(p), resetButton_("Reset", nullptr, 32, Colours::yellow) {
+    : base_type(&p), processor_(p), resetButton_("Reset", nullptr, 32 * COMPACT_UI_SCALE, Colours::yellow) {
     auto view = std::make_shared<ssp::MiniParamView>(&p);
     // std::make_shared<ssp::MiniParamView>(&p, [&](bool io, int bus) { return p.ioActivity(io, bus); });
 

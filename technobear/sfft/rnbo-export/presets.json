@@ -1,0 +1,16 @@
+[
+  {
+    "name": "simplefft2",
+    "preset": {
+      "__sps": {
+        "calcgainpitch": {},
+        "calcgainpitch[1]": {},
+        "p_obj-32": {},
+        "p_obj-44": {},
+        "p_obj-47": {},
+        "p_obj-50": {},
+        "p_obj-53": {}
+      }
+    }
+  }
+]

@@ -20,14 +20,6 @@ protected:
 
 private:
 
-    void addParamPage(
-        std::shared_ptr<ssp::BaseParamControl> c1,
-        std::shared_ptr<ssp::BaseParamControl> c2,
-        std::shared_ptr<ssp::BaseParamControl> c3,
-        std::shared_ptr<ssp::BaseParamControl> c4,
-        juce::Colour clr
-    );
-
     static constexpr unsigned L_CLRS = 3;
     static juce::Colour LAYER_COLOURS[L_CLRS];
     PluginProcessor &processor_;

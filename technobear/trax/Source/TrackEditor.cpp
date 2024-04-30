@@ -55,8 +55,12 @@ void TrackEditor::onEncoderSwitch(unsigned enc, bool v) {
     if (getViewIdx() == trackViewIdx_) {
         if (!v) {
             auto modIdx = enc;
+            // moduleView_->moduleIdx(trackIdx_, modIdx + 1);
+            // setView(moduleViewIdx_);
+            loadModuleView_->moduleIdx(trackIdx_, modIdx + 1);
+            matrixView_->moduleIdx(trackIdx_, modIdx + 1);
             moduleView_->moduleIdx(trackIdx_, modIdx + 1);
-            setView(moduleViewIdx_);
+            setView(matrixViewIdx_);
         }
         return;
     }
@@ -80,10 +84,13 @@ void TrackEditor::eventButton(unsigned btn, bool longPress) {
             return;
         } else if (btn >= 4) {
             auto modIdx = btn - 4;
-            loadModuleView_->moduleIdx(trackIdx_, modIdx + 1);
-            matrixView_->moduleIdx(trackIdx_, modIdx + 1);
+            // loadModuleView_->moduleIdx(trackIdx_, modIdx + 1);
+            // matrixView_->moduleIdx(trackIdx_, modIdx + 1);
+            // moduleView_->moduleIdx(trackIdx_, modIdx + 1);
+            // setView(matrixViewIdx_);
             moduleView_->moduleIdx(trackIdx_, modIdx + 1);
-            setView(matrixViewIdx_);
+            setView(moduleViewIdx_);
+
             return;
         }
     }

@@ -10,7 +10,7 @@ MiniControl::MiniControl(Parameter &p, float coarse, float fine, juce::Colour fg
 void MiniControl::paint(juce::Graphics &g) {
     int h = getHeight();
     int w = getWidth();
-    unsigned tfh = h / 4;
+    unsigned tfh = h / 3;
     unsigned vfh = h / 3;
 
     unsigned gap = scale;

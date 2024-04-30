@@ -74,17 +74,6 @@ PluginMiniEditor::PluginMiniEditor(PluginProcessor &p)
     mainScope_.setVisible(main);
 }
 
-void PluginMiniEditor::addParamPage(std::shared_ptr<ssp::BaseParamControl> c1,
-                                    std::shared_ptr<ssp::BaseParamControl> c2,
-                                    std::shared_ptr<ssp::BaseParamControl> c3,
-                                    std::shared_ptr<ssp::BaseParamControl> c4, juce::Colour clr) {
-    if (c1) c1->fg(clr);
-    if (c2) c2->fg(clr);
-    if (c3) c3->fg(clr);
-    if (c4) c4->fg(clr);
-    return base_type::addParamPage(c1, c2, c3, c4);
-}
-
 
 void PluginMiniEditor::onSSPTimer() {
     base_type::onSSPTimer();

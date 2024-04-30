@@ -4,6 +4,8 @@
 #include "ssp/controls/ListControl.h"
 #include "ssp/editors/BaseMiniView.h"
 
+#include "components/ModuleComponent.h"
+
 class MatrixView : public ssp::MiniBasicView {
 public:
     MatrixView(PluginProcessor &p);
@@ -17,7 +19,13 @@ public:
 
     void moduleIdx(unsigned t, unsigned m) {
         trackIdx_ = t;
-        moduleIdx_ = m;
+        moduleAIdx_ = m;
+        moduleBIdx_ = 0;
+
+        moduleA_.trackIdx(trackIdx_);
+        moduleA_.slotIdx(moduleAIdx_);
+        moduleB_.trackIdx(trackIdx_);
+        moduleB_.slotIdx(moduleBIdx_);
         refreshView();
     }
 
@@ -29,7 +37,7 @@ private:
     static constexpr int FH = 12 * COMPACT_UI_SCALE;
     static constexpr int LS = FH;
 
-    String moduleAsString(unsigned idx);
+    // String moduleAsString(unsigned idx);
     String channelAsString(unsigned midx, unsigned ch, bool inOut);
 
     void refreshView();
@@ -37,22 +45,25 @@ private:
     void refreshSelected();
 
     unsigned trackIdx_;
-    unsigned moduleIdx_;
-    int moduleBIdx_ = -1;
 
+    int moduleAIdx_;
     ssp::ListControl<> channelA_;
-    ssp::ListControl<> moduleB_;
+
+    int moduleBIdx_;
     ssp::ListControl<> channelB_;
 
-    std::vector<bool> chASelected_;
-    std::vector<bool> moduleBSelected_;
-    std::vector<bool> chBSelected_;
+    // std::vector<bool> chASelected_;
+    // std::vector<bool> moduleBSelected_;
+    // std::vector<bool> chBSelected_;
 
     bool isOutput_ = true;
 
-    bool isChASelected(unsigned idx);
-    bool isModuleBSelected(unsigned idx);
-    bool isChBSelected(unsigned idx);
+    // bool isChASelected(unsigned idx);
+    // bool isModuleBSelected(unsigned idx);
+    // bool isChBSelected(unsigned idx);
+
+    ModuleComponent moduleA_;
+    ModuleComponent moduleB_;
 
     PluginProcessor &processor_;
 };
