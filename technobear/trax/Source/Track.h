@@ -22,8 +22,8 @@ public:
     void prepare(int sampleRate, int blockSize);
     void process(juce::AudioSampleBuffer &ioBuffer);
 
-    void getStateInformation(juce::MemoryOutputStream &outStream);
-    void setStateInformation(juce::MemoryInputStream &inStream);
+    void getStateInformation(juce::XmlElement& outStream);
+    void setStateInformation(juce::XmlElement& inStream);
 
     bool requestModuleChange(unsigned midx, const std::string &mn);
     bool requestMatrixConnect(const Matrix::Jack &src, const Matrix::Jack &dest);

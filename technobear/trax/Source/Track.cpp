@@ -1,5 +1,6 @@
 #include "Track.h"
 
+#include "ssp/Log.h"
 
 Track::Track() {
     trackIn_ = std::make_shared<InputModule::PluginInterface>();
@@ -111,63 +112,112 @@ void Track::process(juce::AudioSampleBuffer &ioBuffer) {
     }
 }
 
-static constexpr int checkTrackBytes = 0x1FF2;
-static constexpr int checkModuleBytes = 0x1FF3;
-
-
-void Track::getStateInformation(juce::MemoryOutputStream &outStream) {
-    outStream.writeInt(checkTrackBytes);
-    outStream.writeBool(mute_);
-    outStream.writeFloat(level_);
-
-    for (auto &m : modules_) {
-        outStream.writeInt(checkModuleBytes);
-        auto &plugin = m.plugin_;
-        if (!plugin) {
-            outStream.writeString("");
-            outStream.writeInt(0);
-            continue;
-        }
-
-        void *data;
-        size_t dataSz;
-        plugin->getState(&data, &dataSz);
-
-        outStream.writeString(juce::String(m.pluginName_.c_str()));
-        outStream.writeInt(dataSz);
-        outStream.write(data, dataSz);
+// form juce_AudioProcessor.cpp
+const juce::uint32 magicXmlNumber = 0x21324356;
+void copyXmlToBinary(const juce::XmlElement &xml, juce::MemoryBlock &destData) {
+    {
+        juce::MemoryOutputStream out(destData, false);
+        out.writeInt(magicXmlNumber);
+        out.writeInt(0);
+        xml.writeTo(out, juce::XmlElement::TextFormat().singleLine());
+        out.writeByte(0);
     }
-    matrix_.getStateInformation(outStream);
+
+    // go back and write the string length..
+    static_cast<juce::uint32 *>(destData.getData())[1] =
+        juce::ByteOrder::swapIfBigEndian((juce::uint32)destData.getSize() - 9);
 }
 
-void Track::setStateInformation(juce::MemoryInputStream &inStream) {
-    int check = inStream.readInt();
-    if (check != checkTrackBytes) return;
+std::unique_ptr<juce::XmlElement> getXmlFromBinary(const void *data, const int sizeInBytes) {
+    if (sizeInBytes > 8 && juce::ByteOrder::littleEndianInt(data) == magicXmlNumber) {
+        auto stringLength = (int)juce::ByteOrder::littleEndianInt(juce::addBytesToPointer(data, 4));
 
-    mute_ = inStream.readBool();
-    level_ = inStream.readFloat();
+        if (stringLength > 0)
+            return parseXML(juce::String::fromUTF8(static_cast<const char *>(data) + 8,
+                                                   juce::jmin((sizeInBytes - 8), stringLength)));
+    }
+    return {};
+}
 
 
-    for (int m = 0; m < Track::M_MAX; m++) {
-        int check = inStream.readInt();
-        if (check != checkModuleBytes) { return; }
+void Track::getStateInformation(juce::XmlElement &outStream) {
+    outStream.setAttribute("mute", mute_);
+    outStream.setAttribute("level", level_);
 
-        juce::String pluginName = inStream.readString();
-        int size = inStream.readInt();
-        if (!pluginName.isEmpty() && size > 0) {
-            juce::MemoryBlock moduleData;
-            moduleData.setSize(size);
-            inStream.read(moduleData.getData(), size);
+    std::unique_ptr<juce::XmlElement> xmlModules = std::make_unique<juce::XmlElement>("Modules");
 
-            while (!requestModuleChange(m, pluginName.toStdString())) {}
-            auto &plugin = modules_[m].plugin_;
-            if (!plugin) continue;
+    for (auto &m : modules_) {
+        std::unique_ptr<juce::XmlElement> xmlModule = std::make_unique<juce::XmlElement>("Module");
 
-            plugin->setState(moduleData.getData(), moduleData.getSize());
+        auto &plugin = m.plugin_;
+        if (!plugin) {
+            xmlModule->setAttribute("pluginName", "");
+            xmlModule->setAttribute("dataSz", (int)0);
+        } else {
+            void *data;
+            size_t dataSz;
+            plugin->getState(&data, &dataSz);
+            xmlModule->setAttribute("pluginName", m.pluginName_.c_str());
+            xmlModule->setAttribute("dataSz", (int)dataSz);
+
+            if (dataSz > 0 && data) {
+                std::unique_ptr<juce::XmlElement> xmlPlugData = std::make_unique<juce::XmlElement>("data");
+                auto pluginData = getXmlFromBinary(data, dataSz);
+                if (pluginData) {
+                    xmlPlugData->addChildElement(pluginData.release());
+                    xmlModule->addChildElement(xmlPlugData.release());
+                }
+            }
         }
+
+        xmlModules->addChildElement(xmlModule.release());
+    }
+    outStream.addChildElement(xmlModules.release());
+
+    std::unique_ptr<juce::XmlElement> xmlMatrix = std::make_unique<juce::XmlElement>("Matrix");
+    matrix_.getStateInformation(*xmlMatrix);
+    outStream.addChildElement(xmlMatrix.release());
+}
+
+void Track::setStateInformation(juce::XmlElement &inStream) {
+    mute_ = inStream.getBoolAttribute("mute", false);
+    level_ = inStream.getDoubleAttribute("level", 1.0f);
+
+    auto xmlModules = inStream.getChildByName("Modules");
+    if (xmlModules) {
+        int midx = 0;
+        for (auto xmlModule : xmlModules->getChildIterator()) {
+            juce::String pluginName = xmlModule->getStringAttribute("pluginName");
+            int size = xmlModule->getIntAttribute("dataSz");
+
+            if (!pluginName.isEmpty() && size > 0) {
+                while (!requestModuleChange(midx, pluginName.toStdString())) {}
+
+                auto &plugin = modules_[midx].plugin_;
+                if (plugin) {
+                    auto xmlPlugData = xmlModule->getChildByName("data");
+                    if (xmlPlugData) {
+                        juce::MemoryBlock moduleData;
+                        auto pluginData = xmlPlugData->getFirstChildElement();
+                        if (pluginData) {
+                            copyXmlToBinary(*pluginData, moduleData);
+                            plugin->setState(moduleData.getData(), moduleData.getSize());
+                        }
+                    }
+                }
+            }
+            midx++;
+            if (midx >= M_MAX) break;
+        }
+    } else {
+        ssp::log("setStateInformation : no Modules tag");
     }
 
-    matrix_.setStateInformation(inStream);
+    auto xmlMatrix = inStream.getChildByName("Matrix");
+    if (xmlMatrix)
+        matrix_.setStateInformation(*xmlMatrix);
+    else { ssp::log("setStateInformation : no Matrix tag"); }
+
     for (int midx = 0; midx < M_MAX; midx++) { resetModuleConnections(midx); }
 }
 

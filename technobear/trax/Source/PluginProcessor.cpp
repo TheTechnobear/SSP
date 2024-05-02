@@ -175,51 +175,71 @@ void PluginProcessor::onOutputChanged(unsigned i, bool b) {
 static constexpr int checkBytes = 0x1FF1;
 static constexpr int protoVersion = 0x0001;
 
+static const char *TRAX_XML_TAG = "TRAX";
+static const char *MODLIST_XML_TAG = "ModuleList";
+static const char *TRACKS_XML_TAG = "Tracks";
+static const char *TRACK_XML_TAG = "Track";
+
+
 void PluginProcessor::getStateInformation(MemoryBlock &destData) {
-    // store plugin information
-    MemoryOutputStream outStream(destData, false);
+    std::unique_ptr<juce::XmlElement> xmlTrax = std::make_unique<juce::XmlElement>(TRAX_XML_TAG);
 
-    outStream.writeInt(checkBytes);
-    outStream.writeInt(protoVersion);
 
-    outStream.writeInt(supportedModules_.size());
-    for (auto mn : supportedModules_) { outStream.writeString(String(mn)); }
-
-    int trackIdx = 0;
-    for (auto &track : tracks_) {
-        outStream.writeInt(trackIdx);
-        track.getStateInformation(outStream);
-        trackIdx++;
+    std::unique_ptr<juce::XmlElement> xmlModList = std::make_unique<juce::XmlElement>(MODLIST_XML_TAG);
+    for (auto mn : supportedModules_) {
+        std::unique_ptr<juce::XmlElement> xmlMod = std::make_unique<juce::XmlElement>("Module");
+        xmlMod->setAttribute("name", mn);
+        xmlModList->addChildElement(xmlMod.release());
     }
+    xmlTrax->addChildElement(xmlModList.release());
+
+
+    std::unique_ptr<juce::XmlElement> xmlTracks = std::make_unique<juce::XmlElement>(TRACKS_XML_TAG);
+    for (auto &track : tracks_) {
+        std::unique_ptr<juce::XmlElement> xmlTrack = std::make_unique<juce::XmlElement>(TRACK_XML_TAG);
+        track.getStateInformation(*xmlTrack);
+        xmlTracks->addChildElement(xmlTrack.release());
+    }
+    xmlTrax->addChildElement(xmlTracks.release());
+
+    // ssp::log("getStateInformation : " + xmlTrax->toString().toStdString());
+    copyXmlToBinary(*xmlTrax, destData);
 }
 
 
 void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
-    MemoryBlock srcData(data, sizeInBytes);
-    MemoryInputStream inputStream(data, sizeInBytes, false);
+    std::unique_ptr<juce::XmlElement> xmlTrax(getXmlFromBinary(data, sizeInBytes));
 
-    int check = inputStream.readInt();
-    if (check != checkBytes) return;
-    int proto = inputStream.readInt();
-    if (proto != protoVersion) return;
-
-    supportedModules_.clear();
-    int nModules = inputStream.readInt();
-    if (nModules == 0) {
-        scanPlugins();
-    } else {
-        while (nModules--) {
-            String m = inputStream.readString();
-            supportedModules_.push_back(m.toStdString());
+    if (xmlTrax != nullptr && xmlTrax->hasTagName(TRAX_XML_TAG)) {
+        // ssp::log("setStateInformation : " + xmlTrax->toString().toStdString());
+        auto xmlModList = xmlTrax->getChildByName(MODLIST_XML_TAG);
+        if (xmlModList != nullptr) {
+            supportedModules_.clear();
+            for (auto xmlMod : xmlModList->getChildIterator()) {
+                auto mn = xmlMod->getStringAttribute("name").toStdString();
+                supportedModules_.push_back(mn);
+                // ssp::log("setStateInformation : supported module : " + mn);
+            }
+        } else {
+            ssp::log("setStateInformation : no MODLIST_XML_TAG tag");
         }
+
+        auto xmlTracks = xmlTrax->getChildByName(TRACKS_XML_TAG);
+        if (xmlTracks != nullptr) {
+            int trackIdx = 0;
+            for (auto xmlTrack : xmlTracks->getChildIterator()) {
+                tracks_[trackIdx].setStateInformation(*xmlTrack);
+                trackIdx++;
+                if (trackIdx >= MAX_TRACKS) break;
+            }
+        } else {
+            ssp::log("setStateInformation : no TRACKS_XML_TAG tag");
+        }
+    } else {
+        ssp::log("setStateInformation : no TRAX_XML_TAG tag");
     }
 
-    int trackIdx = 0;
-    for (auto &track : tracks_) {
-        int check = inputStream.readInt();
-        if (check == trackIdx) { track.setStateInformation(inputStream); }
-        trackIdx++;
-    }
+    if (supportedModules_.empty()) { scanPlugins(); }
 }
 
 void PluginProcessor::savePreset() {

@@ -54,6 +54,6 @@ public:
 
     std::vector<Wire> connections_;
 
-    void getStateInformation(juce::MemoryOutputStream& outStream);
-    void setStateInformation(juce::MemoryInputStream& inStream);
+    void getStateInformation(juce::XmlElement& outStream);
+    void setStateInformation(juce::XmlElement& inStream);
 };

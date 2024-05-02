@@ -5,36 +5,26 @@
 Matrix::Matrix() {
 }
 
-
-static constexpr int checkMatrixBytes = 0x1FF4;
-static constexpr int checkWireBytes = 0x1FF5;
-
-
-void Matrix::getStateInformation(juce::MemoryOutputStream& outStream) {
-    outStream.writeInt(checkMatrixBytes);
-    outStream.writeInt(connections_.size());
-    for (auto &w : connections_) {
-        outStream.writeInt(checkWireBytes);
-        outStream.writeInt(w.src_.modIdx_);
-        outStream.writeInt(w.src_.chIdx_);
-        outStream.writeInt(w.dest_.modIdx_);
-        outStream.writeInt(w.dest_.chIdx_);
+void Matrix::getStateInformation(juce::XmlElement& outStream) {
+    for (auto& w : connections_) {
+        std::shared_ptr<juce::XmlElement> xmlWire = std::make_shared<juce::XmlElement>("Wire");
+        xmlWire->setAttribute("srcMod", (int)w.src_.modIdx_);
+        xmlWire->setAttribute("srcCh", (int)w.src_.chIdx_);
+        xmlWire->setAttribute("destMod", (int)w.dest_.modIdx_);
+        xmlWire->setAttribute("destCh", (int)w.dest_.chIdx_);
+        outStream.addChildElement(xmlWire.get());
     }
 }
 
-void Matrix::setStateInformation(juce::MemoryInputStream& inStream) {
+void Matrix::setStateInformation(juce::XmlElement& inStream) {
     connections_.clear();
-    int check = inStream.readInt();
-    if (check != checkMatrixBytes) return;
+    
 
-    int size = inStream.readInt();
-    for(int c=0;c<size;c++) {
-        int check = inStream.readInt();
-        if (check != checkWireBytes) { return; }
-        int src = inStream.readInt();
-        int srcCh = inStream.readInt();
-        int dest = inStream.readInt();
-        int destCh = inStream.readInt();
-        connect(Jack(src,srcCh), Jack(dest,destCh));
+    for (auto xmlWire : inStream.getChildIterator()) {
+        int srcMod = xmlWire->getIntAttribute("srcMod");
+        int srcCh = xmlWire->getIntAttribute("srcCh");
+        int destMod = xmlWire->getIntAttribute("destMod");
+        int destCh = xmlWire->getIntAttribute("destCh");
+        connect(Jack(srcMod, srcCh), Jack(destMod, destCh));
     }
 }
