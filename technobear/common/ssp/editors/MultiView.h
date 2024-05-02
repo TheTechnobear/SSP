@@ -42,8 +42,8 @@ public:
     int getViewIdx() { return view_; }
 
     void onSSPTimer() override;
-protected:
 
+protected:
     void drawView(juce::Graphics &g) override;
     void resized() override;
     unsigned addView(std::shared_ptr<T>);
@@ -68,9 +68,7 @@ MultiView<T>::MultiView(BaseProcessor *p, bool compactUI) : base_type(p, compact
 
 template <class T>
 void MultiView<T>::onSSPTimer() {
-    for(auto& v: views_) {
-        v->onSSPTimer();
-    }
+    for (auto &v : views_) { v->onSSPTimer(); }
 }
 
 
@@ -130,6 +128,7 @@ void MultiView<T>::editorShown() {
             v->setVisible(false);
             v->editorHidden();
         }
+        i++;
     }
 }
 

@@ -15,7 +15,7 @@ public:
     TrackView(PluginProcessor &p);
     ~TrackView() override;
 
-    void trackIdx(unsigned t) { trackIdx_ = t; }
+    void trackIdx(unsigned t);
 protected:
     void drawView(juce::Graphics &g) override;
     void resized() override;

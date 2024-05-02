@@ -153,6 +153,12 @@ loop - needs new ui - update wavedisp,
 
 
 
+-----
+
+notes 
+dlyd missing taps !!!
+
+
 -------------------------------------------------------------------
 
 

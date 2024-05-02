@@ -39,6 +39,7 @@ void TrackEditor::resized() {
 void TrackEditor::editorShown() {
     trackView_->trackIdx(trackIdx_);
     setView(trackViewIdx_);
+    base_type::editorShown();
 }
 
 void TrackEditor::eventUp(bool longpress) {

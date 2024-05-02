@@ -33,21 +33,19 @@ void MixerView::resized() {
     int gap = 2 * COMPACT_UI_SCALE;
     int h = canvasHeight() - 4 * gap;
     int gw = canvasWidth() / PluginProcessor::MAX_TRACKS;
-    int w =  gw - 2* gap;
+    int w = gw - 2 * gap;
 
     int x = canvasX();
     int y = canvasY() + 2 * gap;
 
-    for (int t = 0; t < PluginProcessor::MAX_TRACKS; t++) {
-        vuMeters_[t].setBounds(x + (gw * t) + gap, y, w, h);
-    }
+    for (int t = 0; t < PluginProcessor::MAX_TRACKS; t++) { vuMeters_[t].setBounds(x + (gw * t) + gap, y, w, h); }
 }
 
 void MixerView::editorShown() {
     base_type::editorShown();
     for (int t = 0; t < PluginProcessor::MAX_TRACKS; t++) {
         bool muted = processor_.muteTrack(t);
-        auto btn = getButton(t);
+        auto btn = getButton(t + PluginProcessor::MAX_TRACKS);
         if (btn != nullptr) { btn->value(muted); }
 
         auto& meter = vuMeters_[t];

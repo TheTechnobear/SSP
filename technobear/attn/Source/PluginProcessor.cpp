@@ -55,7 +55,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
         ar[0] = 'A' + sn;
         ar[1] = 0;
         String desc = "Attn " + String(ar);
-        sg->addChild(std::make_unique<ssp::BaseFloatParameter>(getPID(ID::attn, sn, ID::val), desc, 0.0f, 1.0f, 1.0f));
+        sg->addChild(std::make_unique<ssp::BaseFloatParameter>(getPID(ID::attn, sn, ID::val), desc, -5.0f, 5.0f, 1.0f));
     }
     params.add(std::move(sg));
 
@@ -117,6 +117,7 @@ void PluginProcessor::prepareToPlay(double newSampleRate, int estimatedSamplesPe
     }
 }
 
+#define convertParamVal(pv) pv.convertFrom0to1(pv.getValue())
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
     unsigned sz = buffer.getNumSamples();
@@ -127,7 +128,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         if (!isOutputEnabled(O_SIG_A + i)) continue;
 
         bool in = isInputEnabled(I_SIG_A + i);
-        float attnP = params_.attnparams_[i]->val.getValue();
+        float attnP = convertParamVal(params_.attnparams_[i]->val);
 
         for (int smp = 0; smp < sz; smp++) {
             auto &lP = lastParam_[i];

@@ -16,6 +16,13 @@ TrackView::TrackView(PluginProcessor &p) : base_type(&p, nullptr), processor_(p)
 TrackView::~TrackView() {
 }
 
+void TrackView::trackIdx(unsigned idx) {
+    trackIdx_ = idx;
+    for (int i = 0; i < Track::MAX_MODULES; i++) {
+        modules_[i]->trackIdx(idx);
+    }
+}
+
 void TrackView::resized() {
     base_type::resized();
     int gap = 10 * COMPACT_UI_SCALE;

@@ -36,7 +36,7 @@ message("using SYSROOT    :  ${CMAKE_SYSROOT}")
 set(GCCROOT ${BUILDROOT}/lib/gcc/aarch64-rockchip-linux-gnu/8.4.0)
 
 set(CMAKE_SYSTEM_NAME Linux)
-set(CMAKE_SYSTEM_PROCESSOR armv8a)
+set(CMAKE_SYSTEM_PROCESSOR aarch64)
 set(triple aarch64-rockchip-linux-gnu)
 set(CMAKE_C_COMPILER ${TOOLSROOT}/clang)
 set(CMAKE_CXX_COMPILER ${TOOLSROOT}/clang++)
@@ -61,13 +61,14 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} 		${SSP_LINK_FLAGS}")
 set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} 	${SSP_LINK_FLAGS}")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} 	${SSP_LINK_FLAGS}")
 
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -mcpu=cortex-a35")
+set(CPU_FLAGS "-mcpu=cortex-a35 -O3")
+#set(CPU_FLAGS "-march=armv8-a+simd -mtune=cortex-a35 -O3")
+set(CMAKE_C_FLAGS "${CMAKE_CFLAGS}  ${CPU_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPU_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -funwind-tables -fno-omit-frame-pointer  ")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DJUCE_CHECK_MEMORY_LEAKS=0")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${BUILDROOT}/aarch64-rockchip-linux-gnu/include/c++/8.4.0 ")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${BUILDROOT}/aarch64-rockchip-linux-gnu/include/c++/8.4.0/aarch64-rockchip-linux-gnu")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mcpu=cortex-a35")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -funwind-tables -fno-omit-frame-pointer  ")
 
 set(TARGET_XMX 1)
