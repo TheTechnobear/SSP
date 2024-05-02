@@ -3,19 +3,15 @@
 #include "PluginProcessor.h"
 #include "ssp/editors/BaseMiniView.h"
 
-class PluginMiniEditor : public ssp::BaseMiniView {
+class PluginMiniEditor : public ssp::PageMiniView {
 public:
     explicit PluginMiniEditor(PluginProcessor &);
     ~PluginMiniEditor() override = default;
 
-    void drawView(Graphics &) override;
-    void resized() override;
-
 protected:
-    using base_type = ssp::BaseMiniView;
+    using base_type = ssp::PageMiniView;
 
 private:
-
     PluginProcessor &processor_;
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginMiniEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginMiniEditor)
 };

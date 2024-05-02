@@ -134,7 +134,7 @@ trax
 mtin
 mtot
 mttr
-drum - has been reduce to 4 params per drum, its probaly going to need some kind of page labelling!
+drum 
 ldrf
 attn
 sfft - generic rnbo
@@ -148,15 +148,10 @@ mmx4 - custom grid ui , with single line param
 omod 
 clkd 
 cart - quite a bit of ui work, but worth it!
-gra4 - needs new ui - update wavedisp,
-loop - needs new ui - update wavedisp,
+gra4 - needed new ui - update wavedisp,
+loop - needed new ui - update wavedisp,
 
 
-
------
-
-notes 
-dlyd missing taps !!!
 
 
 -------------------------------------------------------------------
