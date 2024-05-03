@@ -45,6 +45,7 @@ public:
     bool ready_ = false;
     bool processed_ = false;
     static constexpr unsigned MAX_MODULES = Track::M_MAX;
+    static constexpr unsigned MAX_USER_MODULES = M_OUT - M_IN - 1;
 
 private:
     static constexpr int MAX_IO_IN = 8;

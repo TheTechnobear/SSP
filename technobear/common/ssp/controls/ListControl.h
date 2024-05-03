@@ -52,6 +52,7 @@ int ListControl<T>::idx() {
 template <class T>
 void ListControl<T>::idx(int i) {
     curIdx_ = i;
+    if (curIdx_ < offset_) offset_ = curIdx_;
     if (curIdx_ >= (offset_ + nLines_)) { offset_ = curIdx_ - nLines_ + 1; }
     repaint();
 }
@@ -74,7 +75,7 @@ void ListControl<T>::nextItem() {
 template <class T>
 void ListControl<T>::prevItem() {
     curIdx_ -= curIdx_ > 0 ? 1 : 0;
-    if(curIdx_ < offset_) offset_ = curIdx_;
+    if (curIdx_ < offset_) offset_ = curIdx_;
     repaint();
 }
 

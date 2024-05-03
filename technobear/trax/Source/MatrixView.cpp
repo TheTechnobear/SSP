@@ -116,14 +116,6 @@ void MatrixView::drawView(Graphics& g) {
 void MatrixView::onEncoder(unsigned enc, float v) {
     switch (enc) {
         case 0: {
-            if (v > 0)
-                channelA_.nextItem();
-            else
-                channelA_.prevItem();
-            refreshSelected();
-            break;
-        }
-        case 1: {
             if (v > 0) {
                 int modB = moduleBIdx_ + 1;
                 modB += moduleAIdx_ == modB;
@@ -141,6 +133,14 @@ void MatrixView::onEncoder(unsigned enc, float v) {
                     refreshModuleB();
                 }
             }
+            break;
+        }
+        case 1: {
+            if (v > 0)
+                channelA_.nextItem();
+            else
+                channelA_.prevItem();
+            refreshSelected();
             break;
         }
         case 2: {

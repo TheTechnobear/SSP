@@ -1,7 +1,7 @@
 #include "TrackView.h"
 
 TrackView::TrackView(PluginProcessor &p) : base_type(&p, nullptr), processor_(p) {
-    for (int i = Track::M_SLOT_1; i <= Track::M_SLOT_4; i++) {
+    for (int i = Track::M_IN + 1; i < Track::M_OUT; i++) {
         auto sbtn = std::make_shared<ssp::ValueButton>("View", [&](bool b) {});
         addButton(i - Track::M_SLOT_1, sbtn);
     }
@@ -18,9 +18,7 @@ TrackView::~TrackView() {
 
 void TrackView::trackIdx(unsigned idx) {
     trackIdx_ = idx;
-    for (int i = 0; i < Track::MAX_MODULES; i++) {
-        modules_[i]->trackIdx(idx);
-    }
+    for (int i = 0; i < Track::MAX_MODULES; i++) { modules_[i]->trackIdx(idx); }
 }
 
 void TrackView::resized() {
@@ -40,7 +38,7 @@ void TrackView::resized() {
                 break;
             }
             case Track::MAX_MODULES - 1: {
-                int y = canvasY() + h  - mh ;
+                int y = canvasY() + h - mh;
                 int w = canvasWidth();
                 module->setBounds(x, y, w, mh);
                 break;
@@ -49,7 +47,7 @@ void TrackView::resized() {
                 int y = canvasY() + mh + 2 * gap;
                 int fw = canvasWidth() - (PluginProcessor::MAX_TRACKS - 1) * gap;
                 int w = fw / PluginProcessor::MAX_TRACKS;
-                module->setBounds(x + ((gap + w) * (i - 1)),  y , w, mh);
+                module->setBounds(x + ((gap + w) * (i - 1)), y, w, mh);
             }
         }
     }
@@ -68,5 +66,3 @@ void TrackView::drawView(Graphics &g) {
 
     g.drawSingleLineText("Track " + String(trackIdx_ + 1), x, y);
 }
-
-

@@ -46,24 +46,19 @@ void TrackEditor::eventUp(bool longpress) {
     auto v = getViewIdx();
 
     if (!longpress) {
-        if (v == matrixViewIdx_ || v == loadViewIdx_) { setView(trackViewIdx_); }
+        if (v == loadViewIdx_) {
+            setView(matrixViewIdx_);
+            return;
+        } else if (v == matrixViewIdx_) {
+            setView(trackViewIdx_);
+            return;
+        }
     }
     base_type::eventUp(longpress);
 }
 
 
 void TrackEditor::onEncoderSwitch(unsigned enc, bool v) {
-    if (getViewIdx() == trackViewIdx_) {
-        if (!v) {
-            auto modIdx = enc;
-            loadModuleView_->moduleIdx(trackIdx_, modIdx + 1);
-            matrixView_->moduleIdx(trackIdx_, modIdx + 1);
-            moduleView_->moduleIdx(trackIdx_, modIdx + 1);
-            setView(matrixViewIdx_);
-        }
-        return;
-    }
-
     base_type::onEncoderSwitch(enc, v);
     if (getViewIdx() == loadViewIdx_ && enc == 0 && loadModuleView_->moduleUpdated()) {
         trackView_->trackIdx(trackIdx_);
@@ -72,34 +67,45 @@ void TrackEditor::onEncoderSwitch(unsigned enc, bool v) {
 }
 
 void TrackEditor::eventButton(unsigned btn, bool longPress) {
-    auto v = getViewIdx();
-    if (v == trackViewIdx_) {
-        if (btn < 4) {
-            auto modIdx = btn;
-            moduleView_->moduleIdx(trackIdx_, modIdx + 1);
-            setView(moduleViewIdx_);
+    if (!longPress) {
+        auto v = getViewIdx();
+        if (v == trackViewIdx_) {
+            if (btn < Track::MAX_USER_MODULES) {
+                auto modIdx = btn + Track::M_SLOT_1;
+                moduleView_->moduleIdx(trackIdx_, modIdx);
+                setView(moduleViewIdx_);
+                return;
+            }
+        } else if (v == loadViewIdx_) {
+            // return view on load and clear
+            switch (btn) {
+                case 3:    // load
+                case 7: {  // clear
+                    // carry out action
+                    loadModuleView_->eventButton(btn, longPress);
+                    // return to matrix view
+                    matrixView_->moduleIdx(matrixView_->trackIdx(), matrixView_->moduleIdx());
+                    setView(matrixViewIdx_);
+                    return;
+                }
+            }
+        } else if (v == matrixViewIdx_) {
+            switch (btn) {
+                case 0: {
+                    loadModuleView_->moduleIdx(matrixView_->trackIdx(), matrixView_->moduleIdx());
+                    setView(loadViewIdx_);
+                    return;
+                }
+            }
+        }
+    } else {
+        if (getViewIdx() == trackViewIdx_ && btn < Track::MAX_USER_MODULES) {
+            auto modIdx = btn + Track::M_SLOT_1;
+            loadModuleView_->moduleIdx(trackIdx_, modIdx + 1);
+            matrixView_->moduleIdx(trackIdx_, modIdx);
+            moduleView_->moduleIdx(trackIdx_, modIdx);
+            setView(matrixViewIdx_);
             return;
-        }
-    } else if (v == loadViewIdx_ && longPress == false) {
-        // return view on load and clear
-        switch (btn) {
-            case 3:    // load
-            case 7: {  // clear
-                // carry out action
-                loadModuleView_->eventButton(btn, longPress);
-                // return to matrix view
-                matrixView_->moduleIdx(matrixView_->trackIdx(), matrixView_->moduleIdx());
-                setView(matrixViewIdx_);
-                return;
-            }
-        }
-    } else if (v == matrixViewIdx_ && longPress == false) {
-        switch (btn) {
-            case 0: {
-                loadModuleView_->moduleIdx(matrixView_->trackIdx(), matrixView_->moduleIdx());
-                setView(loadViewIdx_);
-                return;
-            }
         }
     }
     base_type::eventButton(btn, longPress);
