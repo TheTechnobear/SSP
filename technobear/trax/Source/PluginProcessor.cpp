@@ -208,6 +208,11 @@ void PluginProcessor::getStateInformation(MemoryBlock &destData) {
 
 
 void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
+    for(auto &track : tracks_) {
+        while(!track.requestClearTrack()) {}
+    }   
+
+
     std::unique_ptr<juce::XmlElement> xmlTrax(getXmlFromBinary(data, sizeInBytes));
 
     if (xmlTrax != nullptr && xmlTrax->hasTagName(TRAX_XML_TAG)) {

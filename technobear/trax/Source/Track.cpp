@@ -29,6 +29,23 @@ bool Track::requestModuleChange(unsigned midx, const std::string &mn) {
     return false;
 }
 
+bool Track::requestClearTrack() {
+    if (!lock_.test_and_set()) {
+        for (int midx = 0; midx < M_MAX; midx++) {
+            if (midx == M_IN || midx == M_OUT) continue;
+            auto &m = modules_[midx];
+            while (!m.lock_.test_and_set()) {};
+            clearModuleConnections(midx);
+            modules_[midx].free();
+            m.lock_.clear();
+        }
+        lock_.clear();
+        return true;
+    }
+    return false;
+}
+
+
 bool Track::requestMatrixConnect(const Matrix::Jack &src, const Matrix::Jack &dest) {
     if (!lock_.test_and_set()) {
         int srcCount = 0;

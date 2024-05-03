@@ -28,6 +28,7 @@ public:
     bool requestModuleChange(unsigned midx, const std::string &mn);
     bool requestMatrixConnect(const Matrix::Jack &src, const Matrix::Jack &dest);
     bool requestMatrixDisconnect(const Matrix::Jack &src, const Matrix::Jack &dest);
+    bool requestClearTrack();
 
     enum ModuleIdx { M_IN, M_SLOT_1, M_SLOT_2, M_SLOT_3, M_SLOT_4, M_OUT, M_MAX };
 
