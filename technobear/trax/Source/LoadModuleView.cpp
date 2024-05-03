@@ -21,11 +21,20 @@ LoadModuleView::LoadModuleView(PluginProcessor &p, bool compactUI)
     addAndMakeVisible(scanBtn_);
     addAndMakeVisible(clearBtn_);
     addAndMakeVisible(loadBtn_);
+    addAndMakeVisible(categoryList_);
     addAndMakeVisible(moduleList_);
 }
 
 
 void LoadModuleView::drawView(Graphics &g) {
+    static constexpr unsigned fh = 14 * COMPACT_UI_SCALE;
+    static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
+    static constexpr unsigned x = gap;
+    static constexpr unsigned y = gap + SSP_COMPACT_HEIGHT - (80 * COMPACT_UI_SCALE) + gap;
+    g.setColour(Colours::white);
+    g.setFont(fh);
+
+    g.drawText(pluginDescripton_, x, y, SSP_COMPACT_WIDTH - gap * 2, fh, Justification::topLeft, true);
     drawButtonBox(g);
 }
 
@@ -35,11 +44,12 @@ void LoadModuleView::resized() {
     setButtonBounds(clearBtn_, 1, 3);
     setButtonBounds(loadBtn_, 0, 3);
 
-    unsigned gap = 5 * COMPACT_UI_SCALE;
-    unsigned x = gap;
-    unsigned y = gap;
-    moduleList_.setBounds(x, y, SSP_COMPACT_WIDTH - 2* gap, SSP_COMPACT_HEIGHT - (80 * COMPACT_UI_SCALE));
-    // moduleList_.setBounds(canvasX(),canvasY(), canvasWidth(),canvasHeight());
+    static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
+    static constexpr unsigned x = gap;
+    static constexpr unsigned y = gap;
+    static constexpr unsigned w = (SSP_COMPACT_WIDTH - 3 * gap) / 2;
+    categoryList_.setBounds(x, y, w, SSP_COMPACT_HEIGHT - (80 * COMPACT_UI_SCALE));
+    moduleList_.setBounds(x + gap + w, y, w, SSP_COMPACT_HEIGHT - (80 * COMPACT_UI_SCALE));
 }
 
 void LoadModuleView::drawButtonBox(Graphics &g) {
@@ -83,26 +93,72 @@ void LoadModuleView::loadModule() {
     auto curMod = processor_.getLoadedPlugin(trackIdx_, moduleIdx_);
     auto &modules = processor_.getSupportedModules();
 
-    auto &newMod = modules[moduleList_.idx()];
-    if (newMod != curMod) {
+    int modId = modulesId_[moduleList_.idx()];
+
+    auto &newMod = modules[modId];
+
+    if (newMod.name != curMod) {
         // time to load a new module !
         bool r = false;
-        while (!r) { r = processor_.requestModuleChange(trackIdx_, moduleIdx_, newMod); }
+        while (!r) { r = processor_.requestModuleChange(trackIdx_, moduleIdx_, newMod.name); }
         moduleUpdated_ = true;
     }
 }
 
 
 void LoadModuleView::onEncoder(unsigned enc, float v) {
-    if (v > 0)
-        moduleList_.nextItem();
-    else
-        moduleList_.prevItem();
+    switch (enc) {
+        case 0: {
+            if (v > 0)
+                categoryList_.nextItem();
+            else
+                categoryList_.prevItem();
+            updateModuleList();
+            break;
+        }
+        case 1: {
+            if (v > 0)
+                moduleList_.nextItem();
+            else
+                moduleList_.prevItem();
+            int modId = modulesId_[moduleList_.idx()];
+            auto &modules = processor_.getSupportedModules();
+            pluginDescripton_ = modules[modId].description;
+            break;
+        }
+    }
 }
+
+void LoadModuleView::updateModuleList() {
+    auto cat = categoryList_.idx();
+    if (cat == curCatIdx_) return;
+
+    moduleList_.clear();
+    modulesId_.clear();
+
+    auto &modules = processor_.getSupportedModules();
+    int modIdx = 0;
+    int modListIdx = 0, selListIdx = 0;
+    for (auto &m : modules) {
+        if (cat == 0 ||
+            std::find(m.categories.begin(), m.categories.end(), categories_[cat - 1]) != m.categories.end()) {
+            modulesId_.push_back(modIdx);
+            std::string niceName = nicePlugName(m.name);
+            moduleList_.addItem(niceName);
+            if (m.name == processor_.getLoadedPlugin(trackIdx_, moduleIdx_)) selListIdx = modIdx;
+            modListIdx++;
+        }
+        modIdx++;
+    }
+    moduleList_.idx(selListIdx);
+    int modId = modulesId_[moduleList_.idx()];
+    pluginDescripton_ = modules[modId].description;
+}
+
 
 void LoadModuleView::onEncoderSwitch(unsigned enc, bool v) {
     if (v) return;
-    if(enc==0) loadModule();
+    if (enc == 1) loadModule();
 }
 
 void LoadModuleView::eventButton(unsigned int btn, bool v) {
@@ -127,19 +183,25 @@ void LoadModuleView::eventButton(unsigned int btn, bool v) {
 }
 
 void LoadModuleView::editorShown() {
-    moduleUpdated_ = false;
+    categories_.clear();
+    modulesId_.clear();
     moduleList_.clear();
-    if (moduleIdx_ < Track::M_MAX) {
-        auto curMod = processor_.getLoadedPlugin(trackIdx_, moduleIdx_);
-        auto &modules = processor_.getSupportedModules();
-        int modIdx = 0, selIdx = 0;
-        for (auto &m : modules) {
-            moduleList_.addItem(nicePlugName(m));
-            if (m == curMod) selIdx = modIdx;
-            modIdx++;
+    categoryList_.clear();
+    moduleUpdated_ = false;
+
+    categoryList_.addItem("All");
+    auto &modules = processor_.getSupportedModules();
+    for (auto &m : modules) {
+        for (auto &cat : m.categories) {
+            if (std::find(categories_.begin(), categories_.end(), cat) == categories_.end()) {
+                categories_.push_back(cat);
+                categoryList_.addItem(cat);
+            }
         }
-        moduleList_.idx(selIdx);
     }
+    curCatIdx_ = 0xff;
+    categoryList_.idx(0);
+    updateModuleList();
 }
 
 

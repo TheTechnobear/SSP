@@ -35,8 +35,12 @@ public:
     void setState(void* buffer, size_t size) override {}
     void prepare(double sampleRate, int samplesPerBlock) override {};
     void process(float** channelData, int numChannels, int numSamples) override {}
-    void useCompactUI(bool b) override {};
 
+    void useCompactUI(bool b) override {};
+    unsigned numberOfParameters() override { return 0;}
+    std::string parameterName(unsigned idx) override { return "";}
+    float parameterValue(unsigned idx) override { return 0.f;}
+    void parameterValue(unsigned idx, float v) override {}
 
     static SSPExtendedApi::PluginDescriptor* createDescriptor() { return new OutputModule::PluginDescriptor(); }
 };

@@ -68,6 +68,12 @@ void getApiVersion(unsigned &major, unsigned &minor) {
     minor = Percussa::SSP::API_MINOR_VERSION;
 }
 
+#define CAT_MODULATION  "Modulation"
+#define CAT_FX  "FX"
+#define CAT_OSCILLATOR "Oscillator"
+#define CAT_UTILITY "Utility"
+#define CAT_MIDI "Midi"
+
 
 
 

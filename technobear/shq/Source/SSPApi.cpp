@@ -30,5 +30,6 @@ Percussa::SSP::PluginDescriptor *createExtendedDescriptor() {
     SSP_defaultDescriptor(desc);
     desc->colour = Colours::yellow.getARGB();
     desc->supportCompactUI_ = true;
+    desc->categories_.push_back(CAT_UTILITY);
     return desc;
 }

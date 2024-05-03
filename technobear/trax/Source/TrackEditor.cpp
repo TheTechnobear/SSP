@@ -60,7 +60,7 @@ void TrackEditor::eventUp(bool longpress) {
 
 void TrackEditor::onEncoderSwitch(unsigned enc, bool v) {
     base_type::onEncoderSwitch(enc, v);
-    if (getViewIdx() == loadViewIdx_ && enc == 0 && loadModuleView_->moduleUpdated()) {
+    if (getViewIdx() == loadViewIdx_ && enc == 1 && loadModuleView_->moduleUpdated()) {
         trackView_->trackIdx(trackIdx_);
         setView(trackViewIdx_);
     }

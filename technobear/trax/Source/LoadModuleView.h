@@ -1,13 +1,13 @@
 #pragma once
 
-#include "ssp/BaseView.h"
-#include "ssp/controls/ValueButton.h"
-#include "ssp/controls/ListControl.h"
 #include <juce_gui_basics/juce_gui_basics.h>
 
+#include "Module.h"
 #include "PluginProcessor.h"
 #include "Track.h"
-#include "Module.h"
+#include "ssp/BaseView.h"
+#include "ssp/controls/ListControl.h"
+#include "ssp/controls/ValueButton.h"
 
 
 using namespace juce;
@@ -29,11 +29,19 @@ public:
     void drawButtonBox(Graphics &g);
 
     void moduleIdx(unsigned t, unsigned m);
-    unsigned  trackIdx() { return trackIdx_;}
-    unsigned  moduleIdx() { return moduleIdx_;}
+    unsigned trackIdx() { return trackIdx_; }
+    unsigned moduleIdx() { return moduleIdx_; }
 
-    bool moduleUpdated() { return moduleUpdated_;}
+    bool moduleUpdated() { return moduleUpdated_; }
+
 private:
+    void updateModuleList();
+
+    int curCatIdx_ = 0;
+    std::vector<std::string> categories_;
+    std::vector<int> modulesId_;
+
+
     using base_type = ssp::BaseView;
     static constexpr unsigned btnTopY = 380 - 1;
     static constexpr unsigned btnSpaceY = 50;
@@ -47,6 +55,8 @@ private:
 
     bool moduleUpdated_ = false;
     PluginProcessor &processor_;
+    std::string pluginDescripton_;
 
+    ssp::ListControl<> categoryList_;
     ssp::ListControl<> moduleList_;
 };

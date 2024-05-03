@@ -1,11 +1,9 @@
 #include "Module.h"
 
-
-#include <algorithm>
-
 #include <dlfcn.h>
 #include <juce_core/juce_core.h>
 
+#include <algorithm>
 
 #include "ssp/Log.h"
 
@@ -16,9 +14,9 @@ const char *pluginSuffix = ".vst3/Contents/MacOS/";
 
 #ifdef FORCE_COMPACT_UI
 const char *pluginPath = "plugins/";
-#else  // use full UI
+#else   // use full UI
 const char *pluginPath = "~/Library/Audio/Plug-Ins/VST3/";
-#endif // FORCE_COMPACT_UI
+#endif  // FORCE_COMPACT_UI
 
 #else
 // linux
@@ -154,7 +152,7 @@ bool Module::loadModule(std::string mn) {
     return false;
 }
 
-bool Module::checkPlugin(const std::string &mn) {
+bool Module::checkPlugin(const std::string &mn, ModuleDesc &md) {
     bool supported = false;
     std::string f = getPluginFile(mn);
     // ssp::log(f);
@@ -167,6 +165,9 @@ bool Module::checkPlugin(const std::string &mn) {
             if (fnCreateExDescriptor) {
                 auto desc = fnCreateExDescriptor();
                 supported = desc->supportCompactUI_;
+                md.name = desc->name;
+                md.description = desc->descriptiveName;
+                md.categories = desc->categories_;
                 delete desc;
             }
         }
@@ -177,7 +178,7 @@ bool Module::checkPlugin(const std::string &mn) {
 }
 
 
-void Module::scanPlugins(std::vector<std::string> &supportedModules) {
+void Module::scanPlugins(std::vector<ModuleDesc> &supportedModules) {
     supportedModules.clear();
     // build list of modules to consider
     std::vector<std::string> moduleList;
@@ -191,14 +192,17 @@ void Module::scanPlugins(std::vector<std::string> &supportedModules) {
     }
 #else
     // log(std::string("Checking plugin dir : ") + pluginPath);
-    for (juce::DirectoryEntry entry : juce::RangedDirectoryIterator(juce::File(pluginPath), false, "*.so", juce::File::findFiles)) {
+    for (juce::DirectoryEntry entry :
+         juce::RangedDirectoryIterator(juce::File(pluginPath), false, "*.so", juce::File::findFiles)) {
         if (!entry.isHidden()) { moduleList.push_back(entry.getFile().getFileNameWithoutExtension().toStdString()); }
     }
 #endif
     // check for modules supporting compact ui
     for (const auto &mname : moduleList) {
         // log(std::string("Checking plugin : " + mname));
-        if (checkPlugin(mname)) { supportedModules.push_back(mname); }
+        ModuleDesc md;
+        if(mname == JucePlugin_Name) continue;
+        if (checkPlugin(mname, md)) { supportedModules.push_back(md); }
     }
 
     // log("plugin scan : COMPLETED");

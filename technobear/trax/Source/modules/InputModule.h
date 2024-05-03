@@ -39,6 +39,11 @@ public:
     void process(float** channelData, int numChannels, int numSamples) override {}
     void useCompactUI(bool b) override {};
 
+    unsigned numberOfParameters() override { return 0;}
+    std::string parameterName(unsigned idx) override { return "";}
+    float parameterValue(unsigned idx) override { return 0.f;}
+    void parameterValue(unsigned idx, float v) override {}
+
 
     static SSPExtendedApi::PluginDescriptor* createDescriptor() { return new InputModule::PluginDescriptor(); }
 };

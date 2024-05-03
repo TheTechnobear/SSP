@@ -12,6 +12,10 @@ public:
     ~PluginInterface() override = default;
 
     virtual void useCompactUI(bool b) = 0;
+    virtual unsigned numberOfParameters() = 0;
+    virtual std::string parameterName(unsigned idx) = 0;
+    virtual float parameterValue(unsigned idx) = 0; 
+    virtual void parameterValue(unsigned idx, float v) = 0; 
 };
 
 class PluginEditorInterface : public Percussa::SSP::PluginEditorInterface {
@@ -23,6 +27,7 @@ public:
 
 struct PluginDescriptor : public Percussa::SSP::PluginDescriptor {
     bool supportCompactUI_ = false;
+    std::vector<std::string> categories_;
 };
 
 static const char *apiExtensionsName = "apiExtensions";

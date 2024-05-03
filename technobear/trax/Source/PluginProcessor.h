@@ -82,7 +82,7 @@ public:
     void onInputChanged(unsigned i, bool b) override;
     void onOutputChanged(unsigned i, bool b) override;
 
-    const std::vector<std::string> &getSupportedModules() { return supportedModules_; }
+    const std::vector<ModuleDesc> &getSupportedModules() { return supportedModules_; }
 
     bool requestModuleChange(unsigned t, unsigned m, const std::string &mn);
     void scanPlugins();
@@ -144,12 +144,11 @@ private:
     void processTrack(Track &track, AudioSampleBuffer &ioBuffer);
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override { return true; }
 
-    std::vector<std::string> supportedModules_;
-
+    std::vector<ModuleDesc> supportedModules_;
+    
     bool shouldExit();
     bool shouldExit_ = false;
     
-
     Track tracks_[MAX_TRACKS];
     float lastGain_[MAX_TRACKS] = { 0.f, 0.f, 0.f, 0.f };
     // processing thread for each track

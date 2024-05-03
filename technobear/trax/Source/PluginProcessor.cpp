@@ -86,7 +86,7 @@ bool PluginProcessor::requestModuleChange(unsigned t, unsigned m, const std::str
 void PluginProcessor::scanPlugins() {
     ssp::log("plugin scan - start");
     Module::scanPlugins(supportedModules_);
-    for (auto m : supportedModules_) { ssp::log("module: " + m); }
+    for (auto m : supportedModules_) { ssp::log("module: " + m.name); }
     ssp::log("plugin scan - send");
 }
 
@@ -186,9 +186,15 @@ void PluginProcessor::getStateInformation(MemoryBlock &destData) {
 
 
     std::unique_ptr<juce::XmlElement> xmlModList = std::make_unique<juce::XmlElement>(MODLIST_XML_TAG);
-    for (auto mn : supportedModules_) {
+    for (auto& md : supportedModules_) {
         std::unique_ptr<juce::XmlElement> xmlMod = std::make_unique<juce::XmlElement>("Module");
-        xmlMod->setAttribute("name", mn);
+        xmlMod->setAttribute("name", md.name);
+        xmlMod->setAttribute("desc", md.description);
+        std::string catstr;
+        for (auto &cat : md.categories) {
+            catstr += cat + ",";
+        }
+        xmlMod->setAttribute("cat", catstr);
         xmlModList->addChildElement(xmlMod.release());
     }
     xmlTrax->addChildElement(xmlModList.release());
@@ -212,7 +218,6 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
         while(!track.requestClearTrack()) {}
     }   
 
-
     std::unique_ptr<juce::XmlElement> xmlTrax(getXmlFromBinary(data, sizeInBytes));
 
     if (xmlTrax != nullptr && xmlTrax->hasTagName(TRAX_XML_TAG)) {
@@ -221,8 +226,16 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
         if (xmlModList != nullptr) {
             supportedModules_.clear();
             for (auto xmlMod : xmlModList->getChildIterator()) {
-                auto mn = xmlMod->getStringAttribute("name").toStdString();
-                supportedModules_.push_back(mn);
+                ModuleDesc md;
+                md.name = xmlMod->getStringAttribute("name").toStdString();
+                md.description = xmlMod->getStringAttribute("desc").toStdString();
+                auto catstr= xmlMod->getStringAttribute("cat").toStdString();
+                std::istringstream iss(catstr);
+                std::string cat;
+                while (std::getline(iss, cat, ',')) {
+                    md.categories.push_back(cat);
+                }
+                supportedModules_.push_back(md);
                 // ssp::log("setStateInformation : supported module : " + mn);
             }
         } else {

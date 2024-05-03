@@ -4,6 +4,13 @@
 
 #include "SSPExApi.h"
 
+
+struct ModuleDesc {
+    std::string name;
+    std::string description;
+    std::vector<std::string> categories;
+};
+
 struct Module {
     explicit Module();
     void alloc(const std::string &f, SSPExtendedApi::PluginInterface *p, SSPExtendedApi::PluginDescriptor *d, void *h);
@@ -14,8 +21,8 @@ struct Module {
 
     bool loadModule(std::string);
     static std::string getPluginFile(const std::string& m);
-    static bool checkPlugin(const std::string &f);
-    static void scanPlugins(std::vector<std::string>& supportedModules);
+    static bool checkPlugin(const std::string &f,ModuleDesc &md);
+    static void scanPlugins(std::vector<ModuleDesc>& supportedModules);
 
     juce::AudioSampleBuffer audioBuffer_;
 
