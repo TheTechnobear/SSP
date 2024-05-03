@@ -106,6 +106,10 @@ std::string Module::getPluginFile(const std::string &mname) {
 
 #else
     juce::File plugInDir(pluginPath);
+    if(!plugInDir.exists()) {
+        plugInDir = juce::File("/media/BOOT/plugins/");
+    }
+
     if (plugInDir.exists()) {
         std::string absPath = plugInDir.getFullPathName().toStdString();
         file = absPath + std::string("/") + mname + ".so";
@@ -192,8 +196,13 @@ void Module::scanPlugins(std::vector<ModuleDesc> &supportedModules) {
     }
 #else
     // log(std::string("Checking plugin dir : ") + pluginPath);
+   juce::File plugInDir(pluginPath);
+   if(!plugInDir.exists()) {
+        plugInDir = juce::File("/media/BOOT/plugins/");
+    }
+
     for (juce::DirectoryEntry entry :
-         juce::RangedDirectoryIterator(juce::File(pluginPath), false, "*.so", juce::File::findFiles)) {
+         juce::RangedDirectoryIterator(plugInDir,false, "*.so", juce::File::findFiles)) {
         if (!entry.isHidden()) { moduleList.push_back(entry.getFile().getFileNameWithoutExtension().toStdString()); }
     }
 #endif
