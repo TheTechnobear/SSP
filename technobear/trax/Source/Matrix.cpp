@@ -20,7 +20,6 @@ void Matrix::getStateInformation(juce::XmlElement& outStream) {
 void Matrix::setStateInformation(juce::XmlElement& inStream) {
     connections_.clear();
     
-
     for (auto xmlWire : inStream.getChildIterator()) {
         int srcMod = xmlWire->getIntAttribute("srcMod");
         int srcCh = xmlWire->getIntAttribute("srcCh");

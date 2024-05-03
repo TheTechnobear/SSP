@@ -22,15 +22,27 @@ public:
     void prepare(int sampleRate, int blockSize);
     void process(juce::AudioSampleBuffer &ioBuffer);
 
-    void getStateInformation(juce::XmlElement& outStream);
-    void setStateInformation(juce::XmlElement& inStream);
+    void getStateInformation(juce::XmlElement &outStream);
+    void setStateInformation(juce::XmlElement &inStream);
 
     bool requestModuleChange(unsigned midx, const std::string &mn);
     bool requestMatrixConnect(const Matrix::Jack &src, const Matrix::Jack &dest);
     bool requestMatrixDisconnect(const Matrix::Jack &src, const Matrix::Jack &dest);
     bool requestClearTrack();
 
-    enum ModuleIdx { M_IN, M_SLOT_1, M_SLOT_2, M_SLOT_3, M_SLOT_4, M_OUT, M_MAX };
+    enum ModuleIdx {
+        M_IN,
+        M_SLOT_1,
+        M_SLOT_2,
+        M_SLOT_3,
+        M_SLOT_4,
+        M_SLOT_5,
+        M_SLOT_6,
+        M_SLOT_7,
+        M_SLOT_8,
+        M_OUT,
+        M_MAX
+    };
 
     Module modules_[M_MAX];
 

@@ -57,9 +57,14 @@ bool Track::requestMatrixConnect(const Matrix::Jack &src, const Matrix::Jack &de
 
         auto &srcMod = modules_[src.modIdx_];
         auto &destMod = modules_[dest.modIdx_];
-        matrix_.connect(src, dest);
-        if (srcCount == 0 && srcMod.plugin_) srcMod.plugin_->outputEnabled(src.chIdx_, true);
-        if (destCount == 0 && destMod.plugin_) destMod.plugin_->inputEnabled(dest.chIdx_, true);
+
+        if (srcMod.descriptor_ && src.chIdx_ < srcMod.descriptor_->outputChannelNames.size() && destMod.descriptor_ &&
+            dest.chIdx_ < destMod.descriptor_->inputChannelNames.size()) {
+            matrix_.connect(src, dest);
+            if (srcCount == 0 && srcMod.plugin_) srcMod.plugin_->outputEnabled(src.chIdx_, true);
+            if (destCount == 0 && destMod.plugin_) destMod.plugin_->inputEnabled(dest.chIdx_, true);
+        }
+
         lock_.clear();
         return true;
     }
@@ -231,9 +236,16 @@ void Track::setStateInformation(juce::XmlElement &inStream) {
     }
 
     auto xmlMatrix = inStream.getChildByName("Matrix");
-    if (xmlMatrix)
+    if (xmlMatrix) {
         matrix_.setStateInformation(*xmlMatrix);
-    else { ssp::log("setStateInformation : no Matrix tag"); }
+
+        auto wires = matrix_.connections_;
+        matrix_.connections_.clear();
+        for (auto &w : wires) { requestMatrixConnect(w.src_, w.dest_); }
+
+    } else {
+        ssp::log("setStateInformation : no Matrix tag");
+    }
 
     for (int midx = 0; midx < M_MAX; midx++) { resetModuleConnections(midx); }
 }

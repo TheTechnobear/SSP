@@ -132,12 +132,13 @@ void LoadModuleView::editorShown() {
     if (moduleIdx_ < Track::M_MAX) {
         auto curMod = processor_.getLoadedPlugin(trackIdx_, moduleIdx_);
         auto &modules = processor_.getSupportedModules();
-        int modIdx = 0;
+        int modIdx = 0, selIdx = 0;
         for (auto &m : modules) {
             moduleList_.addItem(nicePlugName(m));
-            if (m == curMod) moduleList_.idx(modIdx);
+            if (m == curMod) selIdx = modIdx;
             modIdx++;
         }
+        moduleList_.idx(selIdx);
     }
 }
 

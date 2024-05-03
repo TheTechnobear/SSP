@@ -73,12 +73,17 @@ juce::String FileSelector::selectedFile() {
 
 void FileSelector::setFile(const juce::String &fullname) {
     juce::File f(fullname);
-    if (!f.exists()) return;
+    if (!f.exists()) {
+        selected_ = 0;
+        offset_ = 0;
+        return;
+    }
 
     if (f.isDirectory()) {
         selected_ = -1;
         baseDir_ = f.getFullPathName();
         scanDir();
+        selected_ = 0;
     } else {
         juce::File fdir(f.getParentDirectory());
         baseDir_ = fdir.getFullPathName();
@@ -89,6 +94,7 @@ void FileSelector::setFile(const juce::String &fullname) {
             if (iter.second == f) { selected_ = idx; }
             idx++;
         }
+        if (selected_ == -1) { selected_ = 0; }
 
         offset_ = 0;
         if (selected_ > nPageEntries_) {
@@ -96,6 +102,7 @@ void FileSelector::setFile(const juce::String &fullname) {
             int col = (page * nMaxCols) - 1;
             offset_ = col * nFilePerCol;
         }
+        if (selected_ < offset_) { offset_ = selected_; }
     }
 }
 
@@ -127,8 +134,8 @@ void FileSelector::paint(juce::Graphics &g) {
 
 
 void FileSelector::drawEntry(juce::Graphics &g, unsigned fidx, bool selected, const juce::String &name, bool isDir) {
-    float w = (getWidth() - 30 * COMPACT_UI_SCALE)  / nMaxCols;
-    float h = ( getHeight() - 10 * COMPACT_UI_SCALE) / nFilePerCol;
+    float w = (getWidth() - 30 * COMPACT_UI_SCALE) / nMaxCols;
+    float h = (getHeight() - 10 * COMPACT_UI_SCALE) / nFilePerCol;
 
 
     if (fidx < offset_ || fidx > (offset_ + (nFilePerCol * nMaxCols))) return;
@@ -140,8 +147,8 @@ void FileSelector::drawEntry(juce::Graphics &g, unsigned fidx, bool selected, co
 
     if (c >= nMaxCols) return;
 
-    float y = (r * h) + ( 5 * COMPACT_UI_SCALE);
-    float x = (c * w) +  (20 * COMPACT_UI_SCALE);
+    float y = (r * h) + (5 * COMPACT_UI_SCALE);
+    float x = (c * w) + (20 * COMPACT_UI_SCALE);
     if (!selected) {
         g.setColour(bg_);
         g.fillRect(x, y, w, h);
@@ -155,7 +162,8 @@ void FileSelector::drawEntry(juce::Graphics &g, unsigned fidx, bool selected, co
     juce::String fname = name;
     if (fidx < fileList_.size()) {
         if (isDir) { fname = "[" + name + "]"; }
-        g.drawText(fname, x + COMPACT_UI_SCALE, y + COMPACT_UI_SCALE, w - COMPACT_UI_SCALE * 2, h - COMPACT_UI_SCALE * 2, juce::Justification::centredLeft);
+        g.drawText(fname, x + COMPACT_UI_SCALE, y + COMPACT_UI_SCALE, w - COMPACT_UI_SCALE * 2,
+                   h - COMPACT_UI_SCALE * 2, juce::Justification::centredLeft);
     }
 }
 

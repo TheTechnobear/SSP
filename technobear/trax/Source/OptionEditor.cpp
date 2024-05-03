@@ -177,7 +177,13 @@ void OptionEditor::eventButton(unsigned btn, bool longPress) {
                 return;
             }
         }
+    } else if(v == loadViewIdx_ || v == saveViewIdx_){
+        if (btn == 7) {
+            setView(optionViewIdx_);
+            return;
+        }
     }
+
 
 
     base_type::eventButton(btn, longPress);

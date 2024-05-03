@@ -23,31 +23,40 @@ void TrackView::trackIdx(unsigned idx) {
 
 void TrackView::resized() {
     base_type::resized();
+    static constexpr int ModPerRow = 4;
     int gap = 10 * COMPACT_UI_SCALE;
     int h = canvasHeight() - gap;
-    int mh = (h / 3) - gap;
-    int x = canvasX();
+
+    int mrows = (Track::MAX_USER_MODULES + ModPerRow - 1) / ModPerRow;
+    int mh = (h / (mrows + 2)) - gap;
 
     for (int i = 0; i < Track::MAX_MODULES; i++) {
         auto module = modules_[i];
         switch (i) {
             case 0: {
+                int x = canvasX();
                 int y = canvasY() + gap;
                 int w = canvasWidth();
                 module->setBounds(x, y, w, mh);
                 break;
             }
             case Track::MAX_MODULES - 1: {
+                int x = canvasX();
                 int y = canvasY() + h - mh;
                 int w = canvasWidth();
                 module->setBounds(x, y, w, mh);
                 break;
             }
             default: {
-                int y = canvasY() + mh + 2 * gap;
-                int fw = canvasWidth() - (PluginProcessor::MAX_TRACKS - 1) * gap;
-                int w = fw / PluginProcessor::MAX_TRACKS;
-                module->setBounds(x + ((gap + w) * (i - 1)), y, w, mh);
+                int fw = canvasWidth() - (ModPerRow - 1) * gap;
+                int w = fw / ModPerRow;
+                int midx = i - Track::M_SLOT_1;
+                int mr = midx / ModPerRow;
+                int mc = midx % ModPerRow;
+
+                int x = canvasX() + ((gap + w) * mc);
+                int y = canvasY() + ((mh + gap) * (mr + 1)) + gap;
+                module->setBounds(x, y, w, mh);
             }
         }
     }
