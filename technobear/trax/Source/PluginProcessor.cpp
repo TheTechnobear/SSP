@@ -79,7 +79,11 @@ PluginProcessor::~PluginProcessor() {
 bool PluginProcessor::requestModuleChange(unsigned t, unsigned m, const std::string &mn) {
     if (t >= MAX_TRACKS || m >= Track::M_MAX) return false;
     auto &track = tracks_[t];
-    return track.requestModuleChange(m, mn);
+    bool ret = track.requestModuleChange(m, mn);
+    if(ret) {
+        while(!removePerformanceParam(t, m));
+    }
+    return ret;
 }
 
 
@@ -179,6 +183,8 @@ static const char *TRAX_XML_TAG = "TRAX";
 static const char *MODLIST_XML_TAG = "ModuleList";
 static const char *TRACKS_XML_TAG = "Tracks";
 static const char *TRACK_XML_TAG = "Track";
+static const char *PERF_XML_TAG = "PerformParams";
+static const char *PERF_PARAM_XML_TAG = "Param";
 
 
 void PluginProcessor::getStateInformation(MemoryBlock &destData) {
@@ -186,14 +192,12 @@ void PluginProcessor::getStateInformation(MemoryBlock &destData) {
 
 
     std::unique_ptr<juce::XmlElement> xmlModList = std::make_unique<juce::XmlElement>(MODLIST_XML_TAG);
-    for (auto& md : supportedModules_) {
+    for (auto &md : supportedModules_) {
         std::unique_ptr<juce::XmlElement> xmlMod = std::make_unique<juce::XmlElement>("Module");
         xmlMod->setAttribute("name", md.name);
         xmlMod->setAttribute("desc", md.description);
         std::string catstr;
-        for (auto &cat : md.categories) {
-            catstr += cat + ",";
-        }
+        for (auto &cat : md.categories) { catstr += cat + ","; }
         xmlMod->setAttribute("cat", catstr);
         xmlModList->addChildElement(xmlMod.release());
     }
@@ -208,15 +212,25 @@ void PluginProcessor::getStateInformation(MemoryBlock &destData) {
     }
     xmlTrax->addChildElement(xmlTracks.release());
 
+    std::unique_ptr<juce::XmlElement> xmlPerf = std::make_unique<juce::XmlElement>(PERF_XML_TAG);
+    for (auto &param : performanceParams_) {
+        std::unique_ptr<juce::XmlElement> xmlParam = std::make_unique<juce::XmlElement>(PERF_PARAM_XML_TAG);
+        xmlParam->setAttribute("track", (int)param.trackIdx());
+        xmlParam->setAttribute("module", (int)param.moduleIdx());
+        xmlParam->setAttribute("param", (int)param.paramIdx());
+        xmlPerf->addChildElement(xmlParam.release());
+    }
+    xmlTrax->addChildElement(xmlPerf.release());
+
     // ssp::log("getStateInformation : " + xmlTrax->toString().toStdString());
     copyXmlToBinary(*xmlTrax, destData);
 }
 
 
 void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
-    for(auto &track : tracks_) {
-        while(!track.requestClearTrack()) {}
-    }   
+    for (auto &track : tracks_) {
+        while (!track.requestClearTrack()) {}
+    }
 
     std::unique_ptr<juce::XmlElement> xmlTrax(getXmlFromBinary(data, sizeInBytes));
 
@@ -229,12 +243,10 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
                 ModuleDesc md;
                 md.name = xmlMod->getStringAttribute("name").toStdString();
                 md.description = xmlMod->getStringAttribute("desc").toStdString();
-                auto catstr= xmlMod->getStringAttribute("cat").toStdString();
+                auto catstr = xmlMod->getStringAttribute("cat").toStdString();
                 std::istringstream iss(catstr);
                 std::string cat;
-                while (std::getline(iss, cat, ',')) {
-                    md.categories.push_back(cat);
-                }
+                while (std::getline(iss, cat, ',')) { md.categories.push_back(cat); }
                 supportedModules_.push_back(md);
                 // ssp::log("setStateInformation : supported module : " + mn);
             }
@@ -252,6 +264,35 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
             }
         } else {
             ssp::log("setStateInformation : no TRACKS_XML_TAG tag");
+        }
+
+        auto xmlPerf = xmlTrax->getChildByName(PERF_XML_TAG);
+        if (xmlPerf != nullptr) {
+            performanceParams_.clear();
+            for (auto xmlParam : xmlPerf->getChildIterator()) {
+                unsigned t = xmlParam->getIntAttribute("track");
+                unsigned m = xmlParam->getIntAttribute("module");
+                unsigned p = xmlParam->getIntAttribute("param");
+
+                auto pluginName = getLoadedPlugin(t, m);
+                auto plugin = getPlugin(t, m);
+                if (plugin) {
+                    if (p < plugin->numberOfParameters()) {
+                        auto paramName = plugin->parameterName(p);
+                        PluginProcessor::PerformanceParam param(t, m, p, pluginName, paramName, 0.0f);
+                        addPerformanceParam(param);
+                    } else {
+                        ssp::log(
+                            "setStateInformation : cannot add performance param, param index out of range for track " +
+                            std::to_string(t) + " module " + std::to_string(m));
+                    }
+                } else {
+                    ssp::log("setStateInformation : cannot add performance param, no plugin for track " +
+                             std::to_string(t) + " module " + std::to_string(m));
+                }
+            }
+        } else {
+            ssp::log("setStateInformation : no PERF_XML_TAG tag");
         }
     } else {
         ssp::log("setStateInformation : no TRAX_XML_TAG tag");
@@ -283,6 +324,38 @@ void PluginProcessor::loadPreset() {
         MemoryMappedFile mmf(f, MemoryMappedFile::AccessMode::readOnly, false);
         setStateInformation(mmf.getData(), mmf.getSize());
     }
+}
+
+
+bool PluginProcessor::addPerformanceParam(const PerformanceParam &p) {
+    performanceParams_.push_back(p);
+    return true;
+}
+bool PluginProcessor::removePerformanceParam(const PerformanceParam &p) {
+    // remove from vector if track, module and param ids match
+    performanceParams_.erase(std::remove_if(performanceParams_.begin(), performanceParams_.end(),
+                                            [&p](const PerformanceParam &pp) {
+                                                return pp.trackIdx() == p.trackIdx() &&
+                                                       pp.moduleIdx() == p.moduleIdx() && pp.paramIdx() == p.paramIdx();
+                                            }),
+                             performanceParams_.end());
+    return true;
+}
+
+bool PluginProcessor::removePerformanceParam(unsigned t, unsigned m) {
+    // remove from vector if track, module ids match
+    performanceParams_.erase(
+        std::remove_if(performanceParams_.begin(), performanceParams_.end(),
+                       [t, m](const PerformanceParam &pp) { return pp.trackIdx() == t && pp.moduleIdx() == m; }),
+        performanceParams_.end());
+    return true;
+}
+bool PluginProcessor::removePerformanceParam(unsigned t) {
+    // remove from vector if track id matches
+    performanceParams_.erase(std::remove_if(performanceParams_.begin(), performanceParams_.end(),
+                                            [t](const PerformanceParam &pp) { return pp.trackIdx() == t; }),
+                             performanceParams_.end());
+    return true;
 }
 
 

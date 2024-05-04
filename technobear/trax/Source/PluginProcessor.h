@@ -128,12 +128,43 @@ public:
     void gainTrack(unsigned t, float gain) {
         if (t >= MAX_TRACKS) return;
         tracks_[t].level(gain);
-    }   
+    }
 
     float gainTrack(unsigned t) {
         if (t >= MAX_TRACKS) return 0.f;
         return tracks_[t].level();
     }
+
+    class PerformanceParam {
+    public:
+        PerformanceParam(unsigned t, unsigned m, unsigned p, const std::string &pluginName,
+                         const std::string &paramName, float v = 0.f)
+            : trackIdx_(t), moduleIdx_(m), paramIdx_(p), pluginName_(pluginName), paramName_(paramName), value_(v) {}
+
+        void value(float v) { value_ = v; }
+        float value() const { return value_; }
+
+        const std::string &pluginName() const { return pluginName_; }
+        const std::string &paramName() const { return paramName_; }
+        unsigned trackIdx() const { return trackIdx_; }
+        unsigned moduleIdx() const { return moduleIdx_; }
+        unsigned paramIdx() const { return paramIdx_; }
+
+    private:
+        unsigned trackIdx_;
+        unsigned moduleIdx_;
+        unsigned paramIdx_;
+        std::string pluginName_;
+        std::string paramName_;
+        float value_;
+    };
+
+    bool addPerformanceParam(const PerformanceParam &p);
+    bool removePerformanceParam(const PerformanceParam &p);
+    bool removePerformanceParam(unsigned t);
+    bool removePerformanceParam(unsigned t, unsigned m);
+
+    std::vector<PerformanceParam> &performanceParams() { return performanceParams_; }
 
 
 protected:
@@ -145,15 +176,15 @@ private:
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override { return true; }
 
     std::vector<ModuleDesc> supportedModules_;
-    
+
     bool shouldExit();
     bool shouldExit_ = false;
-    
+
     Track tracks_[MAX_TRACKS];
     float lastGain_[MAX_TRACKS] = { 0.f, 0.f, 0.f, 0.f };
     // processing thread for each track
     std::vector<std::thread> trackThreads_;
-    
+
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
 
@@ -165,6 +196,8 @@ private:
     String requestedPreset_;
     bool requestPresetLoad_ = false;
     bool requestPresetSave_ = false;
+
+    std::vector<PerformanceParam> performanceParams_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginProcessor)
 };

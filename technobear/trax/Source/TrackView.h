@@ -21,7 +21,7 @@ protected:
     void resized() override;
 
 private:
-    using base_type = MiniBasicView;
+    using base_type = ssp::MiniBasicView;
     unsigned trackIdx_;
     PluginProcessor &processor_;
     std::vector<std::shared_ptr<ModuleComponent>> modules_;

@@ -2,10 +2,11 @@
 
 #include "MixerView.h"
 #include "OptionEditor.h"
+#include "PerformanceEditor.h"
 #include "PluginProcessor.h"
 #include "SSPApiEditor.h"
 #include "TrackEditor.h"
-#include "ssp/editors/MultiView.h"
+
 
 PluginEditor::PluginEditor(PluginProcessor &p) : base_type(&p, false), processor_(p) {
     mixerView_ = std::make_shared<MixerView>(p);
@@ -14,6 +15,9 @@ PluginEditor::PluginEditor(PluginProcessor &p) : base_type(&p, false), processor
     trackEditorIdx_ = addView(trackEditor_);
     optionEditor_ = std::make_shared<OptionEditor>(p);
     optionViewIdx_ = addView(optionEditor_);
+    perfEditor_ = std::make_shared<PerformanceEditor>(p);
+    perfEditorIdx_ = addView(perfEditor_);
+
     setView(mixerViewIdx_);
 }
 
@@ -35,12 +39,29 @@ void PluginEditor::eventButton(unsigned btn, bool longPress) {
 void PluginEditor::eventUp(bool longPress) {
     auto v = getViewIdx();
     if (longPress) {
-        if (v == trackEditorIdx_ || v == optionViewIdx_) {
-            setView(mixerViewIdx_);
-        } else if (v == mixerViewIdx_) {
+        if (v == mixerViewIdx_) {
             setView(optionViewIdx_);
+            return;
+        } else {
+            setView(mixerViewIdx_);
+            return;
         }
     }
-
     base_type::eventUp(longPress);
+}
+
+void PluginEditor::eventDown(bool longPress) {
+    auto v = getViewIdx();
+    if (longPress) {
+        if (v != perfEditorIdx_) {
+            setView(perfEditorIdx_);
+            return;
+        }
+    } else {
+        if (v == mixerViewIdx_) {
+            setView(perfEditorIdx_);
+            return;
+        }
+    }
+    base_type::eventDown(longPress);
 }

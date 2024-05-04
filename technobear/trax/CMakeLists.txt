@@ -50,6 +50,13 @@ target_sources(TRAX
         Source/MatrixView.cpp
         Source/MixerView.cpp
         Source/OptionView.cpp
+
+        Source/PerformanceEditor.cpp
+        Source/PerformanceView.cpp
+        Source/PerformanceEdit.cpp
+        Source/PerformanceAdd.cpp
+
+        Source/components/PerfParamComponent.cpp
         Source/components/ModuleComponent.cpp
         ${COMMON_SRC}
         )
