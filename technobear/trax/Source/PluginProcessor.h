@@ -137,25 +137,43 @@ public:
 
     class PerformanceParam {
     public:
-        PerformanceParam(unsigned t, unsigned m, unsigned p, const std::string &pluginName,
-                         const std::string &paramName, float v = 0.f)
-            : trackIdx_(t), moduleIdx_(m), paramIdx_(p), pluginName_(pluginName), paramName_(paramName), value_(v) {}
+        PerformanceParam(unsigned t, unsigned m, unsigned p, 
+                        const std::string &pluginName,
+                        const std::string &paramName,
+                        float min = 0.f, float max = 1.f, float def = 0.5f, int numSteps = 127, bool isDescrete = false)
+            : trackIdx_(t), moduleIdx_(m), paramIdx_(p), pluginName_(pluginName), paramName_(paramName),
+              min_(min), max_(max), def_(def), numSteps_(numSteps), isDescrete_(isDescrete), value_(def) {}
+
+
+        unsigned trackIdx() const { return trackIdx_; }
+        unsigned moduleIdx() const { return moduleIdx_; }
+        unsigned paramIdx() const { return paramIdx_; }
+
+        const std::string &pluginName() const { return pluginName_; }
+        const std::string &paramName() const { return paramName_; }
+        float min() const { return min_; }
+        float max() const { return max_; }
+        float def() const { return def_; }
+        bool isDescrete() const { return isDescrete_; }
+        int numSteps() const { return numSteps_; }
 
         void value(float v) { value_ = v; }
         float value() const { return value_; }
 
-        const std::string &pluginName() const { return pluginName_; }
-        const std::string &paramName() const { return paramName_; }
-        unsigned trackIdx() const { return trackIdx_; }
-        unsigned moduleIdx() const { return moduleIdx_; }
-        unsigned paramIdx() const { return paramIdx_; }
 
     private:
         unsigned trackIdx_;
         unsigned moduleIdx_;
         unsigned paramIdx_;
+
         std::string pluginName_;
         std::string paramName_;
+        float min_ = 0.f;
+        float max_ = 1.f;
+        float def_ = 0.5f;
+        int  numSteps_ = 127;
+        bool isDescrete_ = false;
+
         float value_;
     };
 

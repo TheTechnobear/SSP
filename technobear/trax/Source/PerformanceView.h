@@ -19,13 +19,12 @@ protected:
     void eventDown(bool longPress) override;
 
     void editorShown() override;
-    void resized() override;
-    void drawView(juce::Graphics &g) override;
-    
     void onSSPTimer() override;
+    void drawView(juce::Graphics &g) override;
 
 private:
-    void changePage(int delta); 
+    static constexpr int fh = 12 * COMPACT_UI_SCALE;
+    void changePage(int delta);
     std::vector<std::shared_ptr<PerfParamComponent>> params_;
     static constexpr unsigned paramsPerPage = 4;
     unsigned page_ = 0;

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "PluginProcessor.h"
-#include "ssp/editors/BaseMiniView.h"
 #include "ssp/controls/ListControl.h"
+#include "ssp/editors/BaseMiniView.h"
 
 class PerformanceAdd : public ssp::MiniBasicView {
 public:
@@ -10,13 +10,16 @@ public:
     ~PerformanceAdd() override;
 
 protected:
-    void resized() override;
     using base_type = ssp::MiniBasicView;
     void onEncoder(unsigned id, float v) override;
     void onEncoderSwitch(unsigned id, bool v) override;
+
+    void resized() override;
     void editorShown() override;
-    
+    void drawView(juce::Graphics &g) override;
+
 private:
+    static constexpr int fh = 12 * COMPACT_UI_SCALE;
     void refreshTrackList();
     void refreshModuleList();
     void refreshParamList();
@@ -29,6 +32,4 @@ private:
     ssp::ListControl<> trackList_;
     ssp::ListControl<> moduleList_;
     ssp::ListControl<> paramList_;
-    
 };
-

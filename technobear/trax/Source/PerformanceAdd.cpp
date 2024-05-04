@@ -13,13 +13,20 @@ PerformanceAdd::~PerformanceAdd() {
 }
 
 
+void PerformanceAdd::drawView(juce::Graphics &g) {
+    base_type::drawView(g);
+    g.setColour(juce::Colours::yellow);
+    g.setFont(fh);
+    g.drawText("Add Performance Parameter", canvasX(), 0, canvasWidth(), fh, juce::Justification::centredLeft);
+}
+
+
 void PerformanceAdd::resized() {
     base_type::resized();
-    auto r = getLocalBounds();
-    auto h = canvasHeight();
+    auto h = canvasHeight() - fh;
     auto w = canvasWidth();
     auto y = canvasY();
-    auto x = canvasX();
+    auto x = canvasX() + fh;
 
     auto gap = 5 * COMPACT_UI_SCALE;
     auto gw = w / 4;
@@ -62,8 +69,8 @@ void PerformanceAdd::refreshParamList() {
     if (!plugin) return;
     int nParams = plugin->numberOfParameters();
     for (int paramIdx = 0; paramIdx < nParams; paramIdx++) {
-        std::string param = plugin->parameterName(paramIdx);
-        paramList_.addItem(param);
+        SSPExtendedApi::PluginInterface::ParameterDesc desc;
+        if (plugin->parameterDesc(paramIdx, desc)) { paramList_.addItem(desc.name_); }
     }
     paramList_.idx(0);
 }
@@ -109,8 +116,12 @@ void PerformanceAdd::onEncoderSwitch(unsigned id, bool v) {
         auto plugin = processor_.getPlugin(curTrackIdx_, curModuleIdx_);
         if (!plugin) return;
 
-        auto paramName = plugin->parameterName(pid);
-        PluginProcessor::PerformanceParam param(curTrackIdx_, curModuleIdx_, pid, pluginName, paramName, 0.0f);
-        processor_.addPerformanceParam(param);
+
+        SSPExtendedApi::PluginInterface::ParameterDesc desc;
+        if (plugin->parameterDesc(pid, desc)) {
+            PluginProcessor::PerformanceParam param(curTrackIdx_, curModuleIdx_, pid, pluginName, desc.name_, desc.min_,
+                                                    desc.max_, desc.def_, desc.numSteps_, desc.isDescrete_);
+            processor_.addPerformanceParam(param);
+        }
     }
 }

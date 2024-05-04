@@ -2,6 +2,12 @@
 
 namespace ssp {
 
+inline juce::String toString(float v) {
+    if (v > -0.0001f && v < 0.0001f) { return juce::String(0.0f, 2, false); }
+    return juce::String(v, 2, false);
+}
+
+
 MiniControl::MiniControl(Parameter &p, float coarse, float fine, juce::Colour fg)
     : SimpleParamControl(p, coarse, fine, fg) {
 

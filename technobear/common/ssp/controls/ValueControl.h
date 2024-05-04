@@ -10,8 +10,8 @@ namespace ssp {
 
 class BaseValueControl : public juce::Component {
 public:
-    BaseValueControl(const std::string &name, const std::string &label = "",
-                     float min = 0.0f, float max = 1.0f, float def = 0.5f);
+    BaseValueControl(const std::string &name, const std::string &label = "", float min = 0.0f, float max = 1.0f,
+                     float def = 0.5f);
     virtual ~BaseValueControl() = default;
 
     virtual void inc(bool coarse) = 0;
@@ -27,14 +27,14 @@ public:
     void fg(juce::Colour c) { fg_ = c; }
 
     void set(float v);
+    void setNoCallback(float v) { value_ = v; }
 
 protected:
-
     std::string name_, label_;
     float value_;
     float min_, max_, default_;
 
-//    void paint(Graphics &g);
+    //    void paint(Graphics &g);
     bool active_;
     juce::Colour fg_ = juce::Colours::red;
     juce_UseDebuggingNewOperator
@@ -43,10 +43,8 @@ protected:
 
 class SimpleValueControl : public BaseValueControl {
 public:
-    SimpleValueControl(const std::string &name, const std::string &label,
-                       std::function<void(float v)> cb,
-                       float min = 1.0f, float max = 1.0f, float def = 0.5f,
-                       float coarse = 1.0f, float fine = 0.01f);
+    SimpleValueControl(const std::string &name, const std::string &label, std::function<void(float v)> cb,
+                       float min = 0.0f, float max = 1.0f, float def = 0.5f, float coarse = 0.1f, float fine = 0.01f);
     void inc(bool coarse) override;
     void dec(bool coarse) override;
     void reset() override;
@@ -65,10 +63,9 @@ private:
 
 class LineValueControl : public SimpleValueControl {
 public:
-    LineValueControl(const std::string &name, const std::string &label,
-                     std::function<void(float v)> cb,
-                     float min = 1.0f, float max = 1.0f, float def = 0.5f,
-                     float coarse = 1.0f, float fine = 0.01f);
+    LineValueControl(const std::string &name, const std::string &label, std::function<void(float v)> cb,
+                     float min = 0.0f, float max = 1.0f, float def = 0.5f, float coarse = 0.1f, float fine = 0.01f);
+
 protected:
     void paint(juce::Graphics &g) override;
     juce_UseDebuggingNewOperator
@@ -77,11 +74,14 @@ protected:
 
 class BarValueControl : public SimpleValueControl {
 public:
-    BarValueControl(const std::string &name, const std::string &label,
-                    std::function<void(float v)> cb,
-                    float min = 1.0f, float max = 1.0f, float def = 0.5f,
-                    float coarse = 1.0f, float fine = 0.01f);
+    BarValueControl(const std::string &name, const std::string &label, std::function<void(float v)> cb,
+                    float min = 0.0f, float max = 1.0f, float def = 0.5f, float coarse = 0.1f, float fine = 0.01f);
+    
+    void displayValue(bool b) { displayValue_ = b; }
+
 protected:
+    bool displayValue_ = true;
+
     void paint(juce::Graphics &g) override;
     juce_UseDebuggingNewOperator
 };
@@ -89,10 +89,8 @@ protected:
 
 class ListValueControl : public BaseValueControl {
 public:
-    ListValueControl(const std::string &name,
-                     std::function<void(float idx, const std::string &str)> cb,
-                     std::vector<std::string> values = std::vector<std::string>(),
-                     float def = 0.0f, 
+    ListValueControl(const std::string &name, std::function<void(float idx, const std::string &str)> cb,
+                     std::vector<std::string> values = std::vector<std::string>(), float def = 0.0f,
                      int fh = 18 * COMPACT_UI_SCALE);
     void inc(bool coarse) override;
     void dec(bool coarse) override;
@@ -104,6 +102,7 @@ public:
 
     void setValues(std::vector<std::string> &v, int selIdx = -1);
     void setFontHeight(int fh) { fh_ = fh; }
+
 protected:
     void paint(juce::Graphics &g) override;
 
@@ -115,4 +114,4 @@ private:
 };
 
 
-} // namespace
+}  // namespace ssp

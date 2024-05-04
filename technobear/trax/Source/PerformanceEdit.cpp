@@ -10,13 +10,21 @@ PerformanceEdit::PerformanceEdit(PluginProcessor& p) : base_type(&p), processor_
     addAndMakeVisible(paramList_);
 }
 
+
+void PerformanceEdit::drawView(juce::Graphics& g) {
+    base_type::drawView(g);
+    g.setColour(juce::Colours::yellow);
+    g.setFont(fh);
+    g.drawText("Performance Parameters", canvasX(), 0, canvasWidth(), fh, juce::Justification::centredLeft);
+}
+
 PerformanceEdit::~PerformanceEdit() {
 }
 
 void PerformanceEdit::resized() {
     base_type::resized();
     auto r = getLocalBounds();
-    paramList_.setBounds(r);
+    paramList_.setBounds(r.removeFromTop(fh));
 }
 
 void PerformanceEdit::editorShown() {

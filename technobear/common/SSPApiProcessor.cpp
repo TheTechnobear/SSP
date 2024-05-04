@@ -81,24 +81,48 @@ void SSP_PluginInterface::useCompactUI(bool b) {
 
 
 unsigned SSP_PluginInterface::numberOfParameters() {
-    auto& params = processor_->getParameters();
-    return params.size();   
+    auto &params = processor_->getParameters();
+    return params.size();
 }
 
-std::string SSP_PluginInterface::parameterName(unsigned idx) {
-    auto& params = processor_->getParameters();
-    if (idx >= params.size()) return "";    
-    return params[idx]->getName(128).toStdString(); 
+bool SSP_PluginInterface::parameterDesc(unsigned idx, ParameterDesc &desc) {
+    auto &params = processor_->getParameters();
+    if (idx >= params.size()) return false;
+
+    auto param = (juce::RangedAudioParameter*) params[idx];
+
+    desc.id_ = param->getParameterID().toStdString();
+    desc.name_ = param->getName(128).toStdString();
+    desc.isDescrete_ = param->isDiscrete();
+    desc.def_ = param->getDefaultValue();
+    desc.numSteps_ = param->getNumSteps();
+
+    auto range = param->getNormalisableRange().getRange();
+    desc.min_ = range.getStart();
+    desc.max_ = range.getEnd();
+    return true;
 }
 
 float SSP_PluginInterface::parameterValue(unsigned idx) {
-    auto& params = processor_->getParameters();
-    if (idx >= params.size()) return 0.0f;    
-    return params[idx]->getValue();
+    auto &params = processor_->getParameters();
+    if (idx >= params.size()) return 0.0f;
+
+    auto p = (juce::RangedAudioParameter*) params[idx];
+    return p->convertFrom0to1(p->getValue());
 }
 
-void SSP_PluginInterface::parameterValue(unsigned idx, float v) {
-    auto& params = processor_->getParameters();
-    if (idx >= params.size()) return;  
-    return params[idx]->setValue(v);
+bool SSP_PluginInterface::parameterValue(unsigned idx, float val) {
+    auto &params = processor_->getParameters();
+    if (idx >= params.size()) return false;
+
+    auto p = (juce::RangedAudioParameter*) params[idx];
+    float norm = p->convertTo0to1(val);
+    if (p->getValue() != norm) {
+        p->beginChangeGesture();
+        p->setValueNotifyingHost(norm);
+        p->endChangeGesture();
+    }
+
+    // params[idx]->setValue(v);
+    return true;
 }

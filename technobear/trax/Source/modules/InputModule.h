@@ -40,9 +40,10 @@ public:
     void useCompactUI(bool b) override {};
 
     unsigned numberOfParameters() override { return 0;}
-    std::string parameterName(unsigned idx) override { return "";}
+    bool parameterDesc(unsigned idx, ParameterDesc& desc) override { return false;}
     float parameterValue(unsigned idx) override { return 0.f;}
-    void parameterValue(unsigned idx, float v) override {}
+    bool parameterValue(unsigned idx, float v) override { return false;}
+    
 
 
     static SSPExtendedApi::PluginDescriptor* createDescriptor() { return new InputModule::PluginDescriptor(); }

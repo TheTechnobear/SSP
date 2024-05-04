@@ -8,14 +8,12 @@ PerformanceView::PerformanceView(PluginProcessor &p) : base_type(&p), processor_
 PerformanceView::~PerformanceView() {
 }
 
-void PerformanceView::resized() {
-    base_type::resized();
-    auto r = getLocalBounds();
-}
-
 
 void PerformanceView::drawView(juce::Graphics &g) {
     base_type::drawView(g);
+    g.setColour(juce::Colours::yellow);
+    g.setFont(fh);
+    g.drawText("Performance", canvasX(), 0, canvasWidth(), fh, juce::Justification::centredLeft);
 }
 
 void PerformanceView::editorShown() {
@@ -24,24 +22,31 @@ void PerformanceView::editorShown() {
     params_.clear();
     page_ = 0;
 
+    static constexpr int MAX_CLRS = 4;
+    juce::Colour clrs[MAX_CLRS] = { juce::Colours::red, juce::Colours::yellow, juce::Colours::blue,
+                                    juce::Colours::orange };
+
     int x = canvasX();
-    int y = canvasY();
+    int y = canvasY() + fh;
     int w = canvasWidth();
-    int h = canvasHeight();
+    int h = canvasHeight() - fh;
     int ph = h / paramsPerPage;
     int py = y;
 
     int idx = 0;
     for (auto &param : processor_.performanceParams()) {
         int pidx = idx % paramsPerPage;
-        auto c = std::make_shared<PerfParamComponent>(processor_, param);
+        int page = idx / paramsPerPage;
+        auto c = std::make_shared<PerfParamComponent>(processor_, param, clrs[page % MAX_CLRS]);
         params_.push_back(c);
         c->setBounds(x, py + ph * pidx, w, ph);
 
         if (idx < paramsPerPage) {
             addAndMakeVisible(c.get());
+            c->active(true);
         } else {
             addChildComponent(c.get());
+            c->active(false);
         }
         idx++;
     }
@@ -72,6 +77,7 @@ void PerformanceView::changePage(int delta) {
         if (idx < params_.size()) {
             auto c = params_[idx];
             c->setVisible(false);
+            c->active(false);
         }
     }
 
@@ -81,6 +87,7 @@ void PerformanceView::changePage(int delta) {
         int idx = page_ * paramsPerPage + i;
         if (idx < params_.size()) {
             auto c = params_[idx];
+            c->active(true);
             c->setVisible(true);
         }
     }
@@ -94,7 +101,7 @@ void PerformanceView::onSSPTimer() {
     if (eidx > params_.size()) eidx = params_.size();
     for (int i = sidx; i < eidx; i++) {
         auto &c = params_[i];
-        if (c->isVisible()) c->onSSPTimer();
+        if (c->active()) c->onSSPTimer();
     }
 }
 
@@ -103,7 +110,7 @@ void PerformanceView::onEncoder(unsigned id, float v) {
     int pidx = sidx + id;
     if (pidx < params_.size()) {
         auto &c = params_[pidx];
-        c->onEncoder(id, v);
+        if (c->active()) c->onEncoder(v);
     }
 
     base_type::onEncoder(id, v);
@@ -114,7 +121,7 @@ void PerformanceView::onEncoderSwitch(unsigned id, bool v) {
     int pidx = sidx + id;
     if (pidx < params_.size()) {
         auto &c = params_[pidx];
-        c->onEncoderSwitch(id, v);
+        if (c->active()) c->onEncoderSwitch(v);
     }
 
     base_type::onEncoderSwitch(id, v);

@@ -80,9 +80,7 @@ bool PluginProcessor::requestModuleChange(unsigned t, unsigned m, const std::str
     if (t >= MAX_TRACKS || m >= Track::M_MAX) return false;
     auto &track = tracks_[t];
     bool ret = track.requestModuleChange(m, mn);
-    if(ret) {
-        while(!removePerformanceParam(t, m));
-    }
+    if (ret) { while (!removePerformanceParam(t, m)); }
     return ret;
 }
 
@@ -278,9 +276,13 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
                 auto plugin = getPlugin(t, m);
                 if (plugin) {
                     if (p < plugin->numberOfParameters()) {
-                        auto paramName = plugin->parameterName(p);
-                        PluginProcessor::PerformanceParam param(t, m, p, pluginName, paramName, 0.0f);
-                        addPerformanceParam(param);
+                        SSPExtendedApi::PluginInterface::ParameterDesc desc;
+                        if (plugin->parameterDesc(p, desc)) {
+                            PluginProcessor::PerformanceParam param(t, m, p, pluginName, desc.name_, desc.min_,
+                                                                    desc.max_, desc.def_, desc.numSteps_,
+                                                                    desc.isDescrete_);
+                            addPerformanceParam(param);
+                        }
                     } else {
                         ssp::log(
                             "setStateInformation : cannot add performance param, param index out of range for track " +
