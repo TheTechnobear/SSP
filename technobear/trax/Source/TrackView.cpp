@@ -2,7 +2,7 @@
 
 TrackView::TrackView(PluginProcessor &p) : base_type(&p, nullptr), processor_(p) {
     for (int i = Track::M_IN + 1; i < Track::M_OUT; i++) {
-        auto sbtn = std::make_shared<ssp::ValueButton>("View", [&](bool b) {});
+        auto sbtn = std::make_shared<ssp::ValueButton>("Mod "+std::to_string(i), [&](bool b) {});
         addButton(i - Track::M_SLOT_1, sbtn);
     }
 
