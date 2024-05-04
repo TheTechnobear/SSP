@@ -38,7 +38,6 @@ private:
     float level_ = 0.0f;
     float gainLevel_=0.0f;
     bool drawGainLevel_=false;
-
     juce_UseDebuggingNewOperator
 };
 
@@ -65,9 +64,12 @@ public:
 
     void paint(juce::Graphics &) override;
     void resized() override;
+    void labelColour(juce::Colour clr) { labelClr_ = clr; }
+
 private:
     String label_;
     VuMeter channel_;
+    juce::Colour labelClr_ = juce::Colours::red;
     juce_UseDebuggingNewOperator
 };
 
@@ -106,6 +108,7 @@ public:
         lChannel_.gainLevel(l_lvl);
         rChannel_.gainLevel(r_lvl);
     }
+    void labelColour(juce::Colour clr) { labelClr_ = clr; }
 
     void paint(juce::Graphics &) override;
     void resized() override;
@@ -113,6 +116,7 @@ private:
     juce::String label_;
     VuMeter lChannel_;
     VuMeter rChannel_;
+    juce::Colour labelClr_ = juce::Colours::red;
 
     juce_UseDebuggingNewOperator
 };

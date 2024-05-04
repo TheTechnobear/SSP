@@ -23,8 +23,7 @@ PerformanceEdit::~PerformanceEdit() {
 
 void PerformanceEdit::resized() {
     base_type::resized();
-    auto r = getLocalBounds();
-    paramList_.setBounds(r.removeFromTop(fh));
+    paramList_.setBounds(canvasX(),canvasY(),canvasWidth(),canvasHeight());
 }
 
 void PerformanceEdit::editorShown() {

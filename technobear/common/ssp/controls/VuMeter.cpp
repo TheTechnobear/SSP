@@ -119,7 +119,7 @@ void MonoVuMeter::paint(Graphics &g) {
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
 
     if (enabled()) {
-        g.setColour(Colours::red);
+        g.setColour(labelClr_);
     } else {
         g.setColour(Colours::lightgrey);
     }
@@ -165,7 +165,7 @@ void StereoVuMeter::paint(Graphics &g) {
 
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
     if (enabled()) {
-        g.setColour(Colours::red);
+        g.setColour(labelClr_);
     } else {
         g.setColour(Colours::lightgrey);
     }

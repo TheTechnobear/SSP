@@ -7,7 +7,6 @@
 
 - test rings
 - wire scale + offset, see below
-- performance UI , see below
 
 - other modules? see below
 

@@ -2,12 +2,14 @@
 
 TrackView::TrackView(PluginProcessor &p) : base_type(&p, nullptr), processor_(p) {
     for (int i = Track::M_IN + 1; i < Track::M_OUT; i++) {
-        auto sbtn = std::make_shared<ssp::ValueButton>("Mod "+std::to_string(i), [&](bool b) {});
+        auto sbtn = std::make_shared<ssp::ValueButton>(
+            "Mod " + std::to_string(i), [&](bool b) {}, 16 * COMPACT_UI_SCALE, Colours::yellow);
         addButton(i - Track::M_SLOT_1, sbtn);
     }
 
     for (int i = 0; i < Track::MAX_MODULES; i++) {
-        auto module = std::make_shared<ModuleComponent>(processor_, 0, i);
+        auto clr = i == Track::M_IN || i == Track::M_OUT ? Colours::white : Colours::yellow;
+        auto module = std::make_shared<ModuleComponent>(processor_, 0, i, clr);
         modules_.push_back(module);
         addAndMakeVisible(module.get());
     }

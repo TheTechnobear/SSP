@@ -23,10 +23,10 @@ void PerformanceAdd::drawView(juce::Graphics &g) {
 
 void PerformanceAdd::resized() {
     base_type::resized();
-    auto h = canvasHeight() - fh;
-    auto w = canvasWidth();
-    auto y = canvasY();
-    auto x = canvasX() + fh;
+    int x = canvasX();
+    int y = canvasY();
+    int w = canvasWidth();
+    int h = canvasHeight();
 
     auto gap = 5 * COMPACT_UI_SCALE;
     auto gw = w / 4;

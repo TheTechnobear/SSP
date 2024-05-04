@@ -4,13 +4,16 @@
 MixerView::MixerView(PluginProcessor& p) : base_type(&p, nullptr), processor_(p) {
     for (int t = 0; t < PluginProcessor::MAX_TRACKS; t++) {
         auto& meter = vuMeters_[t];
-        meter.init("Track " + String(t + 1), true);
+        // meter.init("Track " + String(t + 1), true);
+        meter.init("", true);
         meter.enabled(!processor_.muteTrack(t));
+        meter.labelColour(Colours::yellow);
         addAndMakeVisible(meter);
     }
 
     for (unsigned t = 0; t < PluginProcessor::MAX_TRACKS; t++) {
-        auto tracksel = std::make_shared<ssp::ValueButton>("Track", [this, t](bool v) {});
+        auto tracksel = std::make_shared<ssp::ValueButton>(
+            "Track " + std::to_string(t + 1), [this, t](bool v) {}, 16 * COMPACT_UI_SCALE, juce::Colours::yellow);
         addButton(t, tracksel);
 
         auto mutebtn = std::make_shared<ssp::ValueButton>("Mute", [this, t](bool v) {

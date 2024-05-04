@@ -27,9 +27,9 @@ void PerformanceView::editorShown() {
                                     juce::Colours::orange };
 
     int x = canvasX();
-    int y = canvasY() + fh;
+    int y = canvasY();
     int w = canvasWidth();
-    int h = canvasHeight() - fh;
+    int h = canvasHeight();
     int ph = h / paramsPerPage;
     int py = y;
 
