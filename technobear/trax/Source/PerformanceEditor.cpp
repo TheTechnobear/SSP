@@ -34,8 +34,8 @@ void PerformanceEditor::editorShown() {
 }
 
 void PerformanceEditor::eventUp(bool longPress) {
-    auto v = getViewIdx();
     if (!longPress) {
+        auto v = getViewIdx();
         if (v == editViewIdx_) {
             setView(perfViewIdx_);
             return;
@@ -48,18 +48,21 @@ void PerformanceEditor::eventUp(bool longPress) {
 }
 
 void PerformanceEditor::eventDown(bool longPress) {
-    auto v = getViewIdx();
-    if (longPress) {
-        if (v == perfViewIdx_) {
-            setView(editViewIdx_);
-            return;
-        } else {
-            setView(perfViewIdx_);
-            return;
-        }
-    }
     base_type::eventDown(longPress);
 }
+
+void PerformanceEditor::eventButtonHeld(unsigned btn) {
+    auto v = getViewIdx();
+    if (v == perfViewIdx_) {
+        setView(editViewIdx_);
+        return;
+    } else {
+        setView(perfViewIdx_);
+        return;
+    }
+    base_type::eventButtonHeld(btn);
+}
+
 
 void PerformanceEditor::eventButton(unsigned btn, bool longPress) {
     auto v = getViewIdx();

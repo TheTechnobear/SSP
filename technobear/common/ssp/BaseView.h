@@ -12,10 +12,7 @@ class BaseProcessor;
 class EditorHost;
 
 
-class BaseView :
-    public juce::Component,
-    public SSPActions {
-
+class BaseView : public juce::Component, public SSPActions {
 public:
     explicit BaseView(BaseProcessor *p, bool compactUI);
     virtual ~BaseView();
@@ -40,34 +37,29 @@ public:
 
     void onSSPTimer() override;
 
-    void eventButton(unsigned btn,bool longPress) override {}
+    void eventButton(unsigned btn, bool longPress) override {}
     void eventUp(bool longPress) override {}
     void eventDown(bool longPress) override {}
     void eventLeft(bool longPress) override {}
     void eventRight(bool longPress) override {}
     void eventLeftShift(bool longPress) override {}
     void eventRightShift(bool longPress) override {}
-    void eventButtonCombo(unsigned btn,unsigned comboBtn, bool longPress) override {}
-
+    void eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress) override {}
+    void eventButtonHeld(unsigned btn) override {}
 
     friend class EditorHost;
-
 
 protected:
     BaseProcessor *baseProcessor_;
 
 
-    juce::Colour defaultBg_=  juce::Colour(0xff111111);
-    bool compactUI_=false;
+    juce::Colour defaultBg_ = juce::Colour(0xff111111);
+    bool compactUI_ = false;
 
 private:
     void paint(juce::Graphics &) override;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BaseView)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(BaseView)
 };
 
-}
-
-
-
-
+}  // namespace ssp

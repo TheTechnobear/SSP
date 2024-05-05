@@ -98,9 +98,15 @@ void TrackEditor::eventButton(unsigned btn, bool longPress) {
                 }
             }
         }
-    } else {
+    }
+    base_type::eventButton(btn, longPress);
+}
+
+void TrackEditor::eventButtonHeld(unsigned btn) {
+    if (btn >= SSP_Soft_1 && btn <= SSP_Soft_4) {
+        int m = btn - SSP_Soft_1;
         if (getViewIdx() == trackViewIdx_ && btn < Track::MAX_USER_MODULES) {
-            auto modIdx = btn + Track::M_SLOT_1;
+            auto modIdx = m + Track::M_SLOT_1;
             loadModuleView_->moduleIdx(trackIdx_, modIdx + 1);
             matrixView_->moduleIdx(trackIdx_, modIdx);
             moduleView_->moduleIdx(trackIdx_, modIdx);
@@ -108,7 +114,7 @@ void TrackEditor::eventButton(unsigned btn, bool longPress) {
             return;
         }
     }
-    base_type::eventButton(btn, longPress);
+    base_type::eventButtonHeld(btn);
 }
 
 

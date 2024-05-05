@@ -16,17 +16,16 @@ public:
 
     virtual void onSSPTimer() = 0;
 
-
-    
-    virtual void eventButton(unsigned btn,bool longPress) = 0;
+    virtual void eventButton(unsigned btn, bool longPress) = 0;
     virtual void eventUp(bool longPress) = 0;
     virtual void eventDown(bool longPress) = 0;
     virtual void eventLeft(bool longPress) = 0;
     virtual void eventRight(bool longPress) = 0;
     virtual void eventLeftShift(bool longPress) = 0;
     virtual void eventRightShift(bool longPress) = 0;
-    virtual void eventButtonCombo(unsigned btn,unsigned comboBtn, bool longPress) = 0;
+    virtual void eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress) = 0;
+    virtual void eventButtonHeld(unsigned btn) = 0;
 };
 
 
-}
+}  // namespace ssp

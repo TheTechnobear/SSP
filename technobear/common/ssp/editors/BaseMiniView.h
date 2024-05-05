@@ -105,6 +105,8 @@ public:
 
 protected:
     void onButton(unsigned int id, bool v) override;
+    void editorShown() override;
+    void editorHidden() override;
 
     // void drawView(Graphics &) override;
 

@@ -7,7 +7,6 @@
 
 - test rings
 - other modules? see below
-- use hold event rather than long press?
 
 
 # Possible?
@@ -28,8 +27,6 @@ make use of new components for text edit and file loading?
 ## other tasks
 - review code and tidy up certain parts
 - should matrix be renamed? review other nomenclature.
-- review editors and views... getting very confusing!
-- rationalise button box drawing esp with value buttons - DONE
 
 
 # potential modules to add?
@@ -42,11 +39,6 @@ things on SSP factory:
 arp, bcr, bus, efl, lfo, env, gra, midi, noi (noise- shq?), 
 sam, ste, svf ,ws (waveshaer) wto (wavetable) 
 
-## wire offset/scaling
-scaling of signal... we could add to route screen
-use encoder 4 to allow for scaling (normal turn) or offset (press + turn)
-
-
 
 # close of 'dialog views'
 I dont like the way the editor, has to know about the buttons used.
@@ -56,38 +48,6 @@ or some kind of callback function... to notify parent view to switch back.
 - not really liking the hold UP button to close module window.
 but really there is no other choice, I can think of... as we use up/down to go thru sets of parameters
 
-## performance interface?
-idea is to allow a parameters to be moved to a 'central' performance window.
-so you dont have to dig into to individual plugins to alter.
-ideally this be across ALL tracks
-
-note: 
-parameters would need to be added to plugin descrition ex
-we would also need get/set in the plugin processor api
-
-notes: parameters cannot be added to description - due to way ParameterTree works.
-so has to be done 'live' thru processor api - this is ok, since you only want to do with loaded module anyway
-
-added : api changes, may need improvemnt
-
-one 'issue' it will need to pull values, unless we implement a callback interface from plugin... 
-which we do not currently have at all !
-
-
-
-# view/editor refactoring - lower priority - post demo/release?
-code refactor... the views need refactoring... too much code duplication
-too many variations possible, around how much of the UI and editor wants to draw, or just default 'and work'
-this includes if buttons are parameters, or are just ui elements.
-also perhaps there is an over use of 'multi views' to allow for switching'
-
-I think a better approach is using more components. 
-I recently introduced button box... 
-the idea is the editor can then just include particular components it needs, 
-and then manage the connection between these and buttons presses with minimal code.
-
-needs to be thought thru though, e.g. do we have pages of buttons and paramters do they get linked.
-the potentially issue being, we just end up movin the 'mess' from the view to components ;) 
 
 
 ## existing plugin coversion  - restrictions - later enhancements?

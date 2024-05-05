@@ -35,6 +35,7 @@ public:
     void eventLeftShift(bool longPress) override;
     void eventRightShift(bool longPress) override;
     void eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress) override;
+    void eventButtonHeld(unsigned btn) override;
 
     void editorShown() override;
     void editorHidden() override;
@@ -270,5 +271,11 @@ void MultiView<T>::eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPr
     views_[view_]->eventButtonCombo(btn, comboBtn, longPress);
 }
 
+template <class T>
+void MultiView<T>::eventButtonHeld(unsigned btn) {
+    base_type::eventButtonHeld(btn);
+    if (view_ < 0) return;
+    views_[view_]->eventButtonHeld(btn);
+}
 
 }  // namespace ssp

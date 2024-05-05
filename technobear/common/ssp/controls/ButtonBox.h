@@ -20,6 +20,7 @@ public:
 private:
     void paint(juce::Graphics &g) override;
     void resized() override;
+    void visibilityChanged() override;
 
     static constexpr unsigned scale = COMPACT_UI_SCALE;
     static constexpr unsigned maxUserBtns = 8;

@@ -180,4 +180,10 @@ void BaseViewEditor::eventButtonCombo(unsigned btn, unsigned comboBtn, bool long
 }
 
 
+void BaseViewEditor::eventButtonHeld(unsigned btn) {
+    base_type::eventButtonHeld(btn);
+    if (view_ < 0) return;
+    views_[view_]->eventButtonHeld(btn);
+}
+
 }  // namespace ssp

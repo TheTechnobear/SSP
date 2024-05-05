@@ -50,6 +50,7 @@ public:
     void eventLeftShift(bool longPress) override {}
     void eventRightShift(bool longPress) override {}
     void eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress) override {}
+    void eventButtonHeld(unsigned btn) override {}
 
 protected:
     BaseProcessor *baseProcessor_;

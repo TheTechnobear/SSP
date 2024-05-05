@@ -15,6 +15,19 @@
       "preLaunchTask": "build CLDS_VST3"
     },
     {
+      "name": "RNGS",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/Users/kodiak/bin/AudioPluginHost.app",
+      "args": ["./rngs.filtergraph"],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/resources/test",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
+      "preLaunchTask": "build RNGS_VST3"
+    },
+    {
       "name": "PLTS",
       "type": "cppdbg",
       "request": "launch",

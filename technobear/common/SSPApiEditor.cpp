@@ -21,7 +21,12 @@ SSP_PluginEditorInterface::~SSP_PluginEditorInterface() {
 void SSP_PluginEditorInterface::frameStart() {
     PluginEditorInterface::frameStart();
     if (editor_) editor_->onSSPTimer();
-    for (int i = 0; i < SSP_LastBtn; i++) { buttonCounter_[i] -= (buttonCounter_[i] > 0); }
+    for (int i = 0; i < SSP_LastBtn; i++) {
+        if (buttonCounter_[i] > 0) {
+            buttonCounter_[i]--;
+            if (buttonCounter_[i] == 0) { editor_->eventButtonHeld(i); }
+        }
+    }
 }
 
 void SSP_PluginEditorInterface::visibilityChanged(bool b) {
@@ -98,7 +103,7 @@ void SSP_PluginEditorInterface::encoderTurned(int n, int val) {
 }
 
 void SSP_PluginEditorInterface::generateButtenEvents(int n, bool val) {
-    static constexpr unsigned LONG_PRESS_COUNT = 5;
+    static constexpr unsigned LONG_PRESS_COUNT = 15;
 
     if (buttonState_[n] == val) return;
     // only look at transitions
@@ -116,9 +121,11 @@ void SSP_PluginEditorInterface::generateButtenEvents(int n, bool val) {
     // on release...
     bool longPress = buttonCounter_[n] == 0;
 
+    buttonCounter_[n] = 0;
+
     for (int i = 0; i < SSP_LastBtn; i++) {
         if (i == n) continue;
-        if (buttonState_[i])  {
+        if (buttonState_[i]) {
             // consume combo
             buttonCounter_[i] = 0;
             buttonState_[i] = false;
@@ -126,7 +133,6 @@ void SSP_PluginEditorInterface::generateButtenEvents(int n, bool val) {
             return;
         }
     }
-
 
     switch (n) {
         case SSP_Soft_1:

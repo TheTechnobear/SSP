@@ -27,6 +27,7 @@ public:
     void onEncoderSwitch(unsigned enc, bool v) override;
     void eventUp(bool longpress) override;
     void eventButton(unsigned btn, bool longPress) override;
+    void eventButtonHeld(unsigned btn) override;
 
     void resized() override;
 private:

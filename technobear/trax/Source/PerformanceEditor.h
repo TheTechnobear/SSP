@@ -18,6 +18,7 @@ protected:
     void eventUp(bool longPress) override;
     void eventDown(bool longPress) override;
     void eventButton(unsigned btn, bool longPress) override;
+    void eventButtonHeld(unsigned btn) override;
 
     void editorShown() override;
 

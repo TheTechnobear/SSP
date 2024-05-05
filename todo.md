@@ -33,6 +33,8 @@ TO DO  - MED PRIO
 - Text Edit... test check working as intended, see belo (for TextControl)
 - retest all plugins on SSP look for 'oddities'
 - PMIX ... check is not broken, perhaps move to new events - but its complex! 
+- review editor/view classes, and refactor see below
+- review concept of 'close' for views, so that parent does not have to have handling code (see trax)
 
 
 
@@ -54,3 +56,20 @@ OTHER
 
 - review ValueButton vs ParamButton, as this can cause issues missing the types eg. with ButtonBox
 - use ButtonBox control in editor/view (do we need a ParamButtonBox , see above ValueButton vs ParamButton)
+
+
+
+
+# view/editor refactoring - lower priority - post demo/release?
+code refactor... the views need refactoring... too much code duplication
+too many variations possible, around how much of the UI and editor wants to draw, or just default 'and work'
+this includes if buttons are parameters, or are just ui elements.
+also perhaps there is an over use of 'multi views' to allow for switching'
+
+I think a better approach is using more components. 
+I recently introduced button box... 
+the idea is the editor can then just include particular components it needs, 
+and then manage the connection between these and buttons presses with minimal code.
+
+needs to be thought thru though, e.g. do we have pages of buttons and paramters do they get linked.
+the potentially issue being, we just end up movin the 'mess' from the view to components ;) 

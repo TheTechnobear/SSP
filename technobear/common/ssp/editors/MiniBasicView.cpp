@@ -22,6 +22,16 @@ std::shared_ptr<ValueButton> MiniBasicView::getButton(unsigned idx) {
     return buttonBox_->getButton(idx);
 }
 
+void MiniBasicView::editorShown() {
+    base_type::editorShown();
+    buttonBox_->setVisible(true);
+}
+
+void MiniBasicView::editorHidden() {
+    base_type::editorHidden();
+    buttonBox_->setVisible(false);
+}
+
 
 void MiniBasicView::resized() {
     base_type::resized();

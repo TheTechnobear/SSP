@@ -37,8 +37,23 @@ void PluginEditor::eventButton(unsigned btn, bool longPress) {
 
 
 void PluginEditor::eventUp(bool longPress) {
+    base_type::eventUp(longPress);
+}
+
+void PluginEditor::eventDown(bool longPress) {
     auto v = getViewIdx();
-    if (longPress) {
+    if (!longPress) {
+        if (v == mixerViewIdx_) {
+            setView(perfEditorIdx_);
+            return;
+        }
+    }
+    base_type::eventDown(longPress);
+}
+
+void PluginEditor::eventButtonHeld(unsigned btn) {
+    if (btn == SSP_Up) {
+        auto v = getViewIdx();
         if (v == mixerViewIdx_) {
             setView(optionViewIdx_);
             return;
@@ -46,22 +61,12 @@ void PluginEditor::eventUp(bool longPress) {
             setView(mixerViewIdx_);
             return;
         }
-    }
-    base_type::eventUp(longPress);
-}
-
-void PluginEditor::eventDown(bool longPress) {
-    auto v = getViewIdx();
-    if (longPress) {
+    } else if (btn == SSP_Down) {
+        auto v = getViewIdx();
         if (v != perfEditorIdx_) {
             setView(perfEditorIdx_);
             return;
         }
-    } else {
-        if (v == mixerViewIdx_) {
-            setView(perfEditorIdx_);
-            return;
-        }
     }
-    base_type::eventDown(longPress);
+    base_type::eventButtonHeld(btn);
 }

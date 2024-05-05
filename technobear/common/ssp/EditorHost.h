@@ -1,7 +1,6 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
-
 #include <juce_gui_basics/juce_gui_basics.h>
 using namespace juce;
 
@@ -38,27 +37,25 @@ public:
     void onSSPTimer() override;
 
 
-    void eventButton(unsigned btn,bool longPress) override;
+    void eventButton(unsigned btn, bool longPress) override;
     void eventUp(bool longPress) override;
     void eventDown(bool longPress) override;
     void eventLeft(bool longPress) override;
     void eventRight(bool longPress) override;
     void eventLeftShift(bool longPress) override;
     void eventRightShift(bool longPress) override;
-    void eventButtonCombo(unsigned btn,unsigned comboBtn, bool longPress) override;
-
+    void eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPress) override;
+    void eventButtonHeld(unsigned btn) override;
 
     bool keyStateChanged(bool isKeyDown) override;
     void modifierKeysChanged(const ModifierKeys &modifiers) override;
 
-    juce::Component *getEditorComponent() { 
-        if(sysActive_ && system_ != nullptr) {
-            return system_;
-        } 
-        return editor_; 
+    juce::Component *getEditorComponent() {
+        if (sysActive_ && system_ != nullptr) { return system_; }
+        return editor_;
     }
 
-    bool isCompactUI(){ return compactUI_;}
+    bool isCompactUI() { return compactUI_; }
 
 private:
     void drawMenuBox(Graphics &g);

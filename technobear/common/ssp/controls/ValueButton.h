@@ -34,11 +34,14 @@ public:
     void value(bool v);
     bool value() { return value_; }
     void setToggle(bool b) { isToggle_ = b; }
+    void visibilityChanged() override {
+        if(!isToggle_) value(false);
+    }
 
 private:
     void valueChanged(bool b);
 
-    void paint(juce::Graphics &g);
+    void paint(juce::Graphics &g) override;
     std::function<void(bool value)> callback_;
 
     bool isToggle_ = false;

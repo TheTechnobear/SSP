@@ -28,9 +28,7 @@ EditorHost::EditorHost(BaseProcessor *p, BaseView *e, bool compactUI, bool enabl
     addChildComponent(editor_);
     if (compactUI_) { drawDefaults_ = false; }
 
-    if (compactUI_){
-        defaultBg_ = Colours::black;
-    }
+    if (compactUI_) { defaultBg_ = Colours::black; }
 
 
     if (enableSysEditor) {
@@ -277,11 +275,17 @@ void EditorHost::eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPres
     else
         editor_->eventButtonCombo(btn, comboBtn, longPress);
 
-    if(compactUI_) {
+    if (compactUI_) {
         if ((comboBtn == SSP_Up && btn == SSP_Down) || (comboBtn == SSP_Down && btn == SSP_Up)) { sysEditor(); }
     }
 }
 
+void EditorHost::eventButtonHeld(unsigned btn) {
+    if (sysActive_)
+        system_->eventButtonHeld(btn);
+    else
+        editor_->eventButtonHeld(btn);
+}
 
 // up, down, left , right , rs, ls
 bool EditorHost::keyStateChanged(bool isKeyDown) {

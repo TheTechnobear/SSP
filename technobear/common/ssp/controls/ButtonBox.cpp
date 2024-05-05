@@ -66,4 +66,12 @@ void ButtonBox::onButton(unsigned id, bool v) {
     btn->onButton(v);
 }
 
+void ButtonBox::visibilityChanged() {
+    juce::Component::visibilityChanged();
+    for (auto p : buttons_) {
+        if (p) p->setVisible(isVisible());
+    }
+}
+
+
 }  // namespace ssp

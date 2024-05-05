@@ -5,10 +5,11 @@
 
 namespace ssp {
 
-static constexpr unsigned LONG_PRESS_COUNT = 30;
+static constexpr unsigned LONG_PRESS_COUNT = 15;
 
 SSPUI::SSPUI(BaseProcessor *processor, EditorHost *actions) : processor_(processor), actions_(actions) {
-    startTimer(50);
+    // startTimer(1000/30);  // 30fps
+    startTimer(1000/15);  // 30fps
 
     for (unsigned i = 0; i < NENC; i++) {
         auto &up = encUp_[i];
@@ -117,7 +118,12 @@ SSPUI::~SSPUI() {
 
 void SSPUI::timerCallback() {
     actions_->onSSPTimer();
-    for (int i = 0; i < SSP_LastBtn; i++) { buttonCounter_[i] -= (buttonCounter_[i] > 0); }
+    for (int i = 0; i < SSP_LastBtn; i++) {
+        if (buttonCounter_[i] > 0) {
+            buttonCounter_[i]--;
+            if (buttonCounter_[i] == 0) { actions_->eventButtonHeld(i); }
+        }
+    }
     actions_->repaint();
 }
 
@@ -257,10 +263,12 @@ void SSPUI::generateButtenEvents(int n, bool val) {
 
     // on release...
     bool longPress = buttonCounter_[n] == 0;
+    
+    buttonCounter_[n] = 0;
 
     for (int i = 0; i < SSP_LastBtn; i++) {
         if (i == n) continue;
-        if (buttonState_[i])  {
+        if (buttonState_[i]) {
             // consume combo
             buttonCounter_[i] = 0;
             buttonState_[i] = false;

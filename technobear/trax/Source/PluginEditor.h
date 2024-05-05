@@ -20,6 +20,7 @@ protected:
     void eventButton(unsigned btn,bool longPress) override;
     void eventUp(bool longPress) override;
     void eventDown(bool longPress) override;
+    void eventButtonHeld(unsigned btn) override;
 private:
     using base_type = ssp::MultiView<ssp::BaseView>;
 
