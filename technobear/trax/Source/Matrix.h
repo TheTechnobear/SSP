@@ -25,6 +25,13 @@ public:
         Wire(const Jack& src, const Jack& dest) : src_(src), dest_(dest) {}
         Jack src_;
         Jack dest_;
+        float gain_ = 1.0f;
+        float offset_ = 0.0f;
+
+        void applyGainOffset(float g, float o) {
+            gain_ = g;
+            offset_ = o;
+        }
 
         int operator==(const Wire& b) {
             if (src_ == b.src_ && dest_ == b.dest_) { return 1; }

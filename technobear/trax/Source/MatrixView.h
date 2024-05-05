@@ -1,10 +1,9 @@
 #pragma once
 
 #include "PluginProcessor.h"
+#include "components/ModuleComponent.h"
 #include "ssp/controls/ListControl.h"
 #include "ssp/editors/BaseMiniView.h"
-
-#include "components/ModuleComponent.h"
 
 class MatrixView : public ssp::MiniBasicView {
 public:
@@ -29,8 +28,8 @@ public:
         refreshView();
     }
 
-    unsigned  trackIdx() { return trackIdx_;}
-    unsigned  moduleIdx() { return moduleAIdx_;}
+    unsigned trackIdx() { return trackIdx_; }
+    unsigned moduleIdx() { return moduleAIdx_; }
 
 protected:
     void editorShown() override;
@@ -45,6 +44,7 @@ private:
     void refreshView();
     void refreshModuleB();
     void refreshSelected();
+    void updateGainOffset(bool isOffset, float delta);
 
     unsigned trackIdx_;
 
@@ -61,6 +61,8 @@ private:
 
     bool isChASelected(unsigned idx);
     bool isChBSelected(unsigned idx);
+
+    bool encoderState_[4] = { false, false, false, false };
 
     ModuleComponent moduleA_;
     ModuleComponent moduleB_;

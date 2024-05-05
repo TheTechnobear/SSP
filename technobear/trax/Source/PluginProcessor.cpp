@@ -233,7 +233,7 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
     std::unique_ptr<juce::XmlElement> xmlTrax(getXmlFromBinary(data, sizeInBytes));
 
     if (xmlTrax != nullptr && xmlTrax->hasTagName(TRAX_XML_TAG)) {
-        // ssp::log("setStateInformation : " + xmlTrax->toString().toStdString());
+        ssp::log("setStateInformation : " + xmlTrax->toString().toStdString());
         auto xmlModList = xmlTrax->getChildByName(MODLIST_XML_TAG);
         if (xmlModList != nullptr) {
             supportedModules_.clear();

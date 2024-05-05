@@ -6,9 +6,8 @@
 - keyboard for save  - ability to delete characters?
 
 - test rings
-- wire scale + offset, see below
-
 - other modules? see below
+- use hold event rather than long press?
 
 
 # Possible?

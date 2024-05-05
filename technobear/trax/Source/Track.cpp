@@ -46,7 +46,7 @@ bool Track::requestClearTrack() {
 }
 
 
-bool Track::requestMatrixConnect(const Matrix::Jack &src, const Matrix::Jack &dest) {
+bool Track::requestMatrixConnect(const Matrix::Jack &src, const Matrix::Jack &dest, float gain, float offset) {
     if (!lock_.test_and_set()) {
         int srcCount = 0;
         int destCount = 0;
@@ -61,6 +61,7 @@ bool Track::requestMatrixConnect(const Matrix::Jack &src, const Matrix::Jack &de
         if (srcMod.descriptor_ && src.chIdx_ < srcMod.descriptor_->outputChannelNames.size() && destMod.descriptor_ &&
             dest.chIdx_ < destMod.descriptor_->inputChannelNames.size()) {
             matrix_.connect(src, dest);
+            matrix_.connections_.back().applyGainOffset(gain, offset);
             if (srcCount == 0 && srcMod.plugin_) srcMod.plugin_->outputEnabled(src.chIdx_, true);
             if (destCount == 0 && destMod.plugin_) destMod.plugin_->inputEnabled(dest.chIdx_, true);
         }
@@ -93,6 +94,26 @@ bool Track::requestMatrixDisconnect(const Matrix::Jack &src, const Matrix::Jack 
 }
 
 
+bool Track::requestMatrixAttenuate(const Matrix::Jack &src, const Matrix::Jack &dest, bool isOffset, float delta) {
+    if (!lock_.test_and_set()) {
+        for (auto &w : matrix_.connections_) {
+            if (w.src_ == src && w.dest_ == dest) {
+                if (isOffset) {
+                    w.offset_ += delta;
+                } else {
+                    w.gain_ += delta;
+                }
+                lock_.clear();
+                return true;
+            }
+        }
+        lock_.clear();
+        return true;
+    }
+    return false;
+}
+
+
 void Track::prepare(int sampleRate, int blockSize) {
     blockSize_ = blockSize;
     sampleRate_ = sampleRate;
@@ -114,7 +135,13 @@ void Track::process(juce::AudioSampleBuffer &ioBuffer) {
                 for (auto &route : matrix_.connections_) {
                     if (route.dest_.modIdx_ == modIdx) {
                         auto &srcBuf = modules_[route.src_.modIdx_].audioBuffer_;
-                        moduleBuf.addFrom(route.dest_.chIdx_, 0, srcBuf, route.src_.chIdx_, 0, n);
+                        float gain = route.gain_;
+                        float offset = route.offset_;
+                        moduleBuf.addFrom(route.dest_.chIdx_, 0, srcBuf, route.src_.chIdx_, 0, n, gain);
+                        if (offset != 0.0f) {
+                            auto buf = moduleBuf.getWritePointer(route.dest_.chIdx_, 0);
+                            juce::FloatVectorOperations::add(buf, offset, n);
+                        }
                     }
                 }
 
@@ -239,9 +266,10 @@ void Track::setStateInformation(juce::XmlElement &inStream) {
     if (xmlMatrix) {
         matrix_.setStateInformation(*xmlMatrix);
 
+        // we need to use requestMatrixConnect, as this will update the plugin connections
         auto wires = matrix_.connections_;
         matrix_.connections_.clear();
-        for (auto &w : wires) { requestMatrixConnect(w.src_, w.dest_); }
+        for (auto &w : wires) { while (!requestMatrixConnect(w.src_, w.dest_, w.gain_, w.offset_)); }
 
     } else {
         ssp::log("setStateInformation : no Matrix tag");

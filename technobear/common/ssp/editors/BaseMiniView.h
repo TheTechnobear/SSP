@@ -68,7 +68,7 @@ private:
     static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
     static constexpr unsigned buttonBarH = 32 * COMPACT_UI_SCALE;
     static constexpr unsigned titleH = 15 * COMPACT_UI_SCALE;
-    static constexpr unsigned titleFH = 12 * COMPACT_UI_SCALE;
+    static constexpr unsigned titleFH = 10 * COMPACT_UI_SCALE;
 
     static constexpr unsigned canvasW = SSP_COMPACT_WIDTH - 2 * gap;
     static constexpr unsigned canvasH = SSP_COMPACT_HEIGHT - buttonBarH - titleH;
@@ -113,7 +113,7 @@ private:
     static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
     static constexpr unsigned buttonBarH = 32 * COMPACT_UI_SCALE;
     static constexpr unsigned titleH = 15 * COMPACT_UI_SCALE;
-    static constexpr unsigned titleFH = 12 * COMPACT_UI_SCALE;
+    static constexpr unsigned titleFH = 10 * COMPACT_UI_SCALE;
     static constexpr unsigned canvasW = SSP_COMPACT_WIDTH - 2 * gap;
     static constexpr unsigned canvasH = SSP_COMPACT_HEIGHT - buttonBarH - titleH;
 
@@ -190,7 +190,7 @@ private:
     static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
     static constexpr unsigned buttonBarH = 32 * COMPACT_UI_SCALE;
     static constexpr unsigned titleH = 15 * COMPACT_UI_SCALE;
-    static constexpr unsigned titleFH = 12 * COMPACT_UI_SCALE;
+    static constexpr unsigned titleFH = 10 * COMPACT_UI_SCALE;
     static constexpr unsigned canvasW = SSP_COMPACT_WIDTH - 2 * gap;
     static constexpr unsigned canvasH = SSP_COMPACT_HEIGHT - buttonBarH - titleH;
 
@@ -273,7 +273,7 @@ private:
     static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
     static constexpr unsigned buttonBarH = 32 * COMPACT_UI_SCALE;
     static constexpr unsigned titleH = 15 * COMPACT_UI_SCALE;
-    static constexpr unsigned titleFH = 12 * COMPACT_UI_SCALE;
+    static constexpr unsigned titleFH = 10 * COMPACT_UI_SCALE;
     static constexpr unsigned canvasW = SSP_COMPACT_WIDTH - 2 * gap;
     static constexpr unsigned canvasH = SSP_COMPACT_HEIGHT - buttonBarH - titleH;
 

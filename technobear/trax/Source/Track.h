@@ -26,8 +26,10 @@ public:
     void setStateInformation(juce::XmlElement &inStream);
 
     bool requestModuleChange(unsigned midx, const std::string &mn);
-    bool requestMatrixConnect(const Matrix::Jack &src, const Matrix::Jack &dest);
+    bool requestMatrixConnect(const Matrix::Jack &src, const Matrix::Jack &dest, float gain = 1.0f,
+                              float offset = 0.0f);
     bool requestMatrixDisconnect(const Matrix::Jack &src, const Matrix::Jack &dest);
+    bool requestMatrixAttenuate(const Matrix::Jack &src, const Matrix::Jack &dest, bool isOffset, float delta);
     bool requestClearTrack();
 
     enum ModuleIdx {

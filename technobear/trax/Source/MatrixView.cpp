@@ -32,8 +32,7 @@ MatrixView::MatrixView(PluginProcessor& p)
 
 
     // load is done in track editor!
-    auto loadBtn = std::make_shared<ssp::ValueButton>("Load", [&](bool b) {
-    });
+    auto loadBtn = std::make_shared<ssp::ValueButton>("Load", [&](bool b) {});
     addButton(0, loadBtn);
 
     auto inBtn = std::make_shared<ssp::ValueButton>("Flip IO", [&](bool b) {
@@ -103,7 +102,7 @@ void MatrixView::drawView(Graphics& g) {
     float lx1 = x + (mw * 1.5f);
 
     float lx2 = lx1 + (mw * 1.0f);
-    float ly = y + (mh / 2.0f);
+    float ly = y + (mh / 4.0f);
     float arrowHead = mh / 2.0f;
 
     float lxo = isOutput_ ? lx1 : lx2;
@@ -111,6 +110,21 @@ void MatrixView::drawView(Graphics& g) {
 
     juce::Line<float> line(lxo, ly, lxe, ly);
     g.drawArrow(line, arrowHead / 2.0f, arrowHead, arrowHead);
+
+    Matrix::Jack src(isOutput_ ? moduleAIdx_ : moduleBIdx_, isOutput_ ? channelA_.idx() : channelB_.idx());
+    Matrix::Jack dest(isOutput_ ? moduleBIdx_ : moduleAIdx_, isOutput_ ? channelB_.idx() : channelA_.idx());
+    for (auto& w : processor_.track(trackIdx_).connections()) {
+        if (w.src_ == src && w.dest_ == dest) {
+            g.setColour(juce::Colours::green);
+            static constexpr int fh = 12 * COMPACT_UI_SCALE;
+            g.setFont(fh);
+            // display gain/offset
+            ly += mh / 3;
+            g.drawText("x" + juce::String(w.gain_, 2, false) + " +" + juce::String(w.offset_, 2, false), gw / 2, ly,
+                       gw / 2, fh, juce::Justification::centredLeft);
+            break;
+        }
+    }
 }
 
 void MatrixView::onEncoder(unsigned enc, float v) {
@@ -151,6 +165,7 @@ void MatrixView::onEncoder(unsigned enc, float v) {
             break;
         }
         case 3: {
+            updateGainOffset(encoderState_[enc], v);
             break;
         }
         default: {
@@ -161,6 +176,7 @@ void MatrixView::onEncoder(unsigned enc, float v) {
 
 
 void MatrixView::onEncoderSwitch(unsigned enc, bool v) {
+    encoderState_[enc] = v;
     if (v) return;
 
     switch (enc) {
@@ -176,20 +192,14 @@ void MatrixView::onEncoderSwitch(unsigned enc, bool v) {
             if (chASelected_.size() <= 0 || chBSelected_.size() <= 0) return;
 
             if (channelA_.idx() >= 0 && moduleBIdx_ >= 0 && channelB_.idx() >= 0) {
-                Matrix::Jack jackA(moduleAIdx_, channelA_.idx());
-                Matrix::Jack jackB(moduleBIdx_, channelB_.idx());
+                Matrix::Jack src(isOutput_ ? moduleAIdx_ : moduleBIdx_, isOutput_ ? channelA_.idx() : channelB_.idx());
+                Matrix::Jack dest(isOutput_ ? moduleBIdx_ : moduleAIdx_, isOutput_ ? channelB_.idx() : channelA_.idx());
                 if (!chBSelected_[channelB_.idx()]) {
                     // add new connection
-                    if (isOutput_)
-                        while (!processor_.track(trackIdx_).requestMatrixConnect(jackA, jackB));
-                    else
-                        while (!processor_.track(trackIdx_).requestMatrixConnect(jackB, jackA));
+                    while (!processor_.track(trackIdx_).requestMatrixConnect(src, dest));
                 } else {
                     // remove connection.
-                    if (isOutput_)
-                        while (!processor_.track(trackIdx_).requestMatrixDisconnect(jackA, jackB));
-                    else
-                        while (!processor_.track(trackIdx_).requestMatrixDisconnect(jackB, jackA));
+                    while (!processor_.track(trackIdx_).requestMatrixDisconnect(src, dest));
                 }
                 refreshSelected();
             }
@@ -205,6 +215,11 @@ void MatrixView::onEncoderSwitch(unsigned enc, bool v) {
     }
 }
 
+void MatrixView::updateGainOffset(bool isOffset, float delta) {
+    Matrix::Jack src(isOutput_ ? moduleAIdx_ : moduleBIdx_, isOutput_ ? channelA_.idx() : channelB_.idx());
+    Matrix::Jack dest(isOutput_ ? moduleBIdx_ : moduleAIdx_, isOutput_ ? channelB_.idx() : channelA_.idx());
+    while (!processor_.track(trackIdx_).requestMatrixAttenuate(src, dest, isOffset, delta / 100.0f));
+}
 
 void MatrixView::editorShown() {
     refreshView();
