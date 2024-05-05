@@ -4,8 +4,6 @@
 # milestone 1 & 2 done 
 
 - keyboard for save  - ability to delete characters?
-
-- test rings
 - other modules? see below
 
 

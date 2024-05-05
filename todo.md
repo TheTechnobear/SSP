@@ -40,7 +40,11 @@ TO DO  - MED PRIO
 
 TO DO  - LOW PRIO
 ------------------
-
+- cart ui - gates are too short to see if using a trig on clk, not really a bug, more a feature
+cart gate length is len of trig input... so ui may poll at 'wrong time' and never sees gate.
+we could 'cache' the gate, in processor for a while, so UI sees it.
+alt: support configurable gate length, or nearly as long as step?
+alt2: UI could just show the value of gate step... i.e. not the output (not nice !?)
 
 
 OTHER
