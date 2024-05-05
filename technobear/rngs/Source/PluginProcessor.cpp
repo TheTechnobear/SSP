@@ -1,4 +1,5 @@
 #include "PluginProcessor.h"
+
 #include "PluginEditor.h"
 #include "PluginMiniEditor.h"
 #include "ssp/EditorHost.h"
@@ -7,12 +8,11 @@ inline float constrain(float v, float vMin, float vMax) {
     return std::max<float>(vMin, std::min<float>(vMax, v));
 }
 
-PluginProcessor::PluginProcessor()
-    : PluginProcessor(getBusesProperties(), createParameterLayout()) {}
+PluginProcessor::PluginProcessor() : PluginProcessor(getBusesProperties(), createParameterLayout()) {
+}
 
-PluginProcessor::PluginProcessor(
-    const AudioProcessor::BusesProperties &ioLayouts,
-    AudioProcessorValueTreeState::ParameterLayout layout)
+PluginProcessor::PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts,
+                                 AudioProcessorValueTreeState::ParameterLayout layout)
     : BaseProcessor(ioLayouts, std::move(layout)), params_(vts()) {
     init();
 
@@ -28,8 +28,8 @@ PluginProcessor::PluginProcessor(
     part_.Init(buffer);
     initPart(true);
 
-    for(int i=0;i<I_MAX;i++) inActivity_[i]=0;
-    for(int i=0;i<O_MAX;i++) outActivity_[i]=0;
+    for (int i = 0; i < I_MAX; i++) inActivity_[i] = 0;
+    for (int i = 0; i < O_MAX; i++) outActivity_[i] = 0;
 }
 
 PluginProcessor::~PluginProcessor() {
@@ -42,20 +42,20 @@ PluginProcessor::~PluginProcessor() {
 }
 
 
-PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) :
-    pitch(*apvt.getParameter(ID::pitch)),
-    structure(*apvt.getParameter(ID::structure)),
-    brightness(*apvt.getParameter(ID::brightness)),
-    damping(*apvt.getParameter(ID::damping)),
-    position(*apvt.getParameter(ID::position)),
-    polyphony(*apvt.getParameter(ID::polyphony)),
-    model(*apvt.getParameter(ID::model)),
-    //bypass(*apvt.getParameter(ID::bypass)),
-    //easter_egg(*apvt.getParameter(ID::easter_egg)),
-    in_gain(*apvt.getParameter(ID::in_gain)),
-    enableIn(*apvt.getParameter(ID::enable_in)),
-    enableStrum(*apvt.getParameter(ID::enable_strum)),
-    enableVoct(*apvt.getParameter(ID::enable_voct)) {
+PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt)
+    : pitch(*apvt.getParameter(ID::pitch)),
+      structure(*apvt.getParameter(ID::structure)),
+      brightness(*apvt.getParameter(ID::brightness)),
+      damping(*apvt.getParameter(ID::damping)),
+      position(*apvt.getParameter(ID::position)),
+      polyphony(*apvt.getParameter(ID::polyphony)),
+      model(*apvt.getParameter(ID::model)),
+      // bypass(*apvt.getParameter(ID::bypass)),
+      // easter_egg(*apvt.getParameter(ID::easter_egg)),
+      in_gain(*apvt.getParameter(ID::in_gain)),
+      enableIn(*apvt.getParameter(ID::enable_in)),
+      enableStrum(*apvt.getParameter(ID::enable_strum)),
+      enableVoct(*apvt.getParameter(ID::enable_voct)) {
 }
 
 
@@ -83,11 +83,11 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
     models.add("Syn Q Str");
     models.add("Rvb Str");
     params.add(std::make_unique<ssp::BaseChoiceParameter>(ID::model, "Model", models, 0));
-//    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::bypass, "bypass", false));
-//    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::easter_egg, "easter_egg", false));
+    //    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::bypass, "bypass", false));
+    //    params.add(std::make_unique<ssp::BaseBoolParameter>(ID::easter_egg, "easter_egg", false));
     params.add(std::make_unique<ssp::BaseFloatParameter>(ID::in_gain, "In Gain", 0.0f, 100.0f, 0.0f));
 
-    bool enableIO[3] = {false,false,false};
+    bool enableIO[3] = { false, false, false };
     params.add(std::make_unique<ssp::BaseBoolParameter>(ID::enable_in, "In", enableIO[0]));
     params.add(std::make_unique<ssp::BaseBoolParameter>(ID::enable_strum, "Strum", enableIO[1]));
     params.add(std::make_unique<ssp::BaseBoolParameter>(ID::enable_voct, "VOct", enableIO[2]));
@@ -96,26 +96,14 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 
 
 const String PluginProcessor::getInputBusName(int channelIndex) {
-    static String inBusName[I_MAX] = {
-        "In",
-        "Strum",
-        "VOct",
-        "FM",
-        "Struct",
-        "Bright",
-        "Damp",
-        "Pos"
-    };
+    static String inBusName[I_MAX] = { "In", "Strum", "VOct", "FM", "Struct", "Bright", "Damp", "Pos" };
     if (channelIndex < I_MAX) { return inBusName[channelIndex]; }
     return "ZZIn-" + String(channelIndex);
 }
 
 
 const String PluginProcessor::getOutputBusName(int channelIndex) {
-    static String outBusName[O_MAX] = {
-        "Odd",
-        "Even"
-    };
+    static String outBusName[O_MAX] = { "Odd", "Even" };
     if (channelIndex < O_MAX) { return outBusName[channelIndex]; }
     return "ZZOut-" + String(channelIndex);
 }
@@ -130,17 +118,16 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
 }
 
 void PluginProcessor::initPart(bool force) {
-    int polyphony = constrain(
-        1 << int(params_.polyphony.convertFrom0to1(params_.polyphony.getValue())),
-        1, rings::kMaxPolyphony);
+    int polyphony =
+        constrain(1 << int(params_.polyphony.convertFrom0to1(params_.polyphony.getValue())), 1, rings::kMaxPolyphony);
 
     if (force || polyphony != part_.polyphony()) {
         part_.set_polyphony(polyphony);
         string_synth_.set_polyphony(polyphony);
     }
 
-    int imodel = constrain(params_.model.convertFrom0to1(params_.model.getValue()),
-                           0, rings::ResonatorModel::RESONATOR_MODEL_LAST - 1);
+    int imodel = constrain(params_.model.convertFrom0to1(params_.model.getValue()), 0,
+                           rings::ResonatorModel::RESONATOR_MODEL_LAST - 1);
     rings::ResonatorModel model = static_cast<rings::ResonatorModel>(imodel);
     if (force || model != part_.model()) {
         part_.set_model(model);
@@ -149,10 +136,8 @@ void PluginProcessor::initPart(bool force) {
 }
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
-    if(activityCount_==0) {
-        for(int i=0;i<I_MAX;i++) {
-            inActivity_[i]=buffer.getSample(i,0);
-        }
+    if (activityCount_ == 0) {
+        for (int i = 0; i < I_MAX; i++) { inActivity_[i] = buffer.getSample(i, 0); }
     }
 
 
@@ -167,27 +152,22 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     // Rings usually has a blocks size of 16,
     // SSP = 128 (@48k), so split up, so we read the control rate date every 16
     for (int bidx = 0; bidx < buffer.getNumSamples(); bidx += n) {
-
-
         float gain = (p_in_gain * 4.0f);
         float in_gain = constrain(1.0f + (gain * gain), 1.0f, 17.0f);
 
         bool strum = false;
         for (int i = 0; i < n; i++) {
             in_buf_[i] = out_buf_[i] = buffer.getSample(I_IN, bidx + i) * in_gain;
-            bool trig = buffer.getSample(I_STRUM, bidx + i) > 0.5;
-            if (trig != trig_ && trig) {
-                strum = true;
-            }
+            bool trig = buffer.getSample(I_STRUM, bidx + i) > 0.5f;
+
+            if (trig != trig_ && trig) { strum = true; }
             trig_ = trig;
         }
 
         // control rate
-        static constexpr float RngsPitchOffset = 30.f - 6.0f; // 30 is normal, but 6. makes it in turn at 12 oclock
-        float transpose =
-            params_.pitch.convertFrom0to1(params_.pitch.getValue())
-            + RngsPitchOffset
-            + (noteInput_ ? noteInputTranspose_ : 0.0f);
+        static constexpr float RngsPitchOffset = 30.f - 6.0f;  // 30 is normal, but 6. makes it in turn at 12 oclock
+        float transpose = params_.pitch.convertFrom0to1(params_.pitch.getValue()) + RngsPitchOffset +
+                          (noteInput_ ? noteInputTranspose_ : 0.0f);
 
         float note = cv2Pitch(buffer.getSample(I_VOCT, bidx));
         float fm = cv2Pitch(buffer.getSample(I_FM, bidx));
@@ -206,10 +186,10 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
         performance_state_.note = note;
         performance_state_.tonic = 12.0f + transpose;
 
-        performance_state_.internal_exciter = inputEnabled[I_IN] < 0.5f || params_.enableIn.getValue()  < 0.5;
-        performance_state_.internal_strum = inputEnabled[I_STRUM] < 0.5f || params_.enableStrum.getValue()  < 0.5;;
-        performance_state_.internal_note = inputEnabled[I_VOCT] < 0.5f || params_.enableVoct.getValue()  < 0.5;;
-        performance_state_.chord = constrain(chord, 0, rings::kNumChords - 1);;
+        performance_state_.internal_exciter = inputEnabled[I_IN] < 0.5f || params_.enableIn.getValue() > 0.5f;
+        performance_state_.internal_strum = inputEnabled[I_STRUM] < 0.5f || params_.enableStrum.getValue() > 0.5f;
+        performance_state_.internal_note = inputEnabled[I_VOCT] < 0.5f || params_.enableVoct.getValue() > 0.5f;
+        performance_state_.chord = constrain(chord, 0, rings::kNumChords - 1);
 
         if (!performance_state_.internal_note) {
             // performance_state.note = 0.0;
@@ -221,9 +201,9 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
         initPart(false);
 
-        bool bypass = false; //params_.bypass.getValue() > 0.5;
+        bool bypass = false;  // params_.bypass.getValue() > 0.5;
         part_.set_bypass(bypass);
-        bool easter_egg = false; //params_.easter_egg.getValue() > 0.5;
+        bool easter_egg = false;  // params_.easter_egg.getValue() > 0.5;
 
         if (easter_egg) {
             strummer_.Process(NULL, size, &(performance_state_));
@@ -235,8 +215,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
                 float error, gain;
                 error = in_sample * in_sample - inLevel_;
                 inLevel_ += error * (error > 0.0f ? 0.1f : 0.0001f);
-                gain = inLevel_ <= kNoiseGateThreshold
-                       ? (1.0f / kNoiseGateThreshold) * inLevel_ : 1.0f;
+                gain = inLevel_ <= kNoiseGateThreshold ? (1.0f / kNoiseGateThreshold) * inLevel_ : 1.0f;
                 in_buf_[i] = gain * in_sample;
             }
             strummer_.Process(in_buf_, size, &(performance_state_));
@@ -258,12 +237,10 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     outRms_[0].process(buffer, O_ODD);
     if (stereoOut) outRms_[1].process(buffer, O_EVEN);
 
-    if(activityCount_==0) {
-        for(int i=0;i<O_MAX;i++) {
-            outActivity_[i]=buffer.getSample(i,0);
-        }
+    if (activityCount_ == 0) {
+        for (int i = 0; i < O_MAX; i++) { outActivity_[i] = buffer.getSample(i, 0); }
     }
-    activityCount_ = (activityCount_ + 1 ) % ACTIVITY_PERIOD;
+    activityCount_ = (activityCount_ + 1) % ACTIVITY_PERIOD;
 }
 
 void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
@@ -274,7 +251,7 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
 #ifdef FORCE_COMPACT_UI
-    return new ssp::EditorHost(this, new PluginMiniEditor(*this),true);
+    return new ssp::EditorHost(this, new PluginMiniEditor(*this), true);
 #else
     if (useCompactUI()) {
         return new ssp::EditorHost(this, new PluginMiniEditor(*this), useCompactUI());
@@ -288,4 +265,3 @@ AudioProcessorEditor *PluginProcessor::createEditor() {
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() {
     return new PluginProcessor();
 }
-

@@ -25,6 +25,12 @@
       "environment": [],
       "externalConsole": false,
       "MIMode": "lldb",
+      "sourceFileMap": {
+        "${workspaceFolder}": {
+            "editorPath": "${workspaceFolder}",
+            "useForBreakpoints": "true"
+        }
+      },
       "preLaunchTask": "build RNGS_VST3"
     },
     {
