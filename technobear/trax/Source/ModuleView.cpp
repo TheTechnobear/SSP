@@ -26,7 +26,6 @@ void ModuleView::onSSPTimer() {
     }
 }
 
-
 void ModuleView::drawModulePanel(Graphics &g) {
     int fh = 14 * COMPACT_UI_SCALE;
     unsigned panelWidth = pluginWidth;
@@ -47,9 +46,6 @@ void ModuleView::drawModulePanel(Graphics &g) {
         pComponent->paintEntireComponent(g, true);
     }
 
-}
-
-void ModuleView::editorShown() {
 }
 
 

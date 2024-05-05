@@ -161,6 +161,7 @@ void OptionEditor::resized() {
 
 void OptionEditor::editorShown() {
     setView(optionViewIdx_);
+    base_type::editorShown();
 }
 
 

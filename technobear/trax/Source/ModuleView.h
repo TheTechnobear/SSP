@@ -25,9 +25,6 @@ public:
     void onUpButton(bool v) override;
     void onDownButton(bool v) override;
 
-    void editorShown() override;
-
-
     void onSSPTimer() override;
 
     void moduleIdx(unsigned t, unsigned m) {

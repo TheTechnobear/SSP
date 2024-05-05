@@ -223,6 +223,7 @@ void MatrixView::updateGainOffset(bool isOffset, float delta) {
 
 void MatrixView::editorShown() {
     refreshView();
+    base_type::editorShown();
 }
 
 void MatrixView::refreshView() {

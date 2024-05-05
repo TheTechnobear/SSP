@@ -31,6 +31,6 @@ Percussa::SSP::PluginDescriptor *createExtendedDescriptor() {
     SSP_defaultDescriptor(desc);
     desc->colour = Colours::lightblue.getARGB();
     desc->supportCompactUI_ = true;
-    desc->categories_.push_back(CAT_OSCILLATOR);
+    desc->categories_.push_back(CAT_MODULATION);
     return desc;
 }
