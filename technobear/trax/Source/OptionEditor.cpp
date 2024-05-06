@@ -13,12 +13,16 @@ public:
     LoadPresetView(PluginProcessor &p, const String &defDir) : base_type(&p), processor_(p) {
         fileControl_ = std::make_shared<ssp::FileSelector>(defDir);
         addAndMakeVisible(fileControl_.get());
-        addButton(7, std::make_shared<ssp::ValueButton>("Load", [&](bool b) {
+        addButton(0, std::make_shared<ssp::ValueButton>("Load", [&](bool b) {
                       if (!b) onLoad();
+                  }));
+        addButton(3, std::make_shared<ssp::ValueButton>("Init", [&](bool b) {
+                      if (!b) onInit();
                   }));
     }
 
     void onLoad() { processor_.presetLoadRequest(fileControl_->selectedFile()); }
+    void onInit() { processor_.initPreset(); }
 
 
     void eventUp(bool longPress) override {
@@ -67,12 +71,25 @@ public:
     SavePresetView(PluginProcessor &p, const String &defDir) : ssp::MiniBasicView(&p), processor_(p), baseDir_(defDir) {
         textControl_ = std::make_shared<ssp::TextControl>();
         addAndMakeVisible(textControl_.get());
-        addButton(7, std::make_shared<ssp::ValueButton>("Save", [&](bool b) {
+        addButton(0, std::make_shared<ssp::ValueButton>("Save", [&](bool b) {
                       if (!b) onSave();
+                  }));
+        addButton(4, std::make_shared<ssp::ValueButton>("Default", [&](bool b) {
+                      if (!b) { textControl_->setText("default"); };
+                  }));
+        addButton(3, std::make_shared<ssp::ValueButton>("Del", [&](bool b) {
+                      if (!b) { textControl_->onDelete(); }
+                  }));
+        addButton(7, std::make_shared<ssp::ValueButton>("Clear", [&](bool b) {
+                      if (!b) { textControl_->setText(""); }
                   }));
     }
 
-    void onSave() { processor_.presetSaveRequest(baseDir_ + File::getSeparatorChar() + textControl_->getText()); }
+    void onSave() {
+        std::string fn = textControl_->getText();
+        if (fn.empty()) return;
+        processor_.presetSaveRequest(baseDir_ + File::getSeparatorChar() + fn);
+    }
 
     void eventUp(bool longPress) override {
         if (!longPress) { textControl_->prevKey(); }
@@ -178,13 +195,13 @@ void OptionEditor::eventButton(unsigned btn, bool longPress) {
                 return;
             }
         }
-    } else if(v == loadViewIdx_ || v == saveViewIdx_){
-        if (btn == 7) {
-            setView(optionViewIdx_);
-            return;
-        }
+    } else if (v == loadViewIdx_) {
+        if (btn == 0 || btn == 1) setView(optionViewIdx_);
+        return;
+    } else if (v == saveViewIdx_) {
+        if (btn == 0) setView(optionViewIdx_);
+        return;
     }
-
 
 
     base_type::eventButton(btn, longPress);

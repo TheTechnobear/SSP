@@ -41,9 +41,9 @@ void LoadModuleView::drawView(Graphics &g) {
 
 void LoadModuleView::resized() {
     ssp::BaseView::resized();
-    setButtonBounds(scanBtn_, 0, 0);
-    setButtonBounds(clearBtn_, 1, 3);
-    setButtonBounds(loadBtn_, 0, 3);
+    setButtonBounds(loadBtn_, 0, 0);
+    setButtonBounds(clearBtn_, 1, 0);
+    setButtonBounds(scanBtn_, 0, 3);
 
     static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
     static constexpr unsigned x = gap;
@@ -166,15 +166,15 @@ void LoadModuleView::eventButton(unsigned int btn, bool v) {
     if (v) return;
     switch (btn) {
         case 0: {
+            loadModule();
+            break;
+        }
+        case 3: {
             processor_.loadSupportedModules(true);
             editorShown();  // reset current plugin
             break;
         }
-        case 3: {
-            loadModule();
-            break;
-        }
-        case 7: {
+        case 4: {
             if (trackIdx_ >= PluginProcessor::MAX_TRACKS || moduleIdx_ >= Track::M_MAX) return;
             bool r = false;
             while (!r) { r = processor_.requestModuleChange(trackIdx_, moduleIdx_, ""); }

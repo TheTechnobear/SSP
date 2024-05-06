@@ -79,8 +79,8 @@ void TrackEditor::eventButton(unsigned btn, bool longPress) {
         } else if (v == loadViewIdx_) {
             // return view on load and clear
             switch (btn) {
-                case 3:    // load
-                case 7: {  // clear
+                case 0:    // load
+                case 4: {  // clear
                     // carry out action
                     loadModuleView_->eventButton(btn, longPress);
                     // return to matrix view

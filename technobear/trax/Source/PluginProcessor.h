@@ -112,6 +112,15 @@ public:
         savePreset();
     }
 
+    void initPreset() {
+        for (unsigned i = 0; i < MAX_TRACKS; i++) {
+            muteTrack(i, false);
+            gainTrack(i, 1.f);
+            presetName_ = "";
+            for (unsigned j = 0; j < Track::M_MAX; j++) { while (!requestModuleChange(i, j, "")); }
+        }
+    }
+
     void savePreset();
     void loadPreset();
 
@@ -137,12 +146,20 @@ public:
 
     class PerformanceParam {
     public:
-        PerformanceParam(unsigned t, unsigned m, unsigned p, 
-                        const std::string &pluginName,
-                        const std::string &paramName,
-                        float min = 0.f, float max = 1.f, float def = 0.5f, int numSteps = 127, bool isDescrete = false)
-            : trackIdx_(t), moduleIdx_(m), paramIdx_(p), pluginName_(pluginName), paramName_(paramName),
-              min_(min), max_(max), def_(def), numSteps_(numSteps), isDescrete_(isDescrete), value_(def) {}
+        PerformanceParam(unsigned t, unsigned m, unsigned p, const std::string &pluginName,
+                         const std::string &paramName, float min = 0.f, float max = 1.f, float def = 0.5f,
+                         int numSteps = 127, bool isDescrete = false)
+            : trackIdx_(t),
+              moduleIdx_(m),
+              paramIdx_(p),
+              pluginName_(pluginName),
+              paramName_(paramName),
+              min_(min),
+              max_(max),
+              def_(def),
+              numSteps_(numSteps),
+              isDescrete_(isDescrete),
+              value_(def) {}
 
 
         unsigned trackIdx() const { return trackIdx_; }
@@ -171,7 +188,7 @@ public:
         float min_ = 0.f;
         float max_ = 1.f;
         float def_ = 0.5f;
-        int  numSteps_ = 127;
+        int numSteps_ = 127;
         bool isDescrete_ = false;
 
         float value_;

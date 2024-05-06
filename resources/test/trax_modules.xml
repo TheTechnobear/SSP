@@ -2,7 +2,7 @@
 
 <ModuleList>
   <Module name="sfft" desc="simple fft" cat="FX,"/>
-  <Module name="mmx4" desc="matrix mixer" cat="Oscillator,"/>
+  <Module name="mmx4" desc="matrix mixer" cat="Modulation,"/>
   <Module name="comp" desc="compressor" cat="FX,"/>
   <Module name="data" desc="oscilloscope and analyser" cat="Utility,"/>
   <Module name="pvca" desc="panning vca" cat="Modulation,"/>
@@ -27,5 +27,5 @@
   <Module name="mttr" desc="midi triggers" cat="Midi,"/>
   <Module name="omod" desc="octo modulator" cat="Modulation,"/>
   <Module name="plts" desc="macro oscillator" cat="Oscillator,"/>
-  <Module name="msw8" desc="matrix switch" cat="Oscillator,"/>
+  <Module name="msw8" desc="matrix switch" cat="Modulation,"/>
 </ModuleList>
