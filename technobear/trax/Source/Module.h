@@ -23,6 +23,8 @@ struct Module {
     static std::string getPluginFile(const std::string& m);
     static bool checkPlugin(const std::string &f,ModuleDesc &md);
     static void scanPlugins(std::vector<ModuleDesc>& supportedModules);
+    static bool loadSupportedModules(std::vector<ModuleDesc>& supportedModules);
+    static bool saveSupportedModules(std::vector<ModuleDesc>& supportedModules);
 
     juce::AudioSampleBuffer audioBuffer_;
 

@@ -85,11 +85,17 @@ bool PluginProcessor::requestModuleChange(unsigned t, unsigned m, const std::str
 }
 
 
-void PluginProcessor::scanPlugins() {
-    ssp::log("plugin scan - start");
-    Module::scanPlugins(supportedModules_);
-    for (auto m : supportedModules_) { ssp::log("module: " + m.name); }
-    ssp::log("plugin scan - send");
+void PluginProcessor::loadSupportedModules(bool force) {
+    if (!force) {
+        if (supportedModules_.empty()) { Module::loadSupportedModules(supportedModules_); }
+    }
+
+    if (force || supportedModules_.empty()) {
+        ssp::log("plugin scan - start");
+        Module::scanPlugins(supportedModules_);
+        for (auto m : supportedModules_) { ssp::log("module: " + m.name); }
+        ssp::log("plugin scan - send");
+    }
 }
 
 
@@ -178,7 +184,6 @@ static constexpr int checkBytes = 0x1FF1;
 static constexpr int protoVersion = 0x0001;
 
 static const char *TRAX_XML_TAG = "TRAX";
-static const char *MODLIST_XML_TAG = "ModuleList";
 static const char *TRACKS_XML_TAG = "Tracks";
 static const char *TRACK_XML_TAG = "Track";
 static const char *PERF_XML_TAG = "PerformParams";
@@ -187,20 +192,6 @@ static const char *PERF_PARAM_XML_TAG = "Param";
 
 void PluginProcessor::getStateInformation(MemoryBlock &destData) {
     std::unique_ptr<juce::XmlElement> xmlTrax = std::make_unique<juce::XmlElement>(TRAX_XML_TAG);
-
-
-    std::unique_ptr<juce::XmlElement> xmlModList = std::make_unique<juce::XmlElement>(MODLIST_XML_TAG);
-    for (auto &md : supportedModules_) {
-        std::unique_ptr<juce::XmlElement> xmlMod = std::make_unique<juce::XmlElement>("Module");
-        xmlMod->setAttribute("name", md.name);
-        xmlMod->setAttribute("desc", md.description);
-        std::string catstr;
-        for (auto &cat : md.categories) { catstr += cat + ","; }
-        xmlMod->setAttribute("cat", catstr);
-        xmlModList->addChildElement(xmlMod.release());
-    }
-    xmlTrax->addChildElement(xmlModList.release());
-
 
     std::unique_ptr<juce::XmlElement> xmlTracks = std::make_unique<juce::XmlElement>(TRACKS_XML_TAG);
     for (auto &track : tracks_) {
@@ -230,28 +221,12 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
         while (!track.requestClearTrack()) {}
     }
 
+    loadSupportedModules();
+
     std::unique_ptr<juce::XmlElement> xmlTrax(getXmlFromBinary(data, sizeInBytes));
 
     if (xmlTrax != nullptr && xmlTrax->hasTagName(TRAX_XML_TAG)) {
         // ssp::log("setStateInformation : " + xmlTrax->toString().toStdString());
-        auto xmlModList = xmlTrax->getChildByName(MODLIST_XML_TAG);
-        if (xmlModList != nullptr) {
-            supportedModules_.clear();
-            for (auto xmlMod : xmlModList->getChildIterator()) {
-                ModuleDesc md;
-                md.name = xmlMod->getStringAttribute("name").toStdString();
-                md.description = xmlMod->getStringAttribute("desc").toStdString();
-                auto catstr = xmlMod->getStringAttribute("cat").toStdString();
-                std::istringstream iss(catstr);
-                std::string cat;
-                while (std::getline(iss, cat, ',')) { md.categories.push_back(cat); }
-                supportedModules_.push_back(md);
-                // ssp::log("setStateInformation : supported module : " + mn);
-            }
-        } else {
-            ssp::log("setStateInformation : no MODLIST_XML_TAG tag");
-        }
-
         auto xmlTracks = xmlTrax->getChildByName(TRACKS_XML_TAG);
         if (xmlTracks != nullptr) {
             int trackIdx = 0;
@@ -299,8 +274,6 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
     } else {
         ssp::log("setStateInformation : no TRAX_XML_TAG tag");
     }
-
-    if (supportedModules_.empty()) { scanPlugins(); }
 }
 
 void PluginProcessor::savePreset() {

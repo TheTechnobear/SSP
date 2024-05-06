@@ -85,7 +85,7 @@ public:
     const std::vector<ModuleDesc> &getSupportedModules() { return supportedModules_; }
 
     bool requestModuleChange(unsigned t, unsigned m, const std::string &mn);
-    void scanPlugins();
+    void loadSupportedModules(bool forceScan = false);
 
     Track &track(unsigned t) { return tracks_[t]; }
 

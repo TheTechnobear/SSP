@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ModuleList>
+  <Module name="sfft" desc="simple fft" cat="FX,"/>
+  <Module name="mmx4" desc="matrix mixer" cat="Oscillator,"/>
+  <Module name="comp" desc="compressor" cat="FX,"/>
+  <Module name="data" desc="oscilloscope and analyser" cat="Utility,"/>
+  <Module name="pvca" desc="panning vca" cat="Modulation,"/>
+  <Module name="rngs" desc="resonator" cat="Oscillator,FX,"/>
+  <Module name="logi" desc="logic module" cat="Modulation,"/>
+  <Module name="srvb" desc="another reverb" cat="FX,"/>
+  <Module name="mtmo" desc="midi monitor" cat="Midi,"/>
+  <Module name="mtin" desc="midi input" cat="Midi,"/>
+  <Module name="cart" desc="cartesian sequencer" cat="Modulation,"/>
+  <Module name="gra4" desc="4 track granular" cat="Oscillator,FX,"/>
+  <Module name="clkd" desc="clock and divider" cat="Modulation,"/>
+  <Module name="ldrf" desc="ladder filter" cat="FX,"/>
+  <Module name="dlyd" desc="multi tap delay" cat="FX,"/>
+  <Module name="shq" desc="quantised sample and hold" cat="Utility,"/>
+  <Module name="drum" desc="synth drum kit" cat="Oscillator,"/>
+  <Module name="mtot" desc="midi output" cat="Midi,"/>
+  <Module name="attn" desc="attenuator" cat="Modulation,"/>
+  <Module name="loop" desc="4 track looper" cat="Utility,"/>
+  <Module name="clds" desc="texture synthesizer" cat="FX,Oscillator,"/>
+  <Module name="sflt" desc="spectral filter" cat="FX,"/>
+  <Module name="harm" desc="harmonic oscillator" cat="Oscillator,"/>
+  <Module name="mttr" desc="midi triggers" cat="Midi,"/>
+  <Module name="omod" desc="octo modulator" cat="Modulation,"/>
+  <Module name="plts" desc="macro oscillator" cat="Oscillator,"/>
+  <Module name="msw8" desc="matrix switch" cat="Oscillator,"/>
+</ModuleList>

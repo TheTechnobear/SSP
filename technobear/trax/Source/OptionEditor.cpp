@@ -135,7 +135,7 @@ OptionEditor::OptionEditor(PluginProcessor &p) : base_type(&p, false), processor
     optionView_ = std::make_shared<OptionView>(processor_);
     optionViewIdx_ = addView(optionView_);
 
-    String defDir = File::getCurrentWorkingDirectory().getFullPathName() + File::getSeparatorChar() + "presets";
+    String defDir = File::getCurrentWorkingDirectory().getFullPathName() + File::getSeparatorChar() + "trax_presets";
 
     File dir(defDir);
     if (!dir.exists()) { dir.createDirectory(); }

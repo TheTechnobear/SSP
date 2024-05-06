@@ -23,6 +23,7 @@ LoadModuleView::LoadModuleView(PluginProcessor &p, bool compactUI)
     addAndMakeVisible(loadBtn_);
     addAndMakeVisible(categoryList_);
     addAndMakeVisible(moduleList_);
+    if (processor_.getSupportedModules().size() == 0) { processor_.loadSupportedModules(); }
 }
 
 
@@ -165,7 +166,7 @@ void LoadModuleView::eventButton(unsigned int btn, bool v) {
     if (v) return;
     switch (btn) {
         case 0: {
-            processor_.scanPlugins();
+            processor_.loadSupportedModules(true);
             editorShown();  // reset current plugin
             break;
         }
