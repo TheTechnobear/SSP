@@ -406,15 +406,16 @@ void BaseProcessor::audioProcessorParameterChanged(AudioProcessor *processor,
         if (midiOutDevice_ != nullptr) {
             if (midiAutomation_.find(parameterIndex) != midiAutomation_.end()) {
                 auto &a = midiAutomation_[parameterIndex];
+                auto valout = (v - a.offset_ ) / a.scale_;
                 switch (a.midi_.type_) {
                     case MidiAutomation::Midi::T_CC : {
-                        auto msg = juce::MidiMessage::controllerEvent(a.midi_.channel_, a.midi_.num_, juce::uint8(v * 127));
+                        auto msg = juce::MidiMessage::controllerEvent(a.midi_.channel_, a.midi_.num_, juce::uint8(valout * 127));
                         midiOutDevice_->sendMessageNow(msg);
                         break;
                     }
                     case MidiAutomation::Midi::T_NOTE : {
                         if (v > 0.0f) {
-                            auto msg = juce::MidiMessage::noteOn(a.midi_.channel_, a.midi_.num_, juce::uint8(v * 127));
+                            auto msg = juce::MidiMessage::noteOn(a.midi_.channel_, a.midi_.num_, juce::uint8(valout * 127));
                             midiOutDevice_->sendMessageNow(msg);
                         } else {
                             auto msg = juce::MidiMessage::noteOff(a.midi_.channel_, a.midi_.num_);
@@ -423,7 +424,7 @@ void BaseProcessor::audioProcessorParameterChanged(AudioProcessor *processor,
                         break;
                     }
                     case MidiAutomation::Midi::T_PRESSURE : {
-                        auto msg = juce::MidiMessage::channelPressureChange(a.midi_.channel_, juce::uint8(v * 127));
+                        auto msg = juce::MidiMessage::channelPressureChange(a.midi_.channel_, juce::uint8(valout * 127));
                         midiOutDevice_->sendMessageNow(msg);
                         break;
                     }

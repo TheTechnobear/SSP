@@ -29,11 +29,7 @@ SystemFullEditor::SystemFullEditor(BaseProcessor *p)
 
     addAndMakeVisible(upBtn_);
     addAndMakeVisible(downBtn_);
-
-    setButtonBounds(learnBtn_, 0, 0);
-    setButtonBounds(noteInputBtn_, 0, 1);
-    setButtonBounds(delBtn_, 1, 0);
-
+    mode(M_PARAM);
 }
 
 
@@ -50,10 +46,15 @@ void SystemFullEditor::drawView(Graphics &g) {
     // x= left/right (0..1599)
     // y= top/bottom (0..479)
 
-    drawLabel(g, "Param", 0);
-    drawLabel(g, "Channel", 1);
-    drawLabel(g, "Midi In", 2);
-    drawLabel(g, "Midi Out", 3);
+    if(mode() == M_PARAM) {
+        drawLabel(g, "Param", 0);
+        drawLabel(g, "Scale", 1);
+        drawLabel(g, "Offset", 2);
+    } else {
+        drawLabel(g, "Channel", 0);
+        drawLabel(g, "Midi In", 1);
+        drawLabel(g, "Midi Out", 2);
+    }
 
 
     const int fh = 12 * COMPACT_UI_SCALE;
@@ -61,11 +62,19 @@ void SystemFullEditor::drawView(Graphics &g) {
     g.setColour(Colours::white);
     int y = 60;
 
+    int xparam =20;
+    int xch =250;
+    int xtype = 420;
+    int xnum = 490;
+    int xscale = 540;
+
+
     g.setColour(Colours::red);
-    g.drawSingleLineText("Parameter", 20, y);
-    g.drawSingleLineText(String("Ch"), 400, y);
-    g.drawSingleLineText("Type", 470, y);
-    g.drawSingleLineText(String("Num"), 540, y);
+    g.drawSingleLineText("Parameter", xparam, y);
+    g.drawSingleLineText(String("Ch"), xch, y);
+    g.drawSingleLineText("Type", xtype, y);
+    g.drawSingleLineText(String("Num"), xnum, y);
+    g.drawSingleLineText(String("Scale"), xscale, y);
 
 
     y += fh;
@@ -101,10 +110,13 @@ void SystemFullEditor::drawView(Graphics &g) {
             case BaseProcessor::MidiAutomation::Midi::T_PRESSURE: type = "CHP"; break;
             default: break;
         }
-        g.drawSingleLineText(p->getName(40), 20, y);
-        g.drawSingleLineText(String(a.midi_.channel_), 400, y);
-        g.drawSingleLineText(type, 470, y);
-        g.drawSingleLineText(String(a.midi_.num_), 540, y);
+        g.drawSingleLineText(p->getName(40), xparam, y);
+        g.drawSingleLineText(String(a.midi_.channel_), xch, y);
+        g.drawSingleLineText(type, xtype, y);
+        g.drawSingleLineText(String(a.midi_.num_), xnum, y);
+
+        String scaling = String("x ") + String(a.scale_,2,false) + " + " + String(a.offset_,2,false);
+        g.drawSingleLineText(scaling, xscale, y);
 
         if (ai != am.end()) ai++;
         idx++;
@@ -146,6 +158,12 @@ void SystemFullEditor::resized() {
     midiInCtrl_.setBounds(750, y, 600, fh * 2);
     y += fh * 3;
     midiOutCtrl_.setBounds(750, y, 600, fh * 2);
+
+    setButtonBounds(learnBtn_, 0, 0);
+    setButtonBounds(noteInputBtn_, 0, 1);
+    setButtonBounds(delBtn_, 1, 0);
+    setButtonBounds(deviceMode_, 0, 3);
+    setButtonBounds(paramMode_, 0, 3);
 }
 
 

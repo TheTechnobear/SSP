@@ -53,6 +53,14 @@ public:
     void eventButtonHeld(unsigned btn) override {}
 
 protected:
+    enum UI_Mode{
+        M_PARAM, 
+        M_DEVICE
+    } mode_;
+
+    virtual void mode(UI_Mode m);
+    UI_Mode mode() { return mode_;}
+
     BaseProcessor *baseProcessor_;
 
     ListValueControl midiInCtrl_, midiOutCtrl_, midiChannelCtrl_;
@@ -66,6 +74,7 @@ protected:
     int idxOffset_ = 0;
     int selIdx_ = -1;
     ValueButton learnBtn_, delBtn_, noteInputBtn_;
+    ValueButton deviceMode_, paramMode_;
 
 private:
     std::vector<std::string> midiInStr_;
@@ -73,6 +82,8 @@ private:
     std::vector<std::string> midiChStr_;
     std::vector<MidiDeviceInfo> inDevices_;
     std::vector<MidiDeviceInfo> outDevices_;
+
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SystemEditor)
 };
@@ -111,6 +122,7 @@ public:
     void resized() override;
 
 protected:
+    void mode(UI_Mode m) override;
     void paint(Graphics &g) override;
     virtual void drawView(Graphics &g);
     void setButtonBounds(ValueButton &btn, unsigned r, unsigned c);

@@ -38,7 +38,7 @@ void Module::alloc(const std::string &pname, SSPExtendedApi::PluginInterface *p,
     dlHandle_ = h;
     requestedModule_ = pluginName_;
 
-    if (plugin_) { editor_ = (SSPExtendedApi::PluginEditorInterface *)plugin_->getEditor(); }
+    editor_ = nullptr; // load when needed!
 
     if (descriptor_) {
         int inSz = descriptor_->inputChannelNames.size();

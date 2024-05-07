@@ -10,6 +10,7 @@ SystemMiniEditor::SystemMiniEditor(BaseProcessor *p) : SystemEditor(p) {
     midiInCtrl_.setFontHeight(14 * COMPACT_UI_SCALE);
     midiOutCtrl_.setFontHeight(14 * COMPACT_UI_SCALE);
     midiChannelCtrl_.setFontHeight(14 * COMPACT_UI_SCALE);
+    mode(M_PARAM);
 }
 
 
@@ -22,10 +23,17 @@ void SystemMiniEditor::paint(Graphics &g) {
 
 
 void SystemMiniEditor::drawView(Graphics &g) {
-    drawLabel(g, "Param", 0);
-    drawLabel(g, "Channel", 1);
-    drawLabel(g, "Midi In", 2);
-    drawLabel(g, "Midi Out", 3);
+    if (SystemEditor::mode() == M_PARAM) {
+        drawLabel(g, "Param", 0);
+        drawLabel(g, "Scale", 1);
+        drawLabel(g, "Offset", 2);
+    } else {
+        drawLabel(g, "Channel", 0);
+        drawLabel(g, "Midi In", 1);
+        drawLabel(g, "Midi Out", 2);
+    }
+
+    if (SystemEditor::mode() == M_DEVICE) return;
 
     const int fh = 12 * COMPACT_UI_SCALE;
     g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
@@ -36,12 +44,14 @@ void SystemMiniEditor::drawView(Graphics &g) {
     int xch = xparam + (8 * fh);
     int xtype = xch + (3 * fh);
     int xnum = xtype + (3 * fh);
+    int xscale = xnum + (3 * fh);
 
     g.setColour(Colours::red);
     g.drawSingleLineText("Parameter", xparam, y);
     g.drawSingleLineText(String("Ch"), xch, y);
     g.drawSingleLineText("Type", xtype, y);
     g.drawSingleLineText(String("Num"), xnum, y);
+    g.drawSingleLineText(String("Scaling"), xscale, y);
 
 
     y += fh;
@@ -81,6 +91,8 @@ void SystemMiniEditor::drawView(Graphics &g) {
         g.drawSingleLineText(String(a.midi_.channel_), xch, y);
         g.drawSingleLineText(type, xtype, y);
         g.drawSingleLineText(String(a.midi_.num_), xnum, y);
+        String scaling = String("x ") + String(a.scale_, 2, false) + " + " + String(a.offset_, 2, false);
+        g.drawSingleLineText(scaling, xscale, y);
 
         if (ai != am.end()) ai++;
         idx++;
@@ -119,7 +131,8 @@ void SystemMiniEditor::resized() {
     const int fh = 12 * COMPACT_UI_SCALE;
     int y = fh * 2;
     int w = SSP_COMPACT_WIDTH / 3;
-    int x = SSP_COMPACT_WIDTH - w;
+    int x = 5 * COMPACT_UI_SCALE;
+
     midiChannelCtrl_.setBounds(x, y, w, fh * 2);
     y += fh * 2;
     midiInCtrl_.setBounds(x, y, w, fh * 2);
@@ -129,6 +142,21 @@ void SystemMiniEditor::resized() {
     setButtonBounds(learnBtn_, 0, 0);
     setButtonBounds(noteInputBtn_, 0, 1);
     setButtonBounds(delBtn_, 1, 0);
+    setButtonBounds(deviceMode_, 0, 3);
+    setButtonBounds(paramMode_, 0, 3);
+}
+
+void SystemMiniEditor::mode(UI_Mode m) {
+    SystemEditor::mode(m);
+    if (m == M_PARAM) {
+        midiChannelCtrl_.setVisible(false);
+        midiInCtrl_.setVisible(false);
+        midiOutCtrl_.setVisible(false);
+    } else {
+        midiChannelCtrl_.setVisible(true);
+        midiInCtrl_.setVisible(true);
+        midiOutCtrl_.setVisible(true);
+    }
 }
 
 
