@@ -99,6 +99,25 @@
       "preLaunchTask": "build PMIX_VST3"
     },
     {
+      "name": "DRUM",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/Users/kodiak/bin/AudioPluginHost.app",
+      "args": ["./drum.filtergraph"],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/resources/test",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
+      "sourceFileMap": {
+        "${workspaceFolder}": {
+            "editorPath": "${workspaceFolder}",
+            "useForBreakpoints": "true"
+        }
+      },
+      "preLaunchTask": "build DRUM_VST3"
+    },
+    {
       "name": "CART",
       "type": "cppdbg",
       "request": "launch",

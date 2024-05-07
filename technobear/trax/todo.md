@@ -1,13 +1,10 @@
 
 # TODO 
 
-# milestone 1 & 2 done 
-
-- keyboard for save  - ability to delete characters?
-- other modules? see below
-
+# bugs
 
 # Possible?
+- other modules? see below
 - add save/load to GRA4/LOOP?
 make use of new components for text edit and file loading?
 - add glide to CART?

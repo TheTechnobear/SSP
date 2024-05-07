@@ -31,7 +31,17 @@ void SSP_PluginEditorInterface::frameStart() {
 
 void SSP_PluginEditorInterface::visibilityChanged(bool b) {
     PluginEditorInterface::visibilityChanged(b);
+    editor_->setVisible(false);
+    if(!b) {
+        // if we loose visiibity, then forget button states
+        for (int i = 0; i < SSP_LastBtn; i++) {
+            buttonCounter_[i] = 0;
+            buttonState_[i] = false;
+        }
+        editor_->sysEditor(false);
+    }
 }
+
 
 void SSP_PluginEditorInterface::renderToImage(unsigned char *buffer, int width, int height) {
     auto hashcode = editor_->isCompactUI() ? SSP_COMPACT_IMAGECACHE_HASHCODE : SSP_FULL_IMAGECACHE_HASHCODE;

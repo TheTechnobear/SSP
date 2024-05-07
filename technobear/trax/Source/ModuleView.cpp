@@ -3,7 +3,6 @@
 #include "Module.h"
 
 
-
 ModuleView::ModuleView(PluginProcessor &p) : base_type(&p, false), processor_(p) {
     if (processor_.getSupportedModules().size() == 0) { processor_.loadSupportedModules(); }
 }
@@ -19,7 +18,7 @@ void ModuleView::drawView(Graphics &g) {
 void ModuleView::onSSPTimer() {
     base_type::onSSPTimer();
     auto editor = processor_.getEditor(trackIdx_, moduleIdx_);
-    if( editor) { 
+    if (editor) {
         editor->frameStart();
         auto pComponent = editor->editorComponent();
         pComponent->repaint();
@@ -42,10 +41,7 @@ void ModuleView::drawModulePanel(Graphics &g) {
     }
 
     auto pComponent = editor->editorComponent();
-    if(pComponent) {
-        pComponent->paintEntireComponent(g, true);
-    }
-
+    if (pComponent) { pComponent->paintEntireComponent(g, true); }
 }
 
 
@@ -77,4 +73,15 @@ void ModuleView::onDownButton(bool v) {
     auto plugin = processor_.getPlugin(trackIdx_, moduleIdx_);
     if (!plugin) return;
     plugin->buttonPressed(SSP_Down, v);
+}
+
+void ModuleView::editorShown() {
+    auto plugin = processor_.getEditor(trackIdx_, moduleIdx_);
+    if (plugin) { plugin->visibilityChanged(true); }
+}
+
+
+void ModuleView::editorHidden() {
+    auto plugin = processor_.getEditor(trackIdx_, moduleIdx_);
+    if (plugin) { plugin->visibilityChanged(false); }
 }

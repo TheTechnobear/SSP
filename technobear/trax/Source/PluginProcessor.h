@@ -113,11 +113,10 @@ public:
     }
 
     void initPreset() {
-        for (unsigned i = 0; i < MAX_TRACKS; i++) {
-            muteTrack(i, false);
-            gainTrack(i, 1.f);
-            presetName_ = "";
-            for (unsigned j = 0; j < Track::M_MAX; j++) { while (!requestModuleChange(i, j, "")); }
+        for (auto &track : tracks_) {
+            while (!track.requestClearTrack()) {}
+            track.mute(false);
+            track.level(1.f);
         }
     }
 

@@ -103,7 +103,7 @@ void TrackEditor::eventButton(unsigned btn, bool longPress) {
 }
 
 void TrackEditor::eventButtonHeld(unsigned btn) {
-    if (btn >= SSP_Soft_1 && btn <= SSP_Soft_4) {
+    if (btn >= SSP_Soft_1 && btn <= SSP_Soft_8) {
         int m = btn - SSP_Soft_1;
         if (getViewIdx() == trackViewIdx_ && btn < Track::MAX_USER_MODULES) {
             auto modIdx = m + Track::M_SLOT_1;

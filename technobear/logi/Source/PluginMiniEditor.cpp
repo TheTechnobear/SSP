@@ -33,6 +33,9 @@ void PluginMiniEditor::drawView(Graphics &g) {
 
 
     const int sp = 20 * COMPACT_UI_SCALE;
+    const int hsp = sp / 2;
+    const int qsp = sp / 4;
+
     const int gw = 12 * COMPACT_UI_SCALE;
     const int bw = 50 * COMPACT_UI_SCALE;
     const int tstartX = canvasX(), startX = tstartX + 15 * COMPACT_UI_SCALE, startY = canvasY();
@@ -42,13 +45,13 @@ void PluginMiniEditor::drawView(Graphics &g) {
         bool gate = inputs[i];
         g.setColour(Colours::white);
         {
-            int xb = startX + 10;
-            int yb = y + 10;
+            int xb = startX + qsp;
+            int yb = y + qsp;
 
             float v = inputs[i];
             int w;
             g.setColour(Colours::grey);
-            g.drawRect(xb, yb, bw, sp - 20);
+            g.drawRect(xb, yb, bw, sp - hsp);
             if (v >= 0) {
                 w = std::min(bw, int(v * (bw - 2)));
                 g.setColour(Colours::green);
@@ -56,19 +59,19 @@ void PluginMiniEditor::drawView(Graphics &g) {
                 w = std::min(bw, int(v * -1.0f * (bw - 2)));
                 g.setColour(Colours::red);
             }
-            g.fillRect(xb + 1, yb + 1, w, sp - 20 - 2);
+            g.fillRect(xb + 1, yb + 1, w, sp - hsp - 2);
         }  // inputs
 
 
         if (i + 1 < PluginProcessor::O_MAX) {
             g.setColour(Colours::green);
             gate = outputs[i + 1];
-            int xb = startX + 10 + bw + sp;
-            int yb = y + 10 + (sp / 2) + (i * sp);
+            int xb = startX + qsp + bw + sp;
+            int yb = y + qsp + (sp / 2) + (i * sp);
             if (gate) {
-                g.fillRect(xb, yb, gw - 1, sp - 20);
+                g.fillRect(xb, yb, gw - 1, sp - hsp);
             } else {
-                g.drawRect(xb, yb, gw - 1, sp - 20);
+                g.drawRect(xb, yb, gw - 1, sp - hsp);
             }
         }  // outputs
     }
@@ -76,12 +79,12 @@ void PluginMiniEditor::drawView(Graphics &g) {
     {
         g.setColour(Colours::yellow);
         bool gate = outputs[PluginProcessor::O_OUT_ALL];
-        int xb = startX + 10 + bw + sp + gw + sp;
-        int yb = startY + (sp * 4) - (sp / 2) + 10;
+        int xb = startX + qsp + bw + sp + gw + sp;
+        int yb = startY + (sp * 4) - (sp / 2) + qsp;
         if (gate) {
-            g.fillRect(xb, yb, gw - 1, sp - 20);
+            g.fillRect(xb, yb, gw - 1, sp - hsp);
         } else {
-            g.drawRect(xb, yb, gw - 1, sp - 20);
+            g.drawRect(xb, yb, gw - 1, sp - hsp);
         }
     }  // main out
 }

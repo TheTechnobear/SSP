@@ -56,6 +56,7 @@ public:
     }
 
     bool isCompactUI() { return compactUI_; }
+    void sysEditor(bool sysEditor);
 
 private:
     void drawMenuBox(Graphics &g);
@@ -65,7 +66,6 @@ private:
 
     void setMenuBounds(ValueButton &btn, unsigned r);
 
-    void sysEditor();
     ValueButton globalBtn_, networkBtn_, plugInBtn_, recBtn_;
 
     bool LSActive_ = false;

@@ -5,6 +5,7 @@
 #include "BaseView.h"
 #include "SSP.h"
 
+#include "Log.h"
 
 namespace ssp {
 
@@ -137,10 +138,11 @@ void EditorHost::drawButtonBox(Graphics &g) {
     for (int i = 0; i < 8; i++) { g.drawVerticalLine(x + i * 100, butTopY, 480 - 1); }
 }
 
-void EditorHost::sysEditor() {
+void EditorHost::sysEditor(bool sysEditor) {
     if (!system_) return;
+    if(sysEditor == sysActive_) return;
 
-    sysActive_ = !sysActive_;
+    sysActive_ = sysEditor;
     editor_->setVisible(!sysActive_);
     system_->setVisible(sysActive_);
 }
@@ -202,7 +204,7 @@ void EditorHost::onLeftShiftButton(bool v) {
         editor_->onLeftShiftButton(v);
 
     LSActive_ = v;
-    if (LSActive_ && RSActive_ && system_) sysEditor();
+    if (LSActive_ && RSActive_ && system_) sysEditor(!sysActive_);
 }
 
 void EditorHost::onRightShiftButton(bool v) {
@@ -212,7 +214,7 @@ void EditorHost::onRightShiftButton(bool v) {
         editor_->onRightShiftButton(v);
 
     RSActive_ = v;
-    if (LSActive_ && RSActive_ && system_) sysEditor();
+    if (LSActive_ && RSActive_ && system_) sysEditor(!sysActive_);
 }
 
 void EditorHost::onSSPTimer() {
@@ -276,7 +278,11 @@ void EditorHost::eventButtonCombo(unsigned btn, unsigned comboBtn, bool longPres
         editor_->eventButtonCombo(btn, comboBtn, longPress);
 
     if (compactUI_) {
-        if ((comboBtn == SSP_Up && btn == SSP_Down) || (comboBtn == SSP_Down && btn == SSP_Up)) { sysEditor(); }
+        if ((comboBtn == SSP_Up && btn == SSP_Down) || (comboBtn == SSP_Down && btn == SSP_Up)) { 
+            ssp::log("system editor btn:" + std::to_string(btn) + " combo:" + std::to_string(comboBtn) + " lp:" + std::to_string(longPress));
+            ssp::log("matching up "+std::to_string(SSP_Up)+" down "+std::to_string(SSP_Down));
+            sysEditor(!sysActive_); 
+        }
     }
 }
 

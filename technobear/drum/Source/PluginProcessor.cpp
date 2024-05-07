@@ -89,7 +89,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
         auto drum = std::make_unique<AudioProcessorParameterGroup>(ID::AB, String(ID::AB), ID::separator);
         drum->addChild(std::make_unique<ssp::BaseBoolParameter>(getDrumPid(ID::AB, ID::Sustain), "AB Sustain", false));
         drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::AB, ID::Accent), "AB Accent", 0, 1.0f, 0.1f));
-        drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::AB, ID::Freq), "AB Freq", 1, 5000.0f, 50));
+        drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::AB, ID::Freq), "AB Freq", 1, 440.0f, 55.f));
         drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::AB, ID::Tone), "AB Tone", 0, 1.0f, 0.1f));
         drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::AB, ID::Decay), "AB Decay", 0, 1.0f, 0.3f));
         drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::AB, ID::Gain), "AB Gain", 0, 10.0f, 3.0f));
@@ -101,7 +101,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
         auto drum = std::make_unique<AudioProcessorParameterGroup>(ID::SB, String(ID::SB), ID::separator);
         drum->addChild(std::make_unique<ssp::BaseBoolParameter>(getDrumPid(ID::SB, ID::Sustain), "SB Sustain", false));
         drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::SB, ID::Accent), "SB Accent", 0, 1.0f, 0.2f));
-        drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::SB, ID::Freq), "SB Freq", 1, 5000.0f, 100));
+        drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::SB, ID::Freq), "SB Freq", 1, 440.0f, 55.f));
         drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::SB, ID::Tone), "SB Tone", 0, 1.0f, 0.6f));
         drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::SB, ID::Decay), "SB Decay", 0, 1.0f, 0.7f));
         drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::SB, ID::Gain), "SB Gain", 0, 10.0f, 1.5f));
@@ -114,7 +114,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
         auto drum = std::make_unique<AudioProcessorParameterGroup>(ID::AS, String(ID::AS), ID::separator);
         drum->addChild(std::make_unique<ssp::BaseBoolParameter>(getDrumPid(ID::AS, ID::Sustain), "AS Sustain", false));
         drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::AS, ID::Accent), "AS Accent", 0, 1.0f, 0.6f));
-        drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::AS, ID::Freq), "AS Freq", 1, 5000.0f, 200));
+        drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::AS, ID::Freq), "AS Freq", 1, 440.0f, 220.f));
         drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::AS, ID::Tone), "AS Tone", 0, 1.0f, 0.5f));
         drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::AS, ID::Decay), "AS Decay", 0, 1.0f, 0.3f));
         drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::AS, ID::Gain), "AS Gain", 0, 10.0f, 1.0f));
@@ -125,7 +125,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
         auto drum = std::make_unique<AudioProcessorParameterGroup>(ID::SS, String(ID::SS), ID::separator);
         drum->addChild(std::make_unique<ssp::BaseBoolParameter>(getDrumPid(ID::SS, ID::Sustain), "SS Sustain", false));
         drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::SS, ID::Accent), "SS Accent", 0, 1.0f, 0.6f));
-        drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::SS, ID::Freq), "SS Freq", 1, 5000.0f, 200));
+        drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::SS, ID::Freq), "SS Freq", 1, 440.0f, 220.f));
         drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::SS, ID::Tone), "SS Tone", 0, 1.0f, 0.5f)); // not on SS
         drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::SS, ID::Decay), "SS Decay", 0, 1.0f, 0.3f));
         drum->addChild(std::make_unique<ssp::BaseFloatParameter>(getDrumPid(ID::SS, ID::Gain), "SS Gain", 0, 10.0f, 1.0f));

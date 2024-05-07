@@ -146,7 +146,7 @@ void LoadModuleView::updateModuleList() {
             modulesId_.push_back(modIdx);
             std::string niceName = nicePlugName(m.name);
             moduleList_.addItem(niceName);
-            if (m.name == processor_.getLoadedPlugin(trackIdx_, moduleIdx_)) selListIdx = modIdx;
+            if (m.name == processor_.getLoadedPlugin(trackIdx_, moduleIdx_)) selListIdx = modListIdx;
             modListIdx++;
         }
         modIdx++;

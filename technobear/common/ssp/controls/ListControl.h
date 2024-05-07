@@ -42,6 +42,7 @@ template <class T>
 void ListControl<T>::clear() {
     items_.clear();
     curIdx_ = 0;
+    offset_ = 0;
     repaint();
 }
 

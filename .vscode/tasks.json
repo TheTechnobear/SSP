@@ -80,6 +80,17 @@
 		},
 		{
 			"type": "cmake",
+			"label": "build DRUM_VST3",
+			"command": "build",
+			"targets": [
+				"DRUM_VST3"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "DRUM_VST3"
+		},
+		{
+			"type": "cmake",
 			"label": "build CART_VST3",
 			"command": "build",
 			"targets": [

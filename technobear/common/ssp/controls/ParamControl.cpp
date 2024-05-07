@@ -13,6 +13,7 @@ void BaseParamControl::paramChanged(float) {
 juce::String BaseParamControl::getTextValue() {
     auto &p = param_;
     auto val = p.getCurrentValueAsText();
+    if (val == "-0.00") val = "0.00"; // juce bug?
     if (p.getLabel().length()) { val = val + " " + p.getLabel(); }
     return val;
 }

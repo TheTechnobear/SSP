@@ -26,6 +26,8 @@ public:
     void onDownButton(bool v) override;
 
     void onSSPTimer() override;
+    void editorShown() override;
+    void editorHidden() override;
 
     void moduleIdx(unsigned t, unsigned m) {
         trackIdx_ = t;
