@@ -21,8 +21,31 @@ void SystemMiniEditor::paint(Graphics &g) {
     drawView(g);
 }
 
+void SystemMiniEditor::drawButtonBox(Graphics &g) {
+    g.setColour(Colours::darkgrey);
+    unsigned singleButtonH = buttonBarH / 2;
+    g.drawHorizontalLine(SSP_COMPACT_HEIGHT - buttonBarH - 1, gap, SSP_COMPACT_WIDTH - gap);
+    g.drawHorizontalLine(SSP_COMPACT_HEIGHT - singleButtonH - 1, gap, SSP_COMPACT_WIDTH - gap);
+    g.drawHorizontalLine(SSP_COMPACT_HEIGHT - 1, gap, SSP_COMPACT_WIDTH - gap);
+
+    for (int i = 0; i < nParamsPerPage + 1; i++) {
+        unsigned x = gap + (i * gridW);
+        g.drawVerticalLine(x, SSP_COMPACT_HEIGHT - buttonBarH, SSP_COMPACT_HEIGHT - 1);
+    }
+}
+
+void SystemMiniEditor::setButtonBounds(ValueButton &btn, unsigned r, unsigned c) {
+    int offset = gap + (gap / 2);
+    int w = paramWidth;
+    int h = buttonBarH / 2;
+    int x = offset + (c * gridW);
+    int y = SSP_COMPACT_HEIGHT - buttonBarH + (r * h);
+    btn.setBounds(x, y, w, h);
+}
+
 
 void SystemMiniEditor::drawView(Graphics &g) {
+    drawButtonBox(g);
     if (SystemEditor::mode() == M_PARAM) {
         drawLabel(g, "Param", 0);
         drawLabel(g, "Scale", 1);
@@ -115,16 +138,6 @@ void SystemMiniEditor::drawLabel(Graphics &g, const std::string &str, unsigned i
     g.drawSingleLineText(str, x, y);
 }
 
-void SystemMiniEditor::setButtonBounds(ValueButton &btn, unsigned r, unsigned c) {
-    static constexpr int fh = 16 * COMPACT_UI_SCALE;
-    const int w = SSP_COMPACT_WIDTH / 5;
-    const int btnTop = SSP_COMPACT_HEIGHT - (fh * 2);
-
-    const int h = fh;
-    unsigned x = c * w;
-    unsigned y = btnTop + (r * h);
-    btn.setBounds(x, y, w, h);
-}
 
 
 void SystemMiniEditor::resized() {

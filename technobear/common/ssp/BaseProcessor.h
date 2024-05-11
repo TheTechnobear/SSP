@@ -2,7 +2,6 @@
 
 
 #include "SSP.h"
-#include "SSP.h"
 #include "controls/BaseParameter.h"
 
 #include <juce_audio_processors/juce_audio_processors.h>

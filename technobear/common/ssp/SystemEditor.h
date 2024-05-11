@@ -12,6 +12,8 @@ using namespace juce;
 
 #include "controls/ButtonBox.h"
 
+#include "SSP.h"
+
 namespace ssp {
 
 class BaseProcessor;
@@ -107,6 +109,7 @@ protected:
     virtual void drawView(Graphics &g);
     void setButtonBounds(ValueButton &btn, unsigned r, unsigned c);
 
+    void drawButtonBox(Graphics &g); 
 private:
     ValueButton leftBtn_, rightBtn_, upBtn_, downBtn_;
     ValueButton leftShiftBtn_, rightShiftBtn_;
@@ -122,9 +125,22 @@ public:
     void resized() override;
 
 protected:
+    static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
+    static constexpr unsigned buttonBarH = 32 * COMPACT_UI_SCALE;
+    static constexpr unsigned titleH = 15 * COMPACT_UI_SCALE;
+    static constexpr unsigned titleFH = 10 * COMPACT_UI_SCALE;
+    static constexpr unsigned canvasW = SSP_COMPACT_WIDTH - 2 * gap;
+    static constexpr unsigned canvasH = SSP_COMPACT_HEIGHT - buttonBarH - titleH;
+
+    static constexpr unsigned nParamsPerPage = 4;
+    static constexpr unsigned gridW = canvasW / nParamsPerPage;
+    static constexpr unsigned paramWidth = gridW - gap;
+    static constexpr unsigned paramHeight = 32 * COMPACT_UI_SCALE;
+
     void mode(UI_Mode m) override;
     void paint(Graphics &g) override;
     virtual void drawView(Graphics &g);
+    void drawButtonBox(Graphics &g); 
     void setButtonBounds(ValueButton &btn, unsigned r, unsigned c);
 
 private:

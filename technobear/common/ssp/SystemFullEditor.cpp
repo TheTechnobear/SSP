@@ -41,10 +41,24 @@ void SystemFullEditor::paint(Graphics &g) {
 }
 
 
+void SystemFullEditor::drawButtonBox(Graphics &g) {
+    unsigned butTopY = btnTopY;
+    unsigned butLeftX = 900 - 1;
+    float x = butLeftX;
+    float y = butTopY;
+    g.setColour(Colours::grey);
+    g.drawHorizontalLine(y, x, 1600 - 1);
+    g.drawHorizontalLine(y + btnSpaceY, x, 1600 - 1);
+    g.drawHorizontalLine(480 - 1, x, 1600 - 1);
+    for (int i = 0; i < 8; i++) { g.drawVerticalLine(x + i * 100, butTopY, 480 - 1); }
+}
+
+
 void SystemFullEditor::drawView(Graphics &g) {
     // display 1600x 480
     // x= left/right (0..1599)
     // y= top/bottom (0..479)
+    drawButtonBox(g);
 
     if(mode() == M_PARAM) {
         drawLabel(g, "Param", 0);

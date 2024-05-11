@@ -127,30 +127,31 @@ void Track::process(juce::AudioSampleBuffer &ioBuffer) {
         auto &inMod = modules_[M_IN];
         for (int c = 0; c < MAX_IO_IN; c++) { inMod.audioBuffer_.copyFrom(c, 0, ioBuffer, c, 0, n); }
 
-        if (!mute()) {
-            unsigned modIdx = 0;
-            for (auto &m : modules_) {
-                auto &moduleBuf = m.audioBuffer_;
-                if (modIdx > 0) moduleBuf.applyGain(0.0f);
-                for (auto &route : matrix_.connections_) {
-                    if (route.dest_.modIdx_ == modIdx) {
-                        auto &srcBuf = modules_[route.src_.modIdx_].audioBuffer_;
-                        float gain = route.gain_;
-                        float offset = route.offset_;
-                        moduleBuf.addFrom(route.dest_.chIdx_, 0, srcBuf, route.src_.chIdx_, 0, n, gain);
-                        if (offset != 0.0f) {
-                            auto buf = moduleBuf.getWritePointer(route.dest_.chIdx_, 0);
-                            juce::FloatVectorOperations::add(buf, offset, n);
-                        }
+        unsigned modIdx = 0;
+        for (auto &m : modules_) {
+            auto &moduleBuf = m.audioBuffer_;
+            if (modIdx > 0) moduleBuf.applyGain(0.0f);
+            for (auto &route : matrix_.connections_) {
+                if (route.dest_.modIdx_ == modIdx) {
+                    auto &srcBuf = modules_[route.src_.modIdx_].audioBuffer_;
+                    float gain = route.gain_;
+                    float offset = route.offset_;
+                    moduleBuf.addFrom(route.dest_.chIdx_, 0, srcBuf, route.src_.chIdx_, 0, n, gain);
+                    if (offset != 0.0f) {
+                        auto buf = moduleBuf.getWritePointer(route.dest_.chIdx_, 0);
+                        juce::FloatVectorOperations::add(buf, offset, n);
                     }
                 }
-
-                if (!m.lock_.test_and_set()) {
-                    m.process(moduleBuf);
-                    m.lock_.clear();
-                }
-                modIdx++;
             }
+
+            if (!m.lock_.test_and_set()) {
+                m.process(moduleBuf);
+                m.lock_.clear();
+            }
+            modIdx++;
+        }
+
+        if (!mute()) {
             auto &outMod = modules_[M_OUT];
             for (int c = 0; c < MAX_IO_OUT; c++) { ioBuffer.copyFrom(c, 0, outMod.audioBuffer_, c, 0, n); }
         } else {
