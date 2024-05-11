@@ -5,12 +5,13 @@
 
 #include "PluginProcessor.h"
 #include "ssp/BaseView.h"
+
 using namespace juce;
 
 
 class ModuleView : public ssp::BaseView {
 public:
-    ModuleView(PluginProcessor &p, unsigned modIdx);
+    ModuleView(PluginProcessor &p);
     ~ModuleView() override;
 
     void drawView(Graphics &g) override;
@@ -24,12 +25,22 @@ public:
     void onUpButton(bool v) override;
     void onDownButton(bool v) override;
 
+    void onSSPTimer() override;
     void editorShown() override;
+    void editorHidden() override;
+
+    void moduleIdx(unsigned t, unsigned m) {
+        trackIdx_ = t;
+        moduleIdx_ = m;
+    }
 
 private:
-    unsigned moduleIdx_;
-    PluginProcessor &processor_;
+    using base_type = ssp::BaseView;
+    
+    static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
+    static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
 
-    SSPExtendedApi::PluginEditorInterface* editor_ = nullptr;
-    Component *pComponent_ = nullptr;
+    unsigned trackIdx_ = 0;
+    unsigned moduleIdx_ = 0;
+    PluginProcessor &processor_;
 };

@@ -24,7 +24,7 @@ public:
     void onUpButton(bool v) override;
     void onDownButton(bool v) override;
 
-    void moduleIdx(int m);
+    void moduleIdx(int /*tidx*/,int m);
     void refreshComponents();
 
     void editorShown() override;

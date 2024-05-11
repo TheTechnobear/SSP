@@ -63,7 +63,7 @@ PluginProcessor::~PluginProcessor() {
 }
 
 
-bool PluginProcessor::requestModuleChange(unsigned midx, const std::string &mn) {
+bool PluginProcessor::requestModuleChange(unsigned /*tidx*/,unsigned midx, const std::string &mn) {
     auto &m = modules_[midx];
 
     if (!m.lockModule_.test_and_set()) {
@@ -376,7 +376,7 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
             moduleData.setSize(size);
             inputStream.read(moduleData.getData(), size);
 
-            while (!requestModuleChange(i, fname.toStdString())) {}
+            while (!requestModuleChange(0,i, fname.toStdString())) {}
             auto &plugin = modules_[i].plugin_;
             if (!plugin) continue;
 
@@ -384,6 +384,20 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
         }
     }
 }
+
+void PluginProcessor::loadSupportedModules(bool force) {
+    if (!force) {
+        if (supportedModules_.empty()) { Module::loadSupportedModules(supportedModules_); }
+    }
+
+    if (force || supportedModules_.empty()) {
+        ssp::log("plugin scan - start");
+        Module::scanPlugins(supportedModules_);
+        for (auto m : supportedModules_) { ssp::log("module: " + m.name); }
+        ssp::log("plugin scan - send");
+    }
+}
+
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
     static constexpr bool useSysEditor = false, defaultDraw = false;

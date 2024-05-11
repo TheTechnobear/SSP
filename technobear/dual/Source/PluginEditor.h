@@ -5,7 +5,7 @@
 
 
 class DualView;
-class LoadView;
+class LoadModuleView;
 
 
 using namespace juce;
@@ -31,7 +31,7 @@ private:
     PluginProcessor &processor_;
 
     std::shared_ptr<DualView> dualView_;
-    std::shared_ptr<LoadView> loadView_;
+    std::shared_ptr<LoadModuleView> loadView_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginEditor)
 };

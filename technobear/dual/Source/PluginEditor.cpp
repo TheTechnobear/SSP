@@ -5,14 +5,14 @@
 #include "ssp/editors/MultiView.h"
 
 #include "DualView.h"
-#include "LoadView.h"
+#include "LoadModuleView.h"
 
 PluginEditor::PluginEditor(PluginProcessor &p) : base_type(&p, false), processor_(p) {
     dualView_ = std::make_shared<DualView>(p);
-    loadView_ = std::make_shared<LoadView>(p,true);
+    loadView_ = std::make_shared<LoadModuleView>(p,true);
     addView(dualView_);
     addView(loadView_);
-    dualView_->moduleIdx(0);
+    dualView_->moduleIdx(0,0);
     setView(0);
 }
 
@@ -20,7 +20,7 @@ void PluginEditor::onSSPTimer() {
     base_type::onSSPTimer();
     for (int i = 0; i < PluginProcessor::M_MAX; i++) {
         //        auto editor = processor_.createEditorIfNeeded(i);
-        auto editor = processor_.getEditor(i);
+        auto editor = processor_.getEditor(0,i);
         if (!editor) continue;
         editor->frameStart();
     }
@@ -29,7 +29,7 @@ void PluginEditor::onSSPTimer() {
 void PluginEditor::editorShown() {
     base_type::editorShown();
     for (int i = 0; i < PluginProcessor::M_MAX; i++) {
-        auto editor = processor_.getEditor(i);
+        auto editor = processor_.getEditor(0,i);
         if (!editor) continue;
         editor->visibilityChanged(true);
     }
@@ -38,25 +38,25 @@ void PluginEditor::editorShown() {
 void PluginEditor::editorHidden() {
     base_type::editorHidden();
     for (int i = 0; i < PluginProcessor::M_MAX; i++) {
-        auto editor = processor_.getEditor(i);
+        auto editor = processor_.getEditor(0,i);
         if (!editor) continue;
         editor->visibilityChanged(false);
     }
 }
 
 void  PluginEditor::eventLeft(bool lp) {
-    dualView_->moduleIdx(PluginProcessor::M_LEFT);
+    dualView_->moduleIdx(0,PluginProcessor::M_LEFT);
     setView(0);
 }
 
 void  PluginEditor::eventRight(bool lp) {
-    dualView_->moduleIdx(PluginProcessor::M_RIGHT);
+    dualView_->moduleIdx(0,PluginProcessor::M_RIGHT);
     setView(0);
 }
 
 void  PluginEditor::eventLeftShift(bool lp) {
-    dualView_->moduleIdx(PluginProcessor::M_LEFT);
-    loadView_->moduleIdx(PluginProcessor::M_LEFT);
+    dualView_->moduleIdx(0,PluginProcessor::M_LEFT);
+    loadView_->moduleIdx(0,PluginProcessor::M_LEFT);
     if(getViewIdx()==0) {
         // module -> load 
         setView(1);
@@ -66,8 +66,8 @@ void  PluginEditor::eventLeftShift(bool lp) {
 }
 
 void  PluginEditor::eventRightShift(bool lp) {
-    dualView_->moduleIdx(PluginProcessor::M_RIGHT);
-    loadView_->moduleIdx(PluginProcessor::M_RIGHT);
+    dualView_->moduleIdx(0,PluginProcessor::M_RIGHT);
+    loadView_->moduleIdx(0,PluginProcessor::M_RIGHT);
     if(getViewIdx()==0) {
         // module -> load 
         setView(1);

@@ -20,7 +20,7 @@ void DualView::drawView(Graphics &g) {
 }
 
 
-void DualView::moduleIdx(int m) {
+void DualView::moduleIdx(int /*tidx*/,int m) {
     refreshComponents();
     if (activeModule_ != m) {
         if (pComponent_[0]) pComponent_[0]->setAlpha(m == 0 ? 1.0f : 0.3f);
@@ -41,7 +41,7 @@ void DualView::refreshComponents() {
         if (pComponent_[panel] != nullptr) removeChildComponent(pComponent_[panel]);
 
         pComponent_[panel] = nullptr;
-        auto editor = processor_.getEditor(panel);
+        auto editor = processor_.getEditor(0,panel);
         if (editor) pComponent_[panel] = editor->editorComponent();
         if (pComponent_[panel] != nullptr) {
             addChildComponent(pComponent_[panel]);
@@ -64,7 +64,7 @@ void DualView::drawModulePanel(Graphics &g, unsigned panel) {
     unsigned border = (panelWidth - SSP_COMPACT_WIDTH) / 2;
     unsigned moduleX = (panel * panelWidth) + border;
 
-    auto editor = processor_.getEditor(panel);
+    auto editor = processor_.getEditor(0, panel);
     if (!editor) {
         if (panel == activeModule_)
             g.setColour(Colours::white);
@@ -80,32 +80,32 @@ void DualView::drawModulePanel(Graphics &g, unsigned panel) {
 }
 
 void DualView::onEncoder(unsigned enc, float v) {
-    auto plugin = processor_.getPlugin(activeModule_);
+    auto plugin = processor_.getPlugin(0,activeModule_);
     if (!plugin) return;
     plugin->encoderTurned(enc, v);
 }
 
 void DualView::onEncoderSwitch(unsigned enc, bool v) {
-    auto plugin = processor_.getPlugin(activeModule_);
+    auto plugin = processor_.getPlugin(0,activeModule_);
     if (!plugin) return;
     plugin->encoderPressed(enc, v);
 }
 
 void DualView::onButton(unsigned btn, bool v) {
-    auto plugin = processor_.getPlugin(activeModule_);
+    auto plugin = processor_.getPlugin(0,activeModule_);
     if (!plugin) return;
     plugin->buttonPressed(btn, v);
 }
 
 
 void DualView::onUpButton(bool v) {
-    auto plugin = processor_.getPlugin(activeModule_);
+    auto plugin = processor_.getPlugin(0,activeModule_);
     if (!plugin) return;
     plugin->buttonPressed(SSP_Up, v);
 }
 
 void DualView::onDownButton(bool v) {
-    auto plugin = processor_.getPlugin(activeModule_);
+    auto plugin = processor_.getPlugin(0,activeModule_);
     if (!plugin) return;
     plugin->buttonPressed(SSP_Down, v);
 }

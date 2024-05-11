@@ -39,8 +39,9 @@ target_sources(DUAL
         Source/PluginProcessor.cpp
         Source/DualView.cpp
         Source/ModuleView.cpp
-        Source/LoadView.cpp
-        ${COMMON_SRC}
+#        Source/LoadView.cpp
+       Source/LoadModuleView.cpp
+${COMMON_SRC}
         )
 
 target_compile_definitions(DUAL

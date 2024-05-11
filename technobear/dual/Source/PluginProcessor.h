@@ -51,9 +51,9 @@ public:
     static constexpr unsigned MAX_IN = I_MAX / M_MAX;
     static constexpr unsigned MAX_OUT = O_MAX / M_MAX;
 
-    const std::string &getLoadedPlugin(unsigned m) { return modules_[m].pluginName_; };
+    const std::string &getLoadedPlugin(unsigned /*t*/,unsigned m) { return modules_[m].pluginName_; };
 
-    SSPExtendedApi::PluginEditorInterface *getEditor(unsigned midx) {
+    SSPExtendedApi::PluginEditorInterface *getEditor(unsigned /*tidx*/, unsigned midx) {
         auto &m = modules_[midx];
 
         if (m.plugin_ != nullptr && m.editor_ == nullptr) {
@@ -62,9 +62,9 @@ public:
         return m.editor_;
     };
 
-    SSPExtendedApi::PluginInterface *getPlugin(unsigned m) { return modules_[m].plugin_; };
+    SSPExtendedApi::PluginInterface *getPlugin(unsigned /*tidx*/,unsigned m) { return modules_[m].plugin_; };
 
-    SSPExtendedApi::PluginDescriptor *getDescriptor(unsigned m) { return modules_[m].descriptor_; };
+    SSPExtendedApi::PluginDescriptor *getDescriptor(unsigned /*tidx*/,unsigned m) { return modules_[m].descriptor_; };
 
     void getStateInformation(MemoryBlock &destData) override;
     void setStateInformation(const void *data, int sizeInBytes) override;
@@ -73,8 +73,9 @@ public:
 
     const std::vector<std::string> &getSupportedModules() { return supportedModules_; }
 
-    bool requestModuleChange(unsigned midx, const std::string &f);
+    bool requestModuleChange(unsigned /*tidx*/,unsigned midx, const std::string &f);
     void scanPlugins();
+    void loadSupportedModules(bool forceScan = false);
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -82,7 +83,7 @@ protected:
 private:
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override { return true; }
 
-    std::vector<std::string> supportedModules_;
+    std::vector<ModuleDesc> supportedModules_;
 
 
     struct Module {
