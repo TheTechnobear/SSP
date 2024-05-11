@@ -84,7 +84,7 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
         tap->addChild(
             std::make_unique<ssp::BaseChoiceParameter>(getSlaveOscParamId(oid, ID::wave), desc + "Wave", waves, 0));
         tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getSlaveOscParamId(oid, ID::ratio), desc + "Ratio",
-                                                                0.0f, 10.0f, (1.0f / oid)));
+                                                                0.0f, 10.0f, (1.0f / (oid + 1))));
         tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getSlaveOscParamId(oid, ID::amp), desc + "Amp", 0.0f,
                                                                 4.0f, 1.0f));
         tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getSlaveOscParamId(oid, ID::phase), desc + "Phase",

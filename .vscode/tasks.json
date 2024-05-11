@@ -36,6 +36,17 @@
 		},
 		{
 			"type": "cmake",
+			"label": "build OMOD_VST3",
+			"command": "build",
+			"targets": [
+				"OMOD_VST3"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "OMOD_VST3"
+		},
+		{
+			"type": "cmake",
 			"label": "build DUAL_VST3",
 			"command": "build",
 			"targets": [
