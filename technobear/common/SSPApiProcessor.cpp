@@ -94,7 +94,7 @@ bool SSP_PluginInterface::parameterDesc(unsigned idx, ParameterDesc &desc) {
     desc.id_ = param->getParameterID().toStdString();
     desc.name_ = param->getName(128).toStdString();
     desc.isDescrete_ = param->isDiscrete();
-    desc.def_ = param->getDefaultValue();
+    desc.def_ = param->convertFrom0to1(param->getDefaultValue());
     desc.numSteps_ = param->getNumSteps();
 
     auto range = param->getNormalisableRange().getRange();

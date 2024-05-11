@@ -1,4 +1,5 @@
 #include "PluginProcessor.h"
+
 #include "PluginEditor.h"
 #include "PluginMiniEditor.h"
 #include "ssp/EditorHost.h"
@@ -11,12 +12,11 @@ inline float constrain(float v, float vMin, float vMax) {
 #define MIN_FREQ (1.0f / 600.0f)
 // min freq only used for cv freq
 
-PluginProcessor::PluginProcessor()
-    : PluginProcessor(getBusesProperties(), createParameterLayout()) {}
+PluginProcessor::PluginProcessor() : PluginProcessor(getBusesProperties(), createParameterLayout()) {
+}
 
-PluginProcessor::PluginProcessor(
-    const AudioProcessor::BusesProperties &ioLayouts,
-    AudioProcessorValueTreeState::ParameterLayout layout)
+PluginProcessor::PluginProcessor(const AudioProcessor::BusesProperties &ioLayouts,
+                                 AudioProcessorValueTreeState::ParameterLayout layout)
     : BaseProcessor(ioLayouts, std::move(layout)), params_(vts()) {
     init();
 }
@@ -32,21 +32,22 @@ String getSlaveOscParamId(unsigned tid, StringRef id) {
     return getSlaveOscPid(tid) + String(ID::separator) + id;
 }
 
-PluginProcessor::SlaveOscParams::SlaveOscParams(AudioProcessorValueTreeState &apvt, unsigned id) :
-    id_(id), pid_(getSlaveOscPid(id)),
-    wave(*apvt.getParameter(getSlaveOscParamId(id, ID::wave))),
-    ratio(*apvt.getParameter(getSlaveOscParamId(id, ID::ratio))),
-    amp(*apvt.getParameter(getSlaveOscParamId(id, ID::amp))),
-    phase(*apvt.getParameter(getSlaveOscParamId(id, ID::phase))) {
+PluginProcessor::SlaveOscParams::SlaveOscParams(AudioProcessorValueTreeState &apvt, unsigned id)
+    : id_(id),
+      pid_(getSlaveOscPid(id)),
+      wave(*apvt.getParameter(getSlaveOscParamId(id, ID::wave))),
+      ratio(*apvt.getParameter(getSlaveOscParamId(id, ID::ratio))),
+      amp(*apvt.getParameter(getSlaveOscParamId(id, ID::amp))),
+      phase(*apvt.getParameter(getSlaveOscParamId(id, ID::phase))) {
 }
 
 
-PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt) :
-    wave(*apvt.getParameter(ID::wave)),
-    freq(*apvt.getParameter(ID::freq)),
-    amp(*apvt.getParameter(ID::amp)),
-    phase(*apvt.getParameter(ID::phase)),
-    lfo(*apvt.getParameter(ID::lfo)) {
+PluginProcessor::PluginParams::PluginParams(AudioProcessorValueTreeState &apvt)
+    : wave(*apvt.getParameter(ID::wave)),
+      freq(*apvt.getParameter(ID::freq)),
+      amp(*apvt.getParameter(ID::amp)),
+      phase(*apvt.getParameter(ID::phase)),
+      lfo(*apvt.getParameter(ID::lfo)) {
     for (unsigned oid = 0; oid < MAX_S_OSC; oid++) {
         auto sosc = std::make_unique<SlaveOscParams>(apvt, oid);
         slaveOscsParams_.push_back(std::move(sosc));
@@ -78,11 +79,16 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
         la[0] = 'A' + oid;
         la[1] = 0;
         String desc = "Sub " + String(la) + " ";
-        auto tap = std::make_unique<AudioProcessorParameterGroup>(getSlaveOscPid(oid), getSlaveOscPid(oid), ID::separator);
-        tap->addChild(std::make_unique<ssp::BaseChoiceParameter>(getSlaveOscParamId(oid, ID::wave), desc + "Wave", waves, 0));
-        tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getSlaveOscParamId(oid, ID::ratio), desc + "Ratio", 0.0f, 10.0f, (1.0f / oid)));
-        tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getSlaveOscParamId(oid, ID::amp), desc + "Amp", 0.0f, 4.0f, 1.0f));
-        tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getSlaveOscParamId(oid, ID::phase), desc + "Phase", 0.0f, 360.0f, 0.0f));
+        auto tap =
+            std::make_unique<AudioProcessorParameterGroup>(getSlaveOscPid(oid), getSlaveOscPid(oid), ID::separator);
+        tap->addChild(
+            std::make_unique<ssp::BaseChoiceParameter>(getSlaveOscParamId(oid, ID::wave), desc + "Wave", waves, 0));
+        tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getSlaveOscParamId(oid, ID::ratio), desc + "Ratio",
+                                                                0.0f, 10.0f, (1.0f / oid)));
+        tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getSlaveOscParamId(oid, ID::amp), desc + "Amp", 0.0f,
+                                                                4.0f, 1.0f));
+        tap->addChild(std::make_unique<ssp::BaseFloatParameter>(getSlaveOscParamId(oid, ID::phase), desc + "Phase",
+                                                                0.0f, 360.0f, 0.0f));
         taps->addChild(std::move(tap));
     }
     params.add(std::move(taps));
@@ -93,36 +99,15 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 
 
 const String PluginProcessor::getInputBusName(int channelIndex) {
-    static String inBusName[I_MAX] = {
-        "Freq",
-        "Reset",
-        "Clock",
-        "VOct"
-    };
+    static String inBusName[I_MAX] = { "Freq", "Reset", "Clock", "VOct" };
     if (channelIndex < I_MAX) { return inBusName[channelIndex]; }
     return "ZZIn-" + String(channelIndex);
 }
 
 
 const String PluginProcessor::getOutputBusName(int channelIndex) {
-    static String outBusName[O_MAX] = {
-        "Main",
-        "Out A",
-        "Out B",
-        "Out C",
-        "Out D",
-        "Out E",
-        "Out F",
-        "Out G",
-        "EoC Main",
-        "EoC A",
-        "EoC B",
-        "EoC C",
-        "EoC D",
-        "EoC E",
-        "EoC F",
-        "EoC G"
-    };
+    static String outBusName[O_MAX] = { "Main",     "Out A", "Out B", "Out C", "Out D", "Out E", "Out F", "Out G",
+                                        "EoC Main", "EoC A", "EoC B", "EoC C", "EoC D", "EoC E", "EoC F", "EoC G" };
     if (channelIndex < O_MAX) { return outBusName[channelIndex]; }
     return "ZZOut-" + String(channelIndex);
 }
@@ -131,14 +116,15 @@ const String PluginProcessor::getOutputBusName(int channelIndex) {
 void PluginProcessor::prepareToPlay(double newSampleRate, int estimatedSamplesPerBlock) {
     BaseProcessor::prepareToPlay(newSampleRate, estimatedSamplesPerBlock);
     mainOsc_.Init(newSampleRate);
+    mainOsc_.SetFreq(0.0f);
     for (int oid = 0; oid < MAX_S_OSC; oid++) {
         slaveOscs_[oid].osc_.Init(newSampleRate);
+        slaveOscs_[oid].osc_.SetFreq(0.0f);
     }
 }
 
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
-
     unsigned sz = buffer.getNumSamples();
     float freqmult = (params_.lfo.getValue() > 0.5f) ? 0.01f : 1.0f;
 
@@ -196,7 +182,6 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     static constexpr float trigLevel = 0.5f;
     // sample rate processing
     for (int s = 0; s < sz; s++) {
-
         float fin = buffer.getSample(I_FREQ, s);
         float clockSmp = buffer.getSample(I_CLOCK, s);
         float resetSmp = buffer.getSample(I_RESET, s);
@@ -204,9 +189,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
         requestReset_ = false;
 
-        if (resetSmp > trigLevel && lastReset_ <= trigLevel) {
-            resetTrig = true;
-        }
+        if (resetSmp > trigLevel && lastReset_ <= trigLevel) { resetTrig = true; }
         lastReset_ = resetSmp;
 
         float mainoscfreq = mainfreq;
@@ -225,12 +208,14 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
         if (usingClock) {
             if (clockSmp > trigLevel && lastClock_ <= trigLevel) {
-                clockFreq_ = getSampleRate() / clockSampleCnt_;
+                if (clockSampleCnt_ > 0)
+                    clockFreq_ = getSampleRate() / clockSampleCnt_;
+                else
+                    clockFreq_ = 0.0f;
                 clockSampleCnt_ = 0;
             }
             lastClock_ = clockSmp;
             clockSampleCnt_++;
-
             mainoscfreq = clockFreq_;
         }
 
@@ -239,7 +224,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
             mainOsc_.SetFreq(mainFreq_);
         }
 
-        if (resetTrig) mainOsc_.Reset(mainPhase_ * TWOPI_F);
+        if (resetTrig) mainOsc_.Reset(mainPhase_);
         buffer.setSample(O_OUT_MAIN, s, mainOsc_.Process());
         buffer.setSample(O_EOC_MAIN, s, mainOsc_.IsEOC());
         for (int oid = 0; oid < MAX_S_OSC; oid++) {
@@ -254,7 +239,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
                 sosc.osc_.SetFreq(sosc.freq_);
             }
 
-            if (resetTrig) sosc.osc_.Reset(sosc.phase_ * TWOPI_F);
+            if (resetTrig) sosc.osc_.Reset(sosc.phase_);
 
             buffer.setSample(O_OUT_A + oid, s, sosc.osc_.Process());
             buffer.setSample(O_EOC_A + oid, s, sosc.osc_.IsEOC());
@@ -273,7 +258,7 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
 AudioProcessorEditor *PluginProcessor::createEditor() {
 #ifdef FORCE_COMPACT_UI
-    return new ssp::EditorHost(this, new PluginMiniEditor(*this),true);
+    return new ssp::EditorHost(this, new PluginMiniEditor(*this), true);
 #else
     if (useCompactUI()) {
         return new ssp::EditorHost(this, new PluginMiniEditor(*this), useCompactUI());

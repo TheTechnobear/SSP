@@ -112,14 +112,7 @@ public:
         savePreset();
     }
 
-    void initPreset() {
-        for (auto &track : tracks_) {
-            while (!track.requestClearTrack()) {}
-            track.mute(false);
-            track.level(1.f);
-        }
-    }
-
+    void initPreset();
     void savePreset();
     void loadPreset();
 

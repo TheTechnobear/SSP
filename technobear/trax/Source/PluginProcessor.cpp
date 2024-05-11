@@ -217,9 +217,7 @@ void PluginProcessor::getStateInformation(MemoryBlock &destData) {
 
 
 void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
-    for (auto &track : tracks_) {
-        while (!track.requestClearTrack()) {}
-    }
+    initPreset();
 
     loadSupportedModules();
 
@@ -273,6 +271,16 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
         }
     } else {
         ssp::log("setStateInformation : no TRAX_XML_TAG tag");
+    }
+}
+void PluginProcessor::initPreset() {
+    int trackIdx = 0;
+    for (auto &track : tracks_) {
+        while (!track.requestClearTrack()) {}
+        while (!removePerformanceParam(trackIdx)) {}
+        track.mute(false);
+        track.level(1.f);
+        trackIdx++;
     }
 }
 

@@ -3,6 +3,11 @@
 
 # bugs
 
+# nice to haves?
+- cv in freeze for srvb
+- scale/offset - performance param
+
+
 # Possible?
 - other modules? see below
 - add save/load to GRA4/LOOP?
