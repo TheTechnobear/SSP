@@ -118,6 +118,25 @@
       "preLaunchTask": "build DRUM_VST3"
     },
     {
+      "name": "OMOD",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/Users/kodiak/bin/AudioPluginHost.app",
+      "args": ["./omod.filtergraph"],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/resources/test",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
+      "sourceFileMap": {
+        "${workspaceFolder}": {
+            "editorPath": "${workspaceFolder}",
+            "useForBreakpoints": "true"
+        }
+      },
+      "preLaunchTask": "build OMOD_VST3"
+    },
+    {
       "name": "CART",
       "type": "cppdbg",
       "request": "launch",
