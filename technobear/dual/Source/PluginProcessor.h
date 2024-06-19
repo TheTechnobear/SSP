@@ -5,6 +5,7 @@
 
 #include "SSPExApi.h"
 #include "ssp/BaseProcessor.h"
+#include "Module.h"
 
 using namespace juce;
 
@@ -51,7 +52,7 @@ public:
     static constexpr unsigned MAX_IN = I_MAX / M_MAX;
     static constexpr unsigned MAX_OUT = O_MAX / M_MAX;
 
-    const std::string &getLoadedPlugin(unsigned /*t*/,unsigned m) { return modules_[m].pluginName_; };
+    const std::string &getLoadedPlugin(unsigned /*t*/, unsigned m) { return modules_[m].pluginName_; };
 
     SSPExtendedApi::PluginEditorInterface *getEditor(unsigned /*tidx*/, unsigned midx) {
         auto &m = modules_[midx];
@@ -62,19 +63,18 @@ public:
         return m.editor_;
     };
 
-    SSPExtendedApi::PluginInterface *getPlugin(unsigned /*tidx*/,unsigned m) { return modules_[m].plugin_; };
+    SSPExtendedApi::PluginInterface *getPlugin(unsigned /*tidx*/, unsigned m) { return modules_[m].plugin_; };
 
-    SSPExtendedApi::PluginDescriptor *getDescriptor(unsigned /*tidx*/,unsigned m) { return modules_[m].descriptor_; };
+    SSPExtendedApi::PluginDescriptor *getDescriptor(unsigned /*tidx*/, unsigned m) { return modules_[m].descriptor_; };
 
     void getStateInformation(MemoryBlock &destData) override;
     void setStateInformation(const void *data, int sizeInBytes) override;
     void onInputChanged(unsigned i, bool b) override;
     void onOutputChanged(unsigned i, bool b) override;
 
-    const std::vector<std::string> &getSupportedModules() { return supportedModules_; }
+    const std::vector<ModuleDesc> &getSupportedModules() { return supportedModules_; }
 
-    bool requestModuleChange(unsigned /*tidx*/,unsigned midx, const std::string &f);
-    void scanPlugins();
+    bool requestModuleChange(unsigned t, unsigned m, const std::string &mn);
     void loadSupportedModules(bool forceScan = false);
 
 protected:
@@ -84,22 +84,6 @@ private:
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override { return true; }
 
     std::vector<ModuleDesc> supportedModules_;
-
-
-    struct Module {
-        void alloc(const std::string &f, SSPExtendedApi::PluginInterface *p, SSPExtendedApi::PluginDescriptor *d,
-                   void *h);
-        void free();
-
-        std::string pluginName_;
-        std::string requestedModule_;
-        std::atomic_flag lockModule_ = ATOMIC_FLAG_INIT;
-        SSPExtendedApi::PluginInterface *plugin_ = nullptr;
-        SSPExtendedApi::PluginEditorInterface *editor_ = nullptr;
-        SSPExtendedApi::PluginDescriptor *descriptor_ = nullptr;
-        void *dlHandle_ = nullptr;
-        AudioSampleBuffer audioSampleBuffer_;
-    };
 
     Module modules_[M_MAX];
     bool loadModule(std::string, Module &m);
