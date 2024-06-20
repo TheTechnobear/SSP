@@ -23,8 +23,7 @@ LoadModuleView::LoadModuleView(PluginProcessor &p, bool compactUI)
     addAndMakeVisible(loadBtn_);
     addAndMakeVisible(categoryList_);
     addAndMakeVisible(moduleList_);
-    // if (processor_.getSupportedModules().size() == 0) { processor_.loadSupportedModules(); }
-    if (processor_.getSupportedModules().size() == 0) { processor_.scanPlugins(); }
+    if (processor_.getSupportedModules().size() == 0) { processor_.loadSupportedModules(); }
 }
 
 
@@ -89,7 +88,7 @@ void LoadModuleView::setButtonBounds(ssp::ValueButton &btn, unsigned r, unsigned
 
 
 void LoadModuleView::loadModule() {
-    if (moduleIdx_ >= PluginProcessor::M_MAX) return;
+    if (trackIdx_ >= PluginProcessor::MAX_TRACKS || moduleIdx_ <= Track::M_IN || moduleIdx_ >= Track::M_OUT) return;
     if (moduleList_.idx() < 0) return;
 
     auto curMod = processor_.getLoadedPlugin(trackIdx_, moduleIdx_);
@@ -171,12 +170,12 @@ void LoadModuleView::eventButton(unsigned int btn, bool v) {
             break;
         }
         case 3: {
-            processor_.scanPlugins();
+            processor_.loadSupportedModules(true);
             editorShown();  // reset current plugin
             break;
         }
         case 4: {
-            if (moduleIdx_ >= PluginProcessor::M_MAX) return;
+            if (trackIdx_ >= PluginProcessor::MAX_TRACKS || moduleIdx_ >= Track::M_MAX) return;
             bool r = false;
             while (!r) { r = processor_.requestModuleChange(trackIdx_, moduleIdx_, ""); }
             break;
@@ -208,7 +207,7 @@ void LoadModuleView::editorShown() {
 
 
 void LoadModuleView::moduleIdx(unsigned trackIdx, unsigned mIdx) {
-    if (mIdx  >= PluginProcessor::M_MAX) {
+    if (trackIdx < PluginProcessor::MAX_TRACKS && mIdx < Track::M_MAX) {
         trackIdx_ = trackIdx;
         moduleIdx_ = mIdx;
     }

@@ -18,23 +18,33 @@ c) it displays two compact UI for the modules
 a is handled by LoadModuleView
 b & c are handled by ModuleView
 
-my aim (ideally) would be that LoadModuleView and ModuleView are identical between Trax/Dual
+my aim (ideally) would be that LoadModuleView, ModuleView, Module are identical between Trax/Dual
 therefore the 'functionality' in dual is handled simply by PluginProcessor, PluginEditorVew and DualView
 
 
 note: LoadModuleView/ModuleView do call into PluginProcessor (etc) so the idea is we have a similar interface.
 and in some cases methods from Trax::PluginProcessor may also be copied (detailed later here)
 
+the basic approach is that PluginProcessor uses 1 track from Track.h/Track.cpp
 
 
 # Copied code and changes
 
-## ModuleView.h/cpp
-copied
+## identical files
 
-## LoadModuleVuew.h/cpp
-copied
+these files are just copied from Trax.
 
-## Module.h/cpp
-copied
+ModuleView.cpp
+ModuleView.h
+LoadModuleView.h
+LoadModuleView.cpp
+ModuleView.h
+ModuleView.cpp
+
+## Track.h/Track.cpp
+
+this originates from Trax
+however, Ive stripped out all references to connections/wires/matrix
+as these are 'hardcoded' to the inputs/otuputs of the dual module
+
 

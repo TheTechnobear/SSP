@@ -7,25 +7,7 @@
 
 #include "PluginEditor.h"
 #include "ssp/EditorHost.h"
-
 #include "ssp/Log.h"
-
-// #ifdef __APPLE__
-// const static int dlopenmode = RTLD_LOCAL | RTLD_NOW;
-// const char *pluginSuffix = ".vst3/Contents/MacOS/";
-
-// #ifdef FORCE_COMPACT_UI
-// const char *pluginPath = "plugins/";
-// #else  // use full UI
-// const char *pluginPath = "~/Library/Audio/Plug-Ins/VST3/";
-// #endif // FORCE_COMPACT_UI
-
-// #else
-// // linux
-// const static int dlopenmode = RTLD_LOCAL | RTLD_NOW | RTLD_DEEPBIND;
-// const char *pluginPath = "plugins/";
-// #endif
-
 
 
 PluginProcessor::PluginProcessor() : PluginProcessor(getBusesProperties(), createParameterLayout()) {
@@ -38,9 +20,28 @@ PluginProcessor::PluginProcessor(const AudioProcessor::BusesProperties &ioLayout
 }
 
 PluginProcessor::~PluginProcessor() {
-    for (auto &module : modules_) { module.free(); }
+    tracks_[0].requestClearTrack();
 }
 
+
+AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLayout() {
+    AudioProcessorValueTreeState::ParameterLayout params;
+    BaseProcessor::addBaseParameters(params);
+    return params;
+}
+
+const String PluginProcessor::getInputBusName(int channelIndex) {
+    String bname =
+        String("M") + String((channelIndex / MAX_IN) + 1) + String(" In ") + String((channelIndex % MAX_IN) + 1);
+    return bname;
+}
+
+
+const String PluginProcessor::getOutputBusName(int channelIndex) {
+    String bname =
+        String("M") + String((channelIndex / MAX_OUT) + 1) + String(" Out ") + String((channelIndex % MAX_OUT) + 1);
+    return bname;
+}
 
 bool PluginProcessor::requestModuleChange(unsigned t, unsigned m, const std::string &mn) {
     if (t >= MAX_TRACKS || m >= Track::M_MAX) return false;
@@ -63,88 +64,16 @@ void PluginProcessor::loadSupportedModules(bool force) {
     }
 }
 
-AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLayout() {
-    AudioProcessorValueTreeState::ParameterLayout params;
-    BaseProcessor::addBaseParameters(params);
-    return params;
-}
-
-const String PluginProcessor::getInputBusName(int channelIndex) {
-    String bname =
-        String("M") + String((channelIndex / MAX_IN) + 1) + String(" In ") + String((channelIndex % MAX_IN) + 1);
-    return bname;
-}
-
-
-const String PluginProcessor::getOutputBusName(int channelIndex) {
-    String bname =
-        String("M") + String((channelIndex / MAX_OUT) + 1) + String(" Out ") + String((channelIndex % MAX_OUT) + 1);
-    return bname;
-}
 
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
     BaseProcessor::prepareToPlay(sampleRate, samplesPerBlock);
 
 
-    // buffers are allocated in loadModule, but sampleRate or blocksize could change
-    // so these may need updating
-    for (auto &m : modules_) {
-        auto &plugin = m.plugin_;
-        if (!plugin) continue;
-
-        m.audioBuffer_.setSize(m.audioBuffer_.getNumChannels(), samplesPerBlock);
-        plugin->prepare(sampleRate, samplesPerBlock);
-    }
+    tracks_[0].prepare(sampleRate, samplesPerBlock);
 }
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
-    size_t n = buffer.getNumSamples();
-    int modIdx = 0;
-    bool processed[M_MAX] = { false, false };
-    // prepare input & process audio
-    for (auto &m : modules_) {
-        processed[modIdx] = false;
-        if (!m.lock_.test_and_set()) {
-            processed[modIdx] = true;
-            auto &plugin = m.plugin_;
-            if (plugin) {
-                int chOffset = modIdx * MAX_IN;
-                int nCh = m.descriptor_->inputChannelNames.size();
-                for (unsigned i = 0; i < nCh && i < MAX_IN; i++) {
-                    m.audioBuffer_.copyFrom(i, 0, buffer.getReadPointer(i + chOffset), n);
-                }
-
-                float *const *buffers = m.audioBuffer_.getArrayOfWritePointers();
-                // juce has changed, to using a const pointer to float*
-                // now inconsistent with ssp sdk, but will work fine
-                plugin->process((float **)buffers, nCh, n);
-            }
-        }
-        modIdx++;
-        // note: we cannot copy output yet, since this will overwrite input for next module!
-    }
-
-    // now write the audio back out
-    modIdx = 0;
-    for (auto &m : modules_) {
-        if (processed[modIdx]) {
-            auto &plugin = m.plugin_;
-            if (plugin) {
-                int chOffset = modIdx * MAX_OUT;
-                int nCh = m.descriptor_->outputChannelNames.size();
-                for (unsigned i = 0; i < MAX_OUT; i++) {
-                    if (i < nCh) {
-                        buffer.copyFrom(i + chOffset, 0, m.audioBuffer_.getReadPointer(i), n);
-                    } else {
-                        // zero output where not enough channels
-                        buffer.applyGain(i + chOffset, 0, n, 0.0f);
-                    }
-                }
-            }
-            m.lock_.clear();
-        }
-        modIdx++;
-    }
+    tracks_[0].process(buffer);
 }
 
 void PluginProcessor::onInputChanged(unsigned i, bool b) {
@@ -153,10 +82,13 @@ void PluginProcessor::onInputChanged(unsigned i, bool b) {
 
     int midx = i / MAX_IN;
     int ch = i % MAX_IN;
-    auto plugin = modules_[midx].plugin_;
-    if (!plugin) return;
 
-    if (ch < modules_[midx].descriptor_->inputChannelNames.size()) { plugin->inputEnabled(ch, b); }
+    auto plugin = tracks_[0].modules_[midx].plugin_;
+    auto desc = tracks_[0].modules_[midx].descriptor_;
+    if (!plugin || !desc) return;
+
+
+    if (ch < desc->inputChannelNames.size()) { plugin->inputEnabled(ch, b); }
 }
 
 void PluginProcessor::onOutputChanged(unsigned i, bool b) {
@@ -165,73 +97,58 @@ void PluginProcessor::onOutputChanged(unsigned i, bool b) {
 
     int midx = i / MAX_OUT;
     int ch = i % MAX_OUT;
-    auto plugin = modules_[midx].plugin_;
-    if (!plugin) return;
+    auto plugin = tracks_[0].modules_[midx].plugin_;
+    auto desc = tracks_[0].modules_[midx].descriptor_;
+    if (!plugin || !desc) return;
 
-    if (ch < modules_[midx].descriptor_->outputChannelNames.size()) { plugin->outputEnabled(ch, b); }
+    if (ch < desc->outputChannelNames.size()) { plugin->outputEnabled(ch, b); }
 }
 
 static constexpr int checkBytes = 0x1FF1;
 static constexpr int protoVersion = 0x0002;
+static const char *DUAL_XML_TAG = "DUAL";
+static const char *TRACKS_XML_TAG = "Tracks";
+static const char *TRACK_XML_TAG = "Track";
+
 
 void PluginProcessor::getStateInformation(MemoryBlock &destData) {
-    // store plugin information
-    MemoryOutputStream outStream(destData, false);
+    std::unique_ptr<juce::XmlElement> xmlDual = std::make_unique<juce::XmlElement>(DUAL_XML_TAG);
 
-    outStream.writeInt(checkBytes);
-    outStream.writeInt(protoVersion);
-
-    int i = 0;
-    for (auto &m : modules_) {
-        outStream.writeInt(checkBytes);
-        auto &plugin = m.plugin_;
-        if (!plugin) {
-            outStream.writeString("");
-            outStream.writeInt(0);
-            continue;
-        }
-
-        void *data;
-        size_t dataSz;
-        plugin->getState(&data, &dataSz);
-
-        outStream.writeString(String(m.pluginName_.c_str()));
-        outStream.writeInt(dataSz);
-        outStream.write(data, dataSz);
-        i++;
+    std::unique_ptr<juce::XmlElement> xmlTracks = std::make_unique<juce::XmlElement>(TRACKS_XML_TAG);
+    for (auto &track : tracks_) {
+        std::unique_ptr<juce::XmlElement> xmlTrack = std::make_unique<juce::XmlElement>(TRACK_XML_TAG);
+        track.getStateInformation(*xmlTrack);
+        xmlTracks->addChildElement(xmlTrack.release());
     }
+    xmlDual->addChildElement(xmlTracks.release());
+
+    // ssp::log("getStateInformation : " + xmlTrax->toString().toStdString());
+    copyXmlToBinary(*xmlDual, destData);
 }
 
 
 void PluginProcessor::setStateInformation(const void *data, int sizeInBytes) {
+    while (!tracks_[0].requestClearTrack()) {}
+
     loadSupportedModules();
 
-    MemoryBlock srcData(data, sizeInBytes);
-    MemoryInputStream inputStream(data, sizeInBytes, false);
+    std::unique_ptr<juce::XmlElement> xmlDual(getXmlFromBinary(data, sizeInBytes));
 
-    int check = inputStream.readInt();
-    if (check != checkBytes) return;
-    int proto = inputStream.readInt();
-    if (proto != protoVersion) return;
-
-    for (int i = 0; i < M_MAX; i++) {
-        int check = inputStream.readInt();
-        if (check != checkBytes) { return; }
-
-        String fname = inputStream.readString();
-        int size = inputStream.readInt();
-
-        if (!fname.isEmpty() && size > 0) {
-            MemoryBlock moduleData;
-            moduleData.setSize(size);
-            inputStream.read(moduleData.getData(), size);
-
-            while (!requestModuleChange(0,i, fname.toStdString())) {}
-            auto &plugin = modules_[i].plugin_;
-            if (!plugin) continue;
-
-            plugin->setState(moduleData.getData(), moduleData.getSize());
+    if (xmlDual != nullptr && xmlDual->hasTagName(DUAL_XML_TAG)) {
+        // ssp::log("setStateInformation : " + xmlDual->toString().toStdString());
+        auto xmlTracks = xmlDual->getChildByName(TRACKS_XML_TAG);
+        if (xmlTracks != nullptr) {
+            int trackIdx = 0;
+            for (auto xmlTrack : xmlTracks->getChildIterator()) {
+                tracks_[trackIdx].setStateInformation(*xmlTrack);
+                trackIdx++;
+                if (trackIdx >= MAX_TRACKS) break;
+            }
+        } else {
+            ssp::log("setStateInformation : no TRACKS_XML_TAG tag");
         }
+    } else {
+        ssp::log("setStateInformation : no DUAL_XML_TAG tag");
     }
 }
 

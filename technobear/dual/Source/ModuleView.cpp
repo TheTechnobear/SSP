@@ -1,8 +1,7 @@
 #include "ModuleView.h"
 
 ModuleView::ModuleView(PluginProcessor &p) : base_type(&p, false), processor_(p) {
-    if (processor_.getSupportedModules().size() == 0) { processor_.scanPlugins(); }
-    // if (processor_.getSupportedModules().size() == 0) { processor_.loadSupportedModules(); }
+    if (processor_.getSupportedModules().size() == 0) { processor_.loadSupportedModules(); }
 }
 
 ModuleView::~ModuleView() {

@@ -3,9 +3,10 @@
 #include "ModuleView.h"
 #include "SSP.h"
 
+#include "Track.h"
+
 static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
 static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
-
 
 /// DualView
 
@@ -16,7 +17,7 @@ DualView::~DualView() {
 }
 
 void DualView::drawView(Graphics &g) {
-    for (int i = 0; i < PluginProcessor::M_MAX; i++) { drawModulePanel(g, i); }
+    for (int i = 0; i < Track::M_MAX; i++) { drawModulePanel(g, i); }
 }
 
 
@@ -30,10 +31,10 @@ void DualView::moduleIdx(int /*tidx*/,int m) {
 }
 
 void DualView::refreshComponents() {
-    unsigned panelWidth = (SSP_FULL_WIDTH - 10) / PluginProcessor::M_MAX;
+    unsigned panelWidth = (SSP_FULL_WIDTH - 10) / Track::M_MAX;
     unsigned border = (panelWidth - SSP_COMPACT_WIDTH) / 2;
 
-    for (int panel = 0; panel < PluginProcessor::M_MAX; panel++) {
+    for (int panel = 0; panel < Track::M_MAX; panel++) {
         // we are currently using editorhost->baseview, this is because editorshost is AudioProcessorEditor
         // and it appears AudioProcessorEditor has special handling for resizing etc.
         unsigned moduleX = (panel * panelWidth) + border;
@@ -60,7 +61,7 @@ void DualView::editorShown() {
 }
 
 void DualView::drawModulePanel(Graphics &g, unsigned panel) {
-    unsigned panelWidth = (SSP_FULL_WIDTH - 10) / PluginProcessor::M_MAX;
+    unsigned panelWidth = (SSP_FULL_WIDTH - 10) / Track::M_MAX;
     unsigned border = (panelWidth - SSP_COMPACT_WIDTH) / 2;
     unsigned moduleX = (panel * panelWidth) + border;
 

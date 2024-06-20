@@ -50,8 +50,8 @@ private:
 
     void loadModule();
 
-    unsigned trackIdx_ = PluginProcessor::MAX_TRACKS;
-    unsigned moduleIdx_ = Track::M_MAX;
+    int trackIdx_ = PluginProcessor::MAX_TRACKS;
+    int moduleIdx_ = Track::M_MAX;
 
     bool moduleUpdated_ = false;
     PluginProcessor &processor_;

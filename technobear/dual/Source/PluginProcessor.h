@@ -5,7 +5,8 @@
 
 #include "SSPExApi.h"
 #include "ssp/BaseProcessor.h"
-#include "Module.h"
+#include "Track.h"
+// #include "Module.h"
 
 using namespace juce;
 
@@ -43,39 +44,51 @@ public:
         return props;
     }
 
-
-    enum { M_LEFT, M_RIGHT, M_MAX };
-
-
     static constexpr unsigned I_MAX = 16;
     static constexpr unsigned O_MAX = 4;
-    static constexpr unsigned MAX_IN = I_MAX / M_MAX;
-    static constexpr unsigned MAX_OUT = O_MAX / M_MAX;
+    static constexpr unsigned MAX_IN = I_MAX / Track::M_MAX;
+    static constexpr unsigned MAX_OUT = O_MAX / Track::M_MAX;
 
-    const std::string &getLoadedPlugin(unsigned /*t*/, unsigned m) { return modules_[m].pluginName_; };
-
-    SSPExtendedApi::PluginEditorInterface *getEditor(unsigned /*tidx*/, unsigned midx) {
-        auto &m = modules_[midx];
-
-        if (m.plugin_ != nullptr && m.editor_ == nullptr) {
-            m.editor_ = (SSPExtendedApi::PluginEditorInterface *)m.plugin_->getEditor();
-        }
-        return m.editor_;
+    std::string getLoadedPlugin(unsigned t, unsigned m) {
+        if (t >= MAX_TRACKS || m >= Track::M_MAX) return "";
+        auto &track = tracks_[t];
+        return track.modules_[m].pluginName_;
     };
 
-    SSPExtendedApi::PluginInterface *getPlugin(unsigned /*tidx*/, unsigned m) { return modules_[m].plugin_; };
+    SSPExtendedApi::PluginEditorInterface *getEditor(unsigned t, unsigned m) {
+        if (t >= MAX_TRACKS || m >= Track::M_MAX) return nullptr;
+        auto &track = tracks_[t];
+        auto &module = track.modules_[m];
 
-    SSPExtendedApi::PluginDescriptor *getDescriptor(unsigned /*tidx*/, unsigned m) { return modules_[m].descriptor_; };
+        if (module.plugin_ != nullptr && module.editor_ == nullptr) {
+            module.editor_ = (SSPExtendedApi::PluginEditorInterface *)module.plugin_->getEditor();
+        }
+        return module.editor_;
+    };
 
-    void getStateInformation(MemoryBlock &destData) override;
-    void setStateInformation(const void *data, int sizeInBytes) override;
-    void onInputChanged(unsigned i, bool b) override;
-    void onOutputChanged(unsigned i, bool b) override;
+    SSPExtendedApi::PluginInterface *getPlugin(unsigned t, unsigned m) {
+        if (t >= MAX_TRACKS || m >= Track::M_MAX) return nullptr;
+        auto &track = tracks_[t];
+        return track.modules_[m].plugin_;
+    };
+
+    SSPExtendedApi::PluginDescriptor *getDescriptor(unsigned t, unsigned m) {
+        if (t >= MAX_TRACKS || m >= Track::M_MAX) return nullptr;
+        auto &track = tracks_[t];
+        return track.modules_[m].descriptor_;
+    };
 
     const std::vector<ModuleDesc> &getSupportedModules() { return supportedModules_; }
 
     bool requestModuleChange(unsigned t, unsigned m, const std::string &mn);
     void loadSupportedModules(bool forceScan = false);
+
+    void onInputChanged(unsigned i, bool b) override;
+    void onOutputChanged(unsigned i, bool b) override;
+    void getStateInformation(MemoryBlock &destData) override;
+    void setStateInformation(const void *data, int sizeInBytes) override;
+
+    static constexpr unsigned MAX_TRACKS = 1;
 
 protected:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -85,15 +98,10 @@ private:
 
     std::vector<ModuleDesc> supportedModules_;
 
-    Module modules_[M_MAX];
-    bool loadModule(std::string, Module &m);
+    Track tracks_[MAX_TRACKS];
 
     static const String getInputBusName(int channelIndex);
     static const String getOutputBusName(int channelIndex);
-
-    static bool checkPlugin(const std::string &f);
-    static std::string getPluginFile(const std::string &m);
-
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginProcessor)
 };

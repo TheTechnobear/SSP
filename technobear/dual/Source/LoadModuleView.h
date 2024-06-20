@@ -2,7 +2,9 @@
 
 #include <juce_gui_basics/juce_gui_basics.h>
 
+#include "Module.h"
 #include "PluginProcessor.h"
+#include "Track.h"
 #include "ssp/BaseView.h"
 #include "ssp/controls/ListControl.h"
 #include "ssp/controls/ValueButton.h"
@@ -48,8 +50,8 @@ private:
 
     void loadModule();
 
-    unsigned trackIdx_ = 0;
-    unsigned moduleIdx_ = 0;
+    int trackIdx_ = PluginProcessor::MAX_TRACKS;
+    int moduleIdx_ = Track::M_MAX;
 
     bool moduleUpdated_ = false;
     PluginProcessor &processor_;

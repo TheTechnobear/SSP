@@ -26,12 +26,15 @@ protected:
     void eventRight(bool lp) override;
     void eventLeftShift(bool lp) override;
     void eventRightShift(bool lp) override;
+    void eventButton(unsigned btn, bool longPress) override;
 
 private:
     PluginProcessor &processor_;
 
     std::shared_ptr<DualView> dualView_;
+    int dualViewIdx_ = -1;
     std::shared_ptr<LoadModuleView> loadView_;
+    int loadViewIdx_ = -1;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginEditor)
 };

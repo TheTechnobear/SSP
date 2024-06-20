@@ -41,6 +41,7 @@ target_sources(DUAL
         Source/ModuleView.cpp
         Source/LoadModuleView.cpp
         Source/Module.cpp
+        Source/Track.cpp
         ${COMMON_SRC}
         )
 

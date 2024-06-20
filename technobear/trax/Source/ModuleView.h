@@ -40,7 +40,7 @@ private:
     static constexpr int pluginWidth = SSP_COMPACT_WIDTH;
     static constexpr int pluginHeight = SSP_COMPACT_HEIGHT;
 
-    unsigned trackIdx_ = PluginProcessor::MAX_TRACKS;
-    unsigned moduleIdx_ = Track::M_MAX;
+    int trackIdx_ = PluginProcessor::MAX_TRACKS;
+    int moduleIdx_ = Track::M_MAX;
     PluginProcessor &processor_;
 };
