@@ -150,8 +150,8 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
     // pluginprocessr thread
     // once all process done... sum outputs for mix
     buffer.applyGain(0.0f);  // zero it out
-    static constexpr float MIX_CHANNEL_GAIN = 1.0f / float(MAX_TRACKS);
-    // static constexpr float MIX_CHANNEL_GAIN = 1.0f;
+    // static constexpr float MIX_CHANNEL_GAIN = 1.0f / float(MAX_TRACKS);
+    static constexpr float MIX_CHANNEL_GAIN = 1.0f;
     trackIdx = 0;
     for (auto &track : tracks_) {
         auto &tBuf = threadBuffers_[trackIdx];
