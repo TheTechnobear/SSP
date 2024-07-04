@@ -220,7 +220,7 @@ static const char *MODLIST_XML_TAG = "ModuleList";
 
 
 bool Module::loadSupportedModules(std::vector<ModuleDesc> &supportedModules) {
-    auto xmlModList = juce::XmlDocument::parse(juce::File("./trax_modules.xml"));
+    auto xmlModList = juce::XmlDocument::parse(juce::File(juce::String("./")+JucePlugin_Name+"_modules.xml"));
     if (xmlModList != nullptr && xmlModList->hasTagName(MODLIST_XML_TAG)) {
         supportedModules.clear();
         for (auto xmlMod : xmlModList->getChildIterator()) {
@@ -252,6 +252,6 @@ bool Module::saveSupportedModules(std::vector<ModuleDesc> &supportedModules) {
         xmlMod->setAttribute("cat", catstr);
         xmlModList->addChildElement(xmlMod.release());
     }
-    juce::File("./trax_modules.xml").replaceWithText(xmlModList->toString());
+    juce::File(juce::String("./")+JucePlugin_Name+"_modules.xml").replaceWithText(xmlModList->toString());
     return true;
 }
