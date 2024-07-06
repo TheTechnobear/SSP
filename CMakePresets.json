@@ -1,0 +1,40 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "local build",
+            "displayName": "local build",
+            "description": "local build",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build.cmake",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/build.cmake"
+            }
+        },
+        {
+            "name": "xmx toolchain",
+            "displayName": "xmx toolchain",
+            "description": "build for xmx",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build.cmake.xmx",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/xcXMX.cmake",
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/build.cmake.xmx"
+            }
+        },
+        {
+            "name": "ssp toolchain",
+            "displayName": "ssp toolchain",
+            "description": "build for ssp",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build.cmake.ssp",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/xcSSP.cmake",
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/build.cmake.ssp"
+            }
+        }
+    ]
+}
