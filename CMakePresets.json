@@ -19,7 +19,7 @@
             "generator": "Unix Makefiles",
             "binaryDir": "${sourceDir}/build.cmake.xmx",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_BUILD_TYPE": "Release",
                 "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/xcXMX.cmake",
                 "CMAKE_INSTALL_PREFIX": "${sourceDir}/build.cmake.xmx"
             }
@@ -31,7 +31,7 @@
             "generator": "Unix Makefiles",
             "binaryDir": "${sourceDir}/build.cmake.ssp",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_BUILD_TYPE": "Release",
                 "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/xcSSP.cmake",
                 "CMAKE_INSTALL_PREFIX": "${sourceDir}/build.cmake.ssp"
             }

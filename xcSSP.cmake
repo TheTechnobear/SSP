@@ -4,14 +4,15 @@ if(APPLE)
 endif()
 
 
-if (DEFINED ENV{BUILDROOT})
+if(DEFINED ENV{SSP_BUILDROOT})
+    set(BUILDROOT $ENV{SSP_BUILDROOT})
+elseif (DEFINED ENV{BUILDROOT})
     set(BUILDROOT $ENV{BUILDROOT})
-    set(CMAKE_SYSROOT ${BUILDROOT}/arm-rockchip-linux-gnueabihf/sysroot)
 else ()
-    message("warning: BUILDROOT environment variable assuming in $ENV{HOME}/buildroot")
-    set(BUILDROOT "$ENV{HOME}/buildroot/arm-rockchip-linux-gnueabihf_sdk-buildroot")
-    set(CMAKE_SYSROOT ${BUILDROOT}/arm-rockchip-linux-gnueabihf/sysroot)
+    message("warning: BUILDROOT environment variable missing")
 endif ()
+
+set(CMAKE_SYSROOT ${BUILDROOT}/arm-rockchip-linux-gnueabihf/sysroot)
 
 if (DEFINED ENV{TOOLSROOT})
     set(TOOLSROOT $ENV{TOOLSROOT})
