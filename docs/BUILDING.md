@@ -34,6 +34,7 @@ note: -- passes extra parameters to make -j 8 = number of cores to build on
 
 ## cross compile 
 
+brew install llvm clang-format pkg-config 
 
 instructions for how how to cross compile using toolchains is detailed in under the ssp-sdk
 see Percussa Forum - [specifically this topic](https://forum.percussa.com/t/creating-modules-for-the-ssp-aka-ssp-sdk-updated)
