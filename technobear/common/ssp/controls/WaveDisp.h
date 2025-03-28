@@ -112,8 +112,7 @@ private:
 
         if (legend_) {
             static constexpr unsigned fh = 6 * COMPACT_UI_SCALE;
-            Font f(Font::getDefaultMonospacedFontName(), fh, Font::plain);
-            g.setFont(f);
+            g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
             g.setColour(layer.colour_);
 
             if (!layer.label_.empty()) g.drawText(layer.label_, 0, (sigN * (fh + (COMPACT_UI_SCALE * 5))), w, fh, Justification::bottomLeft);

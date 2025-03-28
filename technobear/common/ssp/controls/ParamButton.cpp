@@ -61,7 +61,7 @@ void ParamButton::onClick() {
 void ParamButton::paint(juce::Graphics &g) {
     const int w = getWidth();
     const int h = getHeight();
-    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh_, juce::Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh_, juce::Font::plain)));
 
     auto &p = param_;
     bool active = p.getValue() > 0.5f;

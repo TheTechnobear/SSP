@@ -116,8 +116,7 @@ void FileBrowser::drawView(Graphics &g) {
     // display 1600x 480
     // x= left/right (0..1599)
     // y= top/bottom (0..479)
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), 18, Font::plain));
-
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), 18, Font::plain)));
 
     int idx = 0;
 

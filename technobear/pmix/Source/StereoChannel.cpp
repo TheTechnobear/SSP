@@ -21,7 +21,7 @@ void StereoChannel::paint(Graphics &g) {
     if(rData_->dummy_) gr=gl;
     vuMeter_.gainLevel(gl,gr);
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
 
     int bw = w / 2;
     int bx = w / 4;

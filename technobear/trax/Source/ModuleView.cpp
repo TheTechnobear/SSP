@@ -32,7 +32,7 @@ void ModuleView::drawModulePanel(Graphics &g) {
         int x = pluginWidth / 2;
         g.setColour(Colours::white);
 
-        g.setFont(Font(Font::getDefaultMonospacedFontName(), fh * 2, Font::plain));
+        g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh * 2, juce::Font::plain)));
         g.drawSingleLineText("No Module Loaded", x - fh * 8, getHeight() / 2 - (20 * COMPACT_UI_SCALE));
         return;
     }

@@ -61,7 +61,7 @@ void MixerView::drawView(Graphics& g) {
     static constexpr unsigned fh = 14 * COMPACT_UI_SCALE;
     g.setColour(Colours::yellow);
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
     g.drawSingleLineText("Trax", (SSP_COMPACT_WIDTH / 2) - (1.5f * float(fh)), COMPACT_UI_SCALE + fh);
 }
 

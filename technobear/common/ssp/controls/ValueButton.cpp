@@ -25,7 +25,7 @@ void ValueButton::value(bool v) {
 void ValueButton::paint(Graphics &g) {
     const int w = getWidth();
     const int h = getHeight();
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh_, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh_, Font::plain)));
 
 
     if (!value_) {

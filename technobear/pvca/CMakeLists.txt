@@ -14,7 +14,8 @@ juce_add_plugin(PVCA
         COPY_PLUGIN_AFTER_BUILD FALSE                
         PLUGIN_MANUFACTURER_CODE TB00               
         PLUGIN_CODE PVCA                            
-        FORMATS VST3                                
+        FORMATS VST3
+        VST3_AUTO_MANIFEST FALSE
         PRODUCT_NAME "pvca")                        
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../common/CMakeLists.txt)
@@ -32,7 +33,6 @@ target_sources(PVCA
 
 target_compile_definitions(PVCA
         PUBLIC
-        JUCE_DISPLAY_SPLASH_SCREEN=0
         JUCE_WEB_BROWSER=0  
         JUCE_USE_CURL=0         
         JUCE_VST3_CAN_REPLACE_VST2=0)

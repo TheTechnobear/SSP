@@ -53,5 +53,7 @@ Podfile.lock
 **/build
 
 tb_plugins.zip
+tb_plugins_xmx.zip
+tb_plugins_ssp.zip
 
 

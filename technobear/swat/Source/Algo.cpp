@@ -7,7 +7,7 @@ void drawAB(juce::Graphics &g, float A, float B) {
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, juce::Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
 
     g.drawSingleLineText("A : " + juce::String(A), x, y);
     y += space * 2;
@@ -53,11 +53,14 @@ void Algo::drawHelp(juce::Graphics &g) {
     unsigned space = 30;
     unsigned yText = y + space;
     g.setColour(juce::Colours::yellow);
-    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), 20 * COMPACT_UI_SCALE, juce::Font::plain));
+
+    int fh = 20 * COMPACT_UI_SCALE;
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
     g.drawSingleLineText(name(), x, y);
 
     y = yText;
-    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), 9 * COMPACT_UI_SCALE, juce::Font::plain));
+    fh = 9 * COMPACT_UI_SCALE;
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
     g.setColour(juce::Colours::white);
 
     std::string::size_type pos = 0;

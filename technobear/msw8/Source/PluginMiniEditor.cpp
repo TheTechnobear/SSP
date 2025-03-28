@@ -33,7 +33,7 @@ void PluginMiniEditor::drawGrid(Graphics &g) {
     Colour inclr = Colours::blue;
     Colour outclr = Colours::green;
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, Font::plain)));
     g.setColour(outclr);
     g.drawText("Outputs", x + lx, y, (8 * sz) + (7 * sp), fh, Justification::centred);
     y += sp;

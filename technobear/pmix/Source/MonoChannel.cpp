@@ -27,7 +27,7 @@ void MonoChannel::paint(Graphics &g) {
 
     int y = vuMeter_.getHeight();
     y += 5;
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
 
     // level
     g.setColour(Colours::lightgrey);

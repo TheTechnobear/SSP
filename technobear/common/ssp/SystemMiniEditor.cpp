@@ -59,7 +59,7 @@ void SystemMiniEditor::drawView(Graphics &g) {
     if (SystemEditor::mode() == M_DEVICE) return;
 
     const int fh = 12 * COMPACT_UI_SCALE;
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, Font::plain)));
     g.setColour(Colours::white);
 
     int y = fh * 3;
@@ -128,7 +128,7 @@ void SystemMiniEditor::drawLabel(Graphics &g, const std::string &str, unsigned i
     static constexpr int fh = 14 * COMPACT_UI_SCALE;
     const int btnTop = SSP_COMPACT_HEIGHT - (fh * 2);
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, Font::plain)));
     g.setColour(Colours::red);
 
     unsigned w = unsigned(SSP_COMPACT_WIDTH / 4.0f);

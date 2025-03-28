@@ -102,7 +102,7 @@ void EditorHost::drawBasicPanel(Graphics &g) {
 
     if (drawDefaults_) {
         // title
-        g.setFont(Font(Font::getDefaultMonospacedFontName(), 12 * COMPACT_UI_SCALE, Font::plain));
+        g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), 12 * COMPACT_UI_SCALE, Font::plain)));
         g.setColour(Colours::yellow);
         g.drawSingleLineText(String(JucePlugin_Name) + " : " + String(JucePlugin_Desc) + String(" @ thetechnobear"), 10,
                              30);

@@ -70,7 +70,7 @@ void PluginMiniEditor::drawView(Graphics &g) {
     base_type::drawView(g);
 
     static constexpr unsigned gap = 5 * COMPACT_UI_SCALE;
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), 10 * COMPACT_UI_SCALE, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), 10 * COMPACT_UI_SCALE, Font::plain)));
 
     g.setColour(Colours::yellow);
     g.drawSingleLineText(String(JucePlugin_Name) + ":" + String(JucePlugin_Desc) + String(" @ thetechnobear"), gap,
@@ -78,7 +78,7 @@ void PluginMiniEditor::drawView(Graphics &g) {
 
 
     const int fh = 12 * COMPACT_UI_SCALE;
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, Font::plain)));
 
     int y = fh * 3;
     g.setColour(Colours::green);

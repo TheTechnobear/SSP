@@ -24,6 +24,7 @@ juce_add_plugin(DUAL
         PLUGIN_MANUFACTURER_CODE TB00               # A four-character manufacturer id with at least one upper-case character
         PLUGIN_CODE DUAL                            # A unique four-character plugin id with at least one upper-case character
         FORMATS VST3                                # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+        VST3_AUTO_MANIFEST FALSE
         PRODUCT_NAME "dual")                        # The name of the final executable, which can differ from the target name
 
 
@@ -47,15 +48,10 @@ target_sources(DUAL
 
 target_compile_definitions(DUAL
         PUBLIC
-        JUCE_DISPLAY_SPLASH_SCREEN=0
         # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
         JUCE_WEB_BROWSER=0  # If you remove this, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
         JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
         JUCE_VST3_CAN_REPLACE_VST2=0)
-
-if(APPLE)
-    juce_enable_copy_plugin_step(DUAL)
-endif()
 
 target_link_libraries(DUAL PRIVATE
         # AudioPluginData           # If we'd created a binary data target, we'd link to it here

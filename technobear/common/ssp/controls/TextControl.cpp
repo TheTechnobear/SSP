@@ -25,7 +25,8 @@ public:
         g.setColour(!active_ ? fg_ : bg_);
         g.drawRect(0, 0, getWidth(), getHeight(), 1 + (selected_ * 2 * COMPACT_UI_SCALE));
 
-        g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh_, juce::Font::plain));
+        g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh_, juce::Font::plain)));
+
         g.drawText(k_, gap, gap, getWidth() - (gap * 2.f), getHeight() - (gap * 2.f), juce::Justification::centred);
     }
 
@@ -104,7 +105,7 @@ void TextControl::paint(juce::Graphics &g) {
     int smallSp = 2 * COMPACT_UI_SCALE;
 
 
-    juce::Font font(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain);
+    juce::Font font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(),fh, juce::Font::plain));
     g.setColour(bg_);
     g.fillRect(x, y, w, h);
     g.setColour(fg_);
@@ -121,7 +122,7 @@ void TextControl::paint(juce::Graphics &g) {
     } else {
         g.setColour(bg_);
     }
-    int fpos = font.getStringWidthFloat(text_);
+    int fpos = juce::GlyphArrangement::getStringWidth(font,text_);
     g.fillRect(x + smallSp + fpos + smallSp, y + smallSp * 4, smallSp * 2, fh - smallSp);
 }
 

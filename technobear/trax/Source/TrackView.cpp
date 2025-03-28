@@ -73,7 +73,7 @@ void TrackView::drawView(Graphics &g) {
     int y = 15 * COMPACT_UI_SCALE;
 
     g.setColour(Colours::yellow);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
 
     g.drawSingleLineText("Track " + String(trackIdx_ + 1), x, y);
 }

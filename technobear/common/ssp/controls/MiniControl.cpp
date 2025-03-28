@@ -22,8 +22,8 @@ void MiniControl::paint(juce::Graphics &g) {
     unsigned gap = scale;
 
     auto &p = param_;
-    const auto &titleFont = juce::Font(juce::Font::getDefaultMonospacedFontName(), tfh, juce::Font::plain);
-    const auto &valueFont = juce::Font(juce::Font::getDefaultMonospacedFontName(), vfh, juce::Font::plain);
+    const auto &titleFont = juce::Font( juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), tfh, juce::Font::plain));
+    const auto &valueFont = juce::Font( juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), vfh, juce::Font::plain));
 
     g.setFont(titleFont);
     g.setColour(active() ? fg_ : juce::Colours::grey);

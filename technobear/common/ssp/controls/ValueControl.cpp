@@ -66,7 +66,7 @@ void SimpleValueControl::paint(juce::Graphics &g) {
     int h = getHeight();
     int w = getWidth();
 
-    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(),  fh, juce::Font::plain)));
 
     g.setColour(fg_);
     g.drawText(name_, 0, 0, w, fh, juce::Justification::centred);
@@ -87,7 +87,7 @@ void LineValueControl::paint(juce::Graphics &g) {
     int h = getHeight();
     int w = getWidth();
 
-    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(),  fh, juce::Font::plain)));
 
     g.setColour(active() ? fg_ : juce::Colours::grey);
     g.drawText(name_, 0, 0, w, fh, juce::Justification::centred);
@@ -108,7 +108,7 @@ void BarValueControl::paint(juce::Graphics &g) {
     int h = getHeight();
     int w = getWidth();
 
-    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(),  fh, juce::Font::plain)));
 
     g.setColour(active() ? fg_ : juce::Colours::grey);
     g.drawText(name_, 0, 0, w, fh, juce::Justification::centred);
@@ -189,7 +189,7 @@ void ListValueControl::paint(juce::Graphics &g) {
     int h = getHeight();
     int w = getWidth();
 
-    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh_, juce::Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(),  fh_, juce::Font::plain)));
 
     g.setColour(fg_);
     g.drawText(name_, 0, 0, w, fh_, juce::Justification::centred);

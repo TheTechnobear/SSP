@@ -72,9 +72,12 @@ void DualView::drawModulePanel(Graphics &g, unsigned panel) {
         else
             g.setColour(Colours::darkgrey);
 
-        g.setFont(Font(Font::getDefaultMonospacedFontName(), 10 * COMPACT_UI_SCALE, Font::plain));
+        int fh = 10 * COMPACT_UI_SCALE;
+        g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
         g.drawSingleLineText("No Module Loaded", moduleX + 40, getHeight() / 2 - 20);
-        g.setFont(Font(Font::getDefaultMonospacedFontName(), 8 * COMPACT_UI_SCALE, Font::plain));
+
+        fh = 8 * COMPACT_UI_SCALE;
+        g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
         g.drawSingleLineText("(hold SHIFT to load)", moduleX + 40, getHeight() / 2);
         return;
     }

@@ -63,7 +63,7 @@ void AgDisplay::paint(Graphics &g) {
     float dx = lastX_, dy = lastY_, dz = lastZ_;
 
     g.setColour(Colours::white);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
     g.drawSingleLineText("X : " + String::formatted("%5.3f", dx) + "  -  " + String::formatted("%4.2f", dx * 5.0f) + "V - " + getNoteValue(dx), x, y);
     y += space * 2;
     g.drawSingleLineText("Y : " + String::formatted("%5.3f", dy) + "  -  " + String::formatted("%4.2f", dy * 5.0f) + "V - " + getNoteValue(dy), x, y);

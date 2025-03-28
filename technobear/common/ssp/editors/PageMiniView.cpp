@@ -9,7 +9,7 @@ PageMiniView::PageMiniView(BaseProcessor *p) : base_type(p, true) {
 }
 
 void PageMiniView::drawView(Graphics &g) {
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), titleFH, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), titleFH, Font::plain)));
 
     g.setColour(Colours::yellow);
     g.drawSingleLineText(String(JucePlugin_Name) + ":" + String(JucePlugin_Desc) + String(" @ thetechnobear"), gap,

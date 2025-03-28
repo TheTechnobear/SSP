@@ -268,7 +268,7 @@ void AgComparatorW::paint (Graphics& g) {
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
 
     g.drawSingleLineText("Low: " + String(LOW_), x, y);
     y += space;
@@ -337,7 +337,7 @@ void AgMapVV::paint (Graphics& g) {
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
 
     g.drawSingleLineText("Min In : " + String(minIn_), x, y);
     y += space;
@@ -418,7 +418,7 @@ void AgCounter::paint (Graphics& g) {
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
 
     g.drawSingleLineText("Min : " + String(min_), x, y);
     y += space;

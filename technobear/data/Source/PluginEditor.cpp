@@ -231,7 +231,7 @@ void PluginEditor::drawValueDisplay(Graphics &g) {
     int yspace = fh + space;
 
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, Font::plain)));
 
     g.setColour(juce::Colours::white);
     g.drawText("Min", x, y, fldw, fh, Justification::left);

@@ -9,7 +9,7 @@ MiniParamView::MiniParamView(BaseProcessor *p, ioActivity cb) : base_type(p, tru
 }
 
 void MiniParamView::drawView(Graphics &g) {
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), titleFH, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), titleFH, Font::plain)));
 
     g.setColour(Colours::yellow);
     g.drawSingleLineText(String(JucePlugin_Name) + ":" + String(JucePlugin_Desc) + String(" @ thetechnobear"), gap,
@@ -209,7 +209,7 @@ void MiniParamView::drawIO(Graphics &g) {
 
 
     g.setColour(Colours::yellow);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, Font::plain)));
 
     g.setColour(Colours::yellow);
     g.drawSingleLineText("Inputs", tx, y);

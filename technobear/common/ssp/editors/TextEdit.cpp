@@ -31,7 +31,7 @@ public:
         g.setColour(!active_ ? fg_ : bg_);
         g.drawRect(0, 0, getWidth(), getHeight(), 1 + (selected_ * 3));
 
-        g.setFont(Font(Font::getDefaultMonospacedFontName(), fh_, Font::plain));
+        g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh_, juce::Font::plain)));
         g.drawText(k_, 4.0f, 4.0f, getWidth() - 8.f, getHeight() - 8.f, Justification::centred);
     }
 
@@ -126,7 +126,7 @@ void TextEdit::drawView(Graphics &g) {
     float w = 800;
     float h = 400;
     float fh = 24;
-    Font font(Font::getDefaultMonospacedFontName(), fh, Font::plain);
+    Font font(juce::FontOptions(Font::getDefaultMonospacedFontName(),fh, juce::Font::plain));
     g.setColour(bg_);
     g.fillRect(x, y, w, h);
     g.setColour(fg_);
@@ -143,10 +143,9 @@ void TextEdit::drawView(Graphics &g) {
     } else {
         g.setColour(bg_);
     }
-    float fpos = font.getStringWidthFloat(text_);
+
+    float fpos = juce::GlyphArrangement::getStringWidth(font,text_);
     g.fillRect(x + 2.f + fpos + 2.f, y + 4.f, 4.f, fh - 2.0f);
-
-
 }
 
 void TextEdit::onDelete() {

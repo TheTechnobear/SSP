@@ -118,7 +118,7 @@ void AgDelay::paint(Graphics &g) {
     unsigned y = 100;
     g.setColour(Colours::white);
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
 
     g.drawSingleLineText("Max Time : " + String(size_), x, y);
     y += space * 2;
@@ -242,7 +242,7 @@ void AgSDelay::paint(Graphics &g) {
     unsigned y = 100;
     g.setColour(Colours::white);
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
 
     g.drawSingleLineText("Max Delay : " + String(size_), x, y);
     y += space * 2;

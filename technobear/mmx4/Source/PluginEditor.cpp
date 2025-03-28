@@ -41,7 +41,7 @@ void PluginEditor::drawGrid(Graphics &g) {
 
     int x = startX;
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, Font::plain)));
     g.setColour(Colours::red);
 
     x += sp + (szx * 2.5f);

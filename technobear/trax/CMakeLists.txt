@@ -23,6 +23,7 @@ juce_add_plugin(TRAX
         PLUGIN_MANUFACTURER_CODE TB00               # A four-character manufacturer id with at least one upper-case character
         PLUGIN_CODE TRAX                            # A unique four-character plugin id with at least one upper-case character
         FORMATS VST3                                # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+        VST3_AUTO_MANIFEST FALSE
         PRODUCT_NAME "trax")                        # The name of the final executable, which can differ from the target name
 
 
@@ -63,7 +64,6 @@ target_sources(TRAX
 
 target_compile_definitions(TRAX
         PUBLIC
-        JUCE_DISPLAY_SPLASH_SCREEN=0
         JUCE_WEB_BROWSER=0  
         JUCE_USE_CURL=0    
         JUCE_VST3_CAN_REPLACE_VST2=0)

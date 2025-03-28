@@ -84,7 +84,7 @@ void ListControl<T>::prevItem() {
 template <class T>
 void ListControl<T>::paint(juce::Graphics& g) {
     g.setColour(juce::Colours::white);
-    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), FH, juce::Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), FH, juce::Font::plain)));
     int s = offset_;
     int e = std::min(offset_ + nLines_, int(items_.size()));
     int x = 0;

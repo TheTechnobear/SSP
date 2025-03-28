@@ -72,7 +72,7 @@ void SystemFullEditor::drawView(Graphics &g) {
 
 
     const int fh = 12 * COMPACT_UI_SCALE;
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, Font::plain)));
     g.setColour(Colours::white);
     int y = 60;
 
@@ -144,7 +144,7 @@ static constexpr unsigned paramSpaceY = 50;
 
 void SystemFullEditor::drawLabel(Graphics &g, const std::string &str, unsigned int idx) {
     const int fh = 16 * COMPACT_UI_SCALE;
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, Font::plain)));
     g.setColour(Colours::red);
 
     //    unsigned h = 2 * paramSpaceY;

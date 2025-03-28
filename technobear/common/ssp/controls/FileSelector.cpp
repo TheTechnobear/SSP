@@ -122,7 +122,7 @@ void FileSelector::scanDir() {
 
 void FileSelector::paint(juce::Graphics &g) {
     static constexpr unsigned fh = 16 * COMPACT_UI_SCALE;
-    g.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(),  fh, juce::Font::plain)));
     int idx = 0;
     for (auto iter : fileList_) {
         juce::String name = iter.first;

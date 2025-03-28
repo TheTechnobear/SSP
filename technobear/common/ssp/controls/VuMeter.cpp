@@ -116,7 +116,7 @@ void MonoVuMeter::paint(Graphics &g) {
     int h = getHeight();
     int w = getWidth();
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
 
     if (enabled()) {
         g.setColour(labelClr_);
@@ -163,7 +163,7 @@ void StereoVuMeter::paint(Graphics &g) {
     int h = getHeight();
     int w = getWidth();
 
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
     if (enabled()) {
         g.setColour(labelClr_);
     } else {

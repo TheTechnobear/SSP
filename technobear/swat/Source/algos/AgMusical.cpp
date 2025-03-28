@@ -70,7 +70,7 @@ void AgTranspose::paint (Graphics& g) {
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
 
     g.drawSingleLineText("Note A : " + String(noteString(NA_)), x, y);
     y += space;
@@ -144,7 +144,7 @@ void AgComparatorN::paint (Graphics& g) {
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
 
     g.drawSingleLineText("Low Note : " + noteString(NL_), x, y);
     y += space;
@@ -218,7 +218,7 @@ void AgMapNV::paint (Graphics& g) {
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
 
     g.drawSingleLineText("Min In : " + noteString(minIn_), x, y);
     y += space;
@@ -294,7 +294,7 @@ void AgMapNN::paint (Graphics& g) {
     unsigned x = space;
     unsigned y = 100;
     g.setColour(Colours::white);
-    g.setFont(Font(Font::getDefaultMonospacedFontName(), fh, Font::plain));
+    g.setFont(juce::Font(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), fh, juce::Font::plain)));
 
     g.drawSingleLineText("Min In : " + noteString(minIn_), x, y);
     y += space;
