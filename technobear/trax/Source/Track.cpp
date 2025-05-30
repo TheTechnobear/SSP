@@ -9,6 +9,9 @@ Track::Track() {
     modules_[M_OUT].alloc("OUT", trackOut_.get(), trackOut_->createDescriptor(), nullptr);
 }
 
+Track::~Track() {
+}
+
 std::vector<Matrix::Wire> Track::connections() {
     return matrix_.connections_;
 }

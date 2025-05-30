@@ -19,6 +19,7 @@ PluginProcessor::PluginProcessor(const AudioProcessor::BusesProperties &ioLayout
         // create thread for each track, place into trackThreads_
         trackThreads_.emplace_back([this, trackIdx] {
             bool running = true;
+            ssp::log("trax thread create");
             while (running) {
                 std::unique_lock<std::mutex> lk(tracks_[trackIdx].mutex_);
                 tracks_[trackIdx].cv_.wait(lk, [this, trackIdx] { return tracks_[trackIdx].ready_; });
@@ -32,6 +33,7 @@ PluginProcessor::PluginProcessor(const AudioProcessor::BusesProperties &ioLayout
                 lk.unlock();
                 tracks_[trackIdx].cv_.notify_one();
             }
+            ssp::log("trax thread exit");
         });
         trackIdx++;
     }
@@ -66,13 +68,17 @@ PluginProcessor::~PluginProcessor() {
         track.cv_.notify_one();
     }
 
-    for (auto &t : trackThreads_) {
+    for (auto &track : tracks_) {
+        std::unique_lock<std::mutex> lk(track.mutex_);
+        track.cv_.wait(lk, [&track] { return track.processed_; });
+    }
+
+   for (auto &t : trackThreads_) {
         if (t.joinable()) t.join();
     }
 
-    for (auto &track : tracks_) {
-        for (auto &module : track.modules_) { module.free(); }
-    }
+    // clear tracks etc
+    initPreset();
 }
 
 

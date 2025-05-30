@@ -3,7 +3,12 @@ if(APPLE)
     set(CMAKE_SYSTEM_NAME Darwin)
 endif()
 
-
+# cross compile make release builds by default
+if (NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
+  if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
+  endif()
+endif()
 
 if(DEFINED ENV{XMX_BUILDROOT})
     set(BUILDROOT $ENV{XMX_BUILDROOT})

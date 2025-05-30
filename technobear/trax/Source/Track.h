@@ -16,6 +16,7 @@
 class Track {
 public:
     explicit Track();
+    ~Track();
 
     std::vector<Matrix::Wire> connections();
 

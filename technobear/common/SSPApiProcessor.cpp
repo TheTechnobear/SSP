@@ -2,9 +2,9 @@
 
 // This has to be inline since it uses PluginProcessor which is part of the Plugin Project
 SSP_PluginInterface::SSP_PluginInterface(PluginProcessor *p) : processor_(p), editor_(nullptr) {
-#ifdef JUCE_DEBUG
+// #ifdef JUCE_DEBUG
     juceInitialiser_ = new ScopedJuceInitialiser_GUI();
-#endif
+// #endif
 }
 
 SSP_PluginInterface::~SSP_PluginInterface() {
