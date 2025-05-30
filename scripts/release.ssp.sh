@@ -1,8 +1,8 @@
 cd ~/projects/SSP.private
 cp ./technobear/README.txt ./releases
 mkdir -p ./releases/plugins/ssp
-cp ~/projects/SSP.private/build.ssp/technobear/*/*/Release/VST3/*.vst3/Contents/*/*.so ./releases/plugins/ssp
-/opt/homebrew/bin/arm-linux-gnueabihf-strip --strip-unneeded ./releases/plugins/ssp/*
+cp ~/projects/SSP.private/build.ssp/technobear/*/*/Release/VST3/*.vst3/Contents/*/*.so ./releases/ssp/plugins
+/opt/homebrew/bin/arm-linux-gnueabihf-strip --strip-unneeded ./releases/ssp/plugins/*
 
 rm -rf tmp
 mkdir -p tmp
