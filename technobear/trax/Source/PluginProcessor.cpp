@@ -19,7 +19,7 @@ PluginProcessor::PluginProcessor(const AudioProcessor::BusesProperties &ioLayout
         // create thread for each track, place into trackThreads_
         trackThreads_.emplace_back([this, trackIdx] {
             bool running = true;
-            ssp::log("trax thread create");
+            ssp::log("trax thread create : " + std::to_string(trackIdx));
             while (running) {
                 std::unique_lock<std::mutex> lk(tracks_[trackIdx].mutex_);
                 tracks_[trackIdx].cv_.wait(lk, [this, trackIdx] { return tracks_[trackIdx].ready_; });
@@ -30,10 +30,11 @@ PluginProcessor::PluginProcessor(const AudioProcessor::BusesProperties &ioLayout
                     running = false;
                 }
                 tracks_[trackIdx].processed_ = true;
+                tracks_[trackIdx].exited_ = !running;
                 lk.unlock();
                 tracks_[trackIdx].cv_.notify_one();
             }
-            ssp::log("trax thread exit");
+            ssp::log("trax thread exit : " + std::to_string(trackIdx));
         });
         trackIdx++;
     }
@@ -62,20 +63,22 @@ bool PluginProcessor::shouldExit() {
 PluginProcessor::~PluginProcessor() {
     shouldExit_ = true;
 
+    int trackCnt = 0;
     for (auto &track : tracks_) {
         std::lock_guard lk(track.mutex_);
         track.ready_ = true;
         track.cv_.notify_one();
+        // ssp::log("ssp thread :" + std::to_string(trackCnt++));
     }
 
     for (auto &track : tracks_) {
         std::unique_lock<std::mutex> lk(track.mutex_);
-        track.cv_.wait(lk, [&track] { return track.processed_; });
+        track.cv_.wait(lk, [&track] { return track.exited_; });
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        // ssp::log("ssp thread :" + std::to_string(--trackCnt) + " : " + std::to_string(track.processed_) + "," + std::to_string(track.ready_));
+
     }
 
-   for (auto &t : trackThreads_) {
-        if (t.joinable()) t.join();
-    }
 
     // clear tracks etc
     initPreset();
@@ -133,6 +136,8 @@ void PluginProcessor::prepareTrack(Track &track, double sampleRate, int samplesP
 
 
 void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMessages) {
+    if(shouldExit_) return;
+
     auto n = buffer.getNumSamples();
 
     // process thread
@@ -150,8 +155,10 @@ void PluginProcessor::processBlock(AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
     for (auto &track : tracks_) {
         std::unique_lock<std::mutex> lk(track.mutex_);
-        track.cv_.wait(lk, [&track] { return track.processed_; });
+        track.cv_.wait(lk, [&track] { return track.processed_ || track.exited_; });
+        if(track.exited_) return;
     }
+ 
 
     // pluginprocessr thread
     // once all process done... sum outputs for mix

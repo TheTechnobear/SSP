@@ -1,10 +1,30 @@
 // #include "ssp/EditorHost.h"
+#include "SSP.h"
+#include "ssp/Log.h"
 
 // This has to be inline since it uses PluginProcessor which is part of the Plugin Project
 SSP_PluginInterface::SSP_PluginInterface(PluginProcessor *p) : processor_(p), editor_(nullptr) {
 // #ifdef JUCE_DEBUG
+#if 1
     juceInitialiser_ = new ScopedJuceInitialiser_GUI();
-// #endif
+#else
+    juceInitialiser_ = nullptr;
+#endif
+    // if(processor_->useCompactUI()) {
+    //     ssp::log("SSP_PluginInterface - compact");
+    // } else {
+    //     ssp::log("SSP_PluginInterface - full");
+    // }
+
+
+// force editor creation
+    // auto* editor = getEditor();
+    // if(processor_->useCompactUI()) {
+    //     editor->renderToImage(nullptr, SSP_COMPACT_WIDTH, SSP_COMPACT_HEIGHT);
+    // }
+    // else {
+    //     editor->renderToImage(nullptr, SSP_FULL_WIDTH, SSP_FULL_HEIGHT);
+    // }
 }
 
 SSP_PluginInterface::~SSP_PluginInterface() {

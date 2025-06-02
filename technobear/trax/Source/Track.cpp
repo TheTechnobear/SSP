@@ -129,11 +129,13 @@ void Track::process(juce::AudioSampleBuffer &ioBuffer) {
         size_t n = blockSize_;
         auto &inMod = modules_[M_IN];
         for (int c = 0; c < MAX_IO_IN; c++) { inMod.audioBuffer_.copyFrom(c, 0, ioBuffer, c, 0, n); }
+        auto &outMod = modules_[M_OUT];
+        outMod.audioBuffer_.clear();
 
         unsigned modIdx = 0;
         for (auto &m : modules_) {
             auto &moduleBuf = m.audioBuffer_;
-            if (modIdx > 0) moduleBuf.applyGain(0.0f);
+            if (modIdx > 0) moduleBuf.clear();
             for (auto &route : matrix_.connections_) {
                 if (route.dest_.modIdx_ == modIdx) {
                     auto &srcBuf = modules_[route.src_.modIdx_].audioBuffer_;
@@ -155,7 +157,6 @@ void Track::process(juce::AudioSampleBuffer &ioBuffer) {
         }
 
         if (!mute()) {
-            auto &outMod = modules_[M_OUT];
             for (int c = 0; c < MAX_IO_OUT; c++) { ioBuffer.copyFrom(c, 0, outMod.audioBuffer_, c, 0, n); }
         } else {
             // muted, so don't process

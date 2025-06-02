@@ -14,7 +14,7 @@ public:
     void visibilityChanged(bool b) override;
     void renderToImage(unsigned char *buffer, int width, int height) override;
 
-    juce::Component* editorComponent() override { return editor_->getEditorComponent();}
+    juce::Component* editorComponent() override { return editor_ != nullptr ? editor_->getEditorComponent() : nullptr ;}
 
     // other
     void buttonPressed(int n, bool val);

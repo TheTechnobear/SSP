@@ -2,6 +2,7 @@
 
 #include "../../ssp-sdk/Percussa.h"
 #include "ssp/EditorHost.h"
+// #include "ssp/Log.h"
 
 // SSPHASH
 #define SSP_FULL_IMAGECACHE_HASHCODE 0x53535048415348
@@ -12,9 +13,11 @@ SSP_PluginEditorInterface::SSP_PluginEditorInterface(ssp::EditorHost *editor) : 
         buttonCounter_[i] = 0;
         buttonState_[i] = false;
     }
+    // ssp::log("SSP_PluginEditorInterface");       
 }
 
 SSP_PluginEditorInterface::~SSP_PluginEditorInterface() {
+    // ssp::log("~SSP_PluginEditorInterface");       
     if (editor_) delete editor_;
 }
 
@@ -47,13 +50,14 @@ void SSP_PluginEditorInterface::renderToImage(unsigned char *buffer, int width, 
     auto hashcode = editor_->isCompactUI() ? SSP_COMPACT_IMAGECACHE_HASHCODE : SSP_FULL_IMAGECACHE_HASHCODE;
     Image img = ImageCache::getFromHashCode(hashcode);
     if (!img.isValid()) {
-        // std::cerr << "new render image created" << std::endl;
         Image newimg(Image::ARGB, width, height, true);
         ImageCache::addImageToCache(newimg, hashcode);
         img = newimg;
+        // ssp::log("renderToImage noimage : " +std::to_string(width)+ "," +std::to_string(height));       
     }
 
     if (!editor_->isVisible()) {
+        // ssp::log("renderToImage novis : " +std::to_string(width)+ "," +std::to_string(height));       
         editor_->setBounds(Rectangle<int>(0, 0, width, height));
         editor_->setOpaque(true);
         editor_->setVisible(true);
@@ -63,7 +67,7 @@ void SSP_PluginEditorInterface::renderToImage(unsigned char *buffer, int width, 
     editor_->paintEntireComponent(g, true);
     Image::BitmapData bitmap(img, Image::BitmapData::readOnly);
 
-    memcpy(buffer, bitmap.data, width * height * 4);
+    if(buffer) memcpy(buffer, bitmap.data, width * height * 4);
 }
 
 void SSP_PluginEditorInterface::buttonPressed(int n, bool val) {

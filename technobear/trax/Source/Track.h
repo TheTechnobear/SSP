@@ -59,6 +59,7 @@ public:
     std::condition_variable cv_;
     bool ready_ = false;
     bool processed_ = false;
+    bool exited_ = false;
     static constexpr unsigned MAX_MODULES = Track::M_MAX;
     static constexpr unsigned MAX_USER_MODULES = M_OUT - M_IN - 1;
 
